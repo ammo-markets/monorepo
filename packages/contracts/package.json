@@ -1,0 +1,20 @@
+{
+  "name": "@ammo-exchange/contracts",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./abis": "./src/abis/index.ts"
+  },
+  "scripts": {
+    "build": "forge build && tsx scripts/export-abis.ts",
+    "test": "forge test",
+    "check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}
