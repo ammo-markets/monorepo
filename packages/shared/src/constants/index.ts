@@ -1,4 +1,4 @@
-import type { Caliber, CaliberSpec } from "../types/index.js";
+import type { Caliber, CaliberSpec } from "../types/index";
 
 /** Fee constants in basis points (1 BPS = 0.01%) */
 export const FEES = {
