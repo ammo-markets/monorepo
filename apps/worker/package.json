@@ -1,0 +1,22 @@
+{
+  "name": "@ammo-exchange/worker",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun --watch src/index.ts",
+    "build": "bun build src/index.ts --outdir dist --target bun",
+    "start": "bun dist/index.js",
+    "check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ammo-exchange/contracts": "workspace:*",
+    "@ammo-exchange/db": "workspace:*",
+    "@ammo-exchange/shared": "workspace:*",
+    "viem": "^2.23.2"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.2",
+    "typescript": "^5.7.3"
+  }
+}
