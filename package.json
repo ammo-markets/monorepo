@@ -1,0 +1,22 @@
+{
+  "name": "ammo-exchange",
+  "private": true,
+  "packageManager": "pnpm@10.4.1",
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "check": "turbo check",
+    "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,json,md}\"",
+    "db:generate": "turbo db:generate",
+    "db:migrate": "turbo db:migrate",
+    "db:studio": "pnpm --filter @ammo-exchange/db exec prisma studio",
+    "contracts:build": "pnpm --filter @ammo-exchange/contracts build",
+    "contracts:test": "pnpm --filter @ammo-exchange/contracts test"
+  },
+  "devDependencies": {
+    "prettier": "^3.5.3",
+    "turbo": "^2.4.4",
+    "typescript": "^5.7.3"
+  }
+}
