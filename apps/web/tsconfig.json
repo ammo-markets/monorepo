@@ -12,12 +12,12 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./*"]
     },
     "incremental": true,
     "noEmit": true,
     "allowJs": true
   },
-  "include": ["*.ts", "*.tsx", "next-env.d.ts", "src", ".next/types/**/*.ts"],
+  "include": ["*.ts", "*.tsx", "next-env.d.ts", "app", "features", "components", "hooks", "lib", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
 }
