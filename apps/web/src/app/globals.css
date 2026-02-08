@@ -1,1 +1,214 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Ammo Exchange custom Tailwind colors */
+  --color-brass: var(--brass);
+  --color-brass-hover: var(--brass-hover);
+  --color-brass-muted: var(--brass-muted);
+  --color-brass-border: var(--brass-border);
+  --color-ammo-green: var(--green);
+  --color-ammo-red: var(--red);
+  --color-ammo-amber: var(--amber);
+  --color-ammo-blue: var(--blue);
+  --color-ax-primary: var(--bg-primary);
+  --color-ax-secondary: var(--bg-secondary);
+  --color-ax-tertiary: var(--bg-tertiary);
+  --color-ax-glass: var(--bg-glass);
+
+  /* Font families */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+}
+
+/*
+ * Dark-only theme: :root values ARE the dark theme.
+ * We set both :root and .dark to the same values so shadcn components
+ * render correctly regardless of selector matching.
+ */
+:root {
+  --radius: 0.5rem;
+
+  /* shadcn semantic colors — ammo-ui dark theme */
+  --background: oklch(0.13 0.01 280);
+  --foreground: oklch(0.92 0.01 280);
+  --card: oklch(0.18 0.01 280);
+  --card-foreground: oklch(0.92 0.01 280);
+  --popover: oklch(0.18 0.01 280);
+  --popover-foreground: oklch(0.92 0.01 280);
+  --primary: oklch(0.72 0.1 80);
+  --primary-foreground: oklch(0.13 0.01 280);
+  --secondary: oklch(0.22 0.01 280);
+  --secondary-foreground: oklch(0.92 0.01 280);
+  --muted: oklch(0.22 0.01 280);
+  --muted-foreground: oklch(0.48 0.01 280);
+  --accent: oklch(0.72 0.1 80);
+  --accent-foreground: oklch(0.13 0.01 280);
+  --destructive: oklch(0.58 0.2 25);
+  --border: oklch(1 0 0 / 6%);
+  --input: oklch(1 0 0 / 6%);
+  --ring: oklch(0.72 0.1 80);
+  --chart-1: oklch(0.72 0.1 80);
+  --chart-2: oklch(0.7 0.15 155);
+  --chart-3: oklch(0.58 0.2 25);
+  --chart-4: oklch(0.75 0.15 75);
+  --chart-5: oklch(0.62 0.13 240);
+  --sidebar: oklch(0.18 0.01 280);
+  --sidebar-foreground: oklch(0.92 0.01 280);
+  --sidebar-primary: oklch(0.72 0.1 80);
+  --sidebar-primary-foreground: oklch(0.92 0.01 280);
+  --sidebar-accent: oklch(0.22 0.01 280);
+  --sidebar-accent-foreground: oklch(0.92 0.01 280);
+  --sidebar-border: oklch(1 0 0 / 6%);
+  --sidebar-ring: oklch(0.72 0.1 80);
+
+  /* Ammo Exchange custom tokens */
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #12121a;
+  --bg-tertiary: #1a1a25;
+  --bg-glass: rgba(26, 26, 37, 0.7);
+
+  --brass: #c6a44e;
+  --brass-hover: #d4b76a;
+  --brass-muted: rgba(198, 164, 78, 0.15);
+  --brass-border: rgba(198, 164, 78, 0.3);
+
+  --text-primary: #e8e8ed;
+  --text-secondary: #8a8a9a;
+  --text-muted: #55556a;
+
+  --green: #2ecc71;
+  --red: #e74c3c;
+  --amber: #f39c12;
+  --blue: #3498db;
+
+  --border-default: rgba(255, 255, 255, 0.06);
+  --border-hover: rgba(255, 255, 255, 0.12);
+  --border-active: rgba(198, 164, 78, 0.4);
+}
+
+.dark {
+  --background: oklch(0.13 0.01 280);
+  --foreground: oklch(0.92 0.01 280);
+  --card: oklch(0.18 0.01 280);
+  --card-foreground: oklch(0.92 0.01 280);
+  --popover: oklch(0.18 0.01 280);
+  --popover-foreground: oklch(0.92 0.01 280);
+  --primary: oklch(0.72 0.1 80);
+  --primary-foreground: oklch(0.13 0.01 280);
+  --secondary: oklch(0.22 0.01 280);
+  --secondary-foreground: oklch(0.92 0.01 280);
+  --muted: oklch(0.22 0.01 280);
+  --muted-foreground: oklch(0.48 0.01 280);
+  --accent: oklch(0.72 0.1 80);
+  --accent-foreground: oklch(0.13 0.01 280);
+  --destructive: oklch(0.58 0.2 25);
+  --border: oklch(1 0 0 / 6%);
+  --input: oklch(1 0 0 / 6%);
+  --ring: oklch(0.72 0.1 80);
+  --chart-1: oklch(0.72 0.1 80);
+  --chart-2: oklch(0.7 0.15 155);
+  --chart-3: oklch(0.58 0.2 25);
+  --chart-4: oklch(0.75 0.15 75);
+  --chart-5: oklch(0.62 0.13 240);
+  --sidebar: oklch(0.18 0.01 280);
+  --sidebar-foreground: oklch(0.92 0.01 280);
+  --sidebar-primary: oklch(0.72 0.1 80);
+  --sidebar-primary-foreground: oklch(0.92 0.01 280);
+  --sidebar-accent: oklch(0.22 0.01 280);
+  --sidebar-accent-foreground: oklch(0.92 0.01 280);
+  --sidebar-border: oklch(1 0 0 / 6%);
+  --sidebar-ring: oklch(0.72 0.1 80);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    border-color: var(--border-default);
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+  }
+}
+
+/* Shimmer loading animation */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--bg-secondary) 25%,
+    var(--bg-tertiary) 50%,
+    var(--bg-secondary) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--bg-tertiary);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}

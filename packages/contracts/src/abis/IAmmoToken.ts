@@ -1,206 +1,206 @@
 export const IAmmoTokenAbi = [
   {
-    "type": "function",
-    "name": "finalizeMint",
-    "inputs": [
+    type: "function",
+    name: "finalizeMint",
+    inputs: [
       {
-        "name": "user",
-        "type": "address",
-        "internalType": "address"
+        name: "user",
+        type: "address",
+        internalType: "address",
       },
       {
-        "name": "tokenAmount",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
+        name: "tokenAmount",
+        type: "uint256",
+        internalType: "uint256",
+      },
     ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
+    outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    "type": "function",
-    "name": "finalizeRedeem",
-    "inputs": [
+    type: "function",
+    name: "finalizeRedeem",
+    inputs: [
       {
-        "name": "user",
-        "type": "address",
-        "internalType": "address"
+        name: "user",
+        type: "address",
+        internalType: "address",
       },
       {
-        "name": "tokenAmount",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
+        name: "tokenAmount",
+        type: "uint256",
+        internalType: "uint256",
+      },
     ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
+    outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    "type": "function",
-    "name": "pause",
-    "inputs": [],
-    "outputs": [],
-    "stateMutability": "nonpayable"
+    type: "function",
+    name: "pause",
+    inputs: [],
+    outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    "type": "function",
-    "name": "setMintFee",
-    "inputs": [
+    type: "function",
+    name: "setMintFee",
+    inputs: [
       {
-        "name": "bps",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
+        name: "bps",
+        type: "uint256",
+        internalType: "uint256",
+      },
     ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
+    outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    "type": "function",
-    "name": "setRedeemFee",
-    "inputs": [
+    type: "function",
+    name: "setRedeemFee",
+    inputs: [
       {
-        "name": "bps",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
+        name: "bps",
+        type: "uint256",
+        internalType: "uint256",
+      },
     ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
+    outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    "type": "function",
-    "name": "startMint",
-    "inputs": [
+    type: "function",
+    name: "startMint",
+    inputs: [
       {
-        "name": "usdcAmount",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
+        name: "usdcAmount",
+        type: "uint256",
+        internalType: "uint256",
+      },
     ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
+    outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    "type": "function",
-    "name": "startRedeem",
-    "inputs": [
+    type: "function",
+    name: "startRedeem",
+    inputs: [
       {
-        "name": "tokenAmount",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
+        name: "tokenAmount",
+        type: "uint256",
+        internalType: "uint256",
+      },
     ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
+    outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    "type": "function",
-    "name": "unpause",
-    "inputs": [],
-    "outputs": [],
-    "stateMutability": "nonpayable"
+    type: "function",
+    name: "unpause",
+    inputs: [],
+    outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    "type": "event",
-    "name": "MintFeeUpdated",
-    "inputs": [
+    type: "event",
+    name: "MintFeeUpdated",
+    inputs: [
       {
-        "name": "newFeeBps",
-        "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
-      }
+        name: "newFeeBps",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
     ],
-    "anonymous": false
+    anonymous: false,
   },
   {
-    "type": "event",
-    "name": "MintFinalized",
-    "inputs": [
+    type: "event",
+    name: "MintFinalized",
+    inputs: [
       {
-        "name": "user",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        name: "user",
+        type: "address",
+        indexed: true,
+        internalType: "address",
       },
       {
-        "name": "tokenAmount",
-        "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
-      }
+        name: "tokenAmount",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
     ],
-    "anonymous": false
+    anonymous: false,
   },
   {
-    "type": "event",
-    "name": "MintStarted",
-    "inputs": [
+    type: "event",
+    name: "MintStarted",
+    inputs: [
       {
-        "name": "user",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        name: "user",
+        type: "address",
+        indexed: true,
+        internalType: "address",
       },
       {
-        "name": "usdcAmount",
-        "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
-      }
+        name: "usdcAmount",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
     ],
-    "anonymous": false
+    anonymous: false,
   },
   {
-    "type": "event",
-    "name": "RedeemFeeUpdated",
-    "inputs": [
+    type: "event",
+    name: "RedeemFeeUpdated",
+    inputs: [
       {
-        "name": "newFeeBps",
-        "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
-      }
+        name: "newFeeBps",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
     ],
-    "anonymous": false
+    anonymous: false,
   },
   {
-    "type": "event",
-    "name": "RedeemFinalized",
-    "inputs": [
+    type: "event",
+    name: "RedeemFinalized",
+    inputs: [
       {
-        "name": "user",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        name: "user",
+        type: "address",
+        indexed: true,
+        internalType: "address",
       },
       {
-        "name": "tokenAmount",
-        "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
-      }
+        name: "tokenAmount",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
     ],
-    "anonymous": false
+    anonymous: false,
   },
   {
-    "type": "event",
-    "name": "RedeemStarted",
-    "inputs": [
+    type: "event",
+    name: "RedeemStarted",
+    inputs: [
       {
-        "name": "user",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        name: "user",
+        type: "address",
+        indexed: true,
+        internalType: "address",
       },
       {
-        "name": "tokenAmount",
-        "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
-      }
+        name: "tokenAmount",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
     ],
-    "anonymous": false
-  }
+    anonymous: false,
+  },
 ] as const;

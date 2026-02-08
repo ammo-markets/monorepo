@@ -34,12 +34,12 @@ This volatility creates opportunity. People who stockpile ammunition during low 
 
 ### 1.3 The Gap in Existing Solutions
 
-| Platform | What It Does | What It Lacks |
-|----------|-------------|---------------|
-| **AmmoSeek** | Search engine for in‑stock ammunition and pricing | No trading, no ownership layer |
-| **Ammunition Depot (price history)** | Historical price charts | No trading capability |
-| **AmmoSquared** | Subscription buying + stored ammo inventory | No liquid secondary market, no DeFi composability |
-| **Forums / classifieds** | Peer‑to‑peer resale | Fragmented, no standardized pricing, compliance complexity |
+| Platform                             | What It Does                                      | What It Lacks                                              |
+| ------------------------------------ | ------------------------------------------------- | ---------------------------------------------------------- |
+| **AmmoSeek**                         | Search engine for in‑stock ammunition and pricing | No trading, no ownership layer                             |
+| **Ammunition Depot (price history)** | Historical price charts                           | No trading capability                                      |
+| **AmmoSquared**                      | Subscription buying + stored ammo inventory       | No liquid secondary market, no DeFi composability          |
+| **Forums / classifieds**             | Peer‑to‑peer resale                               | Fragmented, no standardized pricing, compliance complexity |
 
 Existing tools provide **price discovery** and **inventory accumulation**, but not a liquid, standardized marketplace for transfer of ownership claims.
 
@@ -106,12 +106,12 @@ Note: redemption is **U.S.-only** and subject to shipping/legal constraints. Non
 
 Each supported ammunition caliber has its own ERC-20 token:
 
-| Token | Represents | Backed By |
-|-------|-----------|-----------|
-| `9MM` | 1 round of 9mm 115gr FMJ, brass case, factory‑new (spec’d) | Physical 9mm in warehouse |
-| `556` | 1 round of 5.56 NATO 55gr FMJ, brass case, factory‑new (spec’d) | Physical 5.56 in warehouse |
-| `22LR` | 1 round of .22 LR 40gr, factory‑new (spec’d) | Physical .22 LR in warehouse |
-| `308` | 1 round of .308 Win 147gr FMJ, brass case, factory‑new (spec’d) | Physical .308 in warehouse |
+| Token  | Represents                                                      | Backed By                    |
+| ------ | --------------------------------------------------------------- | ---------------------------- |
+| `9MM`  | 1 round of 9mm 115gr FMJ, brass case, factory‑new (spec’d)      | Physical 9mm in warehouse    |
+| `556`  | 1 round of 5.56 NATO 55gr FMJ, brass case, factory‑new (spec’d) | Physical 5.56 in warehouse   |
+| `22LR` | 1 round of .22 LR 40gr, factory‑new (spec’d)                    | Physical .22 LR in warehouse |
+| `308`  | 1 round of .308 Win 147gr FMJ, brass case, factory‑new (spec’d) | Physical .308 in warehouse   |
 
 **Why per-caliber tokens instead of an index?**
 
@@ -192,12 +192,12 @@ This mirrors how **Tether Gold (XAUT)** and **Paxos Gold (PAXG)** operate — bo
 
 ### 5.1 Fee Structure
 
-| Revenue Source | Rate | Notes |
-|---------------|------|-------|
-| Mint fee | 1-2% | Charged on USDC deposit |
-| Redeem fee | 1-2% | Charged on token burn |
-| Wholesale spread | 5-15% | Buy wholesale, mint at retail price |
-| Shipping fee | At cost + handling | Passed through to redeemer |
+| Revenue Source   | Rate               | Notes                               |
+| ---------------- | ------------------ | ----------------------------------- |
+| Mint fee         | 1-2%               | Charged on USDC deposit             |
+| Redeem fee       | 1-2%               | Charged on token burn               |
+| Wholesale spread | 5-15%              | Buy wholesale, mint at retail price |
+| Shipping fee     | At cost + handling | Passed through to redeemer          |
 
 **Why no storage fee (demurrage)?**
 
@@ -207,13 +207,13 @@ Demurrage — charging token holders a recurring fee — would make tokens incom
 
 Assuming modest adoption:
 
-| Metric | Year 1 | Year 2 | Year 3 |
-|--------|--------|--------|--------|
-| Total Value Minted | $500K | $2M | $10M |
-| Mint Fee Revenue (1.5%) | $7.5K | $30K | $150K |
-| Spread Revenue (10%) | $50K | $200K | $1M |
-| Redemption Revenue | $2K | $10K | $50K |
-| **Total Revenue** | **$59.5K** | **$240K** | **$1.2M** |
+| Metric                  | Year 1     | Year 2    | Year 3    |
+| ----------------------- | ---------- | --------- | --------- |
+| Total Value Minted      | $500K      | $2M       | $10M      |
+| Mint Fee Revenue (1.5%) | $7.5K      | $30K      | $150K     |
+| Spread Revenue (10%)    | $50K       | $200K     | $1M       |
+| Redemption Revenue      | $2K        | $10K      | $50K      |
+| **Total Revenue**       | **$59.5K** | **$240K** | **$1.2M** |
 
 The real business is the **wholesale spread** — buying ammunition at wholesale prices and minting tokens at retail. If 9mm costs $0.16/rd wholesale and the token reflects $0.20/rd retail, that's a 25% gross margin before the mint fee is even applied.
 
@@ -262,13 +262,13 @@ The protocol may introduce a token after demonstrating product-market fit. Until
 
 Key state-level considerations for redemption/shipping:
 
-| State | Restriction |
-|-------|------------|
-| California | Background check required at point of sale; ammo must be shipped to licensed dealer |
-| New York | Online orders must be picked up from a licensed dealer |
-| Illinois | FOID card required; no direct consumer shipment |
-| Washington D.C. | Must be picked up from dealer |
-| New Jersey | Certain ammo types restricted; FID card required |
+| State           | Restriction                                                                         |
+| --------------- | ----------------------------------------------------------------------------------- |
+| California      | Background check required at point of sale; ammo must be shipped to licensed dealer |
+| New York        | Online orders must be picked up from a licensed dealer                              |
+| Illinois        | FOID card required; no direct consumer shipment                                     |
+| Washington D.C. | Must be picked up from dealer                                                       |
+| New Jersey      | Certain ammo types restricted; FID card required                                    |
 
 For MVP, Ammo Exchange ships to states where direct‑to‑consumer delivery is legal. Restricted state support is added in Phase 2 via dealer partnerships. **State rules are volatile and litigation‑prone**, so eligibility must be continuously updated.
 
@@ -292,11 +292,11 @@ PAXG is issued by Paxos Trust, a NYDFS‑regulated trust company. However, this 
 
 ### 7.5 KYC/AML Policy
 
-| Action | KYC Required? |
-|--------|--------------|
-| Minting (buy tokens) | **Case‑by‑case** — may require compliance checks/geo‑fencing depending on state law and legal interpretation of “sale” |
-| Trading on DEX | No — peer-to-peer token transfer |
-| Redemption (physical delivery) | **Yes** — age verification, shipping address, state compliance |
+| Action                         | KYC Required?                                                                                                          |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| Minting (buy tokens)           | **Case‑by‑case** — may require compliance checks/geo‑fencing depending on state law and legal interpretation of “sale” |
+| Trading on DEX                 | No — peer-to-peer token transfer                                                                                       |
+| Redemption (physical delivery) | **Yes** — age verification, shipping address, state compliance                                                         |
 
 This mirrors how commodity‑backed tokens generally operate: secondary market trading can be permissionless, while physical redemption requires identity and compliance checks.
 
@@ -317,7 +317,7 @@ This mirrors how commodity‑backed tokens generally operate: secondary market t
 1. **Political climate:** Heightened uncertainty drives ammunition demand; policy risk and supply shocks can move prices quickly.
 2. **RWA momentum:** Real-world asset tokenization is growing. Gold tokens (XAUT, PAXG) show the model can work with real custody and attestations.
 3. **Infrastructure maturity:** DEXs, bridges, and DeFi lending protocols are mature enough to support commodity tokens.
-4. **Cultural alignment:** Ammunition is deeply embedded in American identity. The messaging is intuitive: *"Make your ammo liquid."*
+4. **Cultural alignment:** Ammunition is deeply embedded in American identity. The messaging is intuitive: _"Make your ammo liquid."_
 
 ### 8.3 Total Addressable Market
 
@@ -367,25 +367,25 @@ Even conservative penetration represents a significant market given near-zero co
 
 ## 10. Risks
 
-| Risk | Mitigation |
-|------|-----------|
-| Regulatory change (federal ammo sales restrictions) | Tokens represent ownership, not sale. Upgradeable contracts allow compliance adaptation. |
-| Warehouse incident (fire, theft) | Insurance coverage, multiple storage locations at scale |
-| Low liquidity / no trading activity | Primers incentive program, protocol-seeded pools, loss-leader pricing on ammo to attract users |
-| Smart contract risk | Audited contracts, upgradeable proxies, multisig admin, battle-tested OpenZeppelin patterns |
-| Ammunition degradation over time | Climate-controlled storage extends shelf life to 20+ years. Rotate inventory on long-term basis. |
-| Token classified as security | Structure as commodity receipt (1:1 physical backing, redeemable). Retain legal counsel. |
-| Competition from incumbents or new entrants | DeFi composability, multi-caliber support, and open protocol are structural advantages |
+| Risk                                                | Mitigation                                                                                       |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Regulatory change (federal ammo sales restrictions) | Tokens represent ownership, not sale. Upgradeable contracts allow compliance adaptation.         |
+| Warehouse incident (fire, theft)                    | Insurance coverage, multiple storage locations at scale                                          |
+| Low liquidity / no trading activity                 | Primers incentive program, protocol-seeded pools, loss-leader pricing on ammo to attract users   |
+| Smart contract risk                                 | Audited contracts, upgradeable proxies, multisig admin, battle-tested OpenZeppelin patterns      |
+| Ammunition degradation over time                    | Climate-controlled storage extends shelf life to 20+ years. Rotate inventory on long-term basis. |
+| Token classified as security                        | Structure as commodity receipt (1:1 physical backing, redeemable). Retain legal counsel.         |
+| Competition from incumbents or new entrants         | DeFi composability, multi-caliber support, and open protocol are structural advantages           |
 
 ---
 
 ## 11. Comparable Precedents
 
-| Protocol | Asset | Evidence | Key Lesson |
-|----------|-------|----------|-----------|
-| **XAUT (Tether Gold)** | Gold | Q1 2025 attestation shows ~7.7 tons backing | Commodity tokenization at scale is feasible |
-| **PAXG (Paxos Gold)** | Gold | Issued by a NYDFS‑regulated trust company with published fee schedule | Zero storage fees can work with mint/redeem fees |
-| **AmmoSquared** | Ammunition | Subscription model with stored inventory | Demand exists for “digital ammo ownership,” but not a liquid market |
+| Protocol               | Asset      | Evidence                                                              | Key Lesson                                                          |
+| ---------------------- | ---------- | --------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| **XAUT (Tether Gold)** | Gold       | Q1 2025 attestation shows ~7.7 tons backing                           | Commodity tokenization at scale is feasible                         |
+| **PAXG (Paxos Gold)**  | Gold       | Issued by a NYDFS‑regulated trust company with published fee schedule | Zero storage fees can work with mint/redeem fees                    |
+| **AmmoSquared**        | Ammunition | Subscription model with stored inventory                              | Demand exists for “digital ammo ownership,” but not a liquid market |
 
 ---
 

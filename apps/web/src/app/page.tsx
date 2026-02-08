@@ -1,26 +1,23 @@
-import { CALIBER_SPECS } from "@ammo-exchange/shared";
+import { Navbar } from "@/components/ammo/navbar";
+import { Hero } from "@/components/ammo/hero";
+import { MarketTicker } from "@/components/ammo/market-ticker";
+import { HowItWorks } from "@/components/ammo/how-it-works";
+import { MarketCards } from "@/components/ammo/market-cards";
+import { ProtocolStats } from "@/components/ammo/protocol-stats";
+import { Footer } from "@/components/ammo/footer";
 
-export default function Home() {
+export default function Page() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-8">
-      <h1 className="text-4xl font-bold mb-8">Ammo Exchange</h1>
-      <p className="text-lg text-gray-600 mb-8">
-        Tokenized ammunition trading protocol
-      </p>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {Object.values(CALIBER_SPECS).map((spec) => (
-          <div
-            key={spec.caliber}
-            className="border rounded-lg p-4 hover:shadow-md transition-shadow"
-          >
-            <h2 className="text-xl font-semibold">{spec.name}</h2>
-            <p className="text-sm text-gray-500">{spec.description}</p>
-            <p className="text-xs mt-2">
-              Min mint: {spec.minMintRounds} rounds
-            </p>
-          </div>
-        ))}
-      </div>
-    </main>
+    <div className="flex min-h-screen flex-col">
+      <Navbar />
+      <main className="flex-1">
+        <Hero />
+        <MarketTicker />
+        <HowItWorks />
+        <MarketCards />
+        <ProtocolStats />
+      </main>
+      <Footer />
+    </div>
   );
 }
