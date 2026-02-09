@@ -23,6 +23,8 @@ contract CaliberMarket {
         uint256 usdcAmount;
         uint256 minTokensOut;
         uint256 requestPrice;
+        uint256 feeBps;
+        uint256 minMintAtStart;
         uint64 deadline;
         uint64 createdAt;
         uint64 finalizedAt;
@@ -32,6 +34,7 @@ contract CaliberMarket {
     struct RedeemOrder {
         address user;
         uint256 tokenAmount;
+        uint256 feeBps;
         uint64 deadline;
         uint64 createdAt;
         uint64 finalizedAt;
@@ -50,6 +53,7 @@ contract CaliberMarket {
     error DeadlineExpired();
     error InvalidStatus();
     error Reentrancy();
+    error TreasuryNotSet();
 
     event MintStarted(
         uint256 indexed orderId, address indexed user, uint256 usdcAmount,
@@ -161,6 +165,8 @@ contract CaliberMarket {
             usdcAmount: usdcAmount,
             minTokensOut: minTokensOut,
             requestPrice: requestPrice,
+            feeBps: mintFeeBps,
+            minMintAtStart: minMintRounds,
             deadline: deadline,
             createdAt: uint64(block.timestamp),
             finalizedAt: 0,
@@ -183,6 +189,7 @@ contract CaliberMarket {
         redeemOrders[orderId] = RedeemOrder({
             user: msg.sender,
             tokenAmount: tokenAmount,
+            feeBps: redeemFeeBps,
             deadline: deadline,
             createdAt: uint64(block.timestamp),
             finalizedAt: 0,
@@ -194,19 +201,22 @@ contract CaliberMarket {
 
     // ── Keeper functions ────────────────────────────
 
-    function finalizeMint(uint256 orderId, uint256 actualPriceX18) external onlyKeeper {
+    function finalizeMint(uint256 orderId, uint256 actualPriceX18) external onlyKeeper whenNotPaused {
         if (actualPriceX18 == 0) revert InvalidPrice();
 
         MintOrder storage order = mintOrders[orderId];
         if (order.status != MintStatus.Started) revert InvalidStatus();
         if (order.deadline != 0 && block.timestamp > order.deadline) revert DeadlineExpired();
 
-        uint256 feeAmount = (order.usdcAmount * mintFeeBps) / 10_000;
+        address treasury = manager.treasury();
+        if (treasury == address(0)) revert TreasuryNotSet();
+
+        uint256 feeAmount = (order.usdcAmount * order.feeBps) / 10_000;
         uint256 netUsdc = order.usdcAmount - feeAmount;
         uint256 scale = 10 ** (18 - usdcDecimals);
         uint256 tokenAmount = (netUsdc * scale * 1e18) / actualPriceX18;
 
-        if (tokenAmount < minMintRounds * 1e18) revert MinMintNotMet();
+        if (tokenAmount < order.minMintAtStart * 1e18) revert MinMintNotMet();
         if (tokenAmount < order.minTokensOut) revert Slippage();
 
         order.status = MintStatus.Finalized;
@@ -215,6 +225,7 @@ contract CaliberMarket {
         if (feeAmount > 0) {
             _safeTransfer(usdc, manager.feeRecipient(), feeAmount);
         }
+        _safeTransfer(usdc, treasury, netUsdc);
         token.mint(order.user, tokenAmount);
 
         emit MintFinalized(orderId, order.user, tokenAmount, actualPriceX18);
@@ -232,12 +243,12 @@ contract CaliberMarket {
         emit MintRefunded(orderId, order.user, order.usdcAmount, reasonCode);
     }
 
-    function finalizeRedeem(uint256 orderId) external onlyKeeper {
+    function finalizeRedeem(uint256 orderId) external onlyKeeper whenNotPaused {
         RedeemOrder storage order = redeemOrders[orderId];
         if (order.status != RedeemStatus.Requested) revert InvalidStatus();
         if (order.deadline != 0 && block.timestamp > order.deadline) revert DeadlineExpired();
 
-        uint256 feeAmount = (order.tokenAmount * redeemFeeBps) / 10_000;
+        uint256 feeAmount = (order.tokenAmount * order.feeBps) / 10_000;
         uint256 netTokens = order.tokenAmount - feeAmount;
 
         order.status = RedeemStatus.Finalized;

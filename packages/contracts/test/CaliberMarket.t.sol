@@ -19,6 +19,7 @@ contract CaliberMarketTest is Test {
     address keeper = address(0xCA11);
     address feeRecipient = address(0xFEE1);
     address guardian = address(0x911);
+    address treasury = address(0x73EA5);
 
     bytes32 constant CALIBER_9MM = bytes32("9MM");
     uint256 constant ORACLE_PRICE = 21e16; // $0.21 per round
@@ -30,6 +31,7 @@ contract CaliberMarketTest is Test {
         manager = new AmmoManager(feeRecipient);
         manager.setKeeper(keeper, true);
         manager.setGuardian(guardian);
+        manager.setTreasury(treasury);
 
         market = new CaliberMarket(
             address(manager), address(usdc), 6, address(oracle), CALIBER_9MM, "Ammo 9MM", "MO9MM", 150, 150, 50
@@ -57,6 +59,8 @@ contract CaliberMarketTest is Test {
             uint256 usdcAmt,
             uint256 minOut,
             uint256 reqPrice,
+            uint256 feeBps,
+            uint256 minMintAtStart,
             uint64 deadline,
             uint64 created,
             uint64 finalized,
@@ -66,6 +70,8 @@ contract CaliberMarketTest is Test {
         assertEq(orderUser, user);
         assertEq(usdcAmt, 100e6);
         assertEq(reqPrice, ORACLE_PRICE);
+        assertEq(feeBps, 150);
+        assertEq(minMintAtStart, 50);
         assertEq(deadline, 0);
         assertTrue(created > 0);
         assertEq(finalized, 0);
@@ -84,12 +90,12 @@ contract CaliberMarketTest is Test {
     function testStartMintSnapshotsOraclePrice() public {
         _startMint(user, 100e6, 500, 0);
 
-        (,, , uint256 reqPrice,,,,) = market.mintOrders(1);
+        (,,, uint256 reqPrice,,,,,,) = market.mintOrders(1);
         assertEq(reqPrice, ORACLE_PRICE);
 
         // Changing oracle after startMint doesn't affect stored price
         oracle.setPrice(50e16);
-        (,, , uint256 reqPriceAfter,,,,) = market.mintOrders(1);
+        (,,, uint256 reqPriceAfter,,,,,,) = market.mintOrders(1);
         assertEq(reqPriceAfter, ORACLE_PRICE);
     }
 
@@ -199,7 +205,7 @@ contract CaliberMarketTest is Test {
 
         assertEq(usdc.balanceOf(user), 1_000e6);
 
-        (,,,,,, , CaliberMarket.MintStatus status) = market.mintOrders(1);
+        (,,,,,,,,, CaliberMarket.MintStatus status) = market.mintOrders(1);
         assertEq(uint256(status), uint256(CaliberMarket.MintStatus.Refunded));
     }
 
@@ -423,6 +429,192 @@ contract CaliberMarketTest is Test {
         vm.prank(keeper);
         vm.expectRevert(CaliberMarket.DeadlineExpired.selector);
         market.finalizeRedeem(orderId);
+    }
+
+    // ═══════════════════════════════════════════════
+    // ── Finding 1: USDC treasury forwarding ───────
+    // ═══════════════════════════════════════════════
+
+    function testFinalizeMintForwardsNetUsdcToTreasury() public {
+        _startMint(user, 100e6, 1000, 0);
+
+        vm.prank(keeper);
+        market.finalizeMint(1, ORACLE_PRICE);
+
+        // fee = 100e6 * 150 / 10_000 = 1_500_000
+        // netUsdc = 98_500_000
+        assertEq(usdc.balanceOf(treasury), 98_500_000);
+        assertEq(usdc.balanceOf(address(market)), 0);
+    }
+
+    function testFinalizeMintRevertsWhenTreasuryNotSet() public {
+        // Deploy fresh manager without treasury set
+        AmmoManager freshManager = new AmmoManager(feeRecipient);
+        freshManager.setKeeper(keeper, true);
+        // treasury is address(0) by default — NOT set
+
+        CaliberMarket freshMarket = new CaliberMarket(
+            address(freshManager), address(usdc), 6, address(oracle), CALIBER_9MM, "Ammo 9MM", "MO9MM", 150, 150, 50
+        );
+
+        usdc.mint(user, 100e6);
+        vm.prank(user);
+        usdc.approve(address(freshMarket), 100e6);
+        vm.prank(user);
+        freshMarket.startMint(100e6, 1000, 0);
+
+        vm.prank(keeper);
+        vm.expectRevert(CaliberMarket.TreasuryNotSet.selector);
+        freshMarket.finalizeMint(1, ORACLE_PRICE);
+    }
+
+    function testFinalizeMintZeroFeeAllUsdcGoesToTreasury() public {
+        // Deploy market with 0% mint fee
+        CaliberMarket zeroFeeMarket = new CaliberMarket(
+            address(manager), address(usdc), 6, address(oracle), CALIBER_9MM, "Ammo 9MM Zero", "MO9Z", 0, 150, 50
+        );
+
+        usdc.mint(user, 100e6);
+        vm.prank(user);
+        usdc.approve(address(zeroFeeMarket), 100e6);
+        vm.prank(user);
+        zeroFeeMarket.startMint(100e6, 1000, 0);
+
+        vm.prank(keeper);
+        zeroFeeMarket.finalizeMint(1, ORACLE_PRICE);
+
+        // 0% fee → all 100e6 goes to treasury
+        assertEq(usdc.balanceOf(treasury), 100e6);
+        assertEq(usdc.balanceOf(feeRecipient), 0);
+        assertEq(usdc.balanceOf(address(zeroFeeMarket)), 0);
+    }
+
+    // ═══════════════════════════════════════════════
+    // ── Finding 2: Fee snapshot ───────────────────
+    // ═══════════════════════════════════════════════
+
+    function testFinalizeMintUsesSnapshotFee() public {
+        _startMint(user, 100e6, 1000, 0); // fee snapshot = 150 bps
+
+        // Admin changes fee after order creation
+        market.setMintFee(500); // 5%
+
+        vm.prank(keeper);
+        market.finalizeMint(1, ORACLE_PRICE);
+
+        // Should use 150 bps (snapshot), NOT 500 bps
+        // fee = 100e6 * 150 / 10_000 = 1_500_000
+        assertEq(usdc.balanceOf(feeRecipient), 1_500_000);
+        assertEq(usdc.balanceOf(treasury), 98_500_000);
+    }
+
+    function testFinalizeRedeemUsesSnapshotFee() public {
+        _mintTokensToUser(user);
+
+        vm.prank(user);
+        ammoToken.approve(address(market), 100e18);
+        vm.prank(user);
+        uint256 orderId = market.startRedeem(100e18, 0); // fee snapshot = 150 bps
+
+        // Admin changes redeem fee after order creation
+        market.setRedeemFee(500); // 5%
+
+        vm.prank(keeper);
+        market.finalizeRedeem(orderId);
+
+        // Should use 150 bps (snapshot), NOT 500 bps
+        // fee = 100e18 * 150 / 10_000 = 1.5e18
+        assertEq(ammoToken.balanceOf(feeRecipient), 1.5e18);
+    }
+
+    function testMintOrderStoresFeeBps() public {
+        _startMint(user, 100e6, 500, 0);
+
+        (,,,, uint256 feeBps,,,,, ) = market.mintOrders(1);
+        assertEq(feeBps, 150);
+    }
+
+    function testRedeemOrderStoresFeeBps() public {
+        _mintTokensToUser(user);
+
+        vm.prank(user);
+        ammoToken.approve(address(market), 100e18);
+        vm.prank(user);
+        market.startRedeem(100e18, 0);
+
+        (,, uint256 feeBps,,,,) = market.redeemOrders(2);
+        assertEq(feeBps, 150);
+    }
+
+    // ═══════════════════════════════════════════════
+    // ── Finding 3: minMintRounds snapshot ─────────
+    // ═══════════════════════════════════════════════
+
+    function testFinalizeMintUsesSnapshotMinMintRounds() public {
+        // minMintRounds is 50 at order creation
+        _startMint(user, 100e6, 1000, 0);
+
+        // Admin increases minMintRounds after order creation
+        market.setMinMint(1_000_000); // impossibly high
+
+        // Finalize should use snapshot value (50), not current (1_000_000)
+        vm.prank(keeper);
+        market.finalizeMint(1, ORACLE_PRICE); // should succeed
+    }
+
+    // ═══════════════════════════════════════════════
+    // ── Pause: irreversible blocked, unwind allowed
+    // ═══════════════════════════════════════════════
+
+    function testPauseBlocksFinalizeMint() public {
+        _startMint(user, 100e6, 1000, 0);
+        market.pause();
+
+        vm.prank(keeper);
+        vm.expectRevert(CaliberMarket.MarketPaused.selector);
+        market.finalizeMint(1, ORACLE_PRICE);
+    }
+
+    function testPauseBlocksFinalizeRedeem() public {
+        _mintTokensToUser(user);
+
+        vm.prank(user);
+        ammoToken.approve(address(market), 100e18);
+        vm.prank(user);
+        uint256 orderId = market.startRedeem(100e18, 0);
+
+        market.pause();
+
+        vm.prank(keeper);
+        vm.expectRevert(CaliberMarket.MarketPaused.selector);
+        market.finalizeRedeem(orderId);
+    }
+
+    function testPauseAllowsRefundMint() public {
+        _startMint(user, 100e6, 1000, 0);
+        market.pause();
+
+        vm.prank(keeper);
+        market.refundMint(1, 1);
+
+        assertEq(usdc.balanceOf(user), 1_000e6);
+    }
+
+    function testPauseAllowsCancelRedeem() public {
+        _mintTokensToUser(user);
+        uint256 balBefore = ammoToken.balanceOf(user);
+
+        vm.prank(user);
+        ammoToken.approve(address(market), 100e18);
+        vm.prank(user);
+        uint256 orderId = market.startRedeem(100e18, 0);
+
+        market.pause();
+
+        vm.prank(keeper);
+        market.cancelRedeem(orderId, 1);
+
+        assertEq(ammoToken.balanceOf(user), balBefore);
     }
 
     // ── Helpers ─────────────────────────────────────

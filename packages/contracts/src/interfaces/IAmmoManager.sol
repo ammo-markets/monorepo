@@ -18,6 +18,7 @@ interface IAmmoManager {
     event GuardianUpdated(address indexed oldGuardian, address indexed newGuardian);
     event FeeRecipientUpdated(address indexed oldRecipient, address indexed newRecipient);
     event KeeperUpdated(address indexed keeper, bool allowed);
+    event TreasuryUpdated(address indexed oldTreasury, address indexed newTreasury);
 
     // ── View functions ───────────────────────────────
 
@@ -25,6 +26,7 @@ interface IAmmoManager {
     function pendingOwner() external view returns (address);
     function guardian() external view returns (address);
     function feeRecipient() external view returns (address);
+    function treasury() external view returns (address);
     function keepers(address account) external view returns (bool);
     function isKeeper(address account) external view returns (bool);
     function isOwner(address account) external view returns (bool);
@@ -42,4 +44,5 @@ interface IAmmoManager {
     // ── Global config ────────────────────────────────
 
     function setFeeRecipient(address newRecipient) external;
+    function setTreasury(address newTreasury) external;
 }

@@ -90,4 +90,29 @@ contract AmmoManagerTest is Test {
         vm.expectRevert(AmmoManager.ZeroAddress.selector);
         manager.setFeeRecipient(address(0));
     }
+
+    // ── Treasury ─────────────────────────────────
+
+    function testSetTreasury() public {
+        assertEq(manager.treasury(), address(0));
+        manager.setTreasury(alice);
+        assertEq(manager.treasury(), alice);
+    }
+
+    function testSetTreasuryRevertsForZero() public {
+        vm.expectRevert(AmmoManager.ZeroAddress.selector);
+        manager.setTreasury(address(0));
+    }
+
+    function testSetTreasuryRevertsForNonOwner() public {
+        vm.prank(alice);
+        vm.expectRevert(AmmoManager.NotOwner.selector);
+        manager.setTreasury(bob);
+    }
+
+    function testSetTreasuryEmitsEvent() public {
+        vm.expectEmit(true, true, false, false);
+        emit AmmoManager.TreasuryUpdated(address(0), alice);
+        manager.setTreasury(alice);
+    }
 }

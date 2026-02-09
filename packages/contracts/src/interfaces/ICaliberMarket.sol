@@ -17,6 +17,8 @@ interface ICaliberMarket {
         uint256 usdcAmount;
         uint256 minTokensOut;
         uint256 requestPrice;
+        uint256 feeBps;
+        uint256 minMintAtStart;
         uint64 deadline;
         uint64 createdAt;
         uint64 finalizedAt;
@@ -26,6 +28,7 @@ interface ICaliberMarket {
     struct RedeemOrder {
         address user;
         uint256 tokenAmount;
+        uint256 feeBps;
         uint64 deadline;
         uint64 createdAt;
         uint64 finalizedAt;
@@ -46,6 +49,7 @@ interface ICaliberMarket {
     error DeadlineExpired();
     error InvalidStatus();
     error Reentrancy();
+    error TreasuryNotSet();
 
     // ── Events ───────────────────────────────────────
 
@@ -85,6 +89,8 @@ interface ICaliberMarket {
             uint256 usdcAmount,
             uint256 minTokensOut,
             uint256 requestPrice,
+            uint256 feeBps,
+            uint256 minMintAtStart,
             uint64 deadline,
             uint64 createdAt,
             uint64 finalizedAt,
@@ -93,8 +99,7 @@ interface ICaliberMarket {
     function redeemOrders(uint256 orderId)
         external
         view
-        returns (address user, uint256 tokenAmount, uint64 deadline, uint64 createdAt, uint64 finalizedAt, RedeemStatus status);
-
+        returns (address user, uint256 tokenAmount, uint256 feeBps, uint64 deadline, uint64 createdAt, uint64 finalizedAt, RedeemStatus status);
     // ── User functions ───────────────────────────────
 
     function startMint(uint256 usdcAmount, uint256 maxSlippageBps, uint64 deadline) external returns (uint256 orderId);

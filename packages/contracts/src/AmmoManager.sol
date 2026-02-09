@@ -9,6 +9,7 @@ contract AmmoManager {
     address public pendingOwner;
     address public guardian;
     address public feeRecipient;
+    address public treasury;
 
     mapping(address => bool) public keepers;
 
@@ -21,6 +22,7 @@ contract AmmoManager {
     event GuardianUpdated(address indexed oldGuardian, address indexed newGuardian);
     event FeeRecipientUpdated(address indexed oldRecipient, address indexed newRecipient);
     event KeeperUpdated(address indexed keeper, bool allowed);
+    event TreasuryUpdated(address indexed oldTreasury, address indexed newTreasury);
 
     modifier onlyOwner() {
         _checkOwner();
@@ -72,6 +74,13 @@ contract AmmoManager {
         address old = feeRecipient;
         feeRecipient = newRecipient;
         emit FeeRecipientUpdated(old, newRecipient);
+    }
+
+    function setTreasury(address newTreasury) external onlyOwner {
+        if (newTreasury == address(0)) revert ZeroAddress();
+        address old = treasury;
+        treasury = newTreasury;
+        emit TreasuryUpdated(old, newTreasury);
     }
 
     // ── Internal access-control helpers ──────────────
