@@ -4,7 +4,12 @@ import { resolve, dirname } from "node:path";
 const OUT_DIR = resolve(import.meta.dirname ?? ".", "../out");
 const ABI_DIR = resolve(import.meta.dirname ?? ".", "../src/abis");
 
-const CONTRACTS_TO_EXPORT = ["IAmmoToken"];
+const CONTRACTS_TO_EXPORT = [
+  "AmmoManager",
+  "AmmoFactory",
+  "CaliberMarket",
+  "AmmoToken",
+];
 
 if (!existsSync(ABI_DIR)) {
   mkdirSync(ABI_DIR, { recursive: true });
