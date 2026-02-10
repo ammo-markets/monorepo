@@ -31,11 +31,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Mock USDC contract has exactly 6 decimals and a faucet function for testnet minting
   4. Database schema is migrated to Neon with Order.onChainOrderId field and BlockCursor table present
   5. Treasury and keeper roles are set on-chain -- a test startMint call does not revert with TreasuryNotSet or access control errors
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 01-01: Deployment script and contract verification
-- [ ] 01-02: Shared config update and database migration
+- [ ] 01-01-PLAN.md -- MockUSDC, MockPriceOracle, DeployFuji.s.sol, Makefile, foundry.toml (wave 1)
+- [ ] 01-02-PLAN.md -- Shared config with Fuji addresses, caliber mapping, Prisma schema migration (wave 2)
 
 ### Phase 2: Event Indexer
 **Goal**: The worker reliably indexes all on-chain settlement events into the database with crash recovery
