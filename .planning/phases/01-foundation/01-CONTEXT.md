@@ -6,7 +6,7 @@
 <domain>
 ## Phase Boundary
 
-Deploy all smart contracts (AmmoManager, AmmoFactory, CaliberMarket × 4, AmmoToken × 4, mock USDC) to Avalanche Fuji testnet. Update shared config with real deployed addresses. Migrate database schema to support order tracking with on-chain linkage and worker block cursors.
+Deploy all smart contracts (AmmoManager, AmmoFactory, CaliberMarket x 4, AmmoToken x 4, mock USDC) to Avalanche Fuji testnet. Update shared config with real deployed addresses. Migrate database schema to support order tracking with on-chain linkage and worker block cursors.
 
 </domain>
 
@@ -14,7 +14,7 @@ Deploy all smart contracts (AmmoManager, AmmoFactory, CaliberMarket × 4, AmmoTo
 ## Implementation Decisions
 
 ### Deployment strategy
-- Single deploy script (DeployFuji.s.sol) that deploys everything in sequence: mock USDC → AmmoManager → AmmoFactory → create all 4 calibers
+- Single deploy script (DeployFuji.s.sol) that deploys everything in sequence: mock USDC -> AmmoManager -> AmmoFactory -> create all 4 calibers
 - Auto-verify all contracts on Snowtrace using forge's --verify flag during deployment
 - Update packages/shared/src/config/index.ts directly with deployed Fuji addresses after deployment
 - Full config restructure: per-caliber objects `{ market, token }` plus global `{ manager, factory, usdc }`
@@ -46,6 +46,15 @@ Deploy all smart contracts (AmmoManager, AmmoFactory, CaliberMarket × 4, AmmoTo
 - Mock USDC exact faucet cap amount
 - Deploy script internal ordering and error handling
 - Foundry.toml EVM version and optimizer settings for Fuji
+
+### Research Overrides
+The following decisions were revised during the research/planning phase based on findings from the actual codebase:
+
+1. **Prisma enum naming (overrides "Rename Prisma Caliber enum values"):** Prisma enum identifiers cannot start with a digit, so values like "9MM" or "556" are invalid Prisma syntax. Keeping existing names (NINE_MM, FIVE_FIVE_SIX, TWENTY_TWO_LR, THREE_OH_EIGHT) with bidirectional mapping (PRISMA_TO_CALIBER / CALIBER_TO_PRISMA) in the shared package.
+
+2. **Role setup (overrides "calls setKeeper(), setTreasury(), setFeeRecipient(), sets guardian"):** The AmmoManager constructor already executes `keepers[msg.sender] = true` and `feeRecipient = feeRecipient_` (constructor arg). Only `setTreasury()` and `setGuardian()` need explicit calls in the deploy script.
+
+3. **MockPriceOracle (clarification):** The existing `test/MockPriceOracle.sol` is verified suitable for deployment — it has `constructor(uint256 price_)`, implements IPriceOracle with `getPrice()`, and has `setPrice()` for testnet adjustments. Copied to `src/` with adjusted import path; no modifications needed.
 
 </decisions>
 
