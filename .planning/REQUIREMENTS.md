@@ -1,4 +1,4 @@
-# Requirements: Ammo Exchange — Fuji Testnet Integration
+# Requirements: Ammo Exchange -- Fuji Testnet Integration
 
 **Defined:** 2026-02-10
 **Core Value:** Anyone worldwide can get price exposure to U.S. ammunition by minting ammo tokens with USDC, while only verified U.S. residents in allowed states can redeem for physical delivery.
@@ -112,11 +112,11 @@ Explicitly excluded. Documented to prevent scope creep.
 
 | Feature | Reason |
 |---------|--------|
-| Mainnet deployment | Fuji first — validate full flow before mainnet costs/risks |
+| Mainnet deployment | Fuji first -- validate full flow before mainnet costs/risks |
 | Real Ammo Squared API integration | Admin manually handles procurement for MVP |
 | Mobile app | Web-first, mobile later |
 | Governance/DAO UI | No token governance needed for centralized keeper model |
-| Custom DEX | Uniswap handles trading — no need to build our own AMM |
+| Custom DEX | Uniswap handles trading -- no need to build our own AMM |
 | Cross-chain bridging | Single chain (Avalanche) sufficient for MVP |
 | Social features | Not a social platform |
 | Fiat on-ramp | Users acquire USDC externally |
@@ -129,52 +129,52 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DEPLOY-01 | — | Pending |
-| DEPLOY-02 | — | Pending |
-| DEPLOY-03 | — | Pending |
-| DEPLOY-04 | — | Pending |
-| WALLET-01 | — | Pending |
-| WALLET-02 | — | Pending |
-| WALLET-03 | — | Pending |
-| WALLET-04 | — | Pending |
-| MINT-01 | — | Pending |
-| MINT-02 | — | Pending |
-| MINT-03 | — | Pending |
-| MINT-04 | — | Pending |
-| MINT-05 | — | Pending |
-| REDEEM-01 | — | Pending |
-| REDEEM-02 | — | Pending |
-| REDEEM-03 | — | Pending |
-| REDEEM-04 | — | Pending |
-| REDEEM-05 | — | Pending |
-| INDEX-01 | — | Pending |
-| INDEX-02 | — | Pending |
-| INDEX-03 | — | Pending |
-| INDEX-04 | — | Pending |
-| API-01 | — | Pending |
-| API-02 | — | Pending |
-| API-03 | — | Pending |
-| API-04 | — | Pending |
-| API-05 | — | Pending |
-| PORT-01 | — | Pending |
-| PORT-02 | — | Pending |
-| PORT-03 | — | Pending |
-| ADMIN-01 | — | Pending |
-| ADMIN-02 | — | Pending |
-| ADMIN-03 | — | Pending |
-| ADMIN-04 | — | Pending |
-| ADMIN-05 | — | Pending |
-| ADMIN-06 | — | Pending |
-| DB-01 | — | Pending |
-| DB-02 | — | Pending |
-| DB-03 | — | Pending |
-| DB-04 | — | Pending |
+| DEPLOY-01 | Phase 1 | Pending |
+| DEPLOY-02 | Phase 1 | Pending |
+| DEPLOY-03 | Phase 1 | Pending |
+| DEPLOY-04 | Phase 1 | Pending |
+| WALLET-01 | Phase 3 | Pending |
+| WALLET-02 | Phase 3 | Pending |
+| WALLET-03 | Phase 3 | Pending |
+| WALLET-04 | Phase 3 | Pending |
+| MINT-01 | Phase 4 | Pending |
+| MINT-02 | Phase 4 | Pending |
+| MINT-03 | Phase 4 | Pending |
+| MINT-04 | Phase 4 | Pending |
+| MINT-05 | Phase 4 | Pending |
+| REDEEM-01 | Phase 4 | Pending |
+| REDEEM-02 | Phase 4 | Pending |
+| REDEEM-03 | Phase 4 | Pending |
+| REDEEM-04 | Phase 4 | Pending |
+| REDEEM-05 | Phase 4 | Pending |
+| INDEX-01 | Phase 2 | Pending |
+| INDEX-02 | Phase 2 | Pending |
+| INDEX-03 | Phase 2 | Pending |
+| INDEX-04 | Phase 2 | Pending |
+| API-01 | Phase 3 | Pending |
+| API-02 | Phase 3 | Pending |
+| API-03 | Phase 3 | Pending |
+| API-04 | Phase 3 | Pending |
+| API-05 | Phase 3 | Pending |
+| PORT-01 | Phase 5 | Pending |
+| PORT-02 | Phase 5 | Pending |
+| PORT-03 | Phase 5 | Pending |
+| ADMIN-01 | Phase 6 | Pending |
+| ADMIN-02 | Phase 6 | Pending |
+| ADMIN-03 | Phase 6 | Pending |
+| ADMIN-04 | Phase 6 | Pending |
+| ADMIN-05 | Phase 6 | Pending |
+| ADMIN-06 | Phase 6 | Pending |
+| DB-01 | Phase 1 | Pending |
+| DB-02 | Phase 1 | Pending |
+| DB-03 | Phase 1 | Pending |
+| DB-04 | Phase 5 | Pending |
 
 **Coverage:**
 - v1 requirements: 40 total
-- Mapped to phases: 0
-- Unmapped: 40 ⚠️
+- Mapped to phases: 40
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-10*
-*Last updated: 2026-02-10 after initial definition*
+*Last updated: 2026-02-10 after roadmap creation*
