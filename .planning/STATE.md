@@ -5,14 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-11)
 
 **Core value:** Anyone worldwide can get price exposure to U.S. ammunition by minting ammo tokens with USDC, while only verified U.S. residents in allowed states can redeem for physical delivery.
-**Current focus:** v1.1 End-to-End Flow Fix
+**Current focus:** Phase 7 -- Registration and Indexing Fixes
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-02-11 — Milestone v1.1 started
+Phase: 7 of 8 (Registration and Indexing Fixes)
+Plan: 0 of 2 in current phase
+Status: Ready to plan
+Last activity: 2026-02-11 -- Roadmap created for v1.1
+
+Progress: [############............] 80% (12/15 plans -- 12 v1.0 complete, 3 v1.1 pending)
 
 ## Performance Metrics
 
@@ -44,10 +46,11 @@ None.
 
 ### Blockers/Concerns
 
-None.
+- Worker currently scans from block 0 -- wastes 51M+ blocks of RPC calls before finding events
+- No user DB record until worker processes an event for that wallet -- breaks API calls on first connect
 
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Milestone v1.1 started. Defining requirements.
+Stopped at: Roadmap created for v1.1 milestone. Ready to plan Phase 7.
 Resume file: None

@@ -15,7 +15,7 @@ Requirements for v1.1 End-to-End Flow Fix. Each maps to roadmap phases.
 ### Event Indexing
 
 - [ ] **IDX-01**: Deployment start block (51699730) is stored in shared config
-- [ ] **IDX-02**: Worker uses deployment block as floor — if block cursor is below deployment block, start from deployment block
+- [ ] **IDX-02**: Worker uses deployment block as floor -- if block cursor is below deployment block, start from deployment block
 - [ ] **IDX-03**: Worker logs progress during backfill (blocks scanned, events found)
 
 ### End-to-End Verification
@@ -40,7 +40,7 @@ Explicitly excluded. Documented to prevent scope creep.
 
 | Feature | Reason |
 |---------|--------|
-| New smart contracts or ABI changes | Contracts are deployed and working — this is app-layer only |
+| New smart contracts or ABI changes | Contracts are deployed and working -- this is app-layer only |
 | New UI pages or features | Focus on fixing existing flows, not adding new ones |
 | Batch operations or automated keeper | Single order finalization sufficient for testnet |
 | Mobile app | Web only for now |
@@ -51,19 +51,19 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| REG-01 | — | Pending |
-| REG-02 | — | Pending |
-| IDX-01 | — | Pending |
-| IDX-02 | — | Pending |
-| IDX-03 | — | Pending |
-| E2E-01 | — | Pending |
-| E2E-02 | — | Pending |
+| REG-01 | Phase 7 | Pending |
+| REG-02 | Phase 7 | Pending |
+| IDX-01 | Phase 7 | Pending |
+| IDX-02 | Phase 7 | Pending |
+| IDX-03 | Phase 7 | Pending |
+| E2E-01 | Phase 8 | Pending |
+| E2E-02 | Phase 8 | Pending |
 
 **Coverage:**
 - v1.1 requirements: 7 total
-- Mapped to phases: 0
-- Unmapped: 7 ⚠️
+- Mapped to phases: 7
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-11*
-*Last updated: 2026-02-11 after initial definition*
+*Last updated: 2026-02-11 after roadmap creation*
