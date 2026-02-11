@@ -109,11 +109,11 @@ Plans:
   3. Admin sees a queue of pending redeem orders showing user address, token amount, caliber, shipping address, and KYC status
   4. Admin can trigger finalizeMint with an actualPriceX18 parameter and finalizeRedeem from the dashboard -- the transaction confirms and the order status updates
   5. Admin sees protocol stats: total minted per caliber, total redeemed, and treasury USDC balance read from the chain
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 06-01: Admin layout, middleware, and order queues
-- [ ] 06-02: Finalization flows and protocol stats
+- [ ] 06-01-PLAN.md -- Admin hooks, layout gate, sidebar, API route, and order queue pages (wave 1)
+- [ ] 06-02-PLAN.md -- Finalize hooks, dialogs, protocol stats API and dashboard (wave 2)
 
 ## Progress
 
