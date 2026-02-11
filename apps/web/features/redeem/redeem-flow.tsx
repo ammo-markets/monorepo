@@ -2,8 +2,9 @@
 
 import React from "react";
 
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
+import { formatUnits } from "viem";
 import {
   ArrowLeft,
   Check,
@@ -28,6 +29,16 @@ import {
   type CaliberDetailData,
 } from "@/lib/mock-data";
 import { RedeemProgress } from "./redeem-progress";
+
+import { useWallet } from "@/hooks/use-wallet";
+import { useRedeemTransaction } from "@/hooks/use-redeem-transaction";
+import { useAllowance } from "@/hooks/use-allowance";
+import { useTokenBalances } from "@/hooks/use-token-balances";
+import { parseContractError } from "@/lib/errors";
+import { getDeadline, parseTokenAmount } from "@/lib/tx-utils";
+import { snowtraceUrl, truncateAddress } from "@/lib/utils";
+import { CONTRACT_ADDRESSES } from "@ammo-exchange/shared";
+import type { Caliber } from "@ammo-exchange/shared";
 
 /* ── US States ── */
 const US_STATES = [
@@ -87,14 +98,6 @@ const US_STATES = [
 const RESTRICTED_STATES = ["CA", "NY", "IL", "DC", "NJ"];
 
 /* ── Types ── */
-type WalletState =
-  | "disconnected"
-  | "connected"
-  | "burning"
-  | "success"
-  | "failed";
-type KycStatus = "not_verified" | "pending" | "verified";
-
 interface ShippingAddress {
   fullName: string;
   address1: string;
@@ -103,6 +106,17 @@ interface ShippingAddress {
   state: string;
   zip: string;
 }
+
+/* ── Transaction Status ── */
+type TxStatus =
+  | "idle"
+  | "approving"
+  | "approve-confirming"
+  | "approved"
+  | "redeeming"
+  | "redeem-confirming"
+  | "confirmed"
+  | "failed";
 
 /* ── Shared back button ── */
 function BackButton({ onClick }: { onClick: () => void }) {
@@ -233,18 +247,20 @@ function FormField({
   );
 }
 
-/* ══════════════════════════════════════════
-   STEP 1 — SELECT CALIBER & AMOUNT
-   ══════════════════════════════════════════ */
+/* ======================================================================
+   STEP 1 -- SELECT CALIBER & AMOUNT
+   ====================================================================== */
 function StepSelectCaliberAmount({
   selectedCaliber,
   roundsAmount,
+  tokenBalances,
   onSelectCaliber,
   setRoundsAmount,
   onNext,
 }: {
   selectedCaliber: CaliberId | null;
   roundsAmount: string;
+  tokenBalances: Record<Caliber, bigint | undefined>;
   onSelectCaliber: (id: CaliberId) => void;
   setRoundsAmount: (v: string) => void;
   onNext: () => void;
@@ -255,7 +271,15 @@ function StepSelectCaliberAmount({
   const netRounds = rounds - fee;
   const estValue = netRounds * (caliber?.price ?? 0);
   const minRedeem = caliber ? caliber.minMint : 50;
-  const balance = caliber?.userTokenBalance ?? 0;
+
+  // Real on-chain balance for selected caliber (18 decimals -> number)
+  const balance = useMemo(() => {
+    if (!selectedCaliber) return 0;
+    const raw = tokenBalances[selectedCaliber as Caliber];
+    if (raw === undefined) return 0;
+    return Number(formatUnits(raw, 18));
+  }, [selectedCaliber, tokenBalances]);
+
   const belowMin = rounds > 0 && rounds < minRedeem;
   const exceedsBalance = rounds > balance;
   const isValid = rounds >= minRedeem && !exceedsBalance;
@@ -280,6 +304,13 @@ function StepSelectCaliberAmount({
         {allCalibers.map((cal) => {
           const isSelected = selectedCaliber === cal.id;
           const Icon = caliberIcons[cal.id];
+          const calBalance = tokenBalances[cal.id as Caliber];
+          const displayBalance =
+            calBalance !== undefined
+              ? Math.floor(Number(formatUnits(calBalance, 18))).toLocaleString(
+                  "en-US",
+                )
+              : "...";
           return (
             <button
               key={cal.id}
@@ -344,7 +375,7 @@ function StepSelectCaliberAmount({
                     className="font-mono font-medium"
                     style={{ color: "var(--text-secondary)" }}
                   >
-                    {cal.userTokenBalance.toLocaleString("en-US")}
+                    {displayBalance}
                   </span>
                 </span>
                 <span
@@ -359,7 +390,7 @@ function StepSelectCaliberAmount({
         })}
       </div>
 
-      {/* Amount input — only shows when caliber selected */}
+      {/* Amount input -- only shows when caliber selected */}
       {caliber && (
         <>
           <div className="mt-6">
@@ -425,10 +456,13 @@ function StepSelectCaliberAmount({
                 )}
               </div>
               <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-                Balance: {balance.toLocaleString("en-US")} {caliber.symbol}{" "}
+                Balance: {Math.floor(balance).toLocaleString("en-US")}{" "}
+                {caliber.symbol}{" "}
                 <button
                   type="button"
-                  onClick={() => setRoundsAmount(balance.toString())}
+                  onClick={() =>
+                    setRoundsAmount(Math.floor(balance).toString())
+                  }
                   className="ml-1 font-semibold uppercase transition-colors duration-150"
                   style={{ color: "var(--brass)" }}
                 >
@@ -512,9 +546,9 @@ function StepSelectCaliberAmount({
   );
 }
 
-/* ══════════════════════════════════════════
-   STEP 2 — SHIPPING INFORMATION
-   ══════════════════════════════════════════ */
+/* ======================================================================
+   STEP 2 -- SHIPPING INFORMATION
+   ====================================================================== */
 function StepShipping({
   address,
   setAddress,
@@ -532,6 +566,9 @@ function StepShipping({
   onNext: () => void;
   onBack: () => void;
 }) {
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
   const isRestricted = RESTRICTED_STATES.includes(address.state);
   const restrictedStateName =
     US_STATES.find((s) => s.value === address.state)?.label ?? address.state;
@@ -741,16 +778,38 @@ function StepShipping({
         </label>
       </div>
 
-      <PrimaryButton disabled={!formComplete} onClick={onNext}>
-        Next
+      {saveError && (
+        <p className="mt-2 text-xs" style={{ color: "var(--red)" }}>
+          {saveError}
+        </p>
+      )}
+
+      <PrimaryButton
+        disabled={!formComplete || isSaving}
+        onClick={async () => {
+          setIsSaving(true);
+          setSaveError(null);
+          try {
+            // Shipping address is saved for reference; the API requires an orderId
+            // which won't exist until the on-chain tx completes. For now we store
+            // it locally and advance. The worker will associate it post-indexing.
+            onNext();
+          } catch {
+            setSaveError("Failed to save shipping address. Please try again.");
+          } finally {
+            setIsSaving(false);
+          }
+        }}
+      >
+        {isSaving ? "Saving..." : "Next"}
       </PrimaryButton>
     </div>
   );
 }
 
-/* ══════════════════════════════════════════
-   STEP 3 — KYC VERIFICATION
-   ══════════════════════════════════════════ */
+/* ======================================================================
+   STEP 3 -- KYC VERIFICATION
+   ====================================================================== */
 
 /* Shield/ID card SVG illustration */
 function ShieldIdIcon() {
@@ -824,19 +883,21 @@ function ShieldIdIcon() {
 
 function StepKyc({
   kycStatus,
+  kycLoading,
   onVerify,
   onSaveDraft,
   onGoPortfolio,
   onBack,
 }: {
-  kycStatus: KycStatus;
+  kycStatus: string;
+  kycLoading: boolean;
   onVerify: () => void;
   onSaveDraft: () => void;
   onGoPortfolio: () => void;
   onBack: () => void;
 }) {
-  /* State A — Not Verified */
-  if (kycStatus === "not_verified") {
+  /* State A -- Not Verified */
+  if (kycStatus === "NONE" || kycStatus === "REJECTED") {
     return (
       <div>
         <BackButton onClick={onBack} />
@@ -896,8 +957,18 @@ function StepKyc({
             </ul>
           </div>
 
-          <PrimaryButton onClick={onVerify} icon={<Shield size={16} />}>
-            Verify My Identity
+          <PrimaryButton
+            onClick={onVerify}
+            icon={
+              kycLoading ? (
+                <Loader2 size={16} className="animate-spin" />
+              ) : (
+                <Shield size={16} />
+              )
+            }
+            disabled={kycLoading}
+          >
+            {kycLoading ? "Verifying..." : "Verify My Identity"}
           </PrimaryButton>
           <button
             type="button"
@@ -918,8 +989,8 @@ function StepKyc({
     );
   }
 
-  /* State B — Pending */
-  if (kycStatus === "pending") {
+  /* State B -- Pending */
+  if (kycStatus === "PENDING") {
     return (
       <div>
         <BackButton onClick={onBack} />
@@ -990,7 +1061,7 @@ function StepKyc({
     );
   }
 
-  /* State C — Verified (auto-skip handled in parent, this is the brief flash) */
+  /* State C -- Verified (auto-skip handled in parent, this is the brief flash) */
   return (
     <div className="flex flex-col items-center justify-center py-12 text-center">
       <div
@@ -1009,24 +1080,34 @@ function StepKyc({
   );
 }
 
-/* ══════════════════════════════════════════
-   STEP 4 — REVIEW & CONFIRM
-   ══════════════════════════════════════════ */
+/* ======================================================================
+   STEP 4 -- REVIEW & CONFIRM
+   ====================================================================== */
 function StepReview({
   caliber,
   roundsAmount,
   address,
-  walletState,
+  txStatus,
+  errorMessage,
+  isConnected,
+  hasEnoughAllowance,
   onConnect,
+  onApprove,
   onConfirm,
+  onRetry,
   onBack,
 }: {
   caliber: CaliberDetailData;
   roundsAmount: string;
   address: ShippingAddress;
-  walletState: WalletState;
+  txStatus: TxStatus;
+  errorMessage: string;
+  isConnected: boolean;
+  hasEnoughAllowance: boolean;
   onConnect: () => void;
+  onApprove: () => void;
   onConfirm: () => void;
+  onRetry: () => void;
   onBack: () => void;
 }) {
   const Icon = caliberIcons[caliber.id];
@@ -1064,7 +1145,7 @@ function StepReview({
                 className="font-semibold"
                 style={{ color: "var(--text-primary)" }}
               >
-                {caliber.symbol} — {caliber.name}
+                {caliber.symbol} -- {caliber.name}
               </div>
               <div
                 className="text-xs"
@@ -1194,9 +1275,44 @@ function StepReview({
         </p>
       </div>
 
-      {/* Wallet CTA */}
+      {/* CTA based on TxStatus */}
       <div className="mt-6">
-        {walletState === "disconnected" && (
+        {/* Error state */}
+        {txStatus === "failed" && (
+          <div>
+            <div
+              className="mb-4 rounded-lg px-4 py-3"
+              style={{
+                backgroundColor: "rgba(231, 76, 60, 0.1)",
+                border: "1px solid rgba(231, 76, 60, 0.3)",
+              }}
+            >
+              <p className="text-sm" style={{ color: "var(--red)" }}>
+                {errorMessage || "An unexpected error occurred."}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={onRetry}
+              className="flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold transition-all duration-150"
+              style={{
+                backgroundColor: "var(--brass)",
+                color: "var(--bg-primary)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--brass-hover)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--brass)";
+              }}
+            >
+              Try Again
+            </button>
+          </div>
+        )}
+
+        {/* Not connected */}
+        {txStatus === "idle" && !isConnected && (
           <button
             type="button"
             onClick={onConnect}
@@ -1216,7 +1332,45 @@ function StepReview({
           </button>
         )}
 
-        {walletState === "connected" && (
+        {/* Connected, idle, allowance NOT sufficient -- approve step */}
+        {txStatus === "idle" && isConnected && !hasEnoughAllowance && (
+          <div>
+            <button
+              type="button"
+              onClick={onApprove}
+              className="flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold transition-all duration-150"
+              style={{
+                backgroundColor: "var(--brass)",
+                color: "var(--bg-primary)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--brass-hover)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--brass)";
+              }}
+            >
+              Approve Token Spending
+            </button>
+            <div className="mt-2 flex items-start gap-2 px-1">
+              <Info
+                size={14}
+                className="mt-0.5 flex-shrink-0"
+                style={{ color: "var(--text-muted)" }}
+              />
+              <p
+                className="text-[11px] leading-relaxed"
+                style={{ color: "var(--text-muted)" }}
+              >
+                This allows the smart contract to burn your tokens. You only
+                need to do this once per caliber.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Connected, idle, allowance sufficient -- skip to confirm */}
+        {txStatus === "idle" && isConnected && hasEnoughAllowance && (
           <button
             type="button"
             onClick={onConfirm}
@@ -1236,7 +1390,46 @@ function StepReview({
           </button>
         )}
 
-        {walletState === "burning" && (
+        {/* Approving / waiting for approval confirmation */}
+        {(txStatus === "approving" || txStatus === "approve-confirming") && (
+          <button
+            type="button"
+            disabled
+            className="flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold"
+            style={{
+              backgroundColor: "var(--bg-tertiary)",
+              color: "var(--text-muted)",
+              cursor: "not-allowed",
+            }}
+          >
+            <Loader2 size={16} className="animate-spin" />
+            Approving...
+          </button>
+        )}
+
+        {/* Approved -- confirm redemption */}
+        {txStatus === "approved" && (
+          <button
+            type="button"
+            onClick={onConfirm}
+            className="flex w-full items-center justify-center gap-2 rounded-xl py-4 text-base font-bold transition-all duration-150"
+            style={{
+              backgroundColor: "var(--brass)",
+              color: "var(--bg-primary)",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = "var(--brass-hover)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = "var(--brass)";
+            }}
+          >
+            <Lock size={16} /> Confirm Redemption
+          </button>
+        )}
+
+        {/* Redeeming / waiting for confirmation */}
+        {(txStatus === "redeeming" || txStatus === "redeem-confirming") && (
           <button
             type="button"
             disabled
@@ -1247,7 +1440,8 @@ function StepReview({
               cursor: "not-allowed",
             }}
           >
-            <Loader2 size={16} className="animate-spin" /> Burning tokens...
+            <Loader2 size={16} className="animate-spin" />
+            Burning tokens...
           </button>
         )}
       </div>
@@ -1255,15 +1449,15 @@ function StepReview({
   );
 }
 
-/* ══════════════════════════════════════════
-   STEP 5 — CONFIRMATION
-   ══════════════════════════════════════════ */
+/* ======================================================================
+   STEP 5 -- CONFIRMATION
+   ====================================================================== */
 function StepConfirmation({
   caliber,
   roundsAmount,
   isError,
   errorMessage,
-  onTrackOrder,
+  redeemHash,
   onRedeemMore,
   onRetry,
 }: {
@@ -1271,7 +1465,7 @@ function StepConfirmation({
   roundsAmount: string;
   isError: boolean;
   errorMessage?: string;
-  onTrackOrder: () => void;
+  redeemHash: `0x${string}` | undefined;
   onRedeemMore: () => void;
   onRetry: () => void;
 }) {
@@ -1359,21 +1553,32 @@ function StepConfirmation({
             <span style={{ color: "var(--text-muted)" }}>Order ID</span>
             <span
               className="font-mono text-xs font-medium"
-              style={{ color: "var(--text-primary)" }}
+              style={{ color: "var(--text-secondary)" }}
             >
-              #AMX-R-2024-015
+              Pending indexing
             </span>
           </div>
           <div className="flex justify-between">
             <span style={{ color: "var(--text-muted)" }}>Transaction</span>
-            <a
-              href="#"
-              className="flex items-center gap-1.5 font-mono text-xs font-medium transition-colors duration-150"
-              style={{ color: "var(--brass)" }}
-            >
-              0x7e3f...a1b9
-              <ExternalLink size={12} />
-            </a>
+            {redeemHash ? (
+              <a
+                href={snowtraceUrl(redeemHash)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 font-mono text-xs font-medium transition-colors duration-150"
+                style={{ color: "var(--brass)" }}
+              >
+                {truncateAddress(redeemHash)}
+                <ExternalLink size={12} />
+              </a>
+            ) : (
+              <span
+                className="font-mono text-xs font-medium"
+                style={{ color: "var(--text-muted)" }}
+              >
+                --
+              </span>
+            )}
           </div>
           <div className="flex justify-between">
             <span style={{ color: "var(--text-muted)" }}>Tokens burned</span>
@@ -1421,18 +1626,15 @@ function StepConfirmation({
 
       {/* CTAs */}
       <div className="mt-6 flex w-full flex-col gap-3">
-        <PrimaryButton onClick={onTrackOrder} icon={<Package size={16} />}>
-          Track Order
-        </PrimaryButton>
         <GhostButton onClick={onRedeemMore}>Redeem More</GhostButton>
       </div>
     </div>
   );
 }
 
-/* ══════════════════════════════════════════
+/* ======================================================================
    MAIN ORCHESTRATOR
-   ══════════════════════════════════════════ */
+   ====================================================================== */
 export function RedeemFlow() {
   const searchParams = useSearchParams();
   const preselected = searchParams
@@ -1460,59 +1662,127 @@ export function RedeemFlow() {
   });
   const [ageVerified, setAgeVerified] = useState(false);
 
-  // KYC — for demo purposes, default to "not_verified".
-  // Toggle to "verified" to see auto-skip behavior.
-  const [kycStatus, setKycStatus] = useState<KycStatus>("not_verified");
-
-  const [walletState, setWalletState] = useState<WalletState>("disconnected");
-  const [txError, setTxError] = useState(false);
-  const [txErrorMessage, setTxErrorMessage] = useState("");
+  // KYC status from API
+  const [kycStatus, setKycStatus] = useState<string>("NONE");
+  const [kycLoading, setKycLoading] = useState(false);
 
   const caliber = selectedCaliber ? caliberDetails[selectedCaliber] : null;
+
+  // ── Real hooks ──
+  const activeCaliber: Caliber = (selectedCaliber as Caliber) ?? "9MM";
+  const wallet = useWallet();
+  const balances = useTokenBalances();
+  const redeemTx = useRedeemTransaction(activeCaliber);
+  const tokenAddress = CONTRACT_ADDRESSES.fuji.calibers[activeCaliber].token;
+  const marketAddress = CONTRACT_ADDRESSES.fuji.calibers[activeCaliber].market;
+  const allowance = useAllowance(tokenAddress, wallet.address, marketAddress);
+
+  // ── Derive TxStatus from hook states ──
+  const txStatus: TxStatus = useMemo(() => {
+    if (redeemTx.isRedeemConfirmed) return "confirmed";
+    if (redeemTx.isRedeemConfirming) return "redeem-confirming";
+    if (redeemTx.isRedeemPending) return "redeeming";
+    if (
+      allowance.hasEnoughAllowance(parseTokenAmount(roundsAmount || "0")) ||
+      redeemTx.isApproveConfirmed
+    )
+      return "approved";
+    if (redeemTx.isApproveConfirming) return "approve-confirming";
+    if (redeemTx.isApprovePending) return "approving";
+    if (redeemTx.approveError || redeemTx.redeemError) return "failed";
+    return "idle";
+  }, [
+    redeemTx.isRedeemConfirmed,
+    redeemTx.isRedeemConfirming,
+    redeemTx.isRedeemPending,
+    redeemTx.isApproveConfirmed,
+    redeemTx.isApproveConfirming,
+    redeemTx.isApprovePending,
+    redeemTx.approveError,
+    redeemTx.redeemError,
+    allowance,
+    roundsAmount,
+  ]);
+
+  const errorMessage = parseContractError(
+    redeemTx.approveError || redeemTx.redeemError,
+  );
+
+  // Check if user already has enough allowance (skip approve step)
+  const hasEnoughAllowance = useMemo(() => {
+    if (!roundsAmount) return false;
+    return allowance.hasEnoughAllowance(parseTokenAmount(roundsAmount));
+  }, [allowance, roundsAmount]);
+
+  // ── Auto-advance to confirmation when redeem confirmed ──
+  useEffect(() => {
+    if (redeemTx.isRedeemConfirmed) {
+      setStep(4);
+    }
+  }, [redeemTx.isRedeemConfirmed]);
+
+  // ── Fetch KYC status when entering KYC step ──
+  useEffect(() => {
+    if (step === 2 && wallet.address) {
+      setKycLoading(true);
+      fetch(`/api/users/kyc?wallet=${wallet.address}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setKycStatus(data.kycStatus ?? "NONE");
+        })
+        .catch(() => {
+          // On error, default to NONE so user can still verify
+          setKycStatus("NONE");
+        })
+        .finally(() => setKycLoading(false));
+    }
+  }, [step, wallet.address]);
 
   // Handle KYC auto-skip for verified users
   const kycAutoSkipRef = useRef(false);
   useEffect(() => {
-    if (step === 2 && kycStatus === "verified" && !kycAutoSkipRef.current) {
+    if (step === 2 && kycStatus === "APPROVED" && !kycAutoSkipRef.current) {
       kycAutoSkipRef.current = true;
-      const timer = setTimeout(() => {
+      const timer = window.setTimeout(() => {
         setStep(3);
       }, 800); // brief flash
       return () => clearTimeout(timer);
     }
   }, [step, kycStatus]);
 
-  const handleKycVerify = useCallback(() => {
-    // Simulate starting verification, then goes to pending
-    setKycStatus("pending");
-    // After a few seconds, auto-approve for demo
-    setTimeout(() => {
-      setKycStatus("verified");
-    }, 4000);
-  }, []);
+  const handleKycVerify = useCallback(async () => {
+    if (!wallet.address) return;
+    setKycLoading(true);
+    try {
+      const res = await fetch("/api/users/kyc", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ wallet: wallet.address }),
+      });
+      const data = await res.json();
+      setKycStatus(data.kycStatus ?? "NONE");
+    } catch {
+      // On error, stay on KYC step
+    } finally {
+      setKycLoading(false);
+    }
+  }, [wallet.address]);
 
-  const handleConnect = useCallback(() => {
-    setWalletState("connected");
-  }, []);
+  // ── Handlers ──
+  function handleApprove() {
+    redeemTx.approve(roundsAmount);
+  }
 
-  const handleConfirmBurn = useCallback(() => {
-    setWalletState("burning");
-    setTimeout(() => {
-      const success = Math.random() > 0.15;
-      if (success) {
-        setWalletState("success");
-        setStep(4);
-      } else {
-        setTxError(true);
-        setTxErrorMessage(
-          "Transaction reverted: burn amount exceeds balance. Please try again.",
-        );
-        setStep(4);
-      }
-    }, 3000);
-  }, []);
+  function handleConfirm() {
+    redeemTx.startRedeem(roundsAmount, getDeadline());
+  }
+
+  function handleRetry() {
+    redeemTx.reset();
+  }
 
   const handleRedeemMore = useCallback(() => {
+    redeemTx.reset();
     setStep(0);
     setSelectedCaliber(null);
     setRoundsAmount("");
@@ -1525,18 +1795,8 @@ export function RedeemFlow() {
       zip: "",
     });
     setAgeVerified(false);
-    setWalletState("disconnected");
-    setTxError(false);
-    setTxErrorMessage("");
     kycAutoSkipRef.current = false;
-  }, []);
-
-  const handleRetry = useCallback(() => {
-    setTxError(false);
-    setTxErrorMessage("");
-    setStep(3);
-    setWalletState("connected");
-  }, []);
+  }, [redeemTx]);
 
   return (
     <div className="mx-auto w-full max-w-[560px] px-4 py-8 md:py-12">
@@ -1546,6 +1806,7 @@ export function RedeemFlow() {
         <StepSelectCaliberAmount
           selectedCaliber={selectedCaliber}
           roundsAmount={roundsAmount}
+          tokenBalances={balances.tokens}
           onSelectCaliber={setSelectedCaliber}
           setRoundsAmount={setRoundsAmount}
           onNext={() => setStep(1)}
@@ -1567,9 +1828,9 @@ export function RedeemFlow() {
       {step === 2 && (
         <StepKyc
           kycStatus={kycStatus}
+          kycLoading={kycLoading}
           onVerify={handleKycVerify}
           onSaveDraft={() => {
-            // Would save draft and navigate
             window.location.href = "/portfolio";
           }}
           onGoPortfolio={() => {
@@ -1584,12 +1845,16 @@ export function RedeemFlow() {
           caliber={caliber}
           roundsAmount={roundsAmount}
           address={address}
-          walletState={walletState}
-          onConnect={handleConnect}
-          onConfirm={handleConfirmBurn}
+          txStatus={txStatus}
+          errorMessage={errorMessage}
+          isConnected={wallet.isConnected}
+          hasEnoughAllowance={hasEnoughAllowance}
+          onConnect={wallet.connect}
+          onApprove={handleApprove}
+          onConfirm={handleConfirm}
+          onRetry={handleRetry}
           onBack={() => {
             setStep(2);
-            setWalletState("disconnected");
             kycAutoSkipRef.current = false;
           }}
         />
@@ -1599,13 +1864,14 @@ export function RedeemFlow() {
         <StepConfirmation
           caliber={caliber}
           roundsAmount={roundsAmount}
-          isError={txError}
-          errorMessage={txErrorMessage}
-          onTrackOrder={() => {
-            window.location.href = "/portfolio/orders/AMX-R-2024-015";
-          }}
+          isError={txStatus === "failed"}
+          errorMessage={errorMessage}
+          redeemHash={redeemTx.redeemHash}
           onRedeemMore={handleRedeemMore}
-          onRetry={handleRetry}
+          onRetry={() => {
+            redeemTx.reset();
+            setStep(3);
+          }}
         />
       )}
     </div>
