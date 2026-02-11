@@ -23,11 +23,8 @@ import {
   Truck,
 } from "lucide-react";
 import { caliberIcons } from "@/features/shared/caliber-icons";
-import {
-  caliberDetails,
-  type CaliberId,
-  type CaliberDetailData,
-} from "@/lib/mock-data";
+import type { CaliberDetailData, MarketCaliberFromAPI } from "@/lib/types";
+import { CALIBER_SPECS, FEES } from "@ammo-exchange/shared";
 import { RedeemProgress } from "./redeem-progress";
 
 import { useWallet } from "@/hooks/use-wallet";
@@ -39,6 +36,35 @@ import { getDeadline, parseTokenAmount } from "@/lib/tx-utils";
 import { snowtraceUrl, truncateAddress } from "@/lib/utils";
 import { CONTRACT_ADDRESSES } from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
+
+/* ── Build CaliberDetailData from API market data ── */
+function buildCaliberDetail(
+  caliber: Caliber,
+  market: MarketCaliberFromAPI,
+): CaliberDetailData {
+  const spec = CALIBER_SPECS[caliber];
+  return {
+    id: caliber,
+    symbol: caliber,
+    name: spec.name,
+    specLine: spec.description,
+    price: market.pricePerRound,
+    totalSupply: market.totalSupply,
+    mintFee: FEES.MINT_FEE_BPS / 100,
+    redeemFee: FEES.REDEEM_FEE_BPS / 100,
+    minMint: spec.minMintRounds,
+  };
+}
+
+function buildAllCaliberDetails(
+  marketData: MarketCaliberFromAPI[],
+): Record<Caliber, CaliberDetailData> {
+  const result = {} as Record<Caliber, CaliberDetailData>;
+  for (const m of marketData) {
+    result[m.caliber] = buildCaliberDetail(m.caliber, m);
+  }
+  return result;
+}
 
 /* ── US States ── */
 const US_STATES = [
@@ -254,18 +280,23 @@ function StepSelectCaliberAmount({
   selectedCaliber,
   roundsAmount,
   tokenBalances,
+  caliberDetailsMap,
   onSelectCaliber,
   setRoundsAmount,
   onNext,
 }: {
-  selectedCaliber: CaliberId | null;
+  selectedCaliber: Caliber | null;
   roundsAmount: string;
   tokenBalances: Record<Caliber, bigint | undefined>;
-  onSelectCaliber: (id: CaliberId) => void;
+  caliberDetailsMap: Record<Caliber, CaliberDetailData> | null;
+  onSelectCaliber: (id: Caliber) => void;
   setRoundsAmount: (v: string) => void;
   onNext: () => void;
 }) {
-  const caliber = selectedCaliber ? caliberDetails[selectedCaliber] : null;
+  const caliber =
+    selectedCaliber && caliberDetailsMap
+      ? caliberDetailsMap[selectedCaliber]
+      : null;
   const rounds = Number.parseInt(roundsAmount) || 0;
   const fee = Math.ceil(rounds * 0.015);
   const netRounds = rounds - fee;
@@ -275,7 +306,7 @@ function StepSelectCaliberAmount({
   // Real on-chain balance for selected caliber (18 decimals -> number)
   const balance = useMemo(() => {
     if (!selectedCaliber) return 0;
-    const raw = tokenBalances[selectedCaliber as Caliber];
+    const raw = tokenBalances[selectedCaliber];
     if (raw === undefined) return 0;
     return Number(formatUnits(raw, 18));
   }, [selectedCaliber, tokenBalances]);
@@ -285,7 +316,9 @@ function StepSelectCaliberAmount({
   const isValid = rounds >= minRedeem && !exceedsBalance;
   const hasError = belowMin || exceedsBalance;
 
-  const allCalibers = Object.values(caliberDetails);
+  const allCalibers = caliberDetailsMap
+    ? Object.values(caliberDetailsMap)
+    : [];
 
   return (
     <div>
@@ -304,7 +337,7 @@ function StepSelectCaliberAmount({
         {allCalibers.map((cal) => {
           const isSelected = selectedCaliber === cal.id;
           const Icon = caliberIcons[cal.id];
-          const calBalance = tokenBalances[cal.id as Caliber];
+          const calBalance = tokenBalances[cal.id];
           const displayBalance =
             calBalance !== undefined
               ? Math.floor(Number(formatUnits(calBalance, 18))).toLocaleString(
@@ -1639,15 +1672,29 @@ export function RedeemFlow() {
   const searchParams = useSearchParams();
   const preselected = searchParams
     .get("caliber")
-    ?.toUpperCase() as CaliberId | null;
+    ?.toUpperCase() as Caliber | null;
 
-  const [step, setStep] = useState(() => {
-    if (preselected && caliberDetails[preselected]) return 0;
-    return 0;
-  });
-  const [selectedCaliber, setSelectedCaliber] = useState<CaliberId | null>(
+  const [caliberDetailsMap, setCaliberDetailsMap] = useState<Record<
+    Caliber,
+    CaliberDetailData
+  > | null>(null);
+
+  useEffect(() => {
+    fetch("/api/market")
+      .then((res) => res.json())
+      .then((json) => {
+        const calibers: MarketCaliberFromAPI[] = json.calibers ?? [];
+        if (calibers.length > 0) {
+          setCaliberDetailsMap(buildAllCaliberDetails(calibers));
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const [step, setStep] = useState(0);
+  const [selectedCaliber, setSelectedCaliber] = useState<Caliber | null>(
     () => {
-      if (preselected && caliberDetails[preselected]) return preselected;
+      if (preselected) return preselected;
       return null;
     },
   );
@@ -1666,10 +1713,13 @@ export function RedeemFlow() {
   const [kycStatus, setKycStatus] = useState<string>("NONE");
   const [kycLoading, setKycLoading] = useState(false);
 
-  const caliber = selectedCaliber ? caliberDetails[selectedCaliber] : null;
+  const caliber =
+    selectedCaliber && caliberDetailsMap
+      ? caliberDetailsMap[selectedCaliber]
+      : null;
 
   // ── Real hooks ──
-  const activeCaliber: Caliber = (selectedCaliber as Caliber) ?? "9MM";
+  const activeCaliber: Caliber = selectedCaliber ?? "9MM";
   const wallet = useWallet();
   const balances = useTokenBalances();
   const redeemTx = useRedeemTransaction(activeCaliber);
@@ -1807,6 +1857,7 @@ export function RedeemFlow() {
           selectedCaliber={selectedCaliber}
           roundsAmount={roundsAmount}
           tokenBalances={balances.tokens}
+          caliberDetailsMap={caliberDetailsMap}
           onSelectCaliber={setSelectedCaliber}
           setRoundsAmount={setRoundsAmount}
           onNext={() => setStep(1)}

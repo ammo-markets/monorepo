@@ -16,10 +16,8 @@ import {
   Info,
 } from "lucide-react";
 import { caliberIcons } from "@/features/shared/caliber-icons";
-import {
-  caliberDetails,
-  type CaliberDetailData,
-} from "@/lib/mock-data";
+import type { CaliberDetailData, MarketCaliberFromAPI } from "@/lib/types";
+import { CALIBER_SPECS, FEES } from "@ammo-exchange/shared";
 import { MintProgress } from "./mint-progress";
 
 import { useWallet } from "@/hooks/use-wallet";
@@ -35,6 +33,35 @@ import {
 import { snowtraceUrl, truncateAddress } from "@/lib/utils";
 import { CONTRACT_ADDRESSES } from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
+
+/* ── Build CaliberDetailData from API market data ── */
+function buildCaliberDetail(
+  caliber: Caliber,
+  market: MarketCaliberFromAPI,
+): CaliberDetailData {
+  const spec = CALIBER_SPECS[caliber];
+  return {
+    id: caliber,
+    symbol: caliber,
+    name: spec.name,
+    specLine: spec.description,
+    price: market.pricePerRound,
+    totalSupply: market.totalSupply,
+    mintFee: FEES.MINT_FEE_BPS / 100,
+    redeemFee: FEES.REDEEM_FEE_BPS / 100,
+    minMint: spec.minMintRounds,
+  };
+}
+
+function buildAllCaliberDetails(
+  marketData: MarketCaliberFromAPI[],
+): Record<Caliber, CaliberDetailData> {
+  const result = {} as Record<Caliber, CaliberDetailData>;
+  for (const m of marketData) {
+    result[m.caliber] = buildCaliberDetail(m.caliber, m);
+  }
+  return result;
+}
 
 /* ── USDC Icon ── */
 function UsdcIcon({ size = 16 }: { size?: number }) {
@@ -117,14 +144,15 @@ function WrongNetworkBanner({ onSwitch }: { onSwitch: () => void }) {
    ===================================================================== */
 function StepSelectCaliber({
   selected,
+  allCalibers,
   onSelect,
   onNext,
 }: {
   selected: Caliber | null;
+  allCalibers: CaliberDetailData[];
   onSelect: (id: Caliber) => void;
   onNext: () => void;
 }) {
-  const allCalibers = Object.values(caliberDetails);
 
   return (
     <div>
@@ -1078,20 +1106,41 @@ export function MintFlow() {
     .get("caliber")
     ?.toUpperCase() as Caliber | null;
 
+  const [caliberDetailsMap, setCaliberDetailsMap] = useState<Record<
+    Caliber,
+    CaliberDetailData
+  > | null>(null);
+
+  useEffect(() => {
+    fetch("/api/market")
+      .then((res) => res.json())
+      .then((json) => {
+        const calibers: MarketCaliberFromAPI[] = json.calibers ?? [];
+        if (calibers.length > 0) {
+          const details = buildAllCaliberDetails(calibers);
+          setCaliberDetailsMap(details);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   const [step, setStep] = useState(() => {
-    if (preselected && caliberDetails[preselected]) return 1;
+    if (preselected) return 1;
     return 0;
   });
   const [selectedCaliber, setSelectedCaliber] = useState<Caliber | null>(
     () => {
-      if (preselected && caliberDetails[preselected]) return preselected;
+      if (preselected) return preselected;
       return null;
     },
   );
   const [usdcAmount, setUsdcAmount] = useState("");
 
   const activeCaliber: Caliber = selectedCaliber ?? "9MM";
-  const caliber = selectedCaliber ? caliberDetails[selectedCaliber] : null;
+  const caliber =
+    selectedCaliber && caliberDetailsMap
+      ? caliberDetailsMap[selectedCaliber]
+      : null;
 
   // ── Real hooks ──
   const wallet = useWallet();
@@ -1176,6 +1225,9 @@ export function MintFlow() {
       {step === 0 && (
         <StepSelectCaliber
           selected={selectedCaliber}
+          allCalibers={
+            caliberDetailsMap ? Object.values(caliberDetailsMap) : []
+          }
           onSelect={setSelectedCaliber}
           onNext={() => setStep(1)}
         />
