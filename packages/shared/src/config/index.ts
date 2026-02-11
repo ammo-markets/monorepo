@@ -87,3 +87,13 @@ export const CONTRACT_ADDRESSES: {
     },
   },
 } as const;
+
+/**
+ * Block numbers where the protocol contracts were first deployed.
+ * Used as the starting point for event indexing on fresh databases
+ * to avoid scanning millions of empty blocks.
+ */
+export const DEPLOYMENT_BLOCKS = {
+  fuji: 51699730n,
+  mainnet: 0n, // Not yet deployed
+} as const;
