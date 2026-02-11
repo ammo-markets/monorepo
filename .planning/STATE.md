@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-10)
 
 **Core value:** Anyone worldwide can get price exposure to U.S. ammunition by minting ammo tokens with USDC, while only verified U.S. residents in allowed states can redeem for physical delivery.
-**Current focus:** Phase 3 -- wallet hooks and API layer
+**Current focus:** Phase 3 complete -- ready for Phase 4
 
 ## Current Position
 
-Phase: 3 of 6 (Wallet and API Layer)
-Plan: 1 of 2 in current phase
-Status: Plan 03-01 complete, 03-02 in progress (parallel)
-Last activity: 2026-02-11 -- Completed plan 03-01 (wallet hooks + WalletButton)
+Phase: 3 of 6 (Wallet and API Layer) -- COMPLETE
+Plan: 2 of 2 in current phase (all done)
+Status: Phase 3 Complete
+Last activity: 2026-02-11 -- Completed plan 03-02 (API route handlers)
 
-Progress: [█████░░░░░] 42%
+Progress: [█████░░░░░] 50%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5
-- Average duration: ~15 min
-- Total execution time: ~1.4 hours
+- Total plans completed: 6
+- Average duration: ~14 min
+- Total execution time: ~1.6 hours
 
 **By Phase:**
 
@@ -29,11 +29,11 @@ Progress: [█████░░░░░] 42%
 |-------|-------|-------|----------|
 | 01-foundation | 2 | ~65min | ~33min |
 | 02-event-indexer | 2 | ~4min | ~2min |
-| 03-wallet-and-api-layer | 1 | ~9min | ~9min |
+| 03-wallet-and-api-layer | 2 | ~19min | ~10min |
 
 **Recent Trend:**
-- Last 5 plans: 01-02 (~20min), 02-01 (~2min), 02-02 (~2min), 03-01 (~9min)
-- Trend: Accelerating
+- Last 5 plans: 02-01 (~2min), 02-02 (~2min), 03-01 (~9min), 03-02 (~10min)
+- Trend: Steady
 
 *Updated after each plan completion*
 
@@ -67,6 +67,11 @@ Recent decisions affecting current work:
 - 03-01: isReconnecting guard in WalletButton to prevent SSR hydration mismatch
 - 03-01: USDC balance inline; ammo token balances deferred to portfolio page
 - 03-01: Network badge text fixed to "Avalanche Fuji" (testnet app, was "Mainnet")
+- 03-02: readContract + Promise.all over multicall for mapped arrays (avoids viem TypeScript tuple inference errors)
+- 03-02: BigInt(0) over 0n literal for ES2017 target compatibility
+- 03-02: serverExternalPackages for @ammo-exchange/db to prevent Prisma WASM bundling
+- 03-02: Explicit @prisma/client@7 dependency in db package (Prisma 7 generated code needs matching runtime)
+- 03-02: webpack extensionAlias .js -> .ts for ESM workspace packages in Next.js
 
 ### Pending Todos
 
@@ -79,5 +84,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Completed 03-01-PLAN.md (wallet hooks + WalletButton). Plan 03-02 (API routes) running in parallel.
+Stopped at: Completed 03-02-PLAN.md (API route handlers). Phase 3 complete. Ready for Phase 4 (frontend views).
 Resume file: None
