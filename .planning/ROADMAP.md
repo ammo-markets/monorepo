@@ -13,7 +13,7 @@ This roadmap delivers a fully functional DeFi protocol on Avalanche Fuji testnet
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - Deploy contracts to Fuji and migrate database schema
-- [ ] **Phase 2: Event Indexer** - Worker indexes on-chain events to database
+- [x] **Phase 2: Event Indexer** - Worker indexes on-chain events to database
 - [ ] **Phase 3: Wallet and API Layer** - Real wallet connection and data access routes
 - [ ] **Phase 4: Mint and Redeem Flows** - Wire contract interactions from the UI
 - [ ] **Phase 5: Portfolio and Data Integration** - Replace all mock data with real reads
@@ -49,8 +49,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 02-01-PLAN.md -- Viem client, constants, cursor helpers, mint and redeem event handlers (wave 1)
-- [ ] 02-02-PLAN.md -- Indexer core with polling loop, backfill, and entry point rewrite (wave 2)
+- [x] 02-01-PLAN.md -- Viem client, constants, cursor helpers, mint and redeem event handlers (wave 1)
+- [x] 02-02-PLAN.md -- Indexer core with polling loop, backfill, and entry point rewrite (wave 2)
 
 ### Phase 3: Wallet and API Layer
 **Goal**: Users can connect wallets and the app serves real data from the database and chain
@@ -123,7 +123,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | Phase | Plans Complete | Status | Completed |
 |-------|---------------|--------|-----------|
 | 1. Foundation | 2/2 | Complete | 2026-02-11 |
-| 2. Event Indexer | 0/2 | In progress | - |
+| 2. Event Indexer | 2/2 | Complete | 2026-02-11 |
 | 3. Wallet and API Layer | 0/2 | Not started | - |
 | 4. Mint and Redeem Flows | 0/2 | Not started | - |
 | 5. Portfolio and Data Integration | 0/2 | Not started | - |
