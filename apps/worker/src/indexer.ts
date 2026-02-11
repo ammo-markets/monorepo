@@ -3,6 +3,7 @@ import {
   BATCH_SIZE,
   MARKET_ADDRESSES,
   CURSOR_KEY,
+  DEPLOYMENT_BLOCK,
 } from "./lib/constants";
 import type { EventMeta } from "./lib/constants";
 import { getCursor, upsertCursor } from "./lib/cursor";
@@ -161,7 +162,9 @@ export async function pollOnce(): Promise<void> {
     where: { contractAddress: CURSOR_KEY },
   });
 
-  const fromBlock = (cursor?.lastBlock ?? 0n) + 1n;
+  // Use deployment block as floor -- never scan before contracts existed
+  const rawFrom = (cursor?.lastBlock ?? 0n) + 1n;
+  const fromBlock = rawFrom < DEPLOYMENT_BLOCK ? DEPLOYMENT_BLOCK : rawFrom;
 
   if (fromBlock > currentBlock) {
     console.log(
@@ -178,6 +181,13 @@ export async function pollOnce(): Promise<void> {
       batchStart + BATCH_SIZE - 1n > currentBlock
         ? currentBlock
         : batchStart + BATCH_SIZE - 1n;
+
+    const totalBlocks = Number(currentBlock - fromBlock + 1n);
+    const scannedBlocks = Number(batchStart - fromBlock);
+    const progressPct = totalBlocks > 0 ? Math.floor((scannedBlocks / totalBlocks) * 100) : 100;
+    console.log(
+      `[indexer] Scanning batch ${batchStart}..${batchEnd} (${progressPct}% complete, ${totalEventsProcessed} events found)`
+    );
 
     const events = await fetchEvents(batchStart, batchEnd);
     const totalEvents =
@@ -206,7 +216,8 @@ export async function pollOnce(): Promise<void> {
     batchStart = batchEnd + 1n;
   }
 
+  const blocksScanned = Number(currentBlock - fromBlock + 1n);
   console.log(
-    `[indexer] Scanned blocks ${fromBlock}..${currentBlock} (${totalEventsProcessed} events)`,
+    `[indexer] Backfill complete: ${blocksScanned.toLocaleString()} blocks scanned (${fromBlock}..${currentBlock}), ${totalEventsProcessed} events found`
   );
 }

@@ -1,4 +1,4 @@
-import { CONTRACT_ADDRESSES } from "@ammo-exchange/shared";
+import { CONTRACT_ADDRESSES, DEPLOYMENT_BLOCKS } from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
 
 // ── Polling Configuration ───────────────────────────────────────────
@@ -14,6 +14,9 @@ export const CURSOR_KEY = "all-markets";
 
 /** Avalanche Fuji testnet chain ID */
 export const CHAIN_ID = 43113;
+
+/** First block where protocol contracts exist on Fuji -- floor for event scanning */
+export const DEPLOYMENT_BLOCK = DEPLOYMENT_BLOCKS.fuji;
 
 // ── Market Addresses ────────────────────────────────────────────────
 

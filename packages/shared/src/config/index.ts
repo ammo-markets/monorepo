@@ -94,6 +94,6 @@ export const CONTRACT_ADDRESSES: {
  * to avoid scanning millions of empty blocks.
  */
 export const DEPLOYMENT_BLOCKS = {
-  fuji: 51699730n,
-  mainnet: 0n, // Not yet deployed
+  fuji: BigInt(51699730),
+  mainnet: BigInt(0), // Not yet deployed
 } as const;
