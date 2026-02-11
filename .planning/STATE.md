@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-10)
 
 **Core value:** Anyone worldwide can get price exposure to U.S. ammunition by minting ammo tokens with USDC, while only verified U.S. residents in allowed states can redeem for physical delivery.
-**Current focus:** Phase 2 complete -- ready for Phase 3
+**Current focus:** Phase 3 -- wallet hooks and API layer
 
 ## Current Position
 
-Phase: 2 of 6 (Event Indexer) -- COMPLETE
-Plan: 2 of 2 in current phase (all done)
-Status: Phase 2 Complete
-Last activity: 2026-02-11 -- Completed plan 02-02 (polling loop and entry point)
+Phase: 3 of 6 (Wallet and API Layer)
+Plan: 1 of 2 in current phase
+Status: Plan 03-01 complete, 03-02 in progress (parallel)
+Last activity: 2026-02-11 -- Completed plan 03-01 (wallet hooks + WalletButton)
 
-Progress: [████░░░░░░] 33%
+Progress: [█████░░░░░] 42%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
-- Average duration: ~17 min
-- Total execution time: ~1.2 hours
+- Total plans completed: 5
+- Average duration: ~15 min
+- Total execution time: ~1.4 hours
 
 **By Phase:**
 
@@ -29,9 +29,10 @@ Progress: [████░░░░░░] 33%
 |-------|-------|-------|----------|
 | 01-foundation | 2 | ~65min | ~33min |
 | 02-event-indexer | 2 | ~4min | ~2min |
+| 03-wallet-and-api-layer | 1 | ~9min | ~9min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (~45min), 01-02 (~20min), 02-01 (~2min), 02-02 (~2min)
+- Last 5 plans: 01-02 (~20min), 02-01 (~2min), 02-02 (~2min), 03-01 (~9min)
 - Trend: Accelerating
 
 *Updated after each plan completion*
@@ -62,6 +63,10 @@ Recent decisions affecting current work:
 - 02-02: Empty block ranges advance cursor to prevent re-scanning
 - 02-02: Polling errors are non-fatal (logged + retried), startup errors are fatal (exit 1)
 - 02-02: Event args cast via `as unknown as` for viem strict generic compatibility
+- 03-01: `as any` cast for useReadContracts dynamic contracts array (wagmi tuple type limitation)
+- 03-01: isReconnecting guard in WalletButton to prevent SSR hydration mismatch
+- 03-01: USDC balance inline; ammo token balances deferred to portfolio page
+- 03-01: Network badge text fixed to "Avalanche Fuji" (testnet app, was "Mainnet")
 
 ### Pending Todos
 
@@ -74,5 +79,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Completed 02-02-PLAN.md (polling loop and entry point). Phase 2 complete. Ready for Phase 3 (REST API).
+Stopped at: Completed 03-01-PLAN.md (wallet hooks + WalletButton). Plan 03-02 (API routes) running in parallel.
 Resume file: None
