@@ -78,11 +78,11 @@ Plans:
   3. User sees real-time transaction status (pending, confirming, confirmed, failed) during both mint and redeem flows
   4. User sees a Snowtrace explorer link for every submitted transaction
   5. Contract reverts, wallet rejections, insufficient balances, and deadline expiry produce clear, human-readable error messages -- the UI never shows raw hex or silently fails
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 04-01: Mint flow (approval, startMint, tx status, error handling)
-- [ ] 04-02: Redeem flow (startRedeem, shipping, KYC, tx status, error handling)
+- [ ] 04-01-PLAN.md -- Shared utilities (errors, tx-utils, allowance hook), mint transaction hook, mint-flow.tsx rewire (wave 1)
+- [ ] 04-02-PLAN.md -- Redeem transaction hook, KYC API route, redeem-flow.tsx rewire (wave 2)
 
 ### Phase 5: Portfolio and Data Integration
 **Goal**: All mock data is replaced with real database queries and on-chain reads across the entire app
@@ -132,4 +132,3 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 ---
 *Roadmap created: 2026-02-10*
 *Last updated: 2026-02-11*
-
