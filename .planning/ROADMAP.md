@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - Deploy contracts to Fuji and migrate database schema
 - [x] **Phase 2: Event Indexer** - Worker indexes on-chain events to database
-- [ ] **Phase 3: Wallet and API Layer** - Real wallet connection and data access routes
+- [x] **Phase 3: Wallet and API Layer** - Real wallet connection and data access routes
 - [ ] **Phase 4: Mint and Redeem Flows** - Wire contract interactions from the UI
 - [ ] **Phase 5: Portfolio and Data Integration** - Replace all mock data with real reads
 - [ ] **Phase 6: Admin Dashboard** - Keeper operations for order finalization
@@ -65,8 +65,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 03-01-PLAN.md -- Wallet hooks, WalletButton component, navbar rewrite with real wagmi state (wave 1)
-- [ ] 03-02-PLAN.md -- Server-side viem client, 5 API route handlers: orders, balances, market, shipping (wave 1)
+- [x] 03-01-PLAN.md -- Wallet hooks, WalletButton component, navbar rewrite with real wagmi state (wave 1)
+- [x] 03-02-PLAN.md -- Server-side viem client, 5 API route handlers: orders, balances, market, shipping (wave 1)
 
 ### Phase 4: Mint and Redeem Flows
 **Goal**: Users can execute real mint and redeem transactions from the UI with full status feedback
@@ -124,7 +124,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 |-------|---------------|--------|-----------|
 | 1. Foundation | 2/2 | Complete | 2026-02-11 |
 | 2. Event Indexer | 2/2 | Complete | 2026-02-11 |
-| 3. Wallet and API Layer | 0/2 | Not started | - |
+| 3. Wallet and API Layer | 2/2 | Complete | 2026-02-11 |
 | 4. Mint and Redeem Flows | 0/2 | Not started | - |
 | 5. Portfolio and Data Integration | 0/2 | Not started | - |
 | 6. Admin Dashboard | 0/2 | Not started | - |
@@ -132,3 +132,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 ---
 *Roadmap created: 2026-02-10*
 *Last updated: 2026-02-11*
+
