@@ -51,16 +51,18 @@ model User {
 }
 
 model Order {
-  id          String      @id @default(cuid())
-  userId      String
-  type        OrderType
-  status      OrderStatus @default(PENDING)
-  caliber     Caliber
-  amount      BigInt
-  txHash      String?     @unique
-  chainId     Int
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id              String      @id @default(cuid())
+  userId          String
+  type            OrderType
+  status          OrderStatus @default(PENDING)
+  caliber         Caliber
+  amount          BigInt
+  onChainOrderId  String?
+  walletAddress   String?
+  txHash          String?     @unique
+  chainId         Int
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
 
   user            User             @relation(fields: [userId], references: [id])
   shippingAddress ShippingAddress?
@@ -68,6 +70,8 @@ model Order {
   @@index([userId])
   @@index([txHash])
   @@index([status])
+  @@index([walletAddress])
+  @@index([onChainOrderId])
 }
 
 model ShippingAddress {
@@ -100,4 +104,14 @@ model AuditLog {
 
   @@index([entity, entityId])
   @@index([createdAt])
+}
+
+model BlockCursor {
+  id              String   @id @default(cuid())
+  contractAddress String   @unique
+  chainId         Int
+  lastBlock       BigInt   @default(0)
+  updatedAt       DateTime @updatedAt
+
+  @@index([contractAddress])
 }
