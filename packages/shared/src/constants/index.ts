@@ -51,3 +51,21 @@ export const RESTRICTED_STATES = [
   "DC", // Must pick up from dealer
   "NJ", // FID card required
 ] as const;
+
+// Bidirectional mapping: Prisma Caliber enum <-> shared Caliber type
+// NOTE: Prisma enum values use NINE_MM, FIVE_FIVE_SIX, etc. because Prisma enum
+// identifiers cannot start with a digit (e.g., "9MM" is invalid). This is a Prisma
+// limitation, not a naming preference. The mapping bridges the two representations.
+export const PRISMA_TO_CALIBER = {
+  NINE_MM: "9MM",
+  FIVE_FIVE_SIX: "556",
+  TWENTY_TWO_LR: "22LR",
+  THREE_OH_EIGHT: "308",
+} as const satisfies Record<string, Caliber>;
+
+export const CALIBER_TO_PRISMA = {
+  "9MM": "NINE_MM",
+  "556": "FIVE_FIVE_SIX",
+  "22LR": "TWENTY_TWO_LR",
+  "308": "THREE_OH_EIGHT",
+} as const satisfies Record<Caliber, string>;
