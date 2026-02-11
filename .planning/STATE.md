@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-10)
 
 **Core value:** Anyone worldwide can get price exposure to U.S. ammunition by minting ammo tokens with USDC, while only verified U.S. residents in allowed states can redeem for physical delivery.
-**Current focus:** Phase 4 in progress -- mint and redeem flows
+**Current focus:** Phase 4 complete -- ready for Phase 5 (frontend views)
 
 ## Current Position
 
-Phase: 4 of 6 (Mint and Redeem Flows)
-Plan: 1 of 2 in current phase (04-01 complete)
-Status: Executing Phase 4
-Last activity: 2026-02-11 -- Completed plan 04-01 (mint flow wiring)
+Phase: 4 of 6 (Mint and Redeem Flows) -- COMPLETE
+Plan: 2 of 2 in current phase (04-02 complete)
+Status: Phase 4 complete, ready for Phase 5
+Last activity: 2026-02-11 -- Completed plan 04-02 (redeem flow wiring)
 
-Progress: [██████░░░░] 58%
+Progress: [████████░░] 67%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7
-- Average duration: ~13 min
-- Total execution time: ~1.7 hours
+- Total plans completed: 8
+- Average duration: ~12 min
+- Total execution time: ~1.8 hours
 
 **By Phase:**
 
@@ -30,11 +30,11 @@ Progress: [██████░░░░] 58%
 | 01-foundation | 2 | ~65min | ~33min |
 | 02-event-indexer | 2 | ~4min | ~2min |
 | 03-wallet-and-api-layer | 2 | ~19min | ~10min |
-| 04-mint-and-redeem-flows | 1 | ~5min | ~5min |
+| 04-mint-and-redeem-flows | 2 | ~11min | ~6min |
 
 **Recent Trend:**
-- Last 5 plans: 02-02 (~2min), 03-01 (~9min), 03-02 (~10min), 04-01 (~5min)
-- Trend: Steady to fast
+- Last 5 plans: 03-01 (~9min), 03-02 (~10min), 04-01 (~5min), 04-02 (~6min)
+- Trend: Steady and fast
 
 *Updated after each plan completion*
 
@@ -77,6 +77,10 @@ Recent decisions affecting current work:
 - 04-01: TxStatus state machine derived via useMemo from hook booleans, not manual setState
 - 04-01: Two separate useWriteContract instances for approve vs startMint to prevent state collision
 - 04-01: Error priority: confirmed/pending states checked before error states to avoid false "failed"
+- 04-02: Explicit return type on useRedeemTransaction to match useMintTransaction pattern (TS2742 prevention)
+- 04-02: Shipping address stored locally (not via API) since shipping route requires orderId from on-chain indexing
+- 04-02: KYC status uses Prisma enum values (NONE/PENDING/APPROVED/REJECTED) directly in frontend state
+- 04-02: Token balances displayed as floor(formatUnits(raw, 18)) to show whole rounds only
 
 ### Pending Todos
 
@@ -89,5 +93,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Completed 04-01-PLAN.md (mint flow wiring). Ready for 04-02 (redeem flow).
+Stopped at: Completed 04-02-PLAN.md (redeem flow wiring). Phase 4 complete. Ready for Phase 5.
 Resume file: None
