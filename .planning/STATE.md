@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md (updated 2026-02-10)
 
 **Core value:** Anyone worldwide can get price exposure to U.S. ammunition by minting ammo tokens with USDC, while only verified U.S. residents in allowed states can redeem for physical delivery.
-**Current focus:** Phase 6 in progress -- admin dashboard
+**Current focus:** All phases complete -- v1.0 milestone finished
 
 ## Current Position
 
 Phase: 6 of 6 (Admin Dashboard)
-Plan: 1 of 2 in current phase (plan 01 complete)
-Status: Executing phase 6
-Last activity: 2026-02-11 -- Completed plan 06-01 (admin dashboard shell)
+Plan: 2 of 2 in current phase (plan 02 complete)
+Status: All phases complete
+Last activity: 2026-02-11 -- Completed plan 06-02 (finalization and stats)
 
-Progress: [███████████] 92%
+Progress: [████████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 11
+- Total plans completed: 12
 - Average duration: ~9 min
 - Total execution time: ~2 hours
 
@@ -32,10 +32,10 @@ Progress: [███████████] 92%
 | 03-wallet-and-api-layer | 2 | ~19min | ~10min |
 | 04-mint-and-redeem-flows | 2 | ~11min | ~6min |
 | 05-portfolio-and-data-integration | 2 | ~9min | ~5min |
-| 06-admin-dashboard | 1 | ~3min | ~3min |
+| 06-admin-dashboard | 2 | ~7min | ~4min |
 
 **Recent Trend:**
-- Last 5 plans: 04-02 (~6min), 05-01 (~5min), 05-02 (~4min), 06-01 (~3min)
+- Last 5 plans: 05-01 (~5min), 05-02 (~4min), 06-01 (~3min), 06-02 (~4min)
 - Trend: Steady and fast
 
 *Updated after each plan completion*
@@ -96,6 +96,11 @@ Recent decisions affecting current work:
 - 06-01: 30s auto-refresh interval for order tables to keep admin view current
 - 06-01: No server-side auth on /api/admin/orders (testnet -- UI gate sufficient, contract enforces security)
 - 06-01: AdminLayoutGate as client component wrapping server layout for three-state access control
+- 06-02: Sonner Toaster added directly to root layout with theme='dark' (no ThemeProvider needed)
+- 06-02: Finalize buttons disabled when onChainOrderId is null (can't finalize without on-chain ID)
+- 06-02: parseUnits(price, 18) for X18 conversion of human-readable USD price
+- 06-02: Stats API combines chain reads (treasury, token supply) with Prisma count queries
+- 06-02: Refetch-based update after finalization instead of manual cache manipulation
 
 ### Pending Todos
 
@@ -108,5 +113,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Completed 06-01-PLAN.md (admin dashboard shell). Plan 06-02 next.
+Stopped at: Completed 06-02-PLAN.md (finalization and stats). All plans complete. v1.0 milestone finished.
 Resume file: None
