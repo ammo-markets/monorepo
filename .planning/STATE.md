@@ -5,22 +5,22 @@
 See: .planning/PROJECT.md (updated 2026-02-10)
 
 **Core value:** Anyone worldwide can get price exposure to U.S. ammunition by minting ammo tokens with USDC, while only verified U.S. residents in allowed states can redeem for physical delivery.
-**Current focus:** Phase 5 complete -- ready for Phase 6
+**Current focus:** Phase 6 in progress -- admin dashboard
 
 ## Current Position
 
-Phase: 5 of 6 (Portfolio and Data Integration) -- COMPLETE
-Plan: 2 of 2 in current phase (all plans complete)
-Status: Phase 5 complete, ready for Phase 6
-Last activity: 2026-02-11 -- Completed plan 05-02 (mock-data elimination)
+Phase: 6 of 6 (Admin Dashboard)
+Plan: 1 of 2 in current phase (plan 01 complete)
+Status: Executing phase 6
+Last activity: 2026-02-11 -- Completed plan 06-01 (admin dashboard shell)
 
-Progress: [██████████] 83%
+Progress: [███████████] 92%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 10
-- Average duration: ~10 min
+- Total plans completed: 11
+- Average duration: ~9 min
 - Total execution time: ~2 hours
 
 **By Phase:**
@@ -32,9 +32,10 @@ Progress: [██████████] 83%
 | 03-wallet-and-api-layer | 2 | ~19min | ~10min |
 | 04-mint-and-redeem-flows | 2 | ~11min | ~6min |
 | 05-portfolio-and-data-integration | 2 | ~9min | ~5min |
+| 06-admin-dashboard | 1 | ~3min | ~3min |
 
 **Recent Trend:**
-- Last 5 plans: 04-01 (~5min), 04-02 (~6min), 05-01 (~5min), 05-02 (~4min)
+- Last 5 plans: 04-02 (~6min), 05-01 (~5min), 05-02 (~4min), 06-01 (~3min)
 - Trend: Steady and fast
 
 *Updated after each plan completion*
@@ -91,6 +92,10 @@ Recent decisions affecting current work:
 - 05-02: Price chart shows "coming soon" placeholder with oracle price instead of fabricated chart data
 - 05-02: buildCaliberDetail helper duplicated in mint-flow and redeem-flow (self-contained features)
 - 05-02: Action panel uses link buttons to /mint and /redeem instead of inline forms
+- 06-01: TanStack Query useQuery for admin table data fetching (already available via wagmi's QueryClientProvider)
+- 06-01: 30s auto-refresh interval for order tables to keep admin view current
+- 06-01: No server-side auth on /api/admin/orders (testnet -- UI gate sufficient, contract enforces security)
+- 06-01: AdminLayoutGate as client component wrapping server layout for three-state access control
 
 ### Pending Todos
 
@@ -103,5 +108,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Completed 05-02-PLAN.md (mock-data elimination). Phase 5 complete. Ready for Phase 6.
+Stopped at: Completed 06-01-PLAN.md (admin dashboard shell). Plan 06-02 next.
 Resume file: None
