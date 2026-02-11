@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-10)
 
 **Core value:** Anyone worldwide can get price exposure to U.S. ammunition by minting ammo tokens with USDC, while only verified U.S. residents in allowed states can redeem for physical delivery.
-**Current focus:** Phase 4 complete -- ready for Phase 5 (frontend views)
+**Current focus:** Phase 5 -- portfolio and data integration
 
 ## Current Position
 
-Phase: 4 of 6 (Mint and Redeem Flows) -- COMPLETE
-Plan: 2 of 2 in current phase (04-02 complete)
-Status: Phase 4 complete, ready for Phase 5
-Last activity: 2026-02-11 -- Completed plan 04-02 (redeem flow wiring)
+Phase: 5 of 6 (Portfolio and Data Integration)
+Plan: 1 of 2 in current phase (05-01 complete)
+Status: Plan 05-01 complete, ready for 05-02
+Last activity: 2026-02-11 -- Completed plan 05-01 (portfolio data wiring)
 
-Progress: [████████░░] 67%
+Progress: [█████████░] 75%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 8
-- Average duration: ~12 min
-- Total execution time: ~1.8 hours
+- Total plans completed: 9
+- Average duration: ~11 min
+- Total execution time: ~1.9 hours
 
 **By Phase:**
 
@@ -31,9 +31,10 @@ Progress: [████████░░] 67%
 | 02-event-indexer | 2 | ~4min | ~2min |
 | 03-wallet-and-api-layer | 2 | ~19min | ~10min |
 | 04-mint-and-redeem-flows | 2 | ~11min | ~6min |
+| 05-portfolio-and-data-integration | 1 | ~5min | ~5min |
 
 **Recent Trend:**
-- Last 5 plans: 03-01 (~9min), 03-02 (~10min), 04-01 (~5min), 04-02 (~6min)
+- Last 5 plans: 03-02 (~10min), 04-01 (~5min), 04-02 (~6min), 05-01 (~5min)
 - Trend: Steady and fast
 
 *Updated after each plan completion*
@@ -81,6 +82,11 @@ Recent decisions affecting current work:
 - 04-02: Shipping address stored locally (not via API) since shipping route requires orderId from on-chain indexing
 - 04-02: KYC status uses Prisma enum values (NONE/PENDING/APPROVED/REJECTED) directly in frontend state
 - 04-02: Token balances displayed as floor(formatUnits(raw, 18)) to show whole rounds only
+- 05-01: Drop P&L columns from holdings table (no historical price data available)
+- 05-01: 3-step stepper instead of 5-6 step mock stepper (matches available DB fields)
+- 05-01: Display order ID as first 8 chars of UUID (Prisma IDs are UUIDs, not AMX-format strings)
+- 05-01: Primers section hardcoded to 0 (no real primers data source yet)
+- 05-01: Removed demo variant selector from order detail (was mock-only scaffolding)
 
 ### Pending Todos
 
@@ -93,5 +99,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Completed 04-02-PLAN.md (redeem flow wiring). Phase 4 complete. Ready for Phase 5.
+Stopped at: Completed 05-01-PLAN.md (portfolio data wiring). Ready for 05-02.
 Resume file: None
