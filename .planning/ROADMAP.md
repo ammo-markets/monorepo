@@ -62,11 +62,11 @@ Plans:
   3. App detects wrong network and prompts the user to switch to Fuji -- switching succeeds without page reload
   4. Connected user sees their USDC balance and per-caliber ammo token balances read from the chain
   5. API routes return real data: GET /api/orders filters by wallet, GET /api/balances returns on-chain balances, GET /api/market returns worker-computed prices, POST /api/redeem/shipping persists a shipping address
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 03-01: Wallet connection (connect, disconnect, chain switch, balances)
-- [ ] 03-02: API routes (orders, balances, market, shipping)
+- [ ] 03-01-PLAN.md -- Wallet hooks, WalletButton component, navbar rewrite with real wagmi state (wave 1)
+- [ ] 03-02-PLAN.md -- Server-side viem client, 5 API route handlers: orders, balances, market, shipping (wave 1)
 
 ### Phase 4: Mint and Redeem Flows
 **Goal**: Users can execute real mint and redeem transactions from the UI with full status feedback
