@@ -93,11 +93,11 @@ Plans:
   2. Portfolio page shows order history from the database with current status (pending, finalized, failed)
   3. User can click into an order detail page showing on-chain transaction links to Snowtrace and full order metadata
   4. No mock data remains in the app -- every data display (balances, orders, prices, market stats) reads from the chain or database
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 05-01: Portfolio page (balances, order history, order detail)
-- [ ] 05-02: Mock data removal audit and final integration
+- [ ] 05-01-PLAN.md -- Extract types, rewire portfolio dashboard and order detail with real data (wave 1)
+- [ ] 05-02-PLAN.md -- Replace all remaining mock-data imports, create /api/activity, delete mock-data.ts (wave 2)
 
 ### Phase 6: Admin Dashboard
 **Goal**: Keepers can manage the protocol -- review pending orders, finalize settlements, and monitor protocol health
