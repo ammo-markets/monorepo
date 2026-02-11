@@ -5,15 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-11)
 
 **Core value:** Anyone worldwide can get price exposure to U.S. ammunition by minting ammo tokens with USDC, while only verified U.S. residents in allowed states can redeem for physical delivery.
-**Current focus:** v1.0 milestone shipped — planning next milestone
+**Current focus:** v1.1 End-to-End Flow Fix
 
 ## Current Position
 
-Milestone: v1.0 Fuji Testnet Integration — SHIPPED 2026-02-11
-Status: Milestone complete, archived to .planning/milestones/
-Last activity: 2026-02-11 — v1.0 milestone archived
-
-Progress: [████████████] 100%
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-02-11 — Milestone v1.1 started
 
 ## Performance Metrics
 
@@ -50,5 +49,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: v1.0 milestone archived. Ready for next milestone.
+Stopped at: Milestone v1.1 started. Defining requirements.
 Resume file: None

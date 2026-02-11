@@ -33,9 +33,12 @@ Anyone worldwide can get price exposure to U.S. ammunition by minting ammo token
 
 ### Active
 
-<!-- Next milestone scope. -->
+<!-- Current milestone: v1.1 End-to-End Flow Fix -->
 
-(None yet — define with `/gsd:new-milestone`)
+- [ ] Auto-create user record in database when wallet connects for the first time
+- [ ] Add deployment start block (51699730) to shared config
+- [ ] Fix worker to use deployment block as floor — never scan below it
+- [ ] Verify full mint flow works end-to-end (connect → mint → indexed → visible in portfolio)
 
 ### Out of Scope
 
@@ -48,6 +51,16 @@ Anyone worldwide can get price exposure to U.S. ammunition by minting ammo token
 - Uniswap pool creation/LP UI — users handle this via Uniswap directly
 - Batch keeper operations — single order finalization sufficient for MVP
 
+## Current Milestone: v1.1 End-to-End Flow Fix
+
+**Goal:** Fix critical gaps that prevent the v1.0 mint flow from working end-to-end — user creation on wallet connect and worker event indexing from the correct starting block.
+
+**Target features:**
+- Auto user registration on wallet connect
+- Deployment start block in shared config (51699730)
+- Worker backfill from deployment block instead of genesis
+- Verified end-to-end mint flow
+
 ## Current State
 
 **Shipped:** v1.0 Fuji Testnet Integration (2026-02-11)
@@ -59,6 +72,11 @@ The full DeFi protocol is functional on Avalanche Fuji testnet:
 - Frontend connects real wallets, executes real transactions, displays real data
 - Admin dashboard enables keeper finalization with protocol health monitoring
 - Zero mock data remains — all displays read from chain or database
+
+**Known gaps (discovered during manual testing):**
+- No user auto-creation on wallet connect — users only get DB records when worker processes their first event
+- Worker backfill starts from block 0 instead of deployment block — scans 51M+ empty blocks before finding events
+- Block cursor advances through empty blocks, wasting RPC calls on pre-deployment blocks
 
 ## Context
 
@@ -101,4 +119,4 @@ The full DeFi protocol is functional on Avalanche Fuji testnet:
 | parseUnits for X18 price conversion | Human-readable price input converted to contract format | ✓ Good — "0.35" → 350000000000000000n |
 
 ---
-*Last updated: 2026-02-11 after v1.0 milestone*
+*Last updated: 2026-02-11 after v1.1 milestone start*
