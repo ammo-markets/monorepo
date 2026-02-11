@@ -17,7 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: Wallet and API Layer** - Real wallet connection and data access routes
 - [x] **Phase 4: Mint and Redeem Flows** - Wire contract interactions from the UI
 - [x] **Phase 5: Portfolio and Data Integration** - Replace all mock data with real reads
-- [ ] **Phase 6: Admin Dashboard** - Keeper operations for order finalization
+- [x] **Phase 6: Admin Dashboard** - Keeper operations for order finalization
 
 ## Phase Details
 
@@ -112,8 +112,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 06-01-PLAN.md -- Admin hooks, layout gate, sidebar, API route, and order queue pages (wave 1)
-- [ ] 06-02-PLAN.md -- Finalize hooks, dialogs, protocol stats API and dashboard (wave 2)
+- [x] 06-01-PLAN.md -- Admin hooks, layout gate, sidebar, API route, and order queue pages (wave 1)
+- [x] 06-02-PLAN.md -- Finalize hooks, dialogs, protocol stats API and dashboard (wave 2)
 
 ## Progress
 
@@ -127,8 +127,8 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 3. Wallet and API Layer | 2/2 | Complete | 2026-02-11 |
 | 4. Mint and Redeem Flows | 2/2 | Complete | 2026-02-11 |
 | 5. Portfolio and Data Integration | 2/2 | Complete | 2026-02-11 |
-| 6. Admin Dashboard | 0/2 | Not started | - |
+| 6. Admin Dashboard | 2/2 | Complete | 2026-02-11 |
 
 ---
 *Roadmap created: 2026-02-10*
-*Last updated: 2026-02-11 (Phase 5 complete)*
+*Last updated: 2026-02-11 (Phase 6 complete — all phases done)*
