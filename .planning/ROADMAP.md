@@ -46,11 +46,11 @@ Plans:
   2. Each Order record includes the on-chain order ID, transaction hash, block number, caliber, user address, amounts, and current status
   3. Worker stores its last processed block in the BlockCursor table and resumes from that checkpoint after restart without missing or duplicating events
   4. Worker backfills all events from the last checkpoint to the current block on startup before entering its polling loop
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 02-01: Polling loop and event processing
-- [ ] 02-02: Persistence, crash recovery, and backfill
+- [ ] 02-01-PLAN.md -- Viem client, constants, cursor helpers, mint and redeem event handlers (wave 1)
+- [ ] 02-02-PLAN.md -- Indexer core with polling loop, backfill, and entry point rewrite (wave 2)
 
 ### Phase 3: Wallet and API Layer
 **Goal**: Users can connect wallets and the app serves real data from the database and chain
@@ -123,7 +123,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | Phase | Plans Complete | Status | Completed |
 |-------|---------------|--------|-----------|
 | 1. Foundation | 2/2 | Complete | 2026-02-11 |
-| 2. Event Indexer | 0/2 | Not started | - |
+| 2. Event Indexer | 0/2 | In progress | - |
 | 3. Wallet and API Layer | 0/2 | Not started | - |
 | 4. Mint and Redeem Flows | 0/2 | Not started | - |
 | 5. Portfolio and Data Integration | 0/2 | Not started | - |
