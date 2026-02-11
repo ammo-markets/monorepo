@@ -1,10 +1,24 @@
 "use client";
 
-import { ArrowUp, ArrowDown } from "lucide-react";
-import { calibers } from "@/lib/mock-data";
+import { useEffect, useState } from "react";
 import { caliberIcons } from "@/features/shared/caliber-icons";
+import type { MarketCaliberFromAPI } from "@/lib/types";
+import type { Caliber } from "@ammo-exchange/shared";
 
 export function MarketTicker() {
+  const [calibers, setCalibers] = useState<MarketCaliberFromAPI[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/market")
+      .then((res) => res.json())
+      .then((data) => setCalibers(data.calibers ?? []))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <MarketTickerSkeleton />;
+
   return (
     <section
       className="w-full overflow-x-auto py-4"
@@ -17,11 +31,10 @@ export function MarketTicker() {
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-4 lg:px-8">
         <div className="flex items-center gap-6 lg:gap-0 lg:justify-between lg:w-full">
           {calibers.map((caliber) => {
-            const IconComponent = caliberIcons[caliber.id];
-            const isPositive = caliber.change24h >= 0;
+            const IconComponent = caliberIcons[caliber.caliber as Caliber];
             return (
               <div
-                key={caliber.id}
+                key={caliber.caliber}
                 className="flex flex-shrink-0 items-center gap-3 lg:flex-1 lg:justify-center"
               >
                 <IconComponent size={24} />
@@ -35,7 +48,7 @@ export function MarketTicker() {
                         className="font-semibold"
                         style={{ color: "var(--text-primary)" }}
                       >
-                        {caliber.symbol}
+                        {caliber.caliber}
                       </span>
                       <span className="ml-1.5">{caliber.name}</span>
                     </div>
@@ -44,25 +57,12 @@ export function MarketTicker() {
                         className="font-mono text-sm font-medium tabular-nums"
                         style={{ color: "var(--text-primary)" }}
                       >
-                        ${caliber.price.toFixed(2)}
-                      </span>
-                      <span
-                        className="flex items-center gap-0.5 text-xs font-medium tabular-nums"
-                        style={{
-                          color: isPositive ? "var(--green)" : "var(--red)",
-                        }}
-                      >
-                        {isPositive ? (
-                          <ArrowUp size={12} />
-                        ) : (
-                          <ArrowDown size={12} />
-                        )}
-                        {Math.abs(caliber.change24h).toFixed(1)}%
+                        ${caliber.pricePerRound.toFixed(2)}
                       </span>
                     </div>
                   </div>
                 </div>
-                {/* Divider — hidden on last item and on mobile */}
+                {/* Divider -- hidden on last item and on mobile */}
                 <div
                   className="ml-6 hidden h-8 w-px lg:block"
                   style={{ backgroundColor: "var(--border-default)" }}

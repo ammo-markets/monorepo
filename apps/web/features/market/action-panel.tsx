@@ -3,15 +3,17 @@
 import { useState, useCallback } from "react";
 import { ArrowDown, Wallet, ChevronUp } from "lucide-react";
 import { Drawer } from "vaul";
-import type { CaliberDetailData, CaliberId } from "@/lib/mock-data";
+import type { CaliberDetailData } from "@/lib/types";
+import type { Caliber } from "@ammo-exchange/shared";
 import { caliberIcons } from "@/features/shared/caliber-icons";
+import { FEES } from "@ammo-exchange/shared";
 
 interface ActionPanelProps {
   data: CaliberDetailData;
   walletConnected?: boolean;
 }
 
-/* ── USDC Icon (simplified) ── */
+/* USDC Icon (simplified) */
 function UsdcIcon({ size = 16 }: { size?: number }) {
   return (
     <svg
@@ -45,29 +47,24 @@ function UsdcIcon({ size = 16 }: { size?: number }) {
   );
 }
 
-/* ── Shared Panel Content ── */
+/* Shared Panel Content */
 function PanelContent({ data, walletConnected = false }: ActionPanelProps) {
   const [activeTab, setActiveTab] = useState<"mint" | "redeem">("mint");
   const [mintAmount, setMintAmount] = useState("");
   const [redeemAmount, setRedeemAmount] = useState("");
-  const IconComponent = caliberIcons[data.id as CaliberId];
+  const IconComponent = caliberIcons[data.id as Caliber];
+
+  const mintFeePercent = data.mintFee;
+  const redeemFeePercent = data.redeemFee;
 
   const mintUsdcValue = Number.parseFloat(mintAmount) || 0;
-  const mintFee = mintUsdcValue * (data.mintFee / 100);
+  const mintFee = mintUsdcValue * (mintFeePercent / 100);
   const mintNet = mintUsdcValue - mintFee;
   const mintRounds = Math.floor(mintNet / data.price);
 
   const redeemTokenValue = Number.parseFloat(redeemAmount) || 0;
-  const redeemFee = redeemTokenValue * (data.redeemFee / 100);
+  const redeemFee = redeemTokenValue * (redeemFeePercent / 100);
   const redeemNet = Math.floor(redeemTokenValue - redeemFee);
-
-  const handleMaxMint = useCallback(() => {
-    setMintAmount(data.userUsdcBalance.toFixed(2));
-  }, [data.userUsdcBalance]);
-
-  const handleMaxRedeem = useCallback(() => {
-    setRedeemAmount(data.userTokenBalance.toString());
-  }, [data.userTokenBalance]);
 
   return (
     <div>
@@ -127,17 +124,6 @@ function PanelContent({ data, walletConnected = false }: ActionPanelProps) {
               style={{ color: "var(--text-primary)" }}
             />
             <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={handleMaxMint}
-                className="rounded px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide transition-colors duration-150"
-                style={{
-                  color: "var(--brass)",
-                  backgroundColor: "var(--brass-muted)",
-                }}
-              >
-                MAX
-              </button>
               <UsdcIcon size={20} />
               <span
                 className="text-sm font-medium"
@@ -147,13 +133,6 @@ function PanelContent({ data, walletConnected = false }: ActionPanelProps) {
               </span>
             </div>
           </div>
-          <p className="mt-1.5 text-xs" style={{ color: "var(--text-muted)" }}>
-            Balance:{" "}
-            {data.userUsdcBalance.toLocaleString("en-US", {
-              minimumFractionDigits: 2,
-            })}{" "}
-            USDC
-          </p>
 
           {/* Arrow divider */}
           <div className="my-4 flex justify-center">
@@ -223,7 +202,7 @@ function PanelContent({ data, walletConnected = false }: ActionPanelProps) {
                 </div>
                 <div className="flex justify-between">
                   <span style={{ color: "var(--text-muted)" }}>
-                    Mint fee ({data.mintFee}%)
+                    Mint fee ({mintFeePercent}%)
                   </span>
                   <span
                     className="font-mono tabular-nums"
@@ -261,9 +240,9 @@ function PanelContent({ data, walletConnected = false }: ActionPanelProps) {
           )}
 
           {/* CTA */}
-          <button
-            type="button"
-            className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold transition-all duration-150"
+          <a
+            href={`/mint?caliber=${data.id}`}
+            className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold transition-all duration-150 no-underline"
             style={{
               backgroundColor: walletConnected ? "var(--brass)" : "transparent",
               color: walletConnected
@@ -295,13 +274,13 @@ function PanelContent({ data, walletConnected = false }: ActionPanelProps) {
             ) : (
               <>
                 <Wallet size={16} />
-                Connect Wallet
+                Connect Wallet to Mint
               </>
             )}
-          </button>
+          </a>
         </div>
       ) : (
-        /* ── Redeem Tab ── */
+        /* Redeem Tab */
         <div>
           {/* You burn */}
           <label
@@ -328,17 +307,6 @@ function PanelContent({ data, walletConnected = false }: ActionPanelProps) {
               style={{ color: "var(--text-primary)" }}
             />
             <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={handleMaxRedeem}
-                className="rounded px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide transition-colors duration-150"
-                style={{
-                  color: "var(--brass)",
-                  backgroundColor: "var(--brass-muted)",
-                }}
-              >
-                MAX
-              </button>
               <IconComponent size={20} />
               <span
                 className="text-sm font-medium"
@@ -348,10 +316,6 @@ function PanelContent({ data, walletConnected = false }: ActionPanelProps) {
               </span>
             </div>
           </div>
-          <p className="mt-1.5 text-xs" style={{ color: "var(--text-muted)" }}>
-            Balance: {data.userTokenBalance.toLocaleString("en-US")}{" "}
-            {data.symbol}
-          </p>
 
           {/* Arrow divider */}
           <div className="my-4 flex justify-center">
@@ -416,7 +380,7 @@ function PanelContent({ data, walletConnected = false }: ActionPanelProps) {
                 </div>
                 <div className="flex justify-between">
                   <span style={{ color: "var(--text-muted)" }}>
-                    Redeem fee ({data.redeemFee}%)
+                    Redeem fee ({redeemFeePercent}%)
                   </span>
                   <span
                     className="font-mono tabular-nums"
@@ -479,7 +443,7 @@ function PanelContent({ data, walletConnected = false }: ActionPanelProps) {
             ) : (
               <>
                 <Wallet size={16} />
-                Connect Wallet
+                Connect Wallet to Redeem
               </>
             )}
           </a>
@@ -489,7 +453,7 @@ function PanelContent({ data, walletConnected = false }: ActionPanelProps) {
   );
 }
 
-/* ── Desktop Sticky Panel ── */
+/* Desktop Sticky Panel */
 export function ActionPanelDesktop(props: ActionPanelProps) {
   return (
     <div
@@ -504,7 +468,7 @@ export function ActionPanelDesktop(props: ActionPanelProps) {
   );
 }
 
-/* ── Mobile Bottom Sheet ── */
+/* Mobile Bottom Sheet */
 export function ActionPanelMobile(props: ActionPanelProps) {
   const [open, setOpen] = useState(false);
 

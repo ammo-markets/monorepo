@@ -1,7 +1,8 @@
 import { publicClient } from "@/lib/viem";
-import { CaliberMarketAbi } from "@ammo-exchange/contracts/abis";
+import { CaliberMarketAbi, AmmoTokenAbi } from "@ammo-exchange/contracts/abis";
 import { CONTRACT_ADDRESSES, CALIBER_SPECS } from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
+import { formatUnits } from "viem";
 
 const CALIBERS: Caliber[] = ["9MM", "556", "22LR", "308"];
 const fuji = CONTRACT_ADDRESSES.fuji;
@@ -43,14 +44,29 @@ export async function GET() {
       ),
     );
 
+    // Step 3: Read totalSupply for each AmmoToken
+    const supplies = await Promise.all(
+      CALIBERS.map((caliber) =>
+        publicClient
+          .readContract({
+            address: fuji.calibers[caliber].token,
+            abi: AmmoTokenAbi,
+            functionName: "totalSupply",
+          })
+          .catch(() => BigInt(0)),
+      ),
+    );
+
     const calibers = CALIBERS.map((caliber, i) => {
       const priceX18 = prices[i]!;
+      const supply = supplies[i]!;
 
       return {
         caliber,
         name: CALIBER_SPECS[caliber].name,
         pricePerRound: Number(priceX18) / 1e18,
         priceX18: priceX18.toString(),
+        totalSupply: Math.floor(Number(formatUnits(supply, 18))),
       };
     });
 

@@ -1,7 +1,7 @@
 "use client";
 
-import { ArrowUp, ArrowDown } from "lucide-react";
-import type { CaliberDetailData, CaliberId } from "@/lib/mock-data";
+import type { CaliberDetailData } from "@/lib/types";
+import type { Caliber } from "@ammo-exchange/shared";
 import { caliberIcons } from "@/features/shared/caliber-icons";
 
 interface CaliberHeaderProps {
@@ -9,8 +9,7 @@ interface CaliberHeaderProps {
 }
 
 export function CaliberHeader({ data }: CaliberHeaderProps) {
-  const IconComponent = caliberIcons[data.id as CaliberId];
-  const isPositive = data.change24h >= 0;
+  const IconComponent = caliberIcons[data.id as Caliber];
 
   return (
     <div>
@@ -65,36 +64,8 @@ export function CaliberHeader({ data }: CaliberHeaderProps) {
         >
           ${data.price.toFixed(2)}
         </span>
-        <div className="mt-2 flex items-center gap-3">
-          <span
-            className="inline-flex items-center gap-1 text-sm font-medium"
-            style={{ color: isPositive ? "var(--green)" : "var(--red)" }}
-          >
-            {isPositive ? <ArrowUp size={14} /> : <ArrowDown size={14} />}
-            {Math.abs(data.change24h).toFixed(1)}% ({isPositive ? "+" : "-"}$
-            {Math.abs(data.change24hUsd).toFixed(3)})
-          </span>
-          <span className="text-xs" style={{ color: "var(--text-muted)" }}>
-            24h
-          </span>
-        </div>
-        <div
-          className="mt-2 flex items-center gap-2 text-xs font-mono"
-          style={{ color: "var(--text-muted)" }}
-        >
-          <span>
-            24h High:{" "}
-            <span style={{ color: "var(--text-secondary)" }}>
-              ${data.high24h.toFixed(3)}
-            </span>
-          </span>
-          <span aria-hidden="true">|</span>
-          <span>
-            24h Low:{" "}
-            <span style={{ color: "var(--text-secondary)" }}>
-              ${data.low24h.toFixed(3)}
-            </span>
-          </span>
+        <div className="mt-2 text-xs" style={{ color: "var(--text-muted)" }}>
+          per round
         </div>
       </div>
     </div>

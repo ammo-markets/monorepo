@@ -2,51 +2,23 @@
 
 import React from "react";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowUp,
   ArrowDown,
   ArrowUpDown,
-  CheckCircle2,
   ExternalLink,
 } from "lucide-react";
-import { type MarketCaliberData, marketCalibers } from "@/lib/mock-data";
 import { caliberIcons } from "@/features/shared/caliber-icons";
+import type { MarketCaliberFromAPI } from "@/lib/types";
+import type { Caliber } from "@ammo-exchange/shared";
 
-type SortKey =
-  | "price"
-  | "change24h"
-  | "change7d"
-  | "volume24h"
-  | "totalSupply"
-  | "warehouseBacking";
+type SortKey = "price" | "totalSupply";
 type SortDir = "asc" | "desc";
-
-function parseVolume(v: string): number {
-  const num = Number.parseFloat(v.replace(/[$,K]/g, ""));
-  return v.includes("K") ? num * 1000 : num;
-}
 
 function formatRounds(n: number): string {
   return n.toLocaleString("en-US") + " rounds";
-}
-
-function ChangeCell({ value }: { value: number }) {
-  const isPositive = value >= 0;
-  return (
-    <span
-      className="inline-flex items-center gap-0.5 font-mono text-sm tabular-nums"
-      style={{ color: isPositive ? "var(--green)" : "var(--red)" }}
-    >
-      {isPositive ? (
-        <ArrowUp size={12} aria-label="Up" />
-      ) : (
-        <ArrowDown size={12} aria-label="Down" />
-      )}
-      {Math.abs(value).toFixed(1)}%
-    </span>
-  );
 }
 
 function SortHeader({
@@ -100,7 +72,7 @@ function SortHeader({
   );
 }
 
-/* ────────────── Skeleton ────────────── */
+/* Skeleton */
 
 function TableRowSkeleton() {
   return (
@@ -116,18 +88,6 @@ function TableRowSkeleton() {
       </td>
       <td className="px-4 py-4 text-right">
         <div className="ml-auto h-4 w-14 rounded shimmer" />
-      </td>
-      <td className="px-4 py-4 text-right">
-        <div className="ml-auto h-4 w-14 rounded shimmer" />
-      </td>
-      <td className="px-4 py-4 text-right">
-        <div className="ml-auto h-4 w-14 rounded shimmer" />
-      </td>
-      <td className="px-4 py-4 text-right">
-        <div className="ml-auto h-4 w-16 rounded shimmer" />
-      </td>
-      <td className="px-4 py-4 text-right">
-        <div className="ml-auto h-4 w-24 rounded shimmer" />
       </td>
       <td className="px-4 py-4 text-right">
         <div className="ml-auto h-4 w-24 rounded shimmer" />
@@ -153,7 +113,7 @@ function CardSkeleton() {
         <div className="h-5 w-28 rounded shimmer" />
       </div>
       <div className="mt-4 grid grid-cols-2 gap-3">
-        {Array.from({ length: 6 }).map((_, i) => (
+        {Array.from({ length: 4 }).map((_, i) => (
           <div key={i}>
             <div className="h-3 w-16 rounded shimmer mb-1" />
             <div className="h-4 w-20 rounded shimmer" />
@@ -164,17 +124,17 @@ function CardSkeleton() {
   );
 }
 
-/* ────────────── Mobile Card ────────────── */
+/* Mobile Card */
 
 function MobileCaliberCard({
   caliber,
   index,
 }: {
-  caliber: MarketCaliberData;
+  caliber: MarketCaliberFromAPI;
   index: number;
 }) {
   const router = useRouter();
-  const IconComponent = caliberIcons[caliber.id];
+  const IconComponent = caliberIcons[caliber.caliber as Caliber];
 
   return (
     <div
@@ -183,7 +143,7 @@ function MobileCaliberCard({
         backgroundColor: "var(--bg-secondary)",
         border: "1px solid var(--border-default)",
       }}
-      onClick={() => router.push(`/market/${caliber.id.toLowerCase()}`)}
+      onClick={() => router.push(`/market/${caliber.caliber.toLowerCase()}`)}
       onMouseEnter={(e) => {
         e.currentTarget.style.borderColor = "var(--brass-border)";
       }}
@@ -195,7 +155,7 @@ function MobileCaliberCard({
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
-          router.push(`/market/${caliber.id.toLowerCase()}`);
+          router.push(`/market/${caliber.caliber.toLowerCase()}`);
         }
       }}
     >
@@ -214,7 +174,7 @@ function MobileCaliberCard({
               className="text-sm font-semibold"
               style={{ color: "var(--text-primary)" }}
             >
-              {caliber.symbol}
+              {caliber.caliber}
             </span>
             <span
               className="ml-2 text-xs"
@@ -228,31 +188,12 @@ function MobileCaliberCard({
           className="font-mono text-lg font-medium tabular-nums"
           style={{ color: "var(--text-primary)" }}
         >
-          ${caliber.price.toFixed(2)}
+          ${caliber.pricePerRound.toFixed(2)}
         </span>
       </div>
 
       {/* Data grid */}
       <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3">
-        <DataItem
-          label="24h Change"
-          value={<ChangeCell value={caliber.change24h} />}
-        />
-        <DataItem
-          label="7d Change"
-          value={<ChangeCell value={caliber.change7d} />}
-        />
-        <DataItem
-          label="24h Volume"
-          value={
-            <span
-              className="font-mono text-sm"
-              style={{ color: "var(--text-primary)" }}
-            >
-              {caliber.volume24h}
-            </span>
-          }
-        />
         <DataItem
           label="Total Supply"
           value={
@@ -260,21 +201,9 @@ function MobileCaliberCard({
               className="font-mono text-sm"
               style={{ color: "var(--text-primary)" }}
             >
-              {(caliber.totalSupply / 1000).toFixed(0)}K
-            </span>
-          }
-        />
-        <DataItem
-          label="Warehouse"
-          value={
-            <span
-              className="flex items-center gap-1 font-mono text-sm"
-              style={{ color: "var(--text-primary)" }}
-            >
-              {(caliber.warehouseBacking / 1000).toFixed(0)}K
-              {caliber.fullyBacked && (
-                <CheckCircle2 size={12} style={{ color: "var(--green)" }} />
-              )}
+              {caliber.totalSupply > 0
+                ? (caliber.totalSupply / 1000).toFixed(0) + "K"
+                : "--"}
             </span>
           }
         />
@@ -329,12 +258,21 @@ function DataItem({ label, value }: { label: string; value: React.ReactNode }) {
   );
 }
 
-/* ────────────── Main Table ────────────── */
+/* Main Table */
 
 export function MarketTable() {
   const [sortKey, setSortKey] = useState<SortKey | null>(null);
   const [sortDir, setSortDir] = useState<SortDir>("desc");
-  const [isLoading] = useState(false);
+  const [calibers, setCalibers] = useState<MarketCaliberFromAPI[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/market")
+      .then((res) => res.json())
+      .then((data) => setCalibers(data.calibers ?? []))
+      .catch(() => {})
+      .finally(() => setIsLoading(false));
+  }, []);
 
   const handleSort = (key: SortKey) => {
     if (sortKey === key) {
@@ -346,20 +284,20 @@ export function MarketTable() {
   };
 
   const sorted = useMemo(() => {
-    if (!sortKey) return marketCalibers;
-    return [...marketCalibers].sort((a, b) => {
+    if (!sortKey) return calibers;
+    return [...calibers].sort((a, b) => {
       let aVal: number;
       let bVal: number;
-      if (sortKey === "volume24h") {
-        aVal = parseVolume(a.volume24h);
-        bVal = parseVolume(b.volume24h);
+      if (sortKey === "price") {
+        aVal = a.pricePerRound;
+        bVal = b.pricePerRound;
       } else {
         aVal = a[sortKey];
         bVal = b[sortKey];
       }
       return sortDir === "desc" ? bVal - aVal : aVal - bVal;
     });
-  }, [sortKey, sortDir]);
+  }, [sortKey, sortDir, calibers]);
 
   const router = useRouter();
 
@@ -403,7 +341,7 @@ export function MarketTable() {
         }}
       >
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[900px]">
+          <table className="w-full min-w-[600px]">
             <thead>
               <tr style={{ borderBottom: "1px solid var(--border-default)" }}>
                 <th
@@ -427,40 +365,8 @@ export function MarketTable() {
                   align="right"
                 />
                 <SortHeader
-                  label="24h"
-                  sortKey="change24h"
-                  currentSort={sortKey}
-                  currentDir={sortDir}
-                  onSort={handleSort}
-                  align="right"
-                />
-                <SortHeader
-                  label="7d"
-                  sortKey="change7d"
-                  currentSort={sortKey}
-                  currentDir={sortDir}
-                  onSort={handleSort}
-                  align="right"
-                />
-                <SortHeader
-                  label="24h Volume"
-                  sortKey="volume24h"
-                  currentSort={sortKey}
-                  currentDir={sortDir}
-                  onSort={handleSort}
-                  align="right"
-                />
-                <SortHeader
                   label="Total Supply"
                   sortKey="totalSupply"
-                  currentSort={sortKey}
-                  currentDir={sortDir}
-                  onSort={handleSort}
-                  align="right"
-                />
-                <SortHeader
-                  label="Warehouse"
-                  sortKey="warehouseBacking"
                   currentSort={sortKey}
                   currentDir={sortDir}
                   onSort={handleSort}
@@ -476,10 +382,10 @@ export function MarketTable() {
             </thead>
             <tbody>
               {sorted.map((caliber, index) => {
-                const IconComponent = caliberIcons[caliber.id];
+                const IconComponent = caliberIcons[caliber.caliber as Caliber];
                 return (
                   <tr
-                    key={caliber.id}
+                    key={caliber.caliber}
                     className="cursor-pointer transition-colors duration-100"
                     style={{
                       borderBottom:
@@ -488,7 +394,7 @@ export function MarketTable() {
                           : "none",
                     }}
                     onClick={() =>
-                      router.push(`/market/${caliber.id.toLowerCase()}`)
+                      router.push(`/market/${caliber.caliber.toLowerCase()}`)
                     }
                     onMouseEnter={(e) => {
                       e.currentTarget.style.backgroundColor =
@@ -516,7 +422,7 @@ export function MarketTable() {
                           className="text-sm font-semibold"
                           style={{ color: "var(--text-primary)" }}
                         >
-                          {caliber.symbol}
+                          {caliber.caliber}
                         </span>
                         <span
                           className="text-sm"
@@ -533,27 +439,7 @@ export function MarketTable() {
                         className="font-mono text-sm font-medium tabular-nums"
                         style={{ color: "var(--text-primary)" }}
                       >
-                        ${caliber.price.toFixed(2)}
-                      </span>
-                    </td>
-
-                    {/* 24h Change */}
-                    <td className="px-4 py-4 text-right">
-                      <ChangeCell value={caliber.change24h} />
-                    </td>
-
-                    {/* 7d Change */}
-                    <td className="px-4 py-4 text-right">
-                      <ChangeCell value={caliber.change7d} />
-                    </td>
-
-                    {/* Volume */}
-                    <td className="px-4 py-4 text-right">
-                      <span
-                        className="font-mono text-sm tabular-nums"
-                        style={{ color: "var(--text-secondary)" }}
-                      >
-                        {caliber.volume24h}
+                        ${caliber.pricePerRound.toFixed(2)}
                       </span>
                     </td>
 
@@ -564,23 +450,6 @@ export function MarketTable() {
                         style={{ color: "var(--text-secondary)" }}
                       >
                         {formatRounds(caliber.totalSupply)}
-                      </span>
-                    </td>
-
-                    {/* Warehouse Backing */}
-                    <td className="px-4 py-4 text-right">
-                      <span
-                        className="inline-flex items-center gap-1.5 font-mono text-sm tabular-nums"
-                        style={{ color: "var(--text-secondary)" }}
-                      >
-                        {formatRounds(caliber.warehouseBacking)}
-                        {caliber.fullyBacked && (
-                          <CheckCircle2
-                            size={14}
-                            style={{ color: "var(--green)" }}
-                            aria-label="Fully backed"
-                          />
-                        )}
                       </span>
                     </td>
 
@@ -647,7 +516,7 @@ export function MarketTable() {
       {/* Mobile cards */}
       <div className="flex flex-col gap-3 md:hidden">
         {sorted.map((caliber, index) => (
-          <MobileCaliberCard key={caliber.id} caliber={caliber} index={index} />
+          <MobileCaliberCard key={caliber.caliber} caliber={caliber} index={index} />
         ))}
       </div>
     </>

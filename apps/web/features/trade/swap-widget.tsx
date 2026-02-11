@@ -11,12 +11,14 @@ import {
   ArrowDownUp,
 } from "lucide-react";
 import { Drawer } from "vaul";
-import { caliberDetails, type CaliberId } from "@/lib/mock-data";
+import { CALIBER_SPECS } from "@ammo-exchange/shared";
+import type { Caliber } from "@ammo-exchange/shared";
+import type { MarketCaliberFromAPI } from "@/lib/types";
 import { caliberIcons } from "@/features/shared/caliber-icons";
 
-/* ── Token definitions ── */
+/* Token definitions */
 
-type TokenId = CaliberId | "USDC";
+type TokenId = Caliber | "USDC";
 
 interface Token {
   id: TokenId;
@@ -26,39 +28,26 @@ interface Token {
   balance: number;
 }
 
-const tokens: Token[] = [
-  { id: "USDC", symbol: "USDC", name: "USD Coin", price: 1.0, balance: 1500.0 },
-  {
-    id: "9MM",
-    symbol: "9MM",
-    name: "9mm FMJ 115gr",
-    price: caliberDetails["9MM"].price,
-    balance: caliberDetails["9MM"].userTokenBalance,
-  },
-  {
-    id: "556",
-    symbol: "556",
-    name: "5.56 NATO 55gr",
-    price: caliberDetails["556"].price,
-    balance: caliberDetails["556"].userTokenBalance,
-  },
-  {
-    id: "22LR",
-    symbol: "22LR",
-    name: ".22 Long Rifle 40gr",
-    price: caliberDetails["22LR"].price,
-    balance: caliberDetails["22LR"].userTokenBalance,
-  },
-  {
-    id: "308",
-    symbol: "308",
-    name: ".308 Win 168gr",
-    price: caliberDetails["308"].price,
-    balance: caliberDetails["308"].userTokenBalance,
-  },
-];
+const CALIBERS: Caliber[] = ["9MM", "556", "22LR", "308"];
 
-function getToken(id: TokenId): Token {
+function buildTokens(marketData: MarketCaliberFromAPI[]): Token[] {
+  const base: Token[] = [
+    { id: "USDC", symbol: "USDC", name: "USD Coin", price: 1.0, balance: 0 },
+  ];
+  for (const cal of CALIBERS) {
+    const market = marketData.find((m) => m.caliber === cal);
+    base.push({
+      id: cal,
+      symbol: cal,
+      name: CALIBER_SPECS[cal].description,
+      price: market?.pricePerRound ?? 0,
+      balance: 0,
+    });
+  }
+  return base;
+}
+
+function getToken(tokens: Token[], id: TokenId): Token {
   return tokens.find((t) => t.id === id) ?? tokens[0]!;
 }
 
@@ -172,10 +161,12 @@ function TokenSelector({
   selected,
   onSelect,
   exclude,
+  tokens,
 }: {
   selected: TokenId;
   onSelect: (id: TokenId) => void;
   exclude?: TokenId;
+  tokens: Token[];
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -189,7 +180,7 @@ function TokenSelector({
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  const token = getToken(selected);
+  const token = getToken(tokens, selected);
   const filteredTokens = tokens.filter((t) => t.id !== exclude);
 
   return (
@@ -267,15 +258,15 @@ function TokenSelector({
 
 /* ── Swap Tab Content ── */
 
-function SwapTab() {
+function SwapTab({ tokens }: { tokens: Token[] }) {
   const [payToken, setPayToken] = useState<TokenId>("USDC");
   const [receiveToken, setReceiveToken] = useState<TokenId>("9MM");
   const [payAmount, setPayAmount] = useState("");
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [rotated, setRotated] = useState(false);
 
-  const payData = getToken(payToken);
-  const receiveData = getToken(receiveToken);
+  const payData = getToken(tokens, payToken);
+  const receiveData = getToken(tokens, receiveToken);
 
   const rate = payData.price / receiveData.price;
   const payNum = Number.parseFloat(payAmount) || 0;
@@ -315,6 +306,7 @@ function SwapTab() {
             selected={payToken}
             onSelect={setPayToken}
             exclude={receiveToken}
+            tokens={tokens}
           />
           <input
             type="text"
@@ -412,6 +404,7 @@ function SwapTab() {
             selected={receiveToken}
             onSelect={setReceiveToken}
             exclude={payToken}
+            tokens={tokens}
           />
           <div
             className="w-full text-right font-mono text-2xl font-semibold"
@@ -640,6 +633,14 @@ function LendBorrowTab() {
 
 function SwapWidgetContent({ onClose }: { onClose: () => void }) {
   const [tab, setTab] = useState<"swap" | "lend">("swap");
+  const [tokens, setTokens] = useState<Token[]>(() => buildTokens([]));
+
+  useEffect(() => {
+    fetch("/api/market")
+      .then((res) => res.json())
+      .then((data) => setTokens(buildTokens(data.calibers ?? [])))
+      .catch(() => {});
+  }, []);
 
   return (
     <div
@@ -721,7 +722,7 @@ function SwapWidgetContent({ onClose }: { onClose: () => void }) {
 
       {/* Tab content */}
       <div className="px-5 py-4">
-        {tab === "swap" ? <SwapTab /> : <LendBorrowTab />}
+        {tab === "swap" ? <SwapTab tokens={tokens} /> : <LendBorrowTab />}
       </div>
     </div>
   );

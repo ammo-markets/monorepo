@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { protocolStats } from "@/lib/mock-data";
+import type { MarketCaliberFromAPI } from "@/lib/types";
 
 function useCountUp(target: string, duration = 1200) {
   const [display, setDisplay] = useState(target);
@@ -9,6 +9,9 @@ function useCountUp(target: string, duration = 1200) {
   const hasAnimated = useRef(false);
 
   useEffect(() => {
+    setDisplay(target);
+    hasAnimated.current = false;
+
     const el = ref.current;
     if (!el) return;
 
@@ -16,7 +19,6 @@ function useCountUp(target: string, duration = 1200) {
       ([entry]) => {
         if (entry?.isIntersecting && !hasAnimated.current) {
           hasAnimated.current = true;
-          // Animate from scrambled to final
           const chars = target.split("");
           const numericPositions = chars
             .map((c, i) => (/\d/.test(c) ? i : -1))
@@ -26,7 +28,7 @@ function useCountUp(target: string, duration = 1200) {
           function animate(now: number) {
             const elapsed = now - startTime;
             const progress = Math.min(elapsed / duration, 1);
-            const eased = 1 - (1 - progress) ** 3; // ease-out cubic
+            const eased = 1 - (1 - progress) ** 3;
 
             const result = chars.map((c, i) => {
               if (!numericPositions.includes(i)) return c;
@@ -78,7 +80,40 @@ function StatItem({ value, label }: { value: string; label: string }) {
   );
 }
 
+function formatCompact(n: number): string {
+  if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `$${(n / 1_000).toFixed(1)}K`;
+  return `$${n.toFixed(0)}`;
+}
+
 export function ProtocolStats() {
+  const [stats, setStats] = useState({
+    tvl: "--",
+    roundsTokenized: "--",
+    uniqueHolders: "--",
+    volume24h: "--",
+  });
+
+  useEffect(() => {
+    fetch("/api/market")
+      .then((res) => res.json())
+      .then((data) => {
+        const calibers: MarketCaliberFromAPI[] = data.calibers ?? [];
+        const totalRounds = calibers.reduce((sum, c) => sum + c.totalSupply, 0);
+        const tvl = calibers.reduce(
+          (sum, c) => sum + c.totalSupply * c.pricePerRound,
+          0,
+        );
+        setStats({
+          tvl: formatCompact(tvl),
+          roundsTokenized: totalRounds.toLocaleString("en-US"),
+          uniqueHolders: "--",
+          volume24h: "--",
+        });
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <section
       className="py-12 px-4 lg:py-16"
@@ -88,13 +123,13 @@ export function ProtocolStats() {
       }}
     >
       <div className="mx-auto grid max-w-5xl grid-cols-2 gap-6 md:grid-cols-4 md:gap-8">
-        <StatItem value={protocolStats.tvl} label="Total Value Locked" />
+        <StatItem value={stats.tvl} label="Total Value Locked" />
         <StatItem
-          value={protocolStats.roundsTokenized}
+          value={stats.roundsTokenized}
           label="Rounds Tokenized"
         />
-        <StatItem value={protocolStats.uniqueHolders} label="Unique Holders" />
-        <StatItem value={protocolStats.volume24h} label="24h Volume" />
+        <StatItem value={stats.uniqueHolders} label="Unique Holders" />
+        <StatItem value={stats.volume24h} label="24h Volume" />
       </div>
     </section>
   );

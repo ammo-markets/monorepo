@@ -1,6 +1,5 @@
 import React from "react";
-import { CheckCircle2 } from "lucide-react";
-import type { CaliberDetailData } from "@/lib/mock-data";
+import type { CaliberDetailData } from "@/lib/types";
 
 interface TokenStatsProps {
   data: CaliberDetailData;
@@ -43,8 +42,6 @@ function StatCard({
 }
 
 export function TokenStats({ data }: TokenStatsProps) {
-  const matched = data.totalSupply === data.warehouseInventory;
-
   return (
     <div>
       <h2
@@ -59,25 +56,8 @@ export function TokenStats({ data }: TokenStatsProps) {
           value={`${data.totalSupply.toLocaleString("en-US")} rounds`}
         />
         <StatCard
-          label="Warehouse Inventory"
-          value={`${data.warehouseInventory.toLocaleString("en-US")} rounds`}
-          suffix={
-            matched ? (
-              <CheckCircle2
-                size={14}
-                style={{ color: "var(--green)" }}
-                aria-label="Matched"
-              />
-            ) : null
-          }
-        />
-        <StatCard
-          label="24h Volume"
-          value={`$${data.volume24h.toLocaleString("en-US")}`}
-        />
-        <StatCard
           label="Market Cap"
-          value={`$${data.marketCap.toLocaleString("en-US")}`}
+          value={`$${(data.totalSupply * data.price).toLocaleString("en-US", { maximumFractionDigits: 0 })}`}
         />
         <StatCard label="Mint Fee" value={`${data.mintFee}%`} />
         <StatCard label="Redeem Fee" value={`${data.redeemFee}%`} />
@@ -92,7 +72,7 @@ export function TokenStatsSkeleton() {
     <div>
       <div className="mb-4 h-4 w-24 rounded shimmer" />
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        {Array.from({ length: 7 }).map((_, i) => (
+        {Array.from({ length: 5 }).map((_, i) => (
           <div
             key={i}
             className="rounded-lg p-4"

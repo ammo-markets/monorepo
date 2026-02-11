@@ -1,6 +1,6 @@
 "use client";
 
-import { use } from "react";
+import { use, useEffect, useState } from "react";
 import { notFound } from "next/navigation";
 import { Navbar, Footer } from "@/features/layout";
 import {
@@ -11,18 +11,38 @@ import {
   ActionPanelDesktop,
   ActionPanelMobile,
 } from "@/features/market";
-import { caliberDetails, type CaliberId } from "@/lib/mock-data";
+import type { CaliberDetailData, MarketCaliberFromAPI } from "@/lib/types";
+import { CALIBER_SPECS, FEES } from "@ammo-exchange/shared";
+import type { Caliber } from "@ammo-exchange/shared";
 
 const validCalibers = ["9mm", "556", "22lr", "308"];
 
-function resolveCaliberId(slug: string): CaliberId | null {
-  const map: Record<string, CaliberId> = {
+function resolveCaliberId(slug: string): Caliber | null {
+  const map: Record<string, Caliber> = {
     "9mm": "9MM",
     "556": "556",
     "22lr": "22LR",
     "308": "308",
   };
   return map[slug.toLowerCase()] ?? null;
+}
+
+function buildCaliberDetail(
+  caliber: Caliber,
+  market: MarketCaliberFromAPI,
+): CaliberDetailData {
+  const spec = CALIBER_SPECS[caliber];
+  return {
+    id: caliber,
+    symbol: caliber,
+    name: spec.name,
+    specLine: spec.description,
+    price: market.pricePerRound,
+    totalSupply: market.totalSupply,
+    mintFee: FEES.MINT_FEE_BPS / 100,
+    redeemFee: FEES.REDEEM_FEE_BPS / 100,
+    minMint: spec.minMintRounds,
+  };
 }
 
 export default function CaliberDetailPage({
@@ -39,8 +59,54 @@ export default function CaliberDetailPage({
   const caliberId = resolveCaliberId(caliberSlug);
   if (!caliberId) notFound();
 
-  const data = caliberDetails[caliberId];
-  if (!data) notFound();
+  const [data, setData] = useState<CaliberDetailData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/market")
+      .then((res) => res.json())
+      .then((json) => {
+        const calibers: MarketCaliberFromAPI[] = json.calibers ?? [];
+        const match = calibers.find((c) => c.caliber === caliberId);
+        if (match) {
+          setData(buildCaliberDetail(caliberId, match));
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [caliberId]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen flex-col">
+        <Navbar />
+        <main className="flex-1 px-4 py-6 lg:py-10">
+          <div className="mx-auto max-w-7xl">
+            <div className="flex flex-col gap-8 lg:flex-row lg:gap-10">
+              <div className="flex-1 min-w-0">
+                <div className="h-8 w-48 rounded shimmer" />
+                <div className="mt-4 h-6 w-32 rounded shimmer" />
+                <div className="mt-8 h-[300px] w-full rounded-xl shimmer lg:h-[400px]" />
+                <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <div key={i} className="h-20 rounded-lg shimmer" />
+                  ))}
+                </div>
+              </div>
+              <div className="hidden lg:block lg:w-[360px]">
+                <div className="h-[400px] rounded-xl shimmer" />
+              </div>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!data) {
+    notFound();
+  }
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -55,7 +121,7 @@ export default function CaliberDetailPage({
 
               {/* Price chart */}
               <div className="mt-8">
-                <PriceChart caliberId={caliberId} />
+                <PriceChart caliberId={caliberId} currentPrice={data.price} />
               </div>
 
               {/* Token stats */}
@@ -69,7 +135,7 @@ export default function CaliberDetailPage({
               </div>
             </div>
 
-            {/* Right column — desktop only (sticky action panel) */}
+            {/* Right column -- desktop only (sticky action panel) */}
             <div className="hidden lg:block lg:w-[360px] lg:flex-shrink-0">
               <ActionPanelDesktop data={data} walletConnected={false} />
             </div>

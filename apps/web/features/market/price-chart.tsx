@@ -1,87 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
-import { TimeRangeSelector, type TimeRange } from "./time-range-selector";
-import type { CaliberId } from "@/lib/mock-data";
-import { chartDataByCaliber } from "@/lib/mock-data";
+import type { Caliber } from "@ammo-exchange/shared";
 
 interface PriceChartProps {
-  caliberId: CaliberId;
+  caliberId: Caliber;
+  currentPrice?: number;
 }
 
-interface ChartPayload {
-  date: string;
-  price: number;
-}
-
-function CustomTooltip({
-  active,
-  payload,
-}: {
-  active?: boolean;
-  payload?: { payload: ChartPayload }[];
-  label?: string;
-}) {
-  if (!active || !payload || payload.length === 0) return null;
-  const data = payload[0]!.payload;
-  return (
-    <div
-      className="rounded-lg px-3 py-2"
-      style={{
-        backgroundColor: "var(--bg-tertiary)",
-        border: "1px solid var(--border-hover)",
-      }}
-    >
-      <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-        {data.date}
-      </p>
-      <p
-        className="font-mono text-sm font-semibold tabular-nums"
-        style={{ color: "var(--text-primary)" }}
-      >
-        ${data.price.toFixed(3)}
-      </p>
-    </div>
-  );
-}
-
-export function PriceChart({ caliberId }: PriceChartProps) {
-  const [timeRange, setTimeRange] = useState<TimeRange>("30D");
-  const fullData = chartDataByCaliber[caliberId] ?? [];
-
-  // Slice data based on time range
-  const data = (() => {
-    switch (timeRange) {
-      case "24H":
-        return fullData.slice(-1);
-      case "7D":
-        return fullData.slice(-7);
-      case "30D":
-        return fullData;
-      case "90D":
-        return fullData;
-      case "1Y":
-        return fullData;
-      case "ALL":
-        return fullData;
-      default:
-        return fullData;
-    }
-  })();
-
-  const prices = data.map((d) => d.price);
-  const minPrice = Math.min(...prices);
-  const maxPrice = Math.max(...prices);
-  const padding = (maxPrice - minPrice) * 0.15 || 0.01;
-
+export function PriceChart({ caliberId, currentPrice }: PriceChartProps) {
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
@@ -91,68 +17,31 @@ export function PriceChart({ caliberId }: PriceChartProps) {
         >
           Price History
         </h2>
-        <TimeRangeSelector selected={timeRange} onSelect={setTimeRange} />
       </div>
-      <div className="h-[300px] w-full lg:h-[400px]" style={{ minWidth: 0 }}>
-        <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-          <AreaChart
-            data={data}
-            margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
+      <div
+        className="flex h-[300px] w-full flex-col items-center justify-center rounded-xl lg:h-[400px]"
+        style={{
+          backgroundColor: "var(--bg-secondary)",
+          border: "1px solid var(--border-default)",
+        }}
+      >
+        {currentPrice !== undefined && currentPrice > 0 && (
+          <span
+            className="mb-3 font-mono text-3xl font-bold tabular-nums"
+            style={{ color: "var(--brass)" }}
           >
-            <defs>
-              <linearGradient id="brassGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#C6A44E" stopOpacity={0.15} />
-                <stop offset="100%" stopColor="#C6A44E" stopOpacity={0.0} />
-              </linearGradient>
-            </defs>
-            <XAxis
-              dataKey="date"
-              axisLine={false}
-              tickLine={false}
-              tick={{
-                fill: "var(--text-muted)",
-                fontSize: 11,
-                fontFamily: "var(--font-jetbrains)",
-              }}
-              interval="preserveStartEnd"
-              minTickGap={40}
-            />
-            <YAxis
-              domain={[minPrice - padding, maxPrice + padding]}
-              axisLine={false}
-              tickLine={false}
-              tick={{
-                fill: "var(--text-muted)",
-                fontSize: 11,
-                fontFamily: "var(--font-jetbrains)",
-              }}
-              tickFormatter={(v: number) => `$${v.toFixed(2)}`}
-              width={54}
-            />
-            <Tooltip
-              content={<CustomTooltip />}
-              cursor={{
-                stroke: "var(--border-hover)",
-                strokeWidth: 1,
-                strokeDasharray: "4 4",
-              }}
-            />
-            <Area
-              type="monotone"
-              dataKey="price"
-              stroke="#C6A44E"
-              strokeWidth={2}
-              fill="url(#brassGradient)"
-              dot={false}
-              activeDot={{
-                r: 4,
-                fill: "#C6A44E",
-                stroke: "var(--bg-primary)",
-                strokeWidth: 2,
-              }}
-            />
-          </AreaChart>
-        </ResponsiveContainer>
+            ${currentPrice.toFixed(2)}
+          </span>
+        )}
+        <span className="text-sm" style={{ color: "var(--text-muted)" }}>
+          Historical price data coming soon
+        </span>
+        <span
+          className="mt-1 text-xs"
+          style={{ color: "var(--text-muted)", opacity: 0.6 }}
+        >
+          Current oracle price for {caliberId}
+        </span>
       </div>
     </div>
   );

@@ -2,10 +2,11 @@
 
 import React from "react";
 
-import { ArrowRight, ArrowUp, ArrowDown } from "lucide-react";
-import { AreaChart, Area, ResponsiveContainer } from "recharts";
-import { calibers } from "@/lib/mock-data";
+import { useEffect, useState } from "react";
+import { ArrowRight } from "lucide-react";
 import { caliberIcons } from "@/features/shared/caliber-icons";
+import type { MarketCaliberFromAPI } from "@/lib/types";
+import type { Caliber } from "@ammo-exchange/shared";
 
 function SectionTitle({
   children,
@@ -31,15 +32,12 @@ function SectionTitle({
   );
 }
 
-function CaliberCard({ caliber }: { caliber: (typeof calibers)[number] }) {
-  const IconComponent = caliberIcons[caliber.id];
-  const isPositive = caliber.change24h >= 0;
-  const chartData = caliber.sparklineData.map((value, i) => ({ i, value }));
-  const chartColor = isPositive ? "var(--green)" : "var(--red)";
+function CaliberCard({ caliber }: { caliber: MarketCaliberFromAPI }) {
+  const IconComponent = caliberIcons[caliber.caliber as Caliber];
 
   return (
     <a
-      href={`/market/${caliber.id.toLowerCase()}`}
+      href={`/market/${caliber.caliber.toLowerCase()}`}
       className="group block rounded-xl p-5 transition-all duration-150"
       style={{
         backgroundColor: "var(--bg-secondary)",
@@ -65,7 +63,7 @@ function CaliberCard({ caliber }: { caliber: (typeof calibers)[number] }) {
             className="text-sm font-semibold"
             style={{ color: "var(--text-primary)" }}
           >
-            {caliber.symbol}
+            {caliber.caliber}
           </span>
           <span className="ml-2 text-xs" style={{ color: "var(--text-muted)" }}>
             {caliber.name}
@@ -79,51 +77,20 @@ function CaliberCard({ caliber }: { caliber: (typeof calibers)[number] }) {
           className="font-mono text-2xl font-medium tabular-nums"
           style={{ color: "var(--text-primary)" }}
         >
-          ${caliber.price.toFixed(2)}
+          ${caliber.pricePerRound.toFixed(2)}
         </span>
-        <span
-          className="flex items-center gap-0.5 text-xs font-medium tabular-nums"
-          style={{ color: isPositive ? "var(--green)" : "var(--red)" }}
-        >
-          {isPositive ? <ArrowUp size={12} /> : <ArrowDown size={12} />}
-          {Math.abs(caliber.change24h).toFixed(1)}%
+        <span className="text-xs" style={{ color: "var(--text-muted)" }}>
+          per round
         </span>
       </div>
 
-      {/* Sparkline */}
-      <div className="mt-4 h-[60px] w-full" style={{ minWidth: 0 }}>
-        <ResponsiveContainer width="100%" height={60} minWidth={0}>
-          <AreaChart data={chartData}>
-            <defs>
-              <linearGradient
-                id={`fill-${caliber.id}`}
-                x1="0"
-                y1="0"
-                x2="0"
-                y2="1"
-              >
-                <stop offset="0%" stopColor={chartColor} stopOpacity={0.15} />
-                <stop offset="100%" stopColor={chartColor} stopOpacity={0} />
-              </linearGradient>
-            </defs>
-            <Area
-              type="monotone"
-              dataKey="value"
-              stroke={chartColor}
-              strokeWidth={1.5}
-              fill={`url(#fill-${caliber.id})`}
-              dot={false}
-              isAnimationActive={false}
-            />
-          </AreaChart>
-        </ResponsiveContainer>
+      {/* Supply info */}
+      <div className="mt-4 text-xs" style={{ color: "var(--text-muted)" }}>
+        Supply: {caliber.totalSupply.toLocaleString("en-US")} rounds
       </div>
 
       {/* Footer */}
-      <div className="mt-4 flex items-center justify-between">
-        <span className="text-xs" style={{ color: "var(--text-muted)" }}>
-          24h Vol: {caliber.volume24h}
-        </span>
+      <div className="mt-4 flex items-center justify-end">
         <span
           className="flex items-center gap-1 text-xs font-medium transition-colors duration-150"
           style={{ color: "var(--text-secondary)" }}
@@ -153,7 +120,7 @@ function CaliberCardSkeleton() {
         <div className="h-4 w-24 rounded shimmer" />
       </div>
       <div className="mt-4 h-7 w-20 rounded shimmer" />
-      <div className="mt-4 h-[60px] w-full rounded shimmer" />
+      <div className="mt-4 h-3 w-32 rounded shimmer" />
       <div className="mt-4 flex items-center justify-between">
         <div className="h-3 w-20 rounded shimmer" />
         <div className="h-3 w-12 rounded shimmer" />
@@ -163,6 +130,17 @@ function CaliberCardSkeleton() {
 }
 
 export function MarketCards() {
+  const [calibers, setCalibers] = useState<MarketCaliberFromAPI[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/market")
+      .then((res) => res.json())
+      .then((data) => setCalibers(data.calibers ?? []))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <section
       id="market"
@@ -173,9 +151,11 @@ export function MarketCards() {
         <SectionTitle>Live Market</SectionTitle>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {calibers.map((caliber) => (
-            <CaliberCard key={caliber.id} caliber={caliber} />
-          ))}
+          {loading
+            ? [1, 2, 3, 4].map((i) => <CaliberCardSkeleton key={i} />)
+            : calibers.map((caliber) => (
+                <CaliberCard key={caliber.caliber} caliber={caliber} />
+              ))}
         </div>
       </div>
     </section>

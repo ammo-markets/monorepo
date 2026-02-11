@@ -57,4 +57,5 @@ export interface MarketCaliberFromAPI {
   name: string;
   pricePerRound: number;
   priceX18: string;
+  totalSupply: number;
 }
