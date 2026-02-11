@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Menu, X, Wallet } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { AmmoLogo } from "./logo";
+import { WalletButton } from "./wallet-button";
+import { useWallet } from "@/hooks/use-wallet";
 
 const navLinks = [
   { label: "Market", href: "/market" },
@@ -13,7 +15,14 @@ const navLinks = [
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [walletConnected] = useState(false);
+  const { isConnected, isWrongNetwork, isReconnecting } = useWallet();
+
+  // Network badge label and status dot color
+  const networkLabel = "Avalanche Fuji";
+  const dotColor =
+    isConnected && !isReconnecting && isWrongNetwork
+      ? "var(--amber)"
+      : "var(--green)";
 
   return (
     <header
@@ -64,7 +73,7 @@ export function Navbar() {
 
         {/* Right side: network badge + wallet */}
         <div className="flex items-center gap-3">
-          {/* Network badge — hidden on very small screens */}
+          {/* Network badge -- hidden on very small screens */}
           <div
             className="hidden items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium sm:flex"
             style={{
@@ -83,58 +92,15 @@ export function Navbar() {
             >
               <path d="M7 1L13 12H1L7 1Z" fill="#E84142" />
             </svg>
-            <span>Avalanche</span>
+            <span>{networkLabel}</span>
             <span
               className="h-1.5 w-1.5 rounded-full"
-              style={{ backgroundColor: "var(--green)" }}
+              style={{ backgroundColor: dotColor }}
             />
           </div>
 
           {/* Wallet button */}
-          {walletConnected ? (
-            <button
-              type="button"
-              className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors duration-150"
-              style={{
-                backgroundColor: "var(--bg-secondary)",
-                border: "1px solid var(--border-hover)",
-                color: "var(--text-primary)",
-              }}
-            >
-              {/* Identicon placeholder */}
-              <span
-                className="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold"
-                style={{
-                  backgroundColor: "var(--brass-muted)",
-                  color: "var(--brass)",
-                }}
-              >
-                A
-              </span>
-              <span className="font-mono text-xs">0x1a2...f4c8</span>
-            </button>
-          ) : (
-            <button
-              type="button"
-              className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-150"
-              style={{
-                backgroundColor: "transparent",
-                border: "1px solid var(--border-hover)",
-                color: "var(--text-primary)",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "var(--bg-tertiary)";
-                e.currentTarget.style.borderColor = "var(--brass-border)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "transparent";
-                e.currentTarget.style.borderColor = "var(--border-hover)";
-              }}
-            >
-              <Wallet size={16} />
-              <span className="hidden sm:inline">Connect Wallet</span>
-            </button>
-          )}
+          <WalletButton />
         </div>
       </nav>
 
@@ -147,7 +113,7 @@ export function Navbar() {
             borderColor: "var(--border-default)",
           }}
         >
-          <div className="flex flex-col px-4 py-3 gap-1">
+          <div className="flex flex-col gap-1 px-4 py-3">
             {navLinks.map((link) => (
               <a
                 key={link.label}
@@ -176,10 +142,10 @@ export function Navbar() {
               >
                 <path d="M7 1L13 12H1L7 1Z" fill="#E84142" />
               </svg>
-              <span>Avalanche Mainnet</span>
+              <span>{networkLabel}</span>
               <span
                 className="h-1.5 w-1.5 rounded-full"
-                style={{ backgroundColor: "var(--green)" }}
+                style={{ backgroundColor: dotColor }}
               />
             </div>
           </div>
