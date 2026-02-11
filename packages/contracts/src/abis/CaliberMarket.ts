@@ -188,6 +188,16 @@ export const CaliberMarketAbi = [
         "internalType": "uint256"
       },
       {
+        "name": "feeBps",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "minMintAtStart",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
         "name": "deadline",
         "type": "uint64",
         "internalType": "uint64"
@@ -287,6 +297,11 @@ export const CaliberMarketAbi = [
       },
       {
         "name": "tokenAmount",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "feeBps",
         "type": "uint256",
         "internalType": "uint256"
       },
@@ -803,6 +818,11 @@ export const CaliberMarketAbi = [
   {
     "type": "error",
     "name": "Slippage",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "TreasuryNotSet",
     "inputs": []
   },
   {
