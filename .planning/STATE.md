@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-10)
 
 **Core value:** Anyone worldwide can get price exposure to U.S. ammunition by minting ammo tokens with USDC, while only verified U.S. residents in allowed states can redeem for physical delivery.
-**Current focus:** Phase 5 -- portfolio and data integration
+**Current focus:** Phase 5 complete -- ready for Phase 6
 
 ## Current Position
 
-Phase: 5 of 6 (Portfolio and Data Integration)
-Plan: 1 of 2 in current phase (05-01 complete)
-Status: Plan 05-01 complete, ready for 05-02
-Last activity: 2026-02-11 -- Completed plan 05-01 (portfolio data wiring)
+Phase: 5 of 6 (Portfolio and Data Integration) -- COMPLETE
+Plan: 2 of 2 in current phase (all plans complete)
+Status: Phase 5 complete, ready for Phase 6
+Last activity: 2026-02-11 -- Completed plan 05-02 (mock-data elimination)
 
-Progress: [█████████░] 75%
+Progress: [██████████] 83%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 9
-- Average duration: ~11 min
-- Total execution time: ~1.9 hours
+- Total plans completed: 10
+- Average duration: ~10 min
+- Total execution time: ~2 hours
 
 **By Phase:**
 
@@ -31,10 +31,10 @@ Progress: [█████████░] 75%
 | 02-event-indexer | 2 | ~4min | ~2min |
 | 03-wallet-and-api-layer | 2 | ~19min | ~10min |
 | 04-mint-and-redeem-flows | 2 | ~11min | ~6min |
-| 05-portfolio-and-data-integration | 1 | ~5min | ~5min |
+| 05-portfolio-and-data-integration | 2 | ~9min | ~5min |
 
 **Recent Trend:**
-- Last 5 plans: 03-02 (~10min), 04-01 (~5min), 04-02 (~6min), 05-01 (~5min)
+- Last 5 plans: 04-01 (~5min), 04-02 (~6min), 05-01 (~5min), 05-02 (~4min)
 - Trend: Steady and fast
 
 *Updated after each plan completion*
@@ -87,6 +87,10 @@ Recent decisions affecting current work:
 - 05-01: Display order ID as first 8 chars of UUID (Prisma IDs are UUIDs, not AMX-format strings)
 - 05-01: Primers section hardcoded to 0 (no real primers data source yet)
 - 05-01: Removed demo variant selector from order detail (was mock-only scaffolding)
+- 05-02: Simplified components to only show data available from real sources (dropped change24h, volume24h, sparklineData)
+- 05-02: Price chart shows "coming soon" placeholder with oracle price instead of fabricated chart data
+- 05-02: buildCaliberDetail helper duplicated in mint-flow and redeem-flow (self-contained features)
+- 05-02: Action panel uses link buttons to /mint and /redeem instead of inline forms
 
 ### Pending Todos
 
@@ -99,5 +103,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Completed 05-01-PLAN.md (portfolio data wiring). Ready for 05-02.
+Stopped at: Completed 05-02-PLAN.md (mock-data elimination). Phase 5 complete. Ready for Phase 6.
 Resume file: None
