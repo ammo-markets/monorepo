@@ -4,3 +4,4 @@ export { MintOrdersTable } from "./mint-orders-table";
 export { RedeemOrdersTable } from "./redeem-orders-table";
 export { FinalizeMintDialog } from "./finalize-mint-dialog";
 export { FinalizeRedeemDialog } from "./finalize-redeem-dialog";
+export { ProtocolStats } from "./protocol-stats";
