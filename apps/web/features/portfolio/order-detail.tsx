@@ -6,24 +6,104 @@ import {
   ArrowLeft,
   Check,
   X,
-  Loader2,
   ExternalLink,
   MessageSquare,
   AlertTriangle,
 } from "lucide-react";
-import {
-  type CaliberId,
-  type OrderDetail,
-  type StepStatus,
-  type OrderStep,
-  orderDetails,
-} from "@/lib/mock-data";
+import type { OrderFromAPI, OrderStep, StepStatus } from "@/lib/types";
+import type { Caliber } from "@ammo-exchange/shared";
+import { CALIBER_SPECS } from "@ammo-exchange/shared";
+import { truncateAddress, snowtraceUrl } from "@/lib/utils";
 import { caliberIcons } from "@/features/shared/caliber-icons";
 
 /* ────────────── Helpers ────────────── */
 
-function TypeBadge({ type }: { type: "Mint" | "Redeem" }) {
-  const color = type === "Mint" ? "var(--green)" : "var(--amber)";
+type DisplayStatus = "Processing" | "Completed" | "Failed";
+
+function mapOrderStatus(status: OrderFromAPI["status"]): DisplayStatus {
+  switch (status) {
+    case "PENDING":
+    case "PROCESSING":
+      return "Processing";
+    case "COMPLETED":
+      return "Completed";
+    case "FAILED":
+    case "CANCELLED":
+      return "Failed";
+  }
+}
+
+function formatDate(iso: string): string {
+  return new Date(iso).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
+function buildMintSteps(order: OrderFromAPI): OrderStep[] {
+  const hasTx = !!order.txHash;
+  const isCompleted = order.status === "COMPLETED";
+  const isFailed = order.status === "FAILED" || order.status === "CANCELLED";
+  return [
+    {
+      label: "Order Placed",
+      status: "completed",
+      meta: formatDate(order.createdAt),
+    },
+    {
+      label: "USDC Deposited",
+      status: hasTx ? "completed" : isFailed ? "failed" : "current",
+      meta: order.txHash
+        ? `Tx: ${truncateAddress(order.txHash)}`
+        : "Awaiting confirmation...",
+      link: order.txHash
+        ? { url: snowtraceUrl(order.txHash), label: "View on Snowtrace" }
+        : undefined,
+    },
+    {
+      label: "Tokens Minted",
+      status: isCompleted ? "completed" : isFailed ? "failed" : "future",
+      meta: isCompleted ? formatDate(order.updatedAt) : undefined,
+    },
+  ];
+}
+
+function buildRedeemSteps(order: OrderFromAPI): OrderStep[] {
+  const hasTx = !!order.txHash;
+  const isCompleted = order.status === "COMPLETED";
+  const isFailed = order.status === "FAILED" || order.status === "CANCELLED";
+  return [
+    {
+      label: "Redemption Initiated",
+      status: "completed",
+      meta: formatDate(order.createdAt),
+    },
+    {
+      label: "Tokens Burned",
+      status: hasTx ? "completed" : isFailed ? "failed" : "current",
+      meta: order.txHash
+        ? `Tx: ${truncateAddress(order.txHash)}`
+        : "Awaiting confirmation...",
+      link: order.txHash
+        ? { url: snowtraceUrl(order.txHash), label: "View on Snowtrace" }
+        : undefined,
+    },
+    {
+      label: "Completed",
+      status: isCompleted ? "completed" : isFailed ? "failed" : "future",
+      meta: isCompleted ? formatDate(order.updatedAt) : undefined,
+    },
+  ];
+}
+
+/* ────────────── Badges ────────────── */
+
+function TypeBadge({ type }: { type: "MINT" | "REDEEM" }) {
+  const label = type === "MINT" ? "Mint" : "Redeem";
+  const color = type === "MINT" ? "var(--green)" : "var(--amber)";
   return (
     <span
       className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium"
@@ -32,15 +112,14 @@ function TypeBadge({ type }: { type: "Mint" | "Redeem" }) {
         color,
       }}
     >
-      {type}
+      {label}
     </span>
   );
 }
 
-function StatusBadge({ status }: { status: OrderDetail["status"] }) {
-  const colorMap: Record<OrderDetail["status"], string> = {
+function StatusBadge({ status }: { status: DisplayStatus }) {
+  const colorMap: Record<DisplayStatus, string> = {
     Processing: "var(--blue)",
-    Shipped: "var(--green)",
     Completed: "var(--green)",
     Failed: "var(--red)",
   };
@@ -248,22 +327,6 @@ function DesktopStepper({ steps }: { steps: OrderStep[] }) {
                   )}
                 </span>
               )}
-
-              {/* Error message */}
-              {step.errorMessage && (
-                <div
-                  className="mt-2 max-w-[160px] rounded-md px-2 py-1.5 text-center text-[11px] leading-snug"
-                  style={{
-                    backgroundColor:
-                      "color-mix(in srgb, var(--red) 10%, transparent)",
-                    color: "var(--red)",
-                    border:
-                      "1px solid color-mix(in srgb, var(--red) 25%, transparent)",
-                  }}
-                >
-                  {step.errorMessage}
-                </div>
-              )}
             </div>
           );
         })}
@@ -347,21 +410,6 @@ function MobileStepper({ steps }: { steps: OrderStep[] }) {
                     )}
                   </div>
                 )}
-
-                {step.errorMessage && (
-                  <div
-                    className="mt-2 max-w-sm rounded-md px-3 py-2 text-xs leading-snug"
-                    style={{
-                      backgroundColor:
-                        "color-mix(in srgb, var(--red) 10%, transparent)",
-                      color: "var(--red)",
-                      border:
-                        "1px solid color-mix(in srgb, var(--red) 25%, transparent)",
-                    }}
-                  >
-                    {step.errorMessage}
-                  </div>
-                )}
               </div>
             </div>
           );
@@ -388,15 +436,15 @@ function OrderDetailSkeleton() {
       >
         <div className="mb-6 h-6 w-32 rounded shimmer" />
         <div className="hidden sm:flex items-center gap-2">
-          {[1, 2, 3, 4, 5].map((i) => (
+          {[1, 2, 3].map((i) => (
             <React.Fragment key={i}>
               <div className="h-8 w-8 rounded-full shimmer" />
-              {i < 5 && <div className="h-0.5 flex-1 shimmer" />}
+              {i < 3 && <div className="h-0.5 flex-1 shimmer" />}
             </React.Fragment>
           ))}
         </div>
         <div className="block sm:hidden flex flex-col gap-4">
-          {[1, 2, 3, 4, 5].map((i) => (
+          {[1, 2, 3].map((i) => (
             <div key={i} className="flex items-center gap-4">
               <div className="h-8 w-8 rounded-full shimmer" />
               <div className="h-5 w-32 rounded shimmer" />
@@ -414,7 +462,7 @@ function OrderDetailSkeleton() {
       >
         <div className="mb-6 h-6 w-28 rounded shimmer" />
         <div className="grid grid-cols-2 gap-4">
-          {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+          {[1, 2, 3, 4, 5, 6].map((i) => (
             <div key={i}>
               <div className="mb-2 h-3 w-16 rounded shimmer" />
               <div className="h-5 w-28 rounded shimmer" />
@@ -450,41 +498,31 @@ function DetailRow({
   );
 }
 
-/* ────────────── Demo Variant Selector ────────────── */
-
-const demoOrders = [
-  { id: "AMX-2024-001", label: "Mint — Processing" },
-  { id: "AMX-2024-002", label: "Mint — Completed" },
-  { id: "AMX-2024-003", label: "Mint — Failed" },
-  { id: "AMX-R-2024-015", label: "Redeem — Shipped" },
-  { id: "AMX-R-2024-010", label: "Redeem — Delivered" },
-];
-
 /* ────────────── Main Component ────────────── */
 
 export function OrderDetailView({ orderId }: { orderId: string }) {
-  const [isLoading, setIsLoading] = useState(true);
-  const [activeOrderId, setActiveOrderId] = useState(orderId);
+  const [order, setOrder] = useState<OrderFromAPI | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setIsLoading(true);
-    const t = setTimeout(() => setIsLoading(false), 800);
-    return () => clearTimeout(t);
-  }, [activeOrderId]);
+    setLoading(true);
+    setError(null);
+    fetch(`/api/orders/${orderId}`)
+      .then((r) => {
+        if (!r.ok) throw new Error("Order not found");
+        return r.json();
+      })
+      .then((data) => setOrder(data.order))
+      .catch((e) => setError(e.message))
+      .finally(() => setLoading(false));
+  }, [orderId]);
 
-  const order = orderDetails[activeOrderId];
-
-  if (isLoading) {
-    return (
-      <>
-        {/* Variant selector always visible */}
-        <VariantSelector activeId={activeOrderId} onChange={setActiveOrderId} />
-        <OrderDetailSkeleton />
-      </>
-    );
+  if (loading) {
+    return <OrderDetailSkeleton />;
   }
 
-  if (!order) {
+  if (error || !order) {
     return (
       <div className="mx-auto max-w-[720px] px-4 py-8 sm:py-12">
         <Link
@@ -521,179 +559,115 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
     );
   }
 
-  const Icon = caliberIcons[order.caliberId];
+  const displayStatus = mapOrderStatus(order.status);
+  const steps =
+    order.type === "MINT" ? buildMintSteps(order) : buildRedeemSteps(order);
+  const spec = CALIBER_SPECS[order.caliber as Caliber];
+  const Icon = caliberIcons[order.caliber as Caliber];
+  const amount = Math.floor(Number(order.amount));
 
   return (
-    <>
-      <VariantSelector activeId={activeOrderId} onChange={setActiveOrderId} />
+    <div className="mx-auto max-w-[720px] px-4 py-8 sm:py-12">
+      {/* Back link */}
+      <Link
+        href="/portfolio"
+        className="mb-8 inline-flex items-center gap-2 text-sm font-medium transition-colors duration-150"
+        style={{ color: "var(--brass)" }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.color = "var(--brass-hover)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.color = "var(--brass)";
+        }}
+      >
+        <ArrowLeft size={16} />
+        Back to Portfolio
+      </Link>
 
-      <div className="mx-auto max-w-[720px] px-4 py-8 sm:py-12">
-        {/* Back link */}
-        <Link
-          href="/portfolio"
-          className="mb-8 inline-flex items-center gap-2 text-sm font-medium transition-colors duration-150"
-          style={{ color: "var(--brass)" }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.color = "var(--brass-hover)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.color = "var(--brass)";
-          }}
-        >
-          <ArrowLeft size={16} />
-          Back to Portfolio
-        </Link>
-
-        {/* ── Status Stepper Card ── */}
-        <div
-          className="mb-6 rounded-xl p-6 sm:p-8"
-          style={{
-            backgroundColor: "var(--bg-secondary)",
-            border: "1px solid var(--border-default)",
-          }}
-        >
-          {/* Card header */}
-          <div className="mb-6 flex flex-wrap items-center gap-3">
-            <h2
-              className="text-base font-semibold"
-              style={{ color: "var(--text-primary)" }}
-            >
-              Order Progress
-            </h2>
-            <StatusBadge status={order.status} />
-          </div>
-
-          {/* Stepper */}
-          <DesktopStepper steps={order.steps} />
-          <MobileStepper steps={order.steps} />
-        </div>
-
-        {/* ── Order Details Card ── */}
-        <div
-          className="mb-6 rounded-xl p-6 sm:p-8"
-          style={{
-            backgroundColor: "var(--bg-secondary)",
-            border: "1px solid var(--border-default)",
-          }}
-        >
-          <h3
-            className="mb-6 text-base font-semibold"
+      {/* Status Stepper Card */}
+      <div
+        className="mb-6 rounded-xl p-6 sm:p-8"
+        style={{
+          backgroundColor: "var(--bg-secondary)",
+          border: "1px solid var(--border-default)",
+        }}
+      >
+        {/* Card header */}
+        <div className="mb-6 flex flex-wrap items-center gap-3">
+          <h2
+            className="text-base font-semibold"
             style={{ color: "var(--text-primary)" }}
           >
-            Order Details
-          </h3>
-
-          <div className="grid grid-cols-1 gap-x-8 gap-y-5 sm:grid-cols-2">
-            <DetailRow label="Order ID">
-              <span className="font-mono">#{order.orderId}</span>
-            </DetailRow>
-
-            <DetailRow label="Type">
-              <TypeBadge type={order.type} />
-            </DetailRow>
-
-            <DetailRow label="Caliber">
-              <div className="flex items-center gap-2">
-                <Icon size={18} />
-                <span>
-                  {order.symbol} — {order.caliberFullName}
-                </span>
-              </div>
-            </DetailRow>
-
-            <DetailRow label="Amount">
-              <span className="font-mono tabular-nums">
-                {order.amount.toLocaleString()} rounds
-              </span>
-            </DetailRow>
-
-            <DetailRow label="Fee">
-              <span className="font-mono tabular-nums">{order.fee}</span>
-            </DetailRow>
-
-            <DetailRow label="Status">
-              <StatusBadge status={order.status} />
-            </DetailRow>
-
-            <DetailRow label="Created">
-              <span>{order.createdAt}</span>
-            </DetailRow>
-
-            <DetailRow label="Last Updated">
-              <span>{order.lastUpdated}</span>
-            </DetailRow>
-
-            {order.txHash && (
-              <DetailRow label="Transaction">
-                <a
-                  href={`https://snowtrace.io/tx/${order.txHash}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 font-mono text-sm transition-colors duration-150"
-                  style={{ color: "var(--brass)" }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.color = "var(--brass-hover)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.color = "var(--brass)";
-                  }}
-                >
-                  {order.txHashShort}
-                  <ExternalLink size={12} />
-                </a>
-              </DetailRow>
-            )}
-
-            {order.shippingAddress && (
-              <DetailRow label="Shipping Address">
-                <span style={{ color: "var(--text-secondary)" }}>
-                  {order.shippingAddress}
-                </span>
-              </DetailRow>
-            )}
-
-            {order.trackingNumber && (
-              <DetailRow label="Tracking Number">
-                <a
-                  href={order.trackingUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 font-mono text-sm transition-colors duration-150"
-                  style={{ color: "var(--brass)" }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.color = "var(--brass-hover)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.color = "var(--brass)";
-                  }}
-                >
-                  {order.trackingNumber}
-                  <ExternalLink size={12} />
-                </a>
-              </DetailRow>
-            )}
-          </div>
+            Order Progress
+          </h2>
+          <StatusBadge status={displayStatus} />
         </div>
 
-        {/* ── Support Section ── */}
-        <div
-          className="rounded-xl p-5 sm:p-6"
-          style={{
-            backgroundColor: "var(--bg-tertiary)",
-            border: "1px solid var(--border-default)",
-          }}
+        {/* Stepper */}
+        <DesktopStepper steps={steps} />
+        <MobileStepper steps={steps} />
+      </div>
+
+      {/* Order Details Card */}
+      <div
+        className="mb-6 rounded-xl p-6 sm:p-8"
+        style={{
+          backgroundColor: "var(--bg-secondary)",
+          border: "1px solid var(--border-default)",
+        }}
+      >
+        <h3
+          className="mb-6 text-base font-semibold"
+          style={{ color: "var(--text-primary)" }}
         >
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p
-                className="text-sm font-medium"
-                style={{ color: "var(--text-secondary)" }}
-              >
-                Having issues with this order?
-              </p>
+          Order Details
+        </h3>
+
+        <div className="grid grid-cols-1 gap-x-8 gap-y-5 sm:grid-cols-2">
+          <DetailRow label="Order ID">
+            <span className="font-mono">
+              #{order.onChainOrderId ?? order.id.slice(0, 8)}
+            </span>
+          </DetailRow>
+
+          <DetailRow label="Type">
+            <TypeBadge type={order.type} />
+          </DetailRow>
+
+          <DetailRow label="Caliber">
+            <div className="flex items-center gap-2">
+              {Icon && <Icon size={18} />}
+              <span>
+                {order.caliber} — {spec?.name ?? order.caliber}
+              </span>
+            </div>
+          </DetailRow>
+
+          <DetailRow label="Amount">
+            <span className="font-mono tabular-nums">
+              {amount.toLocaleString()} rounds
+            </span>
+          </DetailRow>
+
+          <DetailRow label="Status">
+            <StatusBadge status={displayStatus} />
+          </DetailRow>
+
+          <DetailRow label="Created">
+            <span>{formatDate(order.createdAt)}</span>
+          </DetailRow>
+
+          <DetailRow label="Last Updated">
+            <span>{formatDate(order.updatedAt)}</span>
+          </DetailRow>
+
+          {order.txHash && (
+            <DetailRow label="Transaction">
               <a
-                href="#"
-                className="mt-1 inline-flex items-center gap-1.5 text-sm font-medium transition-colors duration-150"
+                href={snowtraceUrl(order.txHash)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 font-mono text-sm transition-colors duration-150"
                 style={{ color: "var(--brass)" }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.color = "var(--brass-hover)";
@@ -702,83 +676,79 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
                   e.currentTarget.style.color = "var(--brass)";
                 }}
               >
-                Contact Support
-                <ArrowLeft size={14} className="rotate-180" />
+                {truncateAddress(order.txHash)}
+                <ExternalLink size={12} />
               </a>
-            </div>
+            </DetailRow>
+          )}
 
-            <button
-              type="button"
-              className="inline-flex items-center gap-2 self-start rounded-lg px-4 py-2.5 text-sm font-medium transition-colors duration-150 sm:self-auto"
-              style={{
-                backgroundColor: "transparent",
-                border: "1px solid var(--border-hover)",
-                color: "var(--text-secondary)",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "var(--bg-secondary)";
-                e.currentTarget.style.color = "var(--text-primary)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "transparent";
-                e.currentTarget.style.color = "var(--text-secondary)";
-              }}
-            >
-              <MessageSquare size={14} />
-              Report a Problem
-            </button>
-          </div>
+          {order.shippingAddress && (
+            <DetailRow label="Shipping Address">
+              <span style={{ color: "var(--text-secondary)" }}>
+                {order.shippingAddress.name}, {order.shippingAddress.line1}
+                {order.shippingAddress.line2
+                  ? `, ${order.shippingAddress.line2}`
+                  : ""}
+                , {order.shippingAddress.city}, {order.shippingAddress.state}{" "}
+                {order.shippingAddress.zip}
+              </span>
+            </DetailRow>
+          )}
         </div>
       </div>
-    </>
-  );
-}
 
-/* ────────────── Variant Selector (demo only) ────────────── */
-
-function VariantSelector({
-  activeId,
-  onChange,
-}: {
-  activeId: string;
-  onChange: (id: string) => void;
-}) {
-  return (
-    <div className="mx-auto max-w-[720px] px-4 pt-6 sm:pt-8">
+      {/* Support Section */}
       <div
-        className="rounded-lg p-4"
+        className="rounded-xl p-5 sm:p-6"
         style={{
           backgroundColor: "var(--bg-tertiary)",
           border: "1px solid var(--border-default)",
         }}
       >
-        <p
-          className="mb-3 text-[11px] font-semibold uppercase tracking-wider"
-          style={{ color: "var(--text-muted)" }}
-        >
-          Demo — View order variants
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {demoOrders.map((d) => {
-            const isActive = d.id === activeId;
-            return (
-              <button
-                key={d.id}
-                type="button"
-                className="rounded-md px-3 py-1.5 text-xs font-medium transition-all duration-150"
-                style={{
-                  backgroundColor: isActive
-                    ? "var(--brass-muted)"
-                    : "var(--bg-secondary)",
-                  border: `1px solid ${isActive ? "var(--brass-border)" : "var(--border-default)"}`,
-                  color: isActive ? "var(--brass)" : "var(--text-secondary)",
-                }}
-                onClick={() => onChange(d.id)}
-              >
-                {d.label}
-              </button>
-            );
-          })}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p
+              className="text-sm font-medium"
+              style={{ color: "var(--text-secondary)" }}
+            >
+              Having issues with this order?
+            </p>
+            <a
+              href="#"
+              className="mt-1 inline-flex items-center gap-1.5 text-sm font-medium transition-colors duration-150"
+              style={{ color: "var(--brass)" }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = "var(--brass-hover)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = "var(--brass)";
+              }}
+            >
+              Contact Support
+              <ArrowLeft size={14} className="rotate-180" />
+            </a>
+          </div>
+
+          <button
+            type="button"
+            className="inline-flex items-center gap-2 self-start rounded-lg px-4 py-2.5 text-sm font-medium transition-colors duration-150 sm:self-auto"
+            style={{
+              backgroundColor: "transparent",
+              border: "1px solid var(--border-hover)",
+              color: "var(--text-secondary)",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = "var(--bg-secondary)";
+              e.currentTarget.style.color = "var(--text-primary)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = "transparent";
+              e.currentTarget.style.color = "var(--text-secondary)";
+            }}
+          >
+            <MessageSquare size={14} />
+            Report a Problem
+          </button>
         </div>
       </div>
     </div>
