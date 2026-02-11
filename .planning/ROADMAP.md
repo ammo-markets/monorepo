@@ -40,11 +40,11 @@ Full details: `.planning/milestones/v1.0-ROADMAP.md`
   3. Deployment start block (51699730) is available in shared config package
   4. Worker starts scanning from deployment block when block cursor is below it, not from block 0
   5. Worker logs show scan progress (blocks scanned, events found) during backfill
-**Plans**: TBD
+**Plans:** 2 plans
 
 Plans:
-- [ ] 07-01: User auto-registration on wallet connect
-- [ ] 07-02: Deployment block config and worker indexing fix
+- [ ] 07-01-PLAN.md -- User auto-registration on wallet connect (POST /api/users/register + useWallet hook)
+- [ ] 07-02-PLAN.md -- Deployment block config and worker indexing fix (shared config + worker floor + logging)
 
 ### Phase 8: End-to-End Verification
 **Goal**: A user can perform a complete mint flow -- from wallet connect through token minting to admin finalization -- and see correct status at every step
@@ -71,9 +71,9 @@ Plans:
 | 4. Mint and Redeem Flows | v1.0 | 2/2 | Complete | 2026-02-11 |
 | 5. Portfolio and Data Integration | v1.0 | 2/2 | Complete | 2026-02-11 |
 | 6. Admin Dashboard | v1.0 | 2/2 | Complete | 2026-02-11 |
-| 7. Registration and Indexing Fixes | v1.1 | 0/2 | Not started | - |
+| 7. Registration and Indexing Fixes | v1.1 | 0/2 | Planning complete | - |
 | 8. End-to-End Verification | v1.1 | 0/1 | Not started | - |
 
 ---
 *Roadmap created: 2026-02-10*
-*Last updated: 2026-02-11 (v1.1 milestone roadmap added)*
+*Last updated: 2026-02-11 (Phase 7 plans created)*
