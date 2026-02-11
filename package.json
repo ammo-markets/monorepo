@@ -12,7 +12,9 @@
     "db:migrate": "turbo db:migrate",
     "db:studio": "pnpm --filter @ammo-exchange/db exec prisma studio",
     "contracts:build": "pnpm --filter @ammo-exchange/contracts build",
-    "contracts:test": "pnpm --filter @ammo-exchange/contracts test"
+    "contracts:test": "pnpm --filter @ammo-exchange/contracts test",
+    "contracts:fuji:check": "make -C packages/contracts fuji_check",
+    "contracts:fuji:deploy": "make -C packages/contracts fuji_deploy"
   },
   "devDependencies": {
     "prettier": "^3.5.3",

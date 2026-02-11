@@ -1,14 +1,18 @@
--include .env
+# Resolve repo root: works whether invoked from root (make -C) or locally
+CONTRACTS_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+ROOT_DIR := $(abspath $(CONTRACTS_DIR)/../..)
+
+-include $(ROOT_DIR)/.env
 
 fuji_check:
-	@forge clean
-	@forge script script/DeployFuji.s.sol:DeployFuji \
+	@cd $(CONTRACTS_DIR) && forge clean
+	@cd $(CONTRACTS_DIR) && forge script script/DeployFuji.s.sol:DeployFuji \
 		--rpc-url $(FUJI_RPC_URL) \
 		--private-key $(PRIVATE_KEY) -vv
 
 fuji_deploy:
-	@forge clean
-	@forge script script/DeployFuji.s.sol:DeployFuji \
+	@cd $(CONTRACTS_DIR) && forge clean
+	@cd $(CONTRACTS_DIR) && forge script script/DeployFuji.s.sol:DeployFuji \
 		--rpc-url $(FUJI_RPC_URL) \
 		--private-key $(PRIVATE_KEY) \
 		--broadcast --verify --slow \
