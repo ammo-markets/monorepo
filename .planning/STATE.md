@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-11)
 ## Current Position
 
 Phase: 7 of 8 (Registration and Indexing Fixes)
-Plan: 0 of 2 in current phase
-Status: Ready to plan
-Last activity: 2026-02-11 -- Roadmap created for v1.1
+Plan: 2 of 2 in current phase
+Status: Phase 7 complete
+Last activity: 2026-02-11 -- Completed 07-02 (deployment block floor)
 
-Progress: [############............] 80% (12/15 plans -- 12 v1.0 complete, 3 v1.1 pending)
+Progress: [##############..........] 93% (14/15 plans -- 12 v1.0 + 2 v1.1 complete, 1 v1.1 pending)
 
 ## Performance Metrics
 
@@ -33,6 +33,7 @@ Progress: [############............] 80% (12/15 plans -- 12 v1.0 complete, 3 v1.
 | 04-mint-and-redeem-flows | 2 | ~11min | ~6min |
 | 05-portfolio-and-data-integration | 2 | ~9min | ~5min |
 | 06-admin-dashboard | 2 | ~7min | ~4min |
+| 07-registration-and-indexing-fixes | 2 | ~3min | ~1.5min |
 
 ## Accumulated Context
 
@@ -40,17 +41,22 @@ Progress: [############............] 80% (12/15 plans -- 12 v1.0 complete, 3 v1.
 
 All v1.0 decisions logged in PROJECT.md Key Decisions table.
 
+**v1.1 Phase 7:**
+- Used BigInt() constructor instead of n-suffix literals in shared config for ES2017 web compat
+- DEPLOYMENT_BLOCK as floor (not cursor override) preserves existing cursor behavior
+- Progress logging per batch for backfill visibility
+
 ### Pending Todos
 
 None.
 
 ### Blockers/Concerns
 
-- Worker currently scans from block 0 -- wastes 51M+ blocks of RPC calls before finding events
-- No user DB record until worker processes an event for that wallet -- breaks API calls on first connect
+- ~~Worker currently scans from block 0~~ -- RESOLVED in 07-02 (deployment block floor)
+- ~~No user DB record until worker processes an event~~ -- RESOLVED in 07-01 (user registration API)
 
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Roadmap created for v1.1 milestone. Ready to plan Phase 7.
+Stopped at: Completed 07-02-PLAN.md (deployment block floor). Phase 7 complete. Phase 8 remaining.
 Resume file: None
