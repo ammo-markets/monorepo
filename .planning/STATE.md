@@ -5,33 +5,33 @@
 See: .planning/PROJECT.md (updated 2026-02-10)
 
 **Core value:** Anyone worldwide can get price exposure to U.S. ammunition by minting ammo tokens with USDC, while only verified U.S. residents in allowed states can redeem for physical delivery.
-**Current focus:** Phase 2 -- Event Indexer
+**Current focus:** Phase 2 complete -- ready for Phase 3
 
 ## Current Position
 
-Phase: 2 of 6 (Event Indexer)
-Plan: 1 of 2 in current phase
-Status: Executing Phase 2
-Last activity: 2026-02-11 -- Completed plan 02-01 (worker foundation modules)
+Phase: 2 of 6 (Event Indexer) -- COMPLETE
+Plan: 2 of 2 in current phase (all done)
+Status: Phase 2 Complete
+Last activity: 2026-02-11 -- Completed plan 02-02 (polling loop and entry point)
 
-Progress: [███░░░░░░░] 25%
+Progress: [████░░░░░░] 33%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
-- Average duration: ~22 min
-- Total execution time: ~1.1 hours
+- Total plans completed: 4
+- Average duration: ~17 min
+- Total execution time: ~1.2 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-foundation | 2 | ~65min | ~33min |
-| 02-event-indexer | 1 | ~2min | ~2min |
+| 02-event-indexer | 2 | ~4min | ~2min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (~45min), 01-02 (~20min), 02-01 (~2min)
+- Last 5 plans: 01-01 (~45min), 01-02 (~20min), 02-01 (~2min), 02-02 (~2min)
 - Trend: Accelerating
 
 *Updated after each plan completion*
@@ -58,6 +58,10 @@ Recent decisions affecting current work:
 - 02-01: Clean typed interfaces (MintStartedArgs, etc.) instead of viem log types for handler testability
 - 02-01: updateMany for finalization handlers since onChainOrderId is per-contract not globally unique
 - 02-01: All wallet addresses stored lowercase for consistent lookups
+- 02-02: pollOnce serves both backfill and polling (single function, cosmetic distinction via caller logging)
+- 02-02: Empty block ranges advance cursor to prevent re-scanning
+- 02-02: Polling errors are non-fatal (logged + retried), startup errors are fatal (exit 1)
+- 02-02: Event args cast via `as unknown as` for viem strict generic compatibility
 
 ### Pending Todos
 
@@ -70,5 +74,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Completed 02-01-PLAN.md (worker foundation modules). Ready for 02-02 (polling loop).
+Stopped at: Completed 02-02-PLAN.md (polling loop and entry point). Phase 2 complete. Ready for Phase 3 (REST API).
 Resume file: None
