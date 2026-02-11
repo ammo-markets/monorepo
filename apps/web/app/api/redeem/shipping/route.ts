@@ -1,0 +1,60 @@
+import type { NextRequest } from "next/server";
+import { z } from "zod";
+import { prisma } from "@ammo-exchange/db";
+import { RESTRICTED_STATES } from "@ammo-exchange/shared";
+
+const shippingSchema = z.object({
+  orderId: z.string().min(1),
+  name: z.string().min(1).max(100),
+  line1: z.string().min(1).max(200),
+  line2: z.string().max(200).optional(),
+  city: z.string().min(1).max(100),
+  state: z
+    .string()
+    .length(2)
+    .refine(
+      (s) =>
+        !RESTRICTED_STATES.includes(s as (typeof RESTRICTED_STATES)[number]),
+      { message: "Shipping to this state is restricted" },
+    ),
+  zip: z.string().regex(/^\d{5}(-\d{4})?$/),
+});
+
+export async function POST(request: NextRequest) {
+  const body = await request.json().catch(() => null);
+
+  if (!body) {
+    return Response.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
+
+  const parsed = shippingSchema.safeParse(body);
+
+  if (!parsed.success) {
+    return Response.json(
+      { error: "Validation failed", details: parsed.error.flatten() },
+      { status: 400 },
+    );
+  }
+
+  const { orderId, ...address } = parsed.data;
+
+  // Verify order exists and is a REDEEM order
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+  });
+
+  if (!order || order.type !== "REDEEM") {
+    return Response.json(
+      { error: "Redeem order not found" },
+      { status: 404 },
+    );
+  }
+
+  const shipping = await prisma.shippingAddress.upsert({
+    where: { orderId },
+    create: { orderId, ...address },
+    update: address,
+  });
+
+  return Response.json({ shipping }, { status: 201 });
+}
