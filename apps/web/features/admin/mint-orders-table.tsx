@@ -1,25 +1,23 @@
 "use client";
 
+import { useCallback, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
 import { Inbox, RefreshCw } from "lucide-react";
 import { truncateAddress } from "@/lib/utils";
-
-interface AdminMintOrder {
-  id: string;
-  walletAddress: string | null;
-  caliber: string;
-  amount: string;
-  createdAt: string;
-  onChainOrderId: string | null;
-  txHash: string | null;
-}
+import { FinalizeMintDialog } from "./finalize-mint-dialog";
+import type { AdminMintOrder } from "./finalize-mint-dialog";
 
 function formatUsdc(amount: string): string {
   return (Number(amount) / 1e6).toFixed(2);
 }
 
 export function MintOrdersTable() {
+  const [selectedOrder, setSelectedOrder] = useState<AdminMintOrder | null>(
+    null,
+  );
+  const [dialogOpen, setDialogOpen] = useState(false);
+
   const {
     data: orders,
     isLoading,
@@ -35,6 +33,15 @@ export function MintOrdersTable() {
     },
     refetchInterval: 30_000,
   });
+
+  const handleFinalized = useCallback(
+    (orderId: string) => {
+      // Optimistically remove from the query cache will happen on next refetch.
+      // Trigger immediate refetch to update the list.
+      void refetch();
+    },
+    [refetch],
+  );
 
   if (isLoading) {
     return (
@@ -70,57 +77,79 @@ export function MintOrdersTable() {
   }
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-zinc-800">
-      <table className="w-full text-left text-sm">
-        <thead>
-          <tr className="border-b border-zinc-800 bg-zinc-900/50">
-            <th className="px-4 py-3 font-medium text-zinc-400">Order ID</th>
-            <th className="px-4 py-3 font-medium text-zinc-400">Wallet</th>
-            <th className="px-4 py-3 font-medium text-zinc-400">Caliber</th>
-            <th className="px-4 py-3 font-medium text-zinc-400 text-right">
-              USDC Amount
-            </th>
-            <th className="px-4 py-3 font-medium text-zinc-400">Time</th>
-            <th className="px-4 py-3 font-medium text-zinc-400">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {orders.map((order) => (
-            <tr
-              key={order.id}
-              className="border-b border-zinc-800/50 transition-colors hover:bg-zinc-900/30"
-            >
-              <td className="px-4 py-3 font-mono text-xs text-zinc-300">
-                {order.id.slice(0, 8)}
-              </td>
-              <td className="px-4 py-3 font-mono text-xs text-zinc-300">
-                {order.walletAddress
-                  ? truncateAddress(order.walletAddress)
-                  : "N/A"}
-              </td>
-              <td className="px-4 py-3 text-zinc-200">{order.caliber}</td>
-              <td className="px-4 py-3 text-right font-mono text-zinc-200">
-                {formatUsdc(order.amount)} USDC
-              </td>
-              <td className="px-4 py-3 text-zinc-400">
-                {formatDistanceToNow(new Date(order.createdAt), {
-                  addSuffix: true,
-                })}
-              </td>
-              <td className="px-4 py-3">
-                <button
-                  type="button"
-                  disabled
-                  title="Coming soon"
-                  className="rounded-md bg-zinc-800 px-3 py-1 text-xs font-medium text-zinc-500 cursor-not-allowed"
-                >
-                  Finalize
-                </button>
-              </td>
+    <>
+      <div className="overflow-x-auto rounded-xl border border-zinc-800">
+        <table className="w-full text-left text-sm">
+          <thead>
+            <tr className="border-b border-zinc-800 bg-zinc-900/50">
+              <th className="px-4 py-3 font-medium text-zinc-400">Order ID</th>
+              <th className="px-4 py-3 font-medium text-zinc-400">Wallet</th>
+              <th className="px-4 py-3 font-medium text-zinc-400">Caliber</th>
+              <th className="px-4 py-3 font-medium text-zinc-400 text-right">
+                USDC Amount
+              </th>
+              <th className="px-4 py-3 font-medium text-zinc-400">Time</th>
+              <th className="px-4 py-3 font-medium text-zinc-400">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {orders.map((order) => (
+              <tr
+                key={order.id}
+                className="border-b border-zinc-800/50 transition-colors hover:bg-zinc-900/30"
+              >
+                <td className="px-4 py-3 font-mono text-xs text-zinc-300">
+                  {order.id.slice(0, 8)}
+                </td>
+                <td className="px-4 py-3 font-mono text-xs text-zinc-300">
+                  {order.walletAddress
+                    ? truncateAddress(order.walletAddress)
+                    : "N/A"}
+                </td>
+                <td className="px-4 py-3 text-zinc-200">{order.caliber}</td>
+                <td className="px-4 py-3 text-right font-mono text-zinc-200">
+                  {formatUsdc(order.amount)} USDC
+                </td>
+                <td className="px-4 py-3 text-zinc-400">
+                  {formatDistanceToNow(new Date(order.createdAt), {
+                    addSuffix: true,
+                  })}
+                </td>
+                <td className="px-4 py-3">
+                  <button
+                    type="button"
+                    disabled={!order.onChainOrderId}
+                    title={
+                      order.onChainOrderId
+                        ? "Finalize this mint order"
+                        : "Awaiting on-chain order ID"
+                    }
+                    onClick={() => {
+                      setSelectedOrder(order);
+                      setDialogOpen(true);
+                    }}
+                    className="rounded-md bg-amber-600/80 px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-amber-500 disabled:cursor-not-allowed disabled:bg-zinc-800 disabled:text-zinc-500"
+                  >
+                    Finalize
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {selectedOrder && (
+        <FinalizeMintDialog
+          order={selectedOrder}
+          open={dialogOpen}
+          onOpenChange={(open) => {
+            setDialogOpen(open);
+            if (!open) setSelectedOrder(null);
+          }}
+          onFinalized={handleFinalized}
+        />
+      )}
+    </>
   );
 }
