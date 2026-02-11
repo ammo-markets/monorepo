@@ -21,35 +21,44 @@ Anyone worldwide can get price exposure to U.S. ammunition by minting ammo token
 - ✓ Shared types package: Caliber specs, fee constants, chain config, contract addresses, restricted states
 - ✓ Monorepo: Turborepo + pnpm workspaces with build dependency graph
 - ✓ Worker skeleton: viem public client, Prisma connection, connects to Avalanche
+- ✓ Contracts deployed to Fuji with all addresses in shared config — v1.0
+- ✓ Real wallet connection (MetaMask) with network switching and balance display — v1.0
+- ✓ Mint flow wired to real contract calls (USDC approval + startMint) — v1.0
+- ✓ Redeem flow wired to real contract calls (token approval + startRedeem) — v1.0
+- ✓ Event indexer with crash recovery (BlockCursor, 4 event types, 4 markets) — v1.0
+- ✓ Admin dashboard with keeper gate, order queues, finalizeMint/finalizeRedeem — v1.0
+- ✓ 9 API routes serving real data (orders, balances, market, shipping, KYC, admin, stats) — v1.0
+- ✓ Portfolio reads on-chain balances and DB order history — v1.0
+- ✓ All mock data eliminated — v1.0
 
 ### Active
 
-<!-- Current scope: Fuji testnet integration milestone. -->
+<!-- Next milestone scope. -->
 
-- [ ] Deploy contracts to Avalanche Fuji testnet and update shared config with real addresses
-- [ ] Wire real wallet connection (wagmi useConnect/useAccount replacing mock boolean)
-- [ ] Wire mint flow: USDC approval → startMint() contract call from UI
-- [ ] Wire redeem flow: startRedeem() contract call from UI
-- [ ] Worker event indexer: listen for MintStarted, RedeemRequested → persist orders to DB
-- [ ] Admin dashboard: /admin/* routes gated by keeper wallet address
-- [ ] Admin order queue: view pending mint/redeem orders
-- [ ] Admin finalization: trigger finalizeMint/finalizeRedeem on-chain from admin UI
-- [ ] Next.js API routes: order queries, user balances, market data
-- [ ] Portfolio: read on-chain token balances via AmmoToken.balanceOf + DB order history
-- [ ] Market prices: worker computes effective price per round from indexed events, stored in DB
-- [ ] KYC/Shipping: store shipping address + KYC status in DB (auto-approved for testnet)
-- [ ] DB integration: replace all mock data with Prisma queries via API routes + server components
+(None yet — define with `/gsd:new-milestone`)
 
 ### Out of Scope
 
-- Real KYC provider integration (Persona, Jumio) — auto-approve for testnet
-- Mainnet deployment — Fuji first
+- Real KYC provider integration (Persona, Jumio) — auto-approve sufficient for testnet
+- Mainnet deployment — Fuji validated, mainnet when ready for production
 - Real Ammo Squared API integration — admin manually handles procurement
 - Price oracle contract implementation — keeper supplies price at finalization
-- Mobile app — web only
+- Mobile app — web only, PWA possible later
 - Real-time chat or notifications — not needed for MVP
 - Uniswap pool creation/LP UI — users handle this via Uniswap directly
 - Batch keeper operations — single order finalization sufficient for MVP
+
+## Current State
+
+**Shipped:** v1.0 Fuji Testnet Integration (2026-02-11)
+**Codebase:** ~22,876 LOC TypeScript across apps/web, apps/worker, packages/shared, packages/db, packages/contracts
+
+The full DeFi protocol is functional on Avalanche Fuji testnet:
+- 13 contracts deployed and verified (AmmoManager, AmmoFactory, 4 CaliberMarkets, 4 AmmoTokens, MockUSDC, 4 MockPriceOracles)
+- Event indexer polls chain events into PostgreSQL with crash recovery
+- Frontend connects real wallets, executes real transactions, displays real data
+- Admin dashboard enables keeper finalization with protocol health monitoring
+- Zero mock data remains — all displays read from chain or database
 
 ## Context
 
@@ -61,19 +70,12 @@ Anyone worldwide can get price exposure to U.S. ammunition by minting ammo token
 - Restricted states (no redemption): CA, NY, IL, DC, NJ
 - Supplier: Ammo Squared — admin purchases ammo off-chain after mint orders
 
-**Architecture Decisions:**
+**Architecture (validated in v1.0):**
 - 2-step settlement: user initiates → admin (keeper) finalizes. Human-in-the-loop for off-chain procurement.
 - Worker role: event indexer only. Writes chain events to DB. Does NOT auto-finalize.
 - Admin finalization: admin reviews order in dashboard, purchases from Ammo Squared, clicks Finalize. Contract call made from admin's keeper wallet via browser (wagmi).
 - API layer: Next.js API routes (not separate worker API). TanStack Query on client hits route handlers.
 - Admin UI: wallet-gated /admin/* routes in same Next.js app. Keeper wallet = admin access. Contract access control IS the auth (finalizeMint reverts for non-keepers anyway).
-
-**Existing Code:**
-- Contracts compiled and tested with Foundry (forge test passes)
-- UI is a complete interactive prototype — all flows work with mock data and setTimeout delays
-- DB schema exists but is unused — no data written or read yet
-- Worker connects to chain but has no event listeners
-- wagmi is configured (lib/wagmi.ts) but not wired to UI components
 
 ## Constraints
 
@@ -86,12 +88,17 @@ Anyone worldwide can get price exposure to U.S. ammunition by minting ammo token
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Fuji testnet first | Validate full flow before mainnet costs/risks | — Pending |
-| Next.js API routes over separate API server | Single deployment, shared DB access, simpler stack | — Pending |
-| Admin in same app (/admin/*) | Shares wagmi setup, Prisma, UI components. 1-2 admin wallets don't justify separate app | — Pending |
-| Worker as indexer, not keeper | Admin must review and trigger finalization. Human-in-the-loop for off-chain procurement | — Pending |
-| Admin auth = wallet address check | Contract already reverts for non-keepers. Middleware is UX, not security | — Pending |
-| TanStack Query for frontend data | Already in stack. API routes return JSON, client caches and refreshes | — Pending |
+| Fuji testnet first | Validate full flow before mainnet costs/risks | ✓ Good — full stack validated on Fuji |
+| Next.js API routes over separate API server | Single deployment, shared DB access, simpler stack | ✓ Good — 9 routes, clean separation |
+| Admin in same app (/admin/*) | Shares wagmi setup, Prisma, UI components. 1-2 admin wallets don't justify separate app | ✓ Good — code reuse worked well |
+| Worker as indexer, not keeper | Admin must review and trigger finalization. Human-in-the-loop for off-chain procurement | ✓ Good — clean separation of concerns |
+| Admin auth = wallet address check | Contract already reverts for non-keepers. Middleware is UX, not security | ✓ Good — client-side gate, contract enforces |
+| TanStack Query for frontend data | Already in stack. API routes return JSON, client caches and refreshes | ✓ Good — 30s auto-refresh in admin tables |
+| Hand-rolled MockUSDC (not OpenZeppelin) | Match project convention, minimal dependencies | ✓ Good — simple and works |
+| Polling-based indexer over WebSocket | getContractEvents more reliable than watchContractEvent for batch processing | ✓ Good — crash recovery via BlockCursor |
+| Bidirectional caliber mapping | Bridge Prisma naming constraints (NINE_MM) to shared types (9MM) | ✓ Good — zero type mismatches across 6 phases |
+| Explicit return types on hooks | Prevent TS2742 non-portable type inference errors | ✓ Good — all hooks compile across packages |
+| parseUnits for X18 price conversion | Human-readable price input converted to contract format | ✓ Good — "0.35" → 350000000000000000n |
 
 ---
-*Last updated: 2026-02-10 after initialization*
+*Last updated: 2026-02-11 after v1.0 milestone*
