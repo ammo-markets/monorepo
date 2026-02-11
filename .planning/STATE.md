@@ -9,28 +9,28 @@ See: .planning/PROJECT.md (updated 2026-02-10)
 
 ## Current Position
 
-Phase: 1 of 6 (Foundation)
-Plan: 1 of 2 in current phase
-Status: Executing
-Last activity: 2026-02-11 -- Completed plan 01-01 (Fuji deployment)
+Phase: 1 of 6 (Foundation) -- COMPLETE
+Plan: 2 of 2 in current phase (all plans complete)
+Status: Phase complete, ready for Phase 2
+Last activity: 2026-02-11 -- Completed plan 01-02 (shared config + schema migration)
 
-Progress: [█░░░░░░░░░] 8%
+Progress: [██░░░░░░░░] 17%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 1
-- Average duration: ~45 min
-- Total execution time: ~0.75 hours
+- Total plans completed: 2
+- Average duration: ~33 min
+- Total execution time: ~1.1 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-foundation | 1 | ~45min | ~45min |
+| 01-foundation | 2 | ~65min | ~33min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (~45min)
+- Last 5 plans: 01-01 (~45min), 01-02 (~20min)
 - Trend: --
 
 *Updated after each plan completion*
@@ -49,6 +49,10 @@ Recent decisions affecting current work:
 - 01-01: Deployer set as all roles (treasury, guardian, keeper, feeRecipient) for testnet
 - 01-01: evm_version = cancun in foundry.toml for Avalanche C-Chain
 - 01-01: avascan.info API for Snowtrace contract verification
+- 01-02: Per-caliber config structure with Record<Caliber, {market, token}> for type-safe address lookups
+- 01-02: Bidirectional caliber mapping (PRISMA_TO_CALIBER/CALIBER_TO_PRISMA) to bridge Prisma naming constraints
+- 01-02: BlockCursor with BigInt lastBlock for correct block number storage
+- 01-02: walletAddress on Order as nullable String for backward compatibility
 
 ### Pending Todos
 
@@ -61,5 +65,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Completed 01-01-PLAN.md (Fuji deployment), ready for 01-02
+Stopped at: Completed 01-02-PLAN.md (shared config + schema migration). Phase 1 complete. Ready for Phase 2 (Event Indexer).
 Resume file: None

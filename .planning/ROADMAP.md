@@ -12,7 +12,7 @@ This roadmap delivers a fully functional DeFi protocol on Avalanche Fuji testnet
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Foundation** - Deploy contracts to Fuji and migrate database schema
+- [x] **Phase 1: Foundation** - Deploy contracts to Fuji and migrate database schema
 - [ ] **Phase 2: Event Indexer** - Worker indexes on-chain events to database
 - [ ] **Phase 3: Wallet and API Layer** - Real wallet connection and data access routes
 - [ ] **Phase 4: Mint and Redeem Flows** - Wire contract interactions from the UI
@@ -34,8 +34,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 2 plans
 
 Plans:
-- [ ] 01-01-PLAN.md -- MockUSDC, MockPriceOracle, DeployFuji.s.sol, Makefile, foundry.toml (wave 1)
-- [ ] 01-02-PLAN.md -- Shared config with Fuji addresses, caliber mapping, Prisma schema migration (wave 2)
+- [x] 01-01-PLAN.md -- MockUSDC, MockPriceOracle, DeployFuji.s.sol, Makefile, foundry.toml (wave 1)
+- [x] 01-02-PLAN.md -- Shared config with Fuji addresses, caliber mapping, Prisma schema migration (wave 2)
 
 ### Phase 2: Event Indexer
 **Goal**: The worker reliably indexes all on-chain settlement events into the database with crash recovery
@@ -122,7 +122,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|---------------|--------|-----------|
-| 1. Foundation | 0/2 | Not started | - |
+| 1. Foundation | 2/2 | Complete | 2026-02-11 |
 | 2. Event Indexer | 0/2 | Not started | - |
 | 3. Wallet and API Layer | 0/2 | Not started | - |
 | 4. Mint and Redeem Flows | 0/2 | Not started | - |
@@ -131,4 +131,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 
 ---
 *Roadmap created: 2026-02-10*
-*Last updated: 2026-02-10*
+*Last updated: 2026-02-11*
