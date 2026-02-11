@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
+import { formatUnits } from "viem";
 import {
   ArrowLeft,
   Check,
@@ -17,10 +18,23 @@ import {
 import { caliberIcons } from "@/features/shared/caliber-icons";
 import {
   caliberDetails,
-  type CaliberId,
   type CaliberDetailData,
 } from "@/lib/mock-data";
 import { MintProgress } from "./mint-progress";
+
+import { useWallet } from "@/hooks/use-wallet";
+import { useMintTransaction } from "@/hooks/use-mint-transaction";
+import { useAllowance } from "@/hooks/use-allowance";
+import { useTokenBalances } from "@/hooks/use-token-balances";
+import { parseContractError } from "@/lib/errors";
+import {
+  getDeadline,
+  DEFAULT_SLIPPAGE_BPS,
+  parseUsdc,
+} from "@/lib/tx-utils";
+import { snowtraceUrl, truncateAddress } from "@/lib/utils";
+import { CONTRACT_ADDRESSES } from "@ammo-exchange/shared";
+import type { Caliber } from "@ammo-exchange/shared";
 
 /* ── USDC Icon ── */
 function UsdcIcon({ size = 16 }: { size?: number }) {
@@ -56,14 +70,15 @@ function UsdcIcon({ size = 16 }: { size?: number }) {
   );
 }
 
-/* ── Wallet / Transaction State Machine ── */
-type WalletState =
-  | "disconnected"
-  | "connected"
+/* ── Transaction Status ── */
+type TxStatus =
+  | "idle"
   | "approving"
+  | "approve-confirming"
   | "approved"
-  | "confirming"
-  | "success"
+  | "minting"
+  | "mint-confirming"
+  | "confirmed"
   | "failed";
 
 /* ── Wrong Network Banner ── */
@@ -97,16 +112,16 @@ function WrongNetworkBanner({ onSwitch }: { onSwitch: () => void }) {
   );
 }
 
-/* ══════════════════════════════════════════
-   STEP 1 — SELECT CALIBER
-   ══════════════════════════════════════════ */
+/* =====================================================================
+   STEP 1 -- SELECT CALIBER
+   ===================================================================== */
 function StepSelectCaliber({
   selected,
   onSelect,
   onNext,
 }: {
-  selected: CaliberId | null;
-  onSelect: (id: CaliberId) => void;
+  selected: Caliber | null;
+  onSelect: (id: Caliber) => void;
   onNext: () => void;
 }) {
   const allCalibers = Object.values(caliberDetails);
@@ -236,19 +251,21 @@ function StepSelectCaliber({
   );
 }
 
-/* ══════════════════════════════════════════
-   STEP 2 — ENTER AMOUNT
-   ══════════════════════════════════════════ */
+/* =====================================================================
+   STEP 2 -- ENTER AMOUNT
+   ===================================================================== */
 function StepEnterAmount({
   caliber,
   usdcAmount,
   setUsdcAmount,
+  usdcBalance,
   onNext,
   onBack,
 }: {
   caliber: CaliberDetailData;
   usdcAmount: string;
   setUsdcAmount: (val: string) => void;
+  usdcBalance: number;
   onNext: () => void;
   onBack: () => void;
 }) {
@@ -260,7 +277,7 @@ function StepEnterAmount({
   const estimatedRounds = Math.floor(netUsdc / caliber.price);
   const minUsdcForMinMint = caliber.minMint * caliber.price;
   const belowMinimum = usdcValue > 0 && usdcValue < minUsdcForMinMint;
-  const exceedsBalance = usdcValue > caliber.userUsdcBalance;
+  const exceedsBalance = usdcValue > usdcBalance;
   const isValid = usdcValue >= minUsdcForMinMint && !exceedsBalance;
   const hasError = belowMinimum || exceedsBalance;
 
@@ -377,13 +394,13 @@ function StepEnterAmount({
         </div>
         <p className="text-xs" style={{ color: "var(--text-muted)" }}>
           Balance:{" "}
-          {caliber.userUsdcBalance.toLocaleString("en-US", {
+          {usdcBalance.toLocaleString("en-US", {
             minimumFractionDigits: 2,
           })}{" "}
           USDC{" "}
           <button
             type="button"
-            onClick={() => setUsdcAmount(caliber.userUsdcBalance.toFixed(2))}
+            onClick={() => setUsdcAmount(usdcBalance.toFixed(2))}
             className="ml-1 font-semibold uppercase transition-colors duration-150"
             style={{ color: "var(--brass)" }}
           >
@@ -529,24 +546,34 @@ function StepEnterAmount({
   );
 }
 
-/* ══════════════════════════════════════════
-   STEP 3 — REVIEW & CONFIRM
-   ══════════════════════════════════════════ */
+/* =====================================================================
+   STEP 3 -- REVIEW & CONFIRM
+   ===================================================================== */
 function StepReview({
   caliber,
   usdcAmount,
-  walletState,
+  txStatus,
+  errorMessage,
+  isConnected,
+  isWrongNetwork,
   onConnect,
+  onSwitchNetwork,
   onApprove,
   onConfirm,
+  onRetry,
   onBack,
 }: {
   caliber: CaliberDetailData;
   usdcAmount: string;
-  walletState: WalletState;
+  txStatus: TxStatus;
+  errorMessage: string;
+  isConnected: boolean;
+  isWrongNetwork: boolean;
   onConnect: () => void;
+  onSwitchNetwork: () => void;
   onApprove: () => void;
   onConfirm: () => void;
+  onRetry: () => void;
   onBack: () => void;
 }) {
   const Icon = caliberIcons[caliber.id];
@@ -580,6 +607,9 @@ function StepReview({
       >
         Review Your Mint Order
       </h2>
+
+      {/* Wrong network banner */}
+      {isWrongNetwork && <WrongNetworkBanner onSwitch={onSwitchNetwork} />}
 
       {/* Summary card */}
       <div
@@ -686,9 +716,44 @@ function StepReview({
         </p>
       </div>
 
-      {/* Wallet State Machine CTA */}
+      {/* CTA based on TxStatus */}
       <div className="mt-6">
-        {walletState === "disconnected" && (
+        {/* Error state */}
+        {txStatus === "failed" && (
+          <div>
+            <div
+              className="mb-4 rounded-lg px-4 py-3"
+              style={{
+                backgroundColor: "rgba(231, 76, 60, 0.1)",
+                border: "1px solid rgba(231, 76, 60, 0.3)",
+              }}
+            >
+              <p className="text-sm" style={{ color: "var(--red)" }}>
+                {errorMessage || "An unexpected error occurred."}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={onRetry}
+              className="flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold transition-all duration-150"
+              style={{
+                backgroundColor: "var(--brass)",
+                color: "var(--bg-primary)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--brass-hover)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--brass)";
+              }}
+            >
+              Try Again
+            </button>
+          </div>
+        )}
+
+        {/* Not connected */}
+        {txStatus === "idle" && !isConnected && (
           <button
             type="button"
             onClick={onConnect}
@@ -709,7 +774,8 @@ function StepReview({
           </button>
         )}
 
-        {walletState === "connected" && (
+        {/* Connected, idle -- approve step */}
+        {txStatus === "idle" && isConnected && (
           <div>
             <button
               type="button"
@@ -745,7 +811,8 @@ function StepReview({
           </div>
         )}
 
-        {walletState === "approving" && (
+        {/* Approving / waiting for approval confirmation */}
+        {(txStatus === "approving" || txStatus === "approve-confirming") && (
           <button
             type="button"
             disabled
@@ -761,7 +828,8 @@ function StepReview({
           </button>
         )}
 
-        {walletState === "approved" && (
+        {/* Approved -- confirm mint */}
+        {txStatus === "approved" && (
           <button
             type="button"
             onClick={onConfirm}
@@ -782,7 +850,8 @@ function StepReview({
           </button>
         )}
 
-        {walletState === "confirming" && (
+        {/* Minting / waiting for mint confirmation */}
+        {(txStatus === "minting" || txStatus === "mint-confirming") && (
           <button
             type="button"
             disabled
@@ -802,23 +871,23 @@ function StepReview({
   );
 }
 
-/* ══════════════════════════════════════════
-   STEP 4 — CONFIRMATION (Success + Error)
-   ══════════════════════════════════════════ */
+/* =====================================================================
+   STEP 4 -- CONFIRMATION (Success + Error)
+   ===================================================================== */
 function StepConfirmation({
   caliber,
   usdcAmount,
   isError,
   errorMessage,
-  onViewOrder,
+  txHash,
   onMintMore,
   onRetry,
 }: {
   caliber: CaliberDetailData;
   usdcAmount: string;
   isError: boolean;
-  errorMessage?: string;
-  onViewOrder: () => void;
+  errorMessage: string;
+  txHash: `0x${string}` | undefined;
   onMintMore: () => void;
   onRetry: () => void;
 }) {
@@ -923,21 +992,32 @@ function StepConfirmation({
             <span style={{ color: "var(--text-muted)" }}>Order ID</span>
             <span
               className="font-mono text-xs font-medium"
-              style={{ color: "var(--text-primary)" }}
+              style={{ color: "var(--text-secondary)" }}
             >
-              #AMX-2024-001
+              Pending indexing
             </span>
           </div>
           <div className="flex justify-between">
             <span style={{ color: "var(--text-muted)" }}>Transaction</span>
-            <a
-              href="#"
-              className="flex items-center gap-1.5 font-mono text-xs font-medium transition-colors duration-150"
-              style={{ color: "var(--brass)" }}
-            >
-              0x1a2b...3c4d
-              <ExternalLink size={12} />
-            </a>
+            {txHash ? (
+              <a
+                href={snowtraceUrl(txHash)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 font-mono text-xs font-medium transition-colors duration-150"
+                style={{ color: "var(--brass)" }}
+              >
+                {truncateAddress(txHash)}
+                <ExternalLink size={12} />
+              </a>
+            ) : (
+              <span
+                className="font-mono text-xs font-medium"
+                style={{ color: "var(--text-muted)" }}
+              >
+                --
+              </span>
+            )}
           </div>
           <div className="flex justify-between">
             <span style={{ color: "var(--text-muted)" }}>
@@ -969,7 +1049,7 @@ function StepConfirmation({
       <div className="mt-6 flex w-full flex-col gap-3">
         <button
           type="button"
-          onClick={onViewOrder}
+          onClick={onMintMore}
           className="flex w-full items-center justify-center rounded-xl py-3.5 text-sm font-bold transition-all duration-150"
           style={{
             backgroundColor: "var(--brass)",
@@ -982,26 +1062,6 @@ function StepConfirmation({
             e.currentTarget.style.backgroundColor = "var(--brass)";
           }}
         >
-          View Order
-        </button>
-        <button
-          type="button"
-          onClick={onMintMore}
-          className="flex w-full items-center justify-center rounded-xl py-3.5 text-sm font-bold transition-all duration-150"
-          style={{
-            backgroundColor: "transparent",
-            color: "var(--text-primary)",
-            border: "1px solid var(--border-hover)",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = "var(--bg-tertiary)";
-            e.currentTarget.style.borderColor = "var(--brass-border)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "transparent";
-            e.currentTarget.style.borderColor = "var(--border-hover)";
-          }}
-        >
           Mint More
         </button>
       </div>
@@ -1009,94 +1069,109 @@ function StepConfirmation({
   );
 }
 
-/* ══════════════════════════════════════════
+/* =====================================================================
    MAIN ORCHESTRATOR
-   ══════════════════════════════════════════ */
+   ===================================================================== */
 export function MintFlow() {
   const searchParams = useSearchParams();
   const preselected = searchParams
     .get("caliber")
-    ?.toUpperCase() as CaliberId | null;
+    ?.toUpperCase() as Caliber | null;
 
   const [step, setStep] = useState(() => {
     if (preselected && caliberDetails[preselected]) return 1;
     return 0;
   });
-  const [selectedCaliber, setSelectedCaliber] = useState<CaliberId | null>(
+  const [selectedCaliber, setSelectedCaliber] = useState<Caliber | null>(
     () => {
       if (preselected && caliberDetails[preselected]) return preselected;
       return null;
     },
   );
   const [usdcAmount, setUsdcAmount] = useState("");
-  const [walletState, setWalletState] = useState<WalletState>("disconnected");
-  const [txError, setTxError] = useState(false);
-  const [txErrorMessage, setTxErrorMessage] = useState("");
-  const [showWrongNetwork, setShowWrongNetwork] = useState(false);
 
+  const activeCaliber: Caliber = selectedCaliber ?? "9MM";
   const caliber = selectedCaliber ? caliberDetails[selectedCaliber] : null;
 
-  const handleConnect = useCallback(() => {
-    // Simulate wallet connection
-    setWalletState("connected");
-  }, []);
+  // ── Real hooks ──
+  const wallet = useWallet();
+  const { usdc: usdcBalanceRaw } = useTokenBalances();
+  const mintTx = useMintTransaction(activeCaliber);
+  const marketAddress =
+    CONTRACT_ADDRESSES.fuji.calibers[activeCaliber].market;
+  const allowance = useAllowance(
+    CONTRACT_ADDRESSES.fuji.usdc,
+    wallet.address,
+    marketAddress,
+  );
 
-  const handleApprove = useCallback(() => {
-    setWalletState("approving");
-    // Simulate approval delay
-    setTimeout(() => {
-      setWalletState("approved");
-    }, 2000);
-  }, []);
+  // ── Format real USDC balance (6 decimals -> number) ──
+  const usdcBalance = useMemo(() => {
+    if (usdcBalanceRaw === undefined) return 0;
+    return Number(formatUnits(usdcBalanceRaw, 6));
+  }, [usdcBalanceRaw]);
 
-  const handleConfirm = useCallback(() => {
-    setWalletState("confirming");
-    // Simulate transaction delay, then success
-    setTimeout(() => {
-      // 80% chance success, 20% chance fail (for demo)
-      const success = Math.random() > 0.2;
-      if (success) {
-        setWalletState("success");
-        setStep(3);
-      } else {
-        setTxError(true);
-        setTxErrorMessage(
-          "Transaction reverted: insufficient gas. Please try again with a higher gas limit.",
-        );
-        setStep(3);
-      }
-    }, 3000);
-  }, []);
+  // ── Derive TxStatus from hook states ──
+  const txStatus: TxStatus = useMemo(() => {
+    if (mintTx.isMintConfirmed) return "confirmed";
+    if (mintTx.isMintConfirming) return "mint-confirming";
+    if (mintTx.isMintPending) return "minting";
+    if (
+      allowance.hasEnoughAllowance(parseUsdc(usdcAmount || "0")) ||
+      mintTx.isApproveConfirmed
+    )
+      return "approved";
+    if (mintTx.isApproveConfirming) return "approve-confirming";
+    if (mintTx.isApprovePending) return "approving";
+    if (mintTx.approveError || mintTx.mintError) return "failed";
+    return "idle";
+  }, [
+    mintTx.isMintConfirmed,
+    mintTx.isMintConfirming,
+    mintTx.isMintPending,
+    mintTx.isApproveConfirmed,
+    mintTx.isApproveConfirming,
+    mintTx.isApprovePending,
+    mintTx.approveError,
+    mintTx.mintError,
+    allowance,
+    usdcAmount,
+  ]);
 
-  const handleMintMore = useCallback(() => {
+  const errorMessage = parseContractError(
+    mintTx.approveError || mintTx.mintError,
+  );
+
+  // ── Auto-advance to confirmation when mint confirmed ──
+  useEffect(() => {
+    if (mintTx.isMintConfirmed) {
+      setStep(3);
+    }
+  }, [mintTx.isMintConfirmed]);
+
+  // ── Handlers ──
+  function handleApprove() {
+    mintTx.approve(usdcAmount);
+  }
+
+  function handleConfirm() {
+    mintTx.startMint(usdcAmount, DEFAULT_SLIPPAGE_BPS, getDeadline());
+  }
+
+  function handleRetry() {
+    mintTx.reset();
+  }
+
+  function handleMintMore() {
+    mintTx.reset();
     setStep(0);
     setSelectedCaliber(null);
     setUsdcAmount("");
-    setWalletState("disconnected");
-    setTxError(false);
-    setTxErrorMessage("");
-  }, []);
-
-  const handleRetry = useCallback(() => {
-    setTxError(false);
-    setTxErrorMessage("");
-    setStep(2);
-    setWalletState("approved");
-  }, []);
-
-  // Dismiss wrong network for demo
-  useEffect(() => {
-    // Show wrong network banner briefly on step 2 for demo purposes
-    // In production this would check the actual connected chain
-  }, []);
+  }
 
   return (
     <div className="mx-auto w-full max-w-[560px] px-4 py-8 md:py-12">
       <MintProgress currentStep={step} />
-
-      {showWrongNetwork && step >= 2 && (
-        <WrongNetworkBanner onSwitch={() => setShowWrongNetwork(false)} />
-      )}
 
       {step === 0 && (
         <StepSelectCaliber
@@ -1111,6 +1186,7 @@ export function MintFlow() {
           caliber={caliber}
           usdcAmount={usdcAmount}
           setUsdcAmount={setUsdcAmount}
+          usdcBalance={usdcBalance}
           onNext={() => setStep(2)}
           onBack={() => setStep(0)}
         />
@@ -1120,14 +1196,16 @@ export function MintFlow() {
         <StepReview
           caliber={caliber}
           usdcAmount={usdcAmount}
-          walletState={walletState}
-          onConnect={handleConnect}
+          txStatus={txStatus}
+          errorMessage={errorMessage}
+          isConnected={wallet.isConnected}
+          isWrongNetwork={wallet.isWrongNetwork}
+          onConnect={wallet.connect}
+          onSwitchNetwork={wallet.switchToFuji}
           onApprove={handleApprove}
           onConfirm={handleConfirm}
-          onBack={() => {
-            setStep(1);
-            setWalletState("disconnected");
-          }}
+          onRetry={handleRetry}
+          onBack={() => setStep(1)}
         />
       )}
 
@@ -1135,12 +1213,9 @@ export function MintFlow() {
         <StepConfirmation
           caliber={caliber}
           usdcAmount={usdcAmount}
-          isError={txError}
-          errorMessage={txErrorMessage}
-          onViewOrder={() => {
-            // Would navigate to /portfolio/orders/[id]
-            window.location.href = "/portfolio/orders/AMX-2024-001";
-          }}
+          isError={txStatus === "failed"}
+          errorMessage={errorMessage}
+          txHash={mintTx.mintHash}
           onMintMore={handleMintMore}
           onRetry={handleRetry}
         />
