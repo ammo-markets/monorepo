@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Event Indexer** - Worker indexes on-chain events to database
 - [x] **Phase 3: Wallet and API Layer** - Real wallet connection and data access routes
 - [x] **Phase 4: Mint and Redeem Flows** - Wire contract interactions from the UI
-- [ ] **Phase 5: Portfolio and Data Integration** - Replace all mock data with real reads
+- [x] **Phase 5: Portfolio and Data Integration** - Replace all mock data with real reads
 - [ ] **Phase 6: Admin Dashboard** - Keeper operations for order finalization
 
 ## Phase Details
@@ -96,8 +96,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 05-01-PLAN.md -- Extract types, rewire portfolio dashboard and order detail with real data (wave 1)
-- [ ] 05-02-PLAN.md -- Replace all remaining mock-data imports, create /api/activity, delete mock-data.ts (wave 2)
+- [x] 05-01-PLAN.md -- Extract types, rewire portfolio dashboard and order detail with real data (wave 1)
+- [x] 05-02-PLAN.md -- Replace all remaining mock-data imports, create /api/activity, delete mock-data.ts (wave 2)
 
 ### Phase 6: Admin Dashboard
 **Goal**: Keepers can manage the protocol -- review pending orders, finalize settlements, and monitor protocol health
@@ -126,9 +126,9 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 2. Event Indexer | 2/2 | Complete | 2026-02-11 |
 | 3. Wallet and API Layer | 2/2 | Complete | 2026-02-11 |
 | 4. Mint and Redeem Flows | 2/2 | Complete | 2026-02-11 |
-| 5. Portfolio and Data Integration | 0/2 | Not started | - |
+| 5. Portfolio and Data Integration | 2/2 | Complete | 2026-02-11 |
 | 6. Admin Dashboard | 0/2 | Not started | - |
 
 ---
 *Roadmap created: 2026-02-10*
-*Last updated: 2026-02-11*
+*Last updated: 2026-02-11 (Phase 5 complete)*
