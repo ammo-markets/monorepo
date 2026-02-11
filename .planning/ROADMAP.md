@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Foundation** - Deploy contracts to Fuji and migrate database schema
 - [x] **Phase 2: Event Indexer** - Worker indexes on-chain events to database
 - [x] **Phase 3: Wallet and API Layer** - Real wallet connection and data access routes
-- [ ] **Phase 4: Mint and Redeem Flows** - Wire contract interactions from the UI
+- [x] **Phase 4: Mint and Redeem Flows** - Wire contract interactions from the UI
 - [ ] **Phase 5: Portfolio and Data Integration** - Replace all mock data with real reads
 - [ ] **Phase 6: Admin Dashboard** - Keeper operations for order finalization
 
@@ -81,8 +81,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 04-01-PLAN.md -- Shared utilities (errors, tx-utils, allowance hook), mint transaction hook, mint-flow.tsx rewire (wave 1)
-- [ ] 04-02-PLAN.md -- Redeem transaction hook, KYC API route, redeem-flow.tsx rewire (wave 2)
+- [x] 04-01-PLAN.md -- Shared utilities (errors, tx-utils, allowance hook), mint transaction hook, mint-flow.tsx rewire (wave 1)
+- [x] 04-02-PLAN.md -- Redeem transaction hook, KYC API route, redeem-flow.tsx rewire (wave 2)
 
 ### Phase 5: Portfolio and Data Integration
 **Goal**: All mock data is replaced with real database queries and on-chain reads across the entire app
@@ -125,7 +125,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 1. Foundation | 2/2 | Complete | 2026-02-11 |
 | 2. Event Indexer | 2/2 | Complete | 2026-02-11 |
 | 3. Wallet and API Layer | 2/2 | Complete | 2026-02-11 |
-| 4. Mint and Redeem Flows | 0/2 | Not started | - |
+| 4. Mint and Redeem Flows | 2/2 | Complete | 2026-02-11 |
 | 5. Portfolio and Data Integration | 0/2 | Not started | - |
 | 6. Admin Dashboard | 0/2 | Not started | - |
 
