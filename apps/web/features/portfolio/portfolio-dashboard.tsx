@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { formatUnits } from "viem";
 import {
-  ArrowUp,
-  ArrowDown,
   Lock,
   Wallet,
   Copy,
@@ -13,28 +12,57 @@ import {
   Info,
   ArrowRight,
 } from "lucide-react";
-import {
-  type CaliberId,
-  type PortfolioHolding,
-  type PortfolioOrder,
-  portfolioHoldings,
-  portfolioOrders,
-  portfolioStats,
-} from "@/lib/mock-data";
+import { useWallet } from "@/hooks/use-wallet";
+import { useTokenBalances } from "@/hooks/use-token-balances";
+import { truncateAddress, snowtraceAddressUrl } from "@/lib/utils";
+import type { OrderFromAPI, MarketCaliberFromAPI } from "@/lib/types";
+import type { Caliber } from "@ammo-exchange/shared";
+import { CALIBER_SPECS } from "@ammo-exchange/shared";
 import { caliberIcons } from "@/features/shared/caliber-icons";
 
-/* ────────────── Helpers ────────────── */
+/* ────────────── Constants ────────────── */
+
+const CALIBERS: Caliber[] = ["9MM", "556", "22LR", "308"];
+
+/* ────────────── Types ────────────── */
 
 type OrderFilter = "All" | "Active" | "Completed" | "Failed";
 
-const statusColors: Record<PortfolioOrder["status"], string> = {
+type DisplayStatus = "Processing" | "Completed" | "Failed";
+
+interface HoldingRow {
+  caliber: Caliber;
+  symbol: string;
+  name: string;
+  balance: number;
+  price: number;
+  value: number;
+}
+
+/* ────────────── Helpers ────────────── */
+
+function mapOrderStatus(
+  status: OrderFromAPI["status"],
+): DisplayStatus {
+  switch (status) {
+    case "PENDING":
+    case "PROCESSING":
+      return "Processing";
+    case "COMPLETED":
+      return "Completed";
+    case "FAILED":
+    case "CANCELLED":
+      return "Failed";
+  }
+}
+
+const statusColors: Record<DisplayStatus, string> = {
   Processing: "var(--blue)",
-  Shipped: "var(--green)",
   Completed: "var(--green)",
   Failed: "var(--red)",
 };
 
-function StatusBadge({ status }: { status: PortfolioOrder["status"] }) {
+function StatusBadge({ status }: { status: DisplayStatus }) {
   const color = statusColors[status];
   return (
     <span
@@ -53,8 +81,9 @@ function StatusBadge({ status }: { status: PortfolioOrder["status"] }) {
   );
 }
 
-function TypeBadge({ type }: { type: "Mint" | "Redeem" }) {
-  const color = type === "Mint" ? "var(--green)" : "var(--amber)";
+function TypeBadge({ type }: { type: "MINT" | "REDEEM" }) {
+  const label = type === "MINT" ? "Mint" : "Redeem";
+  const color = type === "MINT" ? "var(--green)" : "var(--amber)";
   return (
     <span
       className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium"
@@ -63,9 +92,17 @@ function TypeBadge({ type }: { type: "Mint" | "Redeem" }) {
         color,
       }}
     >
-      {type}
+      {label}
     </span>
   );
+}
+
+function formatDate(iso: string): string {
+  return new Date(iso).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 }
 
 /* ────────────── Skeleton Components ────────────── */
@@ -103,7 +140,7 @@ function HoldingsTableSkeleton() {
           <div className="h-6 w-6 rounded shimmer" />
           <div className="h-5 w-32 rounded shimmer" />
           <div className="ml-auto flex gap-8">
-            {[1, 2, 3, 4].map((j) => (
+            {[1, 2, 3].map((j) => (
               <div key={j} className="h-5 w-16 rounded shimmer" />
             ))}
           </div>
@@ -364,11 +401,10 @@ function DisconnectedState({ onConnect }: { onConnect: () => void }) {
 function HoldingsDesktopRow({
   holding,
 }: {
-  holding: PortfolioHolding;
+  holding: HoldingRow;
   isLast: boolean;
 }) {
-  const Icon = caliberIcons[holding.caliberId];
-  const isPositive = holding.pnl >= 0;
+  const Icon = caliberIcons[holding.caliber];
   return (
     <>
       {/* Caliber */}
@@ -395,6 +431,15 @@ function HoldingsDesktopRow({
           {holding.balance.toLocaleString()} rounds
         </span>
       </td>
+      {/* Price */}
+      <td className="px-6 py-4 text-right">
+        <span
+          className="font-mono text-sm tabular-nums"
+          style={{ color: "var(--text-secondary)" }}
+        >
+          ${holding.price.toFixed(4)}/rd
+        </span>
+      </td>
       {/* Value */}
       <td className="px-6 py-4 text-right">
         <span
@@ -404,30 +449,11 @@ function HoldingsDesktopRow({
           ${holding.value.toFixed(2)}
         </span>
       </td>
-      {/* Avg Cost */}
-      <td className="px-6 py-4 text-right">
-        <span
-          className="font-mono text-sm tabular-nums"
-          style={{ color: "var(--text-secondary)" }}
-        >
-          ${holding.avgCost.toFixed(2)}/rd
-        </span>
-      </td>
-      {/* P&L */}
-      <td className="px-6 py-4 text-right">
-        <span
-          className="inline-flex items-center gap-1 font-mono text-sm tabular-nums"
-          style={{ color: isPositive ? "var(--green)" : "var(--red)" }}
-        >
-          {isPositive ? <ArrowUp size={12} /> : <ArrowDown size={12} />}
-          {isPositive ? "+" : ""}${holding.pnl.toFixed(2)}
-        </span>
-      </td>
       {/* Actions */}
       <td className="px-6 py-4 text-right">
         <div className="flex items-center justify-end gap-2">
           <a
-            href={`/mint?caliber=${holding.caliberId}`}
+            href={`/mint?caliber=${holding.caliber}`}
             className="rounded-md px-3 py-1.5 text-xs font-semibold transition-colors duration-150"
             style={{
               backgroundColor: "var(--brass)",
@@ -443,7 +469,7 @@ function HoldingsDesktopRow({
             Mint More
           </a>
           <a
-            href={`/redeem?caliber=${holding.caliberId}`}
+            href={`/redeem?caliber=${holding.caliber}`}
             className="rounded-md px-3 py-1.5 text-xs font-medium transition-colors duration-150"
             style={{
               backgroundColor: "transparent",
@@ -487,9 +513,8 @@ function HoldingsDesktopRow({
   );
 }
 
-function HoldingsMobileCard({ holding }: { holding: PortfolioHolding }) {
-  const Icon = caliberIcons[holding.caliberId];
-  const isPositive = holding.pnl >= 0;
+function HoldingsMobileCard({ holding }: { holding: HoldingRow }) {
+  const Icon = caliberIcons[holding.caliber];
 
   return (
     <div
@@ -547,47 +572,13 @@ function HoldingsMobileCard({ holding }: { holding: PortfolioHolding }) {
             className="text-[11px] uppercase tracking-wide"
             style={{ color: "var(--text-muted)" }}
           >
-            Avg Cost
+            Price
           </span>
           <div
             className="mt-0.5 font-mono text-sm tabular-nums"
             style={{ color: "var(--text-secondary)" }}
           >
-            ${holding.avgCost.toFixed(2)}/rd
-          </div>
-        </div>
-        <div>
-          <span
-            className="text-[11px] uppercase tracking-wide"
-            style={{ color: "var(--text-muted)" }}
-          >
-            {"P&L"}
-          </span>
-          <div className="mt-0.5">
-            <span
-              className="inline-flex items-center gap-1 font-mono text-sm tabular-nums"
-              style={{ color: isPositive ? "var(--green)" : "var(--red)" }}
-            >
-              {isPositive ? <ArrowUp size={12} /> : <ArrowDown size={12} />}
-              {isPositive ? "+" : ""}${holding.pnl.toFixed(2)}
-            </span>
-          </div>
-        </div>
-        <div>
-          <span
-            className="text-[11px] uppercase tracking-wide"
-            style={{ color: "var(--text-muted)" }}
-          >
-            {"P&L %"}
-          </span>
-          <div className="mt-0.5">
-            <span
-              className="font-mono text-sm tabular-nums"
-              style={{ color: isPositive ? "var(--green)" : "var(--red)" }}
-            >
-              {isPositive ? "+" : ""}
-              {holding.pnlPercent.toFixed(1)}%
-            </span>
+            ${holding.price.toFixed(4)}/rd
           </div>
         </div>
       </div>
@@ -595,7 +586,7 @@ function HoldingsMobileCard({ holding }: { holding: PortfolioHolding }) {
       {/* Actions */}
       <div className="mt-4 flex items-center gap-2">
         <a
-          href={`/mint?caliber=${holding.caliberId}`}
+          href={`/mint?caliber=${holding.caliber}`}
           className="flex-1 rounded-lg px-3 py-2 text-center text-xs font-semibold transition-colors duration-150"
           style={{
             backgroundColor: "var(--brass)",
@@ -605,7 +596,7 @@ function HoldingsMobileCard({ holding }: { holding: PortfolioHolding }) {
           Mint More
         </a>
         <a
-          href={`/redeem?caliber=${holding.caliberId}`}
+          href={`/redeem?caliber=${holding.caliber}`}
           className="flex-1 rounded-lg px-3 py-2 text-center text-xs font-medium transition-colors duration-150"
           style={{
             backgroundColor: "transparent",
@@ -638,18 +629,20 @@ function OrdersDesktopRow({
   order,
   isLast,
 }: {
-  order: PortfolioOrder;
+  order: OrderFromAPI;
   isLast: boolean;
 }) {
-  const Icon = caliberIcons[order.caliberId];
+  const Icon = caliberIcons[order.caliber];
   const router = useRouter();
+  const displayStatus = mapOrderStatus(order.status);
+  const amount = Math.floor(Number(order.amount));
   return (
     <tr
       className="cursor-pointer transition-colors duration-100"
       style={{
         borderBottom: isLast ? "none" : "1px solid var(--border-default)",
       }}
-      onClick={() => router.push(`/portfolio/orders/${order.orderId}`)}
+      onClick={() => router.push(`/portfolio/orders/${order.id}`)}
       onMouseEnter={(e) => {
         e.currentTarget.style.backgroundColor = "var(--bg-tertiary)";
       }}
@@ -663,7 +656,7 @@ function OrdersDesktopRow({
           className="font-mono text-sm"
           style={{ color: "var(--text-primary)" }}
         >
-          #{order.orderId}
+          #{order.id.slice(0, 8)}
         </span>
       </td>
       {/* Type */}
@@ -675,7 +668,7 @@ function OrdersDesktopRow({
         <div className="flex items-center gap-2">
           <Icon size={16} />
           <span className="text-sm" style={{ color: "var(--text-primary)" }}>
-            {order.symbol}
+            {order.caliber}
           </span>
         </div>
       </td>
@@ -685,26 +678,28 @@ function OrdersDesktopRow({
           className="font-mono text-sm tabular-nums"
           style={{ color: "var(--text-primary)" }}
         >
-          {order.amount.toLocaleString()} rounds
+          {amount.toLocaleString()} rounds
         </span>
       </td>
       {/* Status */}
       <td className="px-6 py-4">
-        <StatusBadge status={order.status} />
+        <StatusBadge status={displayStatus} />
       </td>
       {/* Created */}
       <td className="px-6 py-4 text-right">
         <span className="text-sm" style={{ color: "var(--text-muted)" }}>
-          {order.createdAt}
+          {formatDate(order.createdAt)}
         </span>
       </td>
     </tr>
   );
 }
 
-function OrderMobileCard({ order }: { order: PortfolioOrder }) {
-  const Icon = caliberIcons[order.caliberId];
+function OrderMobileCard({ order }: { order: OrderFromAPI }) {
+  const Icon = caliberIcons[order.caliber];
   const router = useRouter();
+  const displayStatus = mapOrderStatus(order.status);
+  const amount = Math.floor(Number(order.amount));
   return (
     <div
       className="cursor-pointer rounded-xl p-4 transition-all duration-150"
@@ -712,7 +707,7 @@ function OrderMobileCard({ order }: { order: PortfolioOrder }) {
         backgroundColor: "var(--bg-secondary)",
         border: "1px solid var(--border-default)",
       }}
-      onClick={() => router.push(`/portfolio/orders/${order.orderId}`)}
+      onClick={() => router.push(`/portfolio/orders/${order.id}`)}
       onMouseEnter={(e) => {
         e.currentTarget.style.borderColor = "var(--brass-border)";
       }}
@@ -724,7 +719,7 @@ function OrderMobileCard({ order }: { order: PortfolioOrder }) {
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
-          router.push(`/portfolio/orders/${order.orderId}`);
+          router.push(`/portfolio/orders/${order.id}`);
         }
       }}
     >
@@ -733,28 +728,28 @@ function OrderMobileCard({ order }: { order: PortfolioOrder }) {
           className="font-mono text-sm font-medium"
           style={{ color: "var(--text-primary)" }}
         >
-          #{order.orderId}
+          #{order.id.slice(0, 8)}
         </span>
-        <StatusBadge status={order.status} />
+        <StatusBadge status={displayStatus} />
       </div>
       <div className="mt-3 flex items-center gap-4">
         <TypeBadge type={order.type} />
         <div className="flex items-center gap-2">
           <Icon size={16} />
           <span className="text-sm" style={{ color: "var(--text-primary)" }}>
-            {order.symbol}
+            {order.caliber}
           </span>
         </div>
         <span
           className="font-mono text-sm tabular-nums"
           style={{ color: "var(--text-secondary)" }}
         >
-          {order.amount.toLocaleString()} rounds
+          {amount.toLocaleString()} rounds
         </span>
       </div>
       <div className="mt-2 flex items-center justify-between">
         <span className="text-xs" style={{ color: "var(--text-muted)" }}>
-          {order.createdAt}
+          {formatDate(order.createdAt)}
         </span>
         <ArrowRight size={14} style={{ color: "var(--text-muted)" }} />
       </div>
@@ -880,60 +875,141 @@ function PrimersSection({ primers }: { primers: number }) {
 /* ────────────── Main Dashboard ────────────── */
 
 export function PortfolioDashboard() {
-  const [walletConnected, setWalletConnected] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const { address, isConnected, isReconnecting, connect } = useWallet();
+  const { tokens, usdc, isLoading: balancesLoading } = useTokenBalances();
+
   const [copiedAddress, setCopiedAddress] = useState(false);
   const [orderFilter, setOrderFilter] = useState<OrderFilter>("All");
-  // Toggle these to see empty states
-  const [hasHoldings] = useState(true);
-  const [hasOrders] = useState(true);
 
-  const holdings = hasHoldings ? portfolioHoldings : [];
-  const allOrders = hasOrders ? portfolioOrders : [];
+  // Market prices
+  const [marketData, setMarketData] = useState<MarketCaliberFromAPI[]>([]);
+  const [marketLoading, setMarketLoading] = useState(true);
 
+  // Orders
+  const [orders, setOrders] = useState<OrderFromAPI[]>([]);
+  const [ordersLoading, setOrdersLoading] = useState(true);
+
+  // Fetch market prices
+  useEffect(() => {
+    setMarketLoading(true);
+    fetch("/api/market")
+      .then((r) => r.json())
+      .then((data) => setMarketData(data.calibers ?? []))
+      .catch(() => setMarketData([]))
+      .finally(() => setMarketLoading(false));
+  }, []);
+
+  // Fetch orders
+  useEffect(() => {
+    if (!address) {
+      setOrders([]);
+      setOrdersLoading(false);
+      return;
+    }
+    setOrdersLoading(true);
+    fetch(`/api/orders?wallet=${address}`)
+      .then((r) => r.json())
+      .then((data) => setOrders(data.orders ?? []))
+      .catch(() => setOrders([]))
+      .finally(() => setOrdersLoading(false));
+  }, [address]);
+
+  // Compute holdings from on-chain balances + market prices
+  const holdings: HoldingRow[] = useMemo(() => {
+    const priceMap = new Map(
+      marketData.map((m) => [m.caliber, m.pricePerRound]),
+    );
+
+    return CALIBERS.map((caliber) => {
+      const raw = tokens[caliber] ?? BigInt(0);
+      const balance = Math.floor(Number(formatUnits(raw, 18)));
+      const price = priceMap.get(caliber) ?? 0;
+      const value = balance * price;
+      const spec = CALIBER_SPECS[caliber];
+      return {
+        caliber,
+        symbol: caliber,
+        name: spec.name,
+        balance,
+        price,
+        value,
+      };
+    }).filter((h) => h.balance > 0);
+  }, [tokens, marketData]);
+
+  // Total portfolio value
+  const totalValue = useMemo(() => {
+    return holdings.reduce((sum, h) => sum + h.value, 0);
+  }, [holdings]);
+
+  // USDC balance display
+  const usdcBalance = usdc ? Number(formatUnits(usdc, 6)) : 0;
+
+  // Filter orders
   const filteredOrders = useMemo(() => {
-    if (orderFilter === "All") return allOrders;
+    if (orderFilter === "All") return orders;
     if (orderFilter === "Active")
-      return allOrders.filter(
-        (o) => o.status === "Processing" || o.status === "Shipped",
+      return orders.filter(
+        (o) => o.status === "PENDING" || o.status === "PROCESSING",
       );
     if (orderFilter === "Completed")
-      return allOrders.filter((o) => o.status === "Completed");
-    return allOrders.filter((o) => o.status === "Failed");
-  }, [orderFilter, allOrders]);
+      return orders.filter((o) => o.status === "COMPLETED");
+    return orders.filter(
+      (o) => o.status === "FAILED" || o.status === "CANCELLED",
+    );
+  }, [orderFilter, orders]);
 
-  const handleConnect = () => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setWalletConnected(true);
-      setIsLoading(false);
-    }, 1200);
-  };
-
-  const handleCopyAddress = () => {
+  const handleCopyAddress = useCallback(() => {
+    if (address) {
+      navigator.clipboard.writeText(address).catch(() => {});
+    }
     setCopiedAddress(true);
     setTimeout(() => setCopiedAddress(false), 2000);
-  };
+  }, [address]);
 
-  if (!walletConnected && !isLoading) {
-    return <DisconnectedState onConnect={handleConnect} />;
+  // Show loading skeleton during reconnection (prevents hydration mismatch)
+  if (isReconnecting) {
+    return (
+      <div className="mx-auto max-w-6xl px-4 py-8 lg:px-8 lg:py-10">
+        <HeaderSkeleton />
+        <section className="mt-10">
+          <h2
+            className="mb-4 text-lg font-semibold"
+            style={{ color: "var(--text-primary)" }}
+          >
+            Holdings
+          </h2>
+          <HoldingsTableSkeleton />
+        </section>
+        <section className="mt-10">
+          <h2
+            className="mb-4 text-lg font-semibold"
+            style={{ color: "var(--text-primary)" }}
+          >
+            Orders
+          </h2>
+          <OrdersTableSkeleton />
+        </section>
+      </div>
+    );
   }
 
+  if (!isConnected) {
+    return <DisconnectedState onConnect={connect} />;
+  }
+
+  const dataLoading = balancesLoading || marketLoading;
   const orderFilterTabs: OrderFilter[] = [
     "All",
     "Active",
     "Completed",
     "Failed",
   ];
-  const totalValue = portfolioStats.totalValue;
-  const change = portfolioStats.change24h;
-  const changePct = portfolioStats.change24hPercent;
-  const isChangePositive = change >= 0;
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 lg:px-8 lg:py-10">
-      {/* ── Section 1: Portfolio Value Header ── */}
-      {isLoading ? (
+      {/* Section 1: Portfolio Value Header */}
+      {dataLoading ? (
         <HeaderSkeleton />
       ) : (
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -950,90 +1026,82 @@ export function PortfolioDashboard() {
             >
               ${totalValue.toFixed(2)}
             </p>
-            <div className="mt-1.5 flex items-center gap-1.5">
-              {isChangePositive ? (
-                <ArrowUp size={14} style={{ color: "var(--green)" }} />
-              ) : (
-                <ArrowDown size={14} style={{ color: "var(--red)" }} />
-              )}
-              <span
-                className="font-mono text-sm tabular-nums"
-                style={{
-                  color: isChangePositive ? "var(--green)" : "var(--red)",
-                }}
+            {usdcBalance > 0 && (
+              <p
+                className="mt-1.5 text-sm"
+                style={{ color: "var(--text-secondary)" }}
               >
-                {isChangePositive ? "+" : ""}${change.toFixed(2)} (
-                {isChangePositive ? "+" : ""}
-                {changePct.toFixed(1)}%)
-              </span>
-              <span className="text-xs" style={{ color: "var(--text-muted)" }}>
-                24h
-              </span>
-            </div>
+                + ${usdcBalance.toFixed(2)} USDC available
+              </p>
+            )}
           </div>
 
           {/* Wallet address */}
-          <div
-            className="flex items-center gap-3 rounded-lg px-4 py-2.5"
-            style={{
-              backgroundColor: "var(--bg-secondary)",
-              border: "1px solid var(--border-default)",
-            }}
-          >
-            {/* Identicon */}
-            <span
-              className="flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold"
+          {address && (
+            <div
+              className="flex items-center gap-3 rounded-lg px-4 py-2.5"
               style={{
-                backgroundColor: "var(--brass-muted)",
-                color: "var(--brass)",
+                backgroundColor: "var(--bg-secondary)",
+                border: "1px solid var(--border-default)",
               }}
             >
-              A
-            </span>
-            <span
-              className="font-mono text-sm"
-              style={{ color: "var(--text-secondary)" }}
-            >
-              {portfolioStats.walletAddress}
-            </span>
-            <button
-              type="button"
-              className="flex h-7 w-7 items-center justify-center rounded-md transition-colors duration-150"
-              style={{ color: "var(--text-muted)" }}
-              onClick={handleCopyAddress}
-              aria-label="Copy address"
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "var(--bg-tertiary)";
-                e.currentTarget.style.color = "var(--text-secondary)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "transparent";
-                e.currentTarget.style.color = "var(--text-muted)";
-              }}
-            >
-              {copiedAddress ? <Check size={14} /> : <Copy size={14} />}
-            </button>
-            <a
-              href="#"
-              className="flex h-7 w-7 items-center justify-center rounded-md transition-colors duration-150"
-              style={{ color: "var(--text-muted)" }}
-              aria-label="View on explorer"
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "var(--bg-tertiary)";
-                e.currentTarget.style.color = "var(--text-secondary)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "transparent";
-                e.currentTarget.style.color = "var(--text-muted)";
-              }}
-            >
-              <ExternalLink size={14} />
-            </a>
-          </div>
+              {/* Identicon */}
+              <span
+                className="flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold"
+                style={{
+                  backgroundColor: "var(--brass-muted)",
+                  color: "var(--brass)",
+                }}
+              >
+                {address.slice(2, 3).toUpperCase()}
+              </span>
+              <span
+                className="font-mono text-sm"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                {truncateAddress(address)}
+              </span>
+              <button
+                type="button"
+                className="flex h-7 w-7 items-center justify-center rounded-md transition-colors duration-150"
+                style={{ color: "var(--text-muted)" }}
+                onClick={handleCopyAddress}
+                aria-label="Copy address"
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "var(--bg-tertiary)";
+                  e.currentTarget.style.color = "var(--text-secondary)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "var(--text-muted)";
+                }}
+              >
+                {copiedAddress ? <Check size={14} /> : <Copy size={14} />}
+              </button>
+              <a
+                href={snowtraceAddressUrl(address)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex h-7 w-7 items-center justify-center rounded-md transition-colors duration-150"
+                style={{ color: "var(--text-muted)" }}
+                aria-label="View on explorer"
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "var(--bg-tertiary)";
+                  e.currentTarget.style.color = "var(--text-secondary)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "var(--text-muted)";
+                }}
+              >
+                <ExternalLink size={14} />
+              </a>
+            </div>
+          )}
         </div>
       )}
 
-      {/* ── Section 2: Holdings ── */}
+      {/* Section 2: Holdings */}
       <section className="mt-10">
         <h2
           className="mb-4 text-lg font-semibold"
@@ -1042,7 +1110,7 @@ export function PortfolioDashboard() {
           Holdings
         </h2>
 
-        {isLoading ? (
+        {dataLoading ? (
           <HoldingsTableSkeleton />
         ) : holdings.length === 0 ? (
           <EmptyHoldings />
@@ -1057,7 +1125,7 @@ export function PortfolioDashboard() {
               }}
             >
               <div className="overflow-x-auto">
-                <table className="w-full min-w-[800px]">
+                <table className="w-full min-w-[700px]">
                   <thead>
                     <tr
                       style={{
@@ -1080,19 +1148,13 @@ export function PortfolioDashboard() {
                         className="px-6 py-3 text-right text-xs font-semibold uppercase tracking-wide"
                         style={{ color: "var(--text-muted)" }}
                       >
+                        Price
+                      </th>
+                      <th
+                        className="px-6 py-3 text-right text-xs font-semibold uppercase tracking-wide"
+                        style={{ color: "var(--text-muted)" }}
+                      >
                         Value
-                      </th>
-                      <th
-                        className="px-6 py-3 text-right text-xs font-semibold uppercase tracking-wide"
-                        style={{ color: "var(--text-muted)" }}
-                      >
-                        Avg Cost
-                      </th>
-                      <th
-                        className="px-6 py-3 text-right text-xs font-semibold uppercase tracking-wide"
-                        style={{ color: "var(--text-muted)" }}
-                      >
-                        {"P&L"}
                       </th>
                       <th
                         className="px-6 py-3 text-right text-xs font-semibold uppercase tracking-wide"
@@ -1105,7 +1167,7 @@ export function PortfolioDashboard() {
                   <tbody>
                     {holdings.map((holding, i) => (
                       <tr
-                        key={holding.caliberId}
+                        key={holding.caliber}
                         className="transition-colors duration-100"
                         style={{
                           borderBottom:
@@ -1135,14 +1197,14 @@ export function PortfolioDashboard() {
             {/* Mobile cards */}
             <div className="flex flex-col gap-3 md:hidden">
               {holdings.map((holding) => (
-                <HoldingsMobileCard key={holding.caliberId} holding={holding} />
+                <HoldingsMobileCard key={holding.caliber} holding={holding} />
               ))}
             </div>
           </>
         )}
       </section>
 
-      {/* ── Section 3: Orders ── */}
+      {/* Section 3: Orders */}
       <section className="mt-10">
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <h2
@@ -1181,7 +1243,7 @@ export function PortfolioDashboard() {
           </div>
         </div>
 
-        {isLoading ? (
+        {ordersLoading ? (
           <OrdersTableSkeleton />
         ) : filteredOrders.length === 0 ? (
           orderFilter === "All" ? (
@@ -1278,9 +1340,9 @@ export function PortfolioDashboard() {
         )}
       </section>
 
-      {/* ── Section 4: Primers ── */}
+      {/* Section 4: Primers */}
       <div className="mt-10">
-        <PrimersSection primers={portfolioStats.primers} />
+        <PrimersSection primers={0} />
       </div>
     </div>
   );
