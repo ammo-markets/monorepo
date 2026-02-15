@@ -9,6 +9,10 @@ export const POLL_INTERVAL_MS = 4_000;
 /** Max blocks per getContractEvents call (stays under Avalanche public RPC's 2,048 limit) */
 export const BATCH_SIZE = 2_000n;
 
+/** Number of blocks to re-scan on each poll for reorg safety.
+ *  Avalanche C-Chain finalizes in ~2s but we use 5 blocks (~10s) as safety margin. */
+export const CONFIRMATION_BLOCKS = 5n;
+
 /** Single cursor key for all 4 CaliberMarket contracts */
 export const CURSOR_KEY = "all-markets";
 
