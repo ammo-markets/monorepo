@@ -12,6 +12,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { useSiwe } from "@/hooks/use-siwe";
+import { Navbar, Footer } from "@/features/layout";
 
 /* ── Types ── */
 
@@ -243,12 +244,21 @@ export default function ProfilePage() {
 
   if (isSessionLoading || (isSignedIn && loading)) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <Loader2
-          size={32}
-          className="animate-spin"
-          style={{ color: "var(--text-muted)" }}
-        />
+      <div
+        className="flex min-h-screen flex-col"
+        style={{ backgroundColor: "var(--bg-primary)" }}
+      >
+        <Navbar />
+        <main className="flex-1">
+          <div className="flex min-h-[60vh] items-center justify-center">
+            <Loader2
+              size={32}
+              className="animate-spin"
+              style={{ color: "var(--text-muted)" }}
+            />
+          </div>
+        </main>
+        <Footer />
       </div>
     );
   }
@@ -274,6 +284,12 @@ export default function ProfilePage() {
   /* ── Render ── */
 
   return (
+    <div
+      className="flex min-h-screen flex-col"
+      style={{ backgroundColor: "var(--bg-primary)" }}
+    >
+      <Navbar />
+      <main className="flex-1">
     <div className="mx-auto max-w-2xl px-4 py-8">
       <h1
         className="text-2xl font-bold"
@@ -595,6 +611,9 @@ export default function ProfilePage() {
           )}
         </div>
       </div>
+    </div>
+      </main>
+      <Footer />
     </div>
   );
 }
