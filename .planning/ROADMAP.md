@@ -100,15 +100,15 @@ Plans:
   2. Admin finalize actions (mint, redeem) trigger cache invalidation so order tables update without manual refresh
   3. React Error Boundaries catch component crashes and show fallback UI instead of white-screening the entire app
   4. Zero `as any` casts remain in the codebase, transaction hooks use `enabled` flags, and fee constants come from the shared package
-**Plans**: TBD
+**Plans:** 2 plans in 2 waves
 
 Plans:
-- [ ] 11-01: TanStack Query migration and QueryClient configuration (replace all useEffect+fetch, configure retry/refetch, wire cache invalidation)
-- [ ] 11-02: Error boundaries and code quality fixes (React Error Boundaries, remove as any, enabled flags, shared fee constants, remove unused imports)
+- [ ] 11-01-PLAN.md -- TanStack Query hooks, QueryClient configuration, migrate all components from useEffect+fetch, cache invalidation on admin finalize
+- [ ] 11-02-PLAN.md -- React Error Boundaries for all route segments, remove as-any casts, remove unused React imports
 
 ## Progress
 
-**Execution Order:** Phase 9 ✓ → Phase 9.1 ✓ → Phase 10 → Phase 11. (Phase 10 could run in parallel with Phase 9.1 since it targets a separate app, but sequential is simpler for solo dev.)
+**Execution Order:** Phase 9 ✓ → Phase 9.1 ✓ → Phase 10 ✓ → Phase 11. (Phase 10 could run in parallel with Phase 9.1 since it targets a separate app, but sequential is simpler for solo dev.)
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|---------------|--------|-----------|
@@ -126,4 +126,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-02-10*
-*Last updated: 2026-02-15 (Phase 10 complete)*
+*Last updated: 2026-02-15 (Phase 11 planned)*
