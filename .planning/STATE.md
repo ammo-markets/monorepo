@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-15)
 ## Current Position
 
 Phase: 11 of 11 (Frontend Data Layer & Quality)
-Plan: 1 of 1 in current phase (done)
+Plan: 2 of 2 in current phase (done)
 Status: Phase 11 Complete
-Last activity: 2026-02-15 -- Completed 11-01 TanStack Query migration (all components migrated)
+Last activity: 2026-02-15 -- Completed 11-02 Error boundaries and type cleanup
 
-Progress: [####################] 100% (23/23 plans across all milestones)
+Progress: [####################] 100% (24/24 plans across all milestones)
 
 ## Performance Metrics
 
@@ -47,6 +47,7 @@ Progress: [####################] 100% (23/23 plans across all milestones)
 | Phase 10 P01 | 2min | 2 tasks | 3 files |
 | Phase 10 P02 | 2min | 2 tasks | 5 files |
 | Phase 11 P01 | 6min | 2 tasks | 20 files |
+| Phase 11 P02 | 5min | 2 tasks | 17 files |
 
 ## Accumulated Context
 
@@ -76,6 +77,9 @@ All v1.0 and v1.1 decisions logged in PROJECT.md Key Decisions table.
 - [Phase 11]: useMarketData gets 60s staleTime (market data less volatile than default)
 - [Phase 11]: Admin finalize dialogs invalidate all ["admin"] queries broadly
 - [Phase 11]: Profile page uses inline useQuery (single consumer, no separate hook)
+- [Phase 11]: Typed BalanceOfContract interface with Abi cast for wagmi useReadContracts (avoids as-any)
+- [Phase 11]: ContractErrorCause interface with 'in' type guard for error cause access
+- [Phase 11]: Named ReactNode/Fragment imports replace default React import for type-only usage
 
 ### Pending Todos
 
@@ -88,5 +92,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-15
-Stopped at: Completed 11-01-PLAN.md (TanStack Query migration -- Phase 11 complete)
+Stopped at: Completed 11-02-PLAN.md (Error boundaries & type cleanup -- Phase 11 fully complete)
 Resume file: None
