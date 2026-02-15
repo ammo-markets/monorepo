@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import {
   Copy,
@@ -13,6 +13,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { useSiwe } from "@/hooks/use-siwe";
+import { useSaveProfile } from "@/hooks/use-save-profile";
 import { Navbar, Footer } from "@/features/layout";
 
 /* ── Types ── */
@@ -151,15 +152,17 @@ function profileToForm(profile: ProfileData): AddressForm {
 export default function ProfilePage() {
   const router = useRouter();
   const { isSignedIn, isSessionLoading } = useSiwe();
-  const queryClient = useQueryClient();
+  const {
+    mutateAsync: saveProfile,
+    isPending: saving,
+    error: saveError,
+  } = useSaveProfile<AddressForm>();
 
   const [copied, setCopied] = useState(false);
 
   // Address editing
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState<AddressForm>(emptyForm);
-  const [saving, setSaving] = useState(false);
-  const [saveError, setSaveError] = useState<string | null>(null);
 
   // Auth guard: wait for session check, then redirect if not signed in
   useEffect(() => {
@@ -194,36 +197,18 @@ export default function ProfilePage() {
     } else {
       setForm(emptyForm);
     }
-    setSaveError(null);
     setEditing(true);
   }, [profile]);
 
   // Save address
   const handleSave = useCallback(async () => {
-    setSaving(true);
-    setSaveError(null);
-
     try {
-      const res = await fetch("/api/users/profile", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => null);
-        setSaveError(data?.error ?? "Failed to save address");
-        return;
-      }
-
-      await queryClient.invalidateQueries({ queryKey: ["profile"] });
+      await saveProfile(form);
       setEditing(false);
     } catch {
-      setSaveError("Network error. Please try again.");
-    } finally {
-      setSaving(false);
+      // error is captured by mutation state
     }
-  }, [form, queryClient]);
+  }, [form, saveProfile]);
 
   // Update form field
   const updateField = (field: keyof AddressForm, value: string) => {
@@ -517,7 +502,7 @@ export default function ProfilePage() {
 
               {saveError && (
                 <p className="text-xs" style={{ color: "var(--red)" }}>
-                  {saveError}
+                  {saveError.message}
                 </p>
               )}
 

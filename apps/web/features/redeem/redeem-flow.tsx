@@ -33,6 +33,7 @@ import { useWallet } from "@/hooks/use-wallet";
 import { useRedeemTransaction } from "@/hooks/use-redeem-transaction";
 import { useAllowance } from "@/hooks/use-allowance";
 import { useTokenBalances } from "@/hooks/use-token-balances";
+import { useKycStatus, useKycSubmit } from "@/hooks/use-kyc";
 import { parseContractError } from "@/lib/errors";
 import { getDeadline, parseTokenAmount } from "@/lib/tx-utils";
 import { snowtraceUrl, truncateAddress } from "@/lib/utils";
@@ -1662,20 +1663,6 @@ export function RedeemFlow() {
   });
   const [ageVerified, setAgeVerified] = useState(false);
 
-  // KYC status from API
-  const [kycStatus, setKycStatus] = useState<string>("NONE");
-  const [kycLoading, setKycLoading] = useState(false);
-  const [kycPrefill, setKycPrefill] = useState<
-    | {
-        fullName?: string | null;
-        dateOfBirth?: string | null;
-        state?: string | null;
-        govIdType?: string | null;
-        govIdNumber?: string | null;
-      }
-    | undefined
-  >(undefined);
-
   const caliber =
     selectedCaliber && caliberDetailsMap
       ? caliberDetailsMap[selectedCaliber]
@@ -1686,6 +1673,12 @@ export function RedeemFlow() {
   const wallet = useWallet();
   const balances = useTokenBalances();
   const redeemTx = useRedeemTransaction(activeCaliber);
+
+  // ── KYC hooks ──
+  const { data: kycData, isLoading: kycLoading } = useKycStatus(wallet.address);
+  const kycStatus = kycData?.kycStatus ?? "NONE";
+  const kycPrefill = kycData?.kycPrefill;
+  const { mutateAsync: submitKyc, isPending: kycSubmitting } = useKycSubmit();
   const tokenAddress = CONTRACT_ADDRESSES.fuji.calibers[activeCaliber].token;
   const marketAddress = CONTRACT_ADDRESSES.fuji.calibers[activeCaliber].market;
   const allowance = useAllowance(tokenAddress, wallet.address, marketAddress);
@@ -1734,32 +1727,6 @@ export function RedeemFlow() {
     }
   }, [redeemTx.isRedeemConfirmed]);
 
-  // ── Fetch KYC status when entering KYC step ──
-  useEffect(() => {
-    if (step === 2 && wallet.address) {
-      setKycLoading(true);
-      fetch("/api/users/kyc")
-        .then((res) => res.json())
-        .then((data) => {
-          setKycStatus(data.kycStatus ?? "NONE");
-          setKycPrefill({
-            fullName: data.kycFullName,
-            dateOfBirth: data.kycDateOfBirth
-              ? new Date(data.kycDateOfBirth).toISOString().split("T")[0]
-              : null,
-            state: data.kycState,
-            govIdType: data.kycGovIdType,
-            govIdNumber: data.kycGovIdNumber,
-          });
-        })
-        .catch(() => {
-          // On error, default to NONE so user can still verify
-          setKycStatus("NONE");
-        })
-        .finally(() => setKycLoading(false));
-    }
-  }, [step, wallet.address]);
-
   // Handle KYC auto-skip for verified users
   const kycAutoSkipRef = useRef(false);
   useEffect(() => {
@@ -1772,26 +1739,12 @@ export function RedeemFlow() {
     }
   }, [step, kycStatus]);
 
-  const handleKycSubmit = useCallback(async (data: KycFormData) => {
-    setKycLoading(true);
-    try {
-      const res = await fetch("/api/users/kyc", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      const result = await res.json();
-      if (!res.ok) {
-        // Handle validation errors if needed
-        return;
-      }
-      setKycStatus(result.kycStatus ?? "NONE");
-    } catch {
-      // On error, stay on KYC step
-    } finally {
-      setKycLoading(false);
-    }
-  }, []);
+  const handleKycSubmit = useCallback(
+    async (data: KycFormData) => {
+      await submitKyc(data);
+    },
+    [submitKyc],
+  );
 
   // ── Handlers ──
   function handleApprove() {
@@ -1854,7 +1807,7 @@ export function RedeemFlow() {
       {step === 2 && (
         <StepKyc
           kycStatus={kycStatus}
-          kycLoading={kycLoading}
+          kycLoading={kycSubmitting}
           onSubmit={handleKycSubmit}
           kycPrefill={kycPrefill}
           onSaveDraft={() => {
