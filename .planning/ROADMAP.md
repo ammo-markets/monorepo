@@ -48,7 +48,7 @@ Full details: `.planning/milestones/v1.2-ROADMAP.md`
 
 **Milestone Goal:** Split the app into a public landing site and a wallet-connected app with clean 4-tab navigation, enriched database for protocol stats/activity/preferences, and unified trade experience.
 
-- [ ] **Phase 12: Database Schema & Stats Worker** - New tables and periodic stats computation
+- [x] **Phase 12: Database Schema & Stats Worker** - New tables and periodic stats computation
 - [ ] **Phase 13: App Shell Restructure** - Route groups, 4-tab nav, wallet gate
 - [ ] **Phase 14: Dashboard** - Personal dashboard with balances, orders, and quick actions
 - [ ] **Phase 15: Unified Trade Page** - Combined mint/redeem/swap with inline caliber info
@@ -69,8 +69,8 @@ Full details: `.planning/milestones/v1.2-ROADMAP.md`
 **Plans:** 2 plans
 
 Plans:
-- [ ] 12-01-PLAN.md -- Prisma schema (ProtocolStats, ActivityLog, UserPreference) + migration + seed
-- [ ] 12-02-PLAN.md -- Stats worker cron job + API endpoints (stats, activity, preferences)
+- [x] 12-01-PLAN.md -- Prisma schema (ProtocolStats, ActivityLog, UserPreference) + migration + seed
+- [x] 12-02-PLAN.md -- Stats worker cron job + API endpoints (stats, activity, preferences)
 
 ### Phase 13: App Shell Restructure
 **Goal**: App has clean separation between public landing routes and wallet-connected app routes with responsive 4-tab navigation
@@ -150,7 +150,7 @@ Phases execute in numeric order: 12 -> 13 -> 14 -> 15 -> 16
 | 9.1 Admin Protection, KYC Data & Profile | v1.2 | 4/4 | Complete | 2026-02-15 |
 | 10. Worker Hardening | v1.2 | 2/2 | Complete | 2026-02-15 |
 | 11. Frontend Data Layer and Quality | v1.2 | 2/2 | Complete | 2026-02-15 |
-| 12. Database Schema & Stats Worker | v1.3 | 0/2 | Planning | - |
+| 12. Database Schema & Stats Worker | v1.3 | 2/2 | Complete | 2026-02-15 |
 | 13. App Shell Restructure | v1.3 | 0/TBD | Not started | - |
 | 14. Dashboard | v1.3 | 0/TBD | Not started | - |
 | 15. Unified Trade Page | v1.3 | 0/TBD | Not started | - |
@@ -158,4 +158,4 @@ Phases execute in numeric order: 12 -> 13 -> 14 -> 15 -> 16
 
 ---
 *Roadmap created: 2026-02-10*
-*Last updated: 2026-02-15 (Phase 12 planned -- 2 plans)*
+*Last updated: 2026-02-15 (Phase 12 complete -- 2/2 plans)*
