@@ -76,32 +76,32 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| LAND-01 | — | Pending |
-| LAND-02 | — | Pending |
-| LAND-03 | — | Pending |
-| LAND-04 | — | Pending |
-| SHELL-01 | — | Pending |
-| SHELL-02 | — | Pending |
-| SHELL-03 | — | Pending |
-| SHELL-04 | — | Pending |
-| DASH-01 | — | Pending |
-| DASH-02 | — | Pending |
-| DASH-03 | — | Pending |
-| DASH-04 | — | Pending |
-| TRADE-01 | — | Pending |
-| TRADE-02 | — | Pending |
-| TRADE-03 | — | Pending |
-| TRADE-04 | — | Pending |
-| DB-01 | — | Pending |
-| DB-02 | — | Pending |
-| DB-03 | — | Pending |
-| DB-04 | — | Pending |
+| LAND-01 | Phase 16 | Pending |
+| LAND-02 | Phase 16 | Pending |
+| LAND-03 | Phase 16 | Pending |
+| LAND-04 | Phase 16 | Pending |
+| SHELL-01 | Phase 13 | Pending |
+| SHELL-02 | Phase 13 | Pending |
+| SHELL-03 | Phase 13 | Pending |
+| SHELL-04 | Phase 13 | Pending |
+| DASH-01 | Phase 14 | Pending |
+| DASH-02 | Phase 14 | Pending |
+| DASH-03 | Phase 14 | Pending |
+| DASH-04 | Phase 14 | Pending |
+| TRADE-01 | Phase 15 | Pending |
+| TRADE-02 | Phase 15 | Pending |
+| TRADE-03 | Phase 15 | Pending |
+| TRADE-04 | Phase 15 | Pending |
+| DB-01 | Phase 12 | Pending |
+| DB-02 | Phase 12 | Pending |
+| DB-03 | Phase 12 | Pending |
+| DB-04 | Phase 12 | Pending |
 
 **Coverage:**
 - v1.3 requirements: 20 total
-- Mapped to phases: 0
-- Unmapped: 20
+- Mapped to phases: 20
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-15*
-*Last updated: 2026-02-15 after initial definition*
+*Last updated: 2026-02-15 after roadmap creation*
