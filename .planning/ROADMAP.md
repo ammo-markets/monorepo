@@ -85,11 +85,11 @@ Plans:
   3. Worker re-processes events within a confirmation window so shallow reorgs do not cause missed or phantom events
   4. Worker refuses to start if required environment variables are missing (fails fast with clear error message)
   5. Worker drains in-flight polling cycle on SIGTERM before exiting
-**Plans**: TBD
+**Plans:** 2 plans in 2 waves
 
 Plans:
-- [ ] 10-01: Complete event coverage (MintRefunded, RedeemCanceled, Paused, Unpaused, fee updates)
-- [ ] 10-02: RPC resilience and operational hardening (retry logic, reorg protection, env validation, graceful shutdown)
+- [ ] 10-01-PLAN.md -- Complete event coverage (MintRefunded, RedeemCanceled, Paused, Unpaused, fee update handlers + indexer wiring)
+- [ ] 10-02-PLAN.md -- RPC resilience and operational hardening (retry transport, reorg protection, env validation, graceful shutdown)
 
 ### Phase 11: Frontend Data Layer and Quality
 **Goal**: Every frontend component fetches data through TanStack Query with proper error handling, and all type safety issues are resolved
@@ -108,7 +108,7 @@ Plans:
 
 ## Progress
 
-**Execution Order:** Phase 9 ✓ → Phase 9.1 → Phase 10 → Phase 11. (Phase 10 could run in parallel with Phase 9.1 since it targets a separate app, but sequential is simpler for solo dev.)
+**Execution Order:** Phase 9 ✓ → Phase 9.1 ✓ → Phase 10 → Phase 11. (Phase 10 could run in parallel with Phase 9.1 since it targets a separate app, but sequential is simpler for solo dev.)
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|---------------|--------|-----------|
@@ -126,4 +126,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-02-10*
-*Last updated: 2026-02-15 (Phase 9.1 complete)*
+*Last updated: 2026-02-15 (Phase 10 planned)*
