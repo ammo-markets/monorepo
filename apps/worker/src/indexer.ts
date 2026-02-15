@@ -17,53 +17,144 @@ import type {
   RedeemRequestedArgs,
   RedeemFinalizedArgs,
 } from "./handlers/redeem";
+import { handleMintRefunded, handleRedeemCanceled } from "./handlers/refund";
+import type {
+  MintRefundedArgs,
+  RedeemCanceledArgs,
+} from "./handlers/refund";
+import {
+  handlePaused,
+  handleUnpaused,
+  handleMintFeeUpdated,
+  handleRedeemFeeUpdated,
+  handleMinMintUpdated,
+} from "./handlers/lifecycle";
 import { prisma } from "@ammo-exchange/db";
 import { CaliberMarketAbi } from "@ammo-exchange/contracts";
 
 // ── Event Fetching ──────────────────────────────────────────────────
 
 /**
- * Fetch all 4 event types from all CaliberMarket contracts in parallel.
+ * Fetch all 9 event types from all CaliberMarket contracts in parallel.
  * Uses strict mode for typed event args.
  */
 async function fetchEvents(fromBlock: bigint, toBlock: bigint) {
-  const [mintStarted, mintFinalized, redeemRequested, redeemFinalized] =
-    await Promise.all([
-      client.getContractEvents({
-        abi: CaliberMarketAbi,
-        address: MARKET_ADDRESSES,
-        eventName: "MintStarted",
-        fromBlock,
-        toBlock,
-        strict: true,
-      }),
-      client.getContractEvents({
-        abi: CaliberMarketAbi,
-        address: MARKET_ADDRESSES,
-        eventName: "MintFinalized",
-        fromBlock,
-        toBlock,
-        strict: true,
-      }),
-      client.getContractEvents({
-        abi: CaliberMarketAbi,
-        address: MARKET_ADDRESSES,
-        eventName: "RedeemRequested",
-        fromBlock,
-        toBlock,
-        strict: true,
-      }),
-      client.getContractEvents({
-        abi: CaliberMarketAbi,
-        address: MARKET_ADDRESSES,
-        eventName: "RedeemFinalized",
-        fromBlock,
-        toBlock,
-        strict: true,
-      }),
-    ]);
+  const [
+    mintStarted,
+    mintFinalized,
+    mintRefunded,
+    redeemRequested,
+    redeemFinalized,
+    redeemCanceled,
+    paused,
+    unpaused,
+    mintFeeUpdated,
+    redeemFeeUpdated,
+    minMintUpdated,
+  ] = await Promise.all([
+    client.getContractEvents({
+      abi: CaliberMarketAbi,
+      address: MARKET_ADDRESSES,
+      eventName: "MintStarted",
+      fromBlock,
+      toBlock,
+      strict: true,
+    }),
+    client.getContractEvents({
+      abi: CaliberMarketAbi,
+      address: MARKET_ADDRESSES,
+      eventName: "MintFinalized",
+      fromBlock,
+      toBlock,
+      strict: true,
+    }),
+    client.getContractEvents({
+      abi: CaliberMarketAbi,
+      address: MARKET_ADDRESSES,
+      eventName: "MintRefunded",
+      fromBlock,
+      toBlock,
+      strict: true,
+    }),
+    client.getContractEvents({
+      abi: CaliberMarketAbi,
+      address: MARKET_ADDRESSES,
+      eventName: "RedeemRequested",
+      fromBlock,
+      toBlock,
+      strict: true,
+    }),
+    client.getContractEvents({
+      abi: CaliberMarketAbi,
+      address: MARKET_ADDRESSES,
+      eventName: "RedeemFinalized",
+      fromBlock,
+      toBlock,
+      strict: true,
+    }),
+    client.getContractEvents({
+      abi: CaliberMarketAbi,
+      address: MARKET_ADDRESSES,
+      eventName: "RedeemCanceled",
+      fromBlock,
+      toBlock,
+      strict: true,
+    }),
+    client.getContractEvents({
+      abi: CaliberMarketAbi,
+      address: MARKET_ADDRESSES,
+      eventName: "Paused",
+      fromBlock,
+      toBlock,
+      strict: true,
+    }),
+    client.getContractEvents({
+      abi: CaliberMarketAbi,
+      address: MARKET_ADDRESSES,
+      eventName: "Unpaused",
+      fromBlock,
+      toBlock,
+      strict: true,
+    }),
+    client.getContractEvents({
+      abi: CaliberMarketAbi,
+      address: MARKET_ADDRESSES,
+      eventName: "MintFeeUpdated",
+      fromBlock,
+      toBlock,
+      strict: true,
+    }),
+    client.getContractEvents({
+      abi: CaliberMarketAbi,
+      address: MARKET_ADDRESSES,
+      eventName: "RedeemFeeUpdated",
+      fromBlock,
+      toBlock,
+      strict: true,
+    }),
+    client.getContractEvents({
+      abi: CaliberMarketAbi,
+      address: MARKET_ADDRESSES,
+      eventName: "MinMintUpdated",
+      fromBlock,
+      toBlock,
+      strict: true,
+    }),
+  ]);
 
-  return { mintStarted, mintFinalized, redeemRequested, redeemFinalized };
+  return {
+    mintStarted,
+    mintFinalized,
+    mintRefunded,
+    redeemRequested,
+    redeemFinalized,
+    redeemCanceled,
+    paused,
+    unpaused,
+    mintFeeUpdated,
+    redeemFeeUpdated,
+    minMintUpdated,
+  };
 }
 
 type FetchedEvents = Awaited<ReturnType<typeof fetchEvents>>;
@@ -83,8 +174,15 @@ async function processAndCommit(
   const allEvents = [
     ...events.mintStarted.map((e) => ({ ...e, eventName: "MintStarted" as const })),
     ...events.mintFinalized.map((e) => ({ ...e, eventName: "MintFinalized" as const })),
+    ...events.mintRefunded.map((e) => ({ ...e, eventName: "MintRefunded" as const })),
     ...events.redeemRequested.map((e) => ({ ...e, eventName: "RedeemRequested" as const })),
     ...events.redeemFinalized.map((e) => ({ ...e, eventName: "RedeemFinalized" as const })),
+    ...events.redeemCanceled.map((e) => ({ ...e, eventName: "RedeemCanceled" as const })),
+    ...events.paused.map((e) => ({ ...e, eventName: "Paused" as const })),
+    ...events.unpaused.map((e) => ({ ...e, eventName: "Unpaused" as const })),
+    ...events.mintFeeUpdated.map((e) => ({ ...e, eventName: "MintFeeUpdated" as const })),
+    ...events.redeemFeeUpdated.map((e) => ({ ...e, eventName: "RedeemFeeUpdated" as const })),
+    ...events.minMintUpdated.map((e) => ({ ...e, eventName: "MinMintUpdated" as const })),
   ];
 
   // Sort by blockNumber ascending, then logIndex ascending
@@ -132,6 +230,35 @@ async function processAndCommit(
               event.args as unknown as RedeemFinalizedArgs,
               meta,
             );
+            break;
+          case "MintRefunded":
+            await handleMintRefunded(
+              tx,
+              event.args as unknown as MintRefundedArgs,
+              meta,
+            );
+            break;
+          case "RedeemCanceled":
+            await handleRedeemCanceled(
+              tx,
+              event.args as unknown as RedeemCanceledArgs,
+              meta,
+            );
+            break;
+          case "Paused":
+            handlePaused(meta, event.args as unknown as { by: `0x${string}` });
+            break;
+          case "Unpaused":
+            handleUnpaused(meta, event.args as unknown as { by: `0x${string}` });
+            break;
+          case "MintFeeUpdated":
+            handleMintFeeUpdated(meta, event.args as unknown as { oldBps: bigint; newBps: bigint });
+            break;
+          case "RedeemFeeUpdated":
+            handleRedeemFeeUpdated(meta, event.args as unknown as { oldBps: bigint; newBps: bigint });
+            break;
+          case "MinMintUpdated":
+            handleMinMintUpdated(meta, event.args as unknown as { oldMin: bigint; newMin: bigint });
             break;
         }
       }
@@ -193,8 +320,15 @@ export async function pollOnce(): Promise<void> {
     const totalEvents =
       events.mintStarted.length +
       events.mintFinalized.length +
+      events.mintRefunded.length +
       events.redeemRequested.length +
-      events.redeemFinalized.length;
+      events.redeemFinalized.length +
+      events.redeemCanceled.length +
+      events.paused.length +
+      events.unpaused.length +
+      events.mintFeeUpdated.length +
+      events.redeemFeeUpdated.length +
+      events.minMintUpdated.length;
 
     if (totalEvents > 0) {
       await processAndCommit(events, batchEnd);
