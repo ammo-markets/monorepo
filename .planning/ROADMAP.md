@@ -4,7 +4,7 @@
 
 - ✅ **v1.0 Fuji Testnet Integration** -- Phases 1-6 (shipped 2026-02-11)
 - ✅ **v1.1 End-to-End Flow Fix** -- Phase 7 (shipped 2026-02-15)
-- **v1.2 Production Hardening** -- Phases 9-11 (in progress)
+- **v1.2 Production Hardening** -- Phases 9-11 + 9.1 (in progress)
 
 ## Phases
 
@@ -36,6 +36,7 @@ Phase 8 (E2E Verification) superseded by v1.2.
 **Milestone Goal:** Fix all security, stability, and code quality gaps identified in senior developer review -- make the protocol deployable to production.
 
 - [x] **Phase 9: Authentication and API Hardening** -- SIWE auth on all routes, admin authorization, rate limiting, CORS, and registration race fix (completed 2026-02-15)
+- [x] **Phase 9.1: Admin Protection, KYC Data & User Profile** -- Server-side admin page protection, KYC identity data collection, user profile page with shipping address (completed 2026-02-15)
 - [ ] **Phase 10: Worker Hardening** -- Complete event coverage, retry logic, reorg protection, startup validation, graceful shutdown
 - [ ] **Phase 11: Frontend Data Layer and Quality** -- TanStack Query migration, error boundaries, cache invalidation, type safety fixes
 
@@ -56,6 +57,23 @@ Phase 8 (E2E Verification) superseded by v1.2.
 Plans:
 - [x] 09-01-PLAN.md -- SIWE authentication infrastructure (session creation, auth helpers, client hook, registration race fix)
 - [x] 09-02-PLAN.md -- Route protection and API hardening (apply auth to all routes, admin authz, KYC gate, shipping ownership, CORS, rate limiting)
+
+### Phase 9.1: Admin Protection, KYC Data & User Profile
+**Goal**: Admin pages are server-side protected (non-keepers see 404), KYC collects real identity data, and users have a profile page with reusable shipping address
+**Depends on**: Phase 9 (SIWE auth, requireSession/requireKeeper helpers)
+**Success Criteria** (what must be TRUE):
+  1. Non-keeper navigating to /admin sees 404 with no content flash (server-side protection)
+  2. Admin link visible only to keepers in the navbar
+  3. KYC form collects name, DOB, state, gov ID type and number — stored in database
+  4. /profile page shows wallet address, KYC status badge, and editable shipping address
+  5. Typecheck passes across all packages
+**Plans:** 4 plans in 2 waves
+
+Plans:
+- [x] 09.1-01-PLAN.md -- Schema migration (KYC identity fields + default shipping address on User model)
+- [x] 09.1-02-PLAN.md -- Admin page protection (server-side layout + conditional navbar links)
+- [x] 09.1-03-PLAN.md -- KYC data collection form (API expansion + form component + redeem flow integration)
+- [x] 09.1-04-PLAN.md -- User profile page (API endpoints + profile page with wallet/KYC/shipping sections)
 
 ### Phase 10: Worker Hardening
 **Goal**: The event indexer handles every contract event reliably, recovers from RPC failures, and shuts down cleanly
@@ -90,7 +108,7 @@ Plans:
 
 ## Progress
 
-**Execution Order:** Phase 9 then Phase 10 then Phase 11. (Phase 10 could run in parallel with Phase 9 since it targets a separate app, but sequential is simpler for solo dev.)
+**Execution Order:** Phase 9 ✓ → Phase 9.1 → Phase 10 → Phase 11. (Phase 10 could run in parallel with Phase 9.1 since it targets a separate app, but sequential is simpler for solo dev.)
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|---------------|--------|-----------|
@@ -102,9 +120,10 @@ Plans:
 | 6. Admin Dashboard | v1.0 | 2/2 | Complete | 2026-02-11 |
 | 7. Registration and Indexing Fixes | v1.1 | 2/2 | Complete | 2026-02-15 |
 | 9. Authentication and API Hardening | v1.2 | 2/2 | Complete | 2026-02-15 |
+| 9.1 Admin Protection, KYC Data & Profile | v1.2 | 4/4 | Complete | 2026-02-15 |
 | 10. Worker Hardening | v1.2 | 0/2 | Not started | - |
 | 11. Frontend Data Layer and Quality | v1.2 | 0/2 | Not started | - |
 
 ---
 *Roadmap created: 2026-02-10*
-*Last updated: 2026-02-15 (Phase 9 complete)*
+*Last updated: 2026-02-15 (Phase 9.1 complete)*
