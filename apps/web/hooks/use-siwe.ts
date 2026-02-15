@@ -7,6 +7,7 @@ import { SiweMessage } from "siwe";
 interface SiweState {
   isSignedIn: boolean;
   isSigningIn: boolean;
+  isSessionLoading: boolean;
   address: string | null;
 }
 
@@ -14,6 +15,7 @@ export function useSiwe() {
   const [state, setState] = useState<SiweState>({
     isSignedIn: false,
     isSigningIn: false,
+    isSessionLoading: true,
     address: null,
   });
 
@@ -31,12 +33,14 @@ export function useSiwe() {
         setState({
           isSignedIn: true,
           isSigningIn: false,
+          isSessionLoading: false,
           address: data.address,
         });
       } else {
         setState({
           isSignedIn: false,
           isSigningIn: false,
+          isSessionLoading: false,
           address: null,
         });
       }
@@ -44,6 +48,7 @@ export function useSiwe() {
       setState({
         isSignedIn: false,
         isSigningIn: false,
+        isSessionLoading: false,
         address: null,
       });
     }
@@ -86,6 +91,7 @@ export function useSiwe() {
         setState({
           isSignedIn: true,
           isSigningIn: false,
+          isSessionLoading: false,
           address: data.address,
         });
       } else {
@@ -102,7 +108,7 @@ export function useSiwe() {
     } catch {
       // Ignore errors — clear client state regardless
     }
-    setState({ isSignedIn: false, isSigningIn: false, address: null });
+    setState({ isSignedIn: false, isSigningIn: false, isSessionLoading: false, address: null });
   }, []);
 
   // Restore session from cookie on mount
@@ -127,6 +133,7 @@ export function useSiwe() {
   return {
     isSignedIn: state.isSignedIn,
     isSigningIn: state.isSigningIn,
+    isSessionLoading: state.isSessionLoading,
     address: state.address,
     signIn,
     signOut,

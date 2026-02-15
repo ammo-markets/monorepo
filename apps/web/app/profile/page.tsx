@@ -148,11 +148,10 @@ function profileToForm(profile: ProfileData): AddressForm {
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { isSignedIn, address } = useSiwe();
+  const { isSignedIn, isSessionLoading } = useSiwe();
 
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [sessionChecked, setSessionChecked] = useState(false);
   const [copied, setCopied] = useState(false);
 
   // Address editing
@@ -163,16 +162,10 @@ export default function ProfilePage() {
 
   // Auth guard: wait for session check, then redirect if not signed in
   useEffect(() => {
-    // Give useSiwe a tick to restore session from cookie
-    const timer = setTimeout(() => setSessionChecked(true), 100);
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    if (sessionChecked && !isSignedIn) {
+    if (!isSessionLoading && !isSignedIn) {
       router.push("/");
     }
-  }, [sessionChecked, isSignedIn, router]);
+  }, [isSessionLoading, isSignedIn, router]);
 
   // Fetch profile data
   const fetchProfile = useCallback(async () => {
@@ -248,7 +241,7 @@ export default function ProfilePage() {
 
   /* ── Loading / Auth States ── */
 
-  if (!sessionChecked || (isSignedIn && loading)) {
+  if (isSessionLoading || (isSignedIn && loading)) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <Loader2
