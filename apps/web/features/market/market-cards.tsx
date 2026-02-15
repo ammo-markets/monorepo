@@ -1,7 +1,6 @@
 "use client";
 
-import React from "react";
-
+import type { ReactNode } from "react";
 import { ArrowRight } from "lucide-react";
 import { caliberIcons } from "@/features/shared/caliber-icons";
 import { useMarketData } from "@/hooks/use-market-data";
@@ -12,7 +11,7 @@ function SectionTitle({
   children,
   id,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   id?: string;
 }) {
   return (

@@ -1,7 +1,6 @@
 "use client";
 
-import React from "react";
-
+import type { ReactNode } from "react";
 import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { useMarketData } from "@/hooks/use-market-data";
 import { useSearchParams } from "next/navigation";
@@ -177,8 +176,8 @@ function PrimaryButton({
 }: {
   disabled?: boolean;
   onClick: () => void;
-  children: React.ReactNode;
-  icon?: React.ReactNode;
+  children: ReactNode;
+  icon?: ReactNode;
 }) {
   return (
     <button
@@ -212,7 +211,7 @@ function GhostButton({
   children,
 }: {
   onClick: () => void;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <button
@@ -248,7 +247,7 @@ function FormField({
   label: string;
   required?: boolean;
   error?: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <div>

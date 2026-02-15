@@ -1,7 +1,6 @@
 "use client";
 
-import React from "react";
-
+import type { ReactNode } from "react";
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -245,7 +244,7 @@ function MobileCaliberCard({
   );
 }
 
-function DataItem({ label, value }: { label: string; value: React.ReactNode }) {
+function DataItem({ label, value }: { label: string; value: ReactNode }) {
   return (
     <div>
       <span

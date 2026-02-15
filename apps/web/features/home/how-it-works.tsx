@@ -1,5 +1,5 @@
-import React from "react";
-function SectionTitle({ children }: { children: React.ReactNode }) {
+import type { ReactNode } from "react";
+function SectionTitle({ children }: { children: ReactNode }) {
   return (
     <div className="mb-12 text-center lg:mb-16">
       <h2

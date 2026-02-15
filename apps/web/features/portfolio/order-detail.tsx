@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import { Fragment, type ReactNode } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -438,10 +438,10 @@ function OrderDetailSkeleton() {
         <div className="mb-6 h-6 w-32 rounded shimmer" />
         <div className="hidden sm:flex items-center gap-2">
           {[1, 2, 3].map((i) => (
-            <React.Fragment key={i}>
+            <Fragment key={i}>
               <div className="h-8 w-8 rounded-full shimmer" />
               {i < 3 && <div className="h-0.5 flex-1 shimmer" />}
-            </React.Fragment>
+            </Fragment>
           ))}
         </div>
         <div className="block sm:hidden flex flex-col gap-4">
@@ -482,7 +482,7 @@ function DetailRow({
   children,
 }: {
   label: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <div className="flex flex-col gap-1">

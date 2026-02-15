@@ -1,4 +1,4 @@
-import React from "react";
+import type { ReactNode } from "react";
 import type { CaliberDetailData } from "@/lib/types";
 
 interface TokenStatsProps {
@@ -11,8 +11,8 @@ function StatCard({
   suffix,
 }: {
   label: string;
-  value: React.ReactNode;
-  suffix?: React.ReactNode;
+  value: ReactNode;
+  suffix?: ReactNode;
 }) {
   return (
     <div

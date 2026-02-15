@@ -48,8 +48,12 @@ export function parseContractError(error: Error | null): string {
   }
 
   // 2. Custom contract error name (e.g. CaliberMarket revert)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const cause = (error as any).cause;
+  interface ContractErrorCause {
+    data?: { errorName?: string };
+    reason?: string;
+  }
+  const cause: ContractErrorCause | undefined =
+    "cause" in error ? (error.cause as ContractErrorCause) : undefined;
   const errorName: string | undefined =
     cause?.data?.errorName ?? cause?.reason;
   if (errorName && CONTRACT_ERROR_MESSAGES[errorName]) {

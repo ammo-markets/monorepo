@@ -1,7 +1,6 @@
 "use client";
 
-import React from "react";
-
+import type { ReactNode } from "react";
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useMarketData } from "@/hooks/use-market-data";
 import {
@@ -729,7 +728,7 @@ interface SwapWidgetProps {
   defaultOpen?: boolean;
   initialPayToken?: TokenId;
   initialReceiveToken?: TokenId;
-  trigger?: React.ReactNode;
+  trigger?: ReactNode;
 }
 
 export function SwapWidget({ defaultOpen = false, trigger }: SwapWidgetProps) {
