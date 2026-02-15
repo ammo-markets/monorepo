@@ -2,6 +2,7 @@
 
 import { Wallet } from "lucide-react";
 import { useWallet } from "@/hooks/use-wallet";
+import { useSiwe } from "@/hooks/use-siwe";
 import { useTokenBalances } from "@/hooks/use-token-balances";
 import { truncateAddress } from "@/lib/utils";
 
@@ -27,6 +28,7 @@ export function WalletButton() {
     isSwitching,
   } = useWallet();
 
+  const { isSignedIn, isSigningIn, signIn, signOut } = useSiwe();
   const { usdc } = useTokenBalances();
 
   // During reconnection, render disconnected state to match SSR (prevents hydration mismatch)
@@ -87,7 +89,35 @@ export function WalletButton() {
     );
   }
 
-  // State C: Connected and correct network
+  // State C: Connected but not signed in — prompt SIWE
+  if (!isSignedIn) {
+    return (
+      <button
+        type="button"
+        className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-150"
+        style={{
+          backgroundColor: "transparent",
+          border: "1px solid var(--brass-border)",
+          color: "var(--brass)",
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = "rgba(var(--brass-rgb), 0.1)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = "transparent";
+        }}
+        onClick={signIn}
+        disabled={isSigningIn}
+      >
+        <Wallet size={16} />
+        <span className="hidden sm:inline">
+          {isSigningIn ? "Signing..." : "Sign In"}
+        </span>
+      </button>
+    );
+  }
+
+  // State D: Connected, correct network, and signed in
   return (
     <button
       type="button"
@@ -97,7 +127,10 @@ export function WalletButton() {
         border: "1px solid var(--border-hover)",
         color: "var(--text-primary)",
       }}
-      onClick={disconnect}
+      onClick={() => {
+        signOut();
+        disconnect();
+      }}
     >
       {/* Identicon placeholder */}
       <span

@@ -899,7 +899,7 @@ export function PortfolioDashboard() {
       .finally(() => setMarketLoading(false));
   }, []);
 
-  // Fetch orders
+  // Fetch orders (session cookie identifies the user)
   useEffect(() => {
     if (!address) {
       setOrders([]);
@@ -907,8 +907,11 @@ export function PortfolioDashboard() {
       return;
     }
     setOrdersLoading(true);
-    fetch(`/api/orders?wallet=${address}`)
-      .then((r) => r.json())
+    fetch("/api/orders")
+      .then((r) => {
+        if (!r.ok) return { orders: [] };
+        return r.json();
+      })
       .then((data) => setOrders(data.orders ?? []))
       .catch(() => setOrders([]))
       .finally(() => setOrdersLoading(false));

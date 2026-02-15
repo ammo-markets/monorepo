@@ -45,7 +45,7 @@ export async function handleMintStarted(
       type: "MINT",
       status: "PENDING",
       caliber: prismaCaliber,
-      amount: args.usdcAmount,
+      amount: args.usdcAmount.toString(),
       onChainOrderId: args.orderId.toString(),
       walletAddress: userAddress,
       txHash: meta.transactionHash,

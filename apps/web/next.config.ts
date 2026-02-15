@@ -20,6 +20,16 @@ const nextConfig: NextConfig = {
         "@prisma/client": "commonjs @prisma/client",
       });
     }
+
+    // Silence warnings from wagmi transitive deps (MetaMask SDK, WalletConnect/pino)
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        "@react-native-async-storage/async-storage": false,
+        "pino-pretty": false,
+      };
+    }
+
     return config;
   },
 };

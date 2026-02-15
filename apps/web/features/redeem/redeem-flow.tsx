@@ -1775,7 +1775,7 @@ export function RedeemFlow() {
   useEffect(() => {
     if (step === 2 && wallet.address) {
       setKycLoading(true);
-      fetch(`/api/users/kyc?wallet=${wallet.address}`)
+      fetch("/api/users/kyc")
         .then((res) => res.json())
         .then((data) => {
           setKycStatus(data.kycStatus ?? "NONE");

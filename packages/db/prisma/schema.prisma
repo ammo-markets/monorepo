@@ -56,7 +56,7 @@ model Order {
   type            OrderType
   status          OrderStatus @default(PENDING)
   caliber         Caliber
-  amount          BigInt
+  amount          String
   onChainOrderId  String?
   walletAddress   String?
   txHash          String?     @unique
