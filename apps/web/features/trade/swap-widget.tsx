@@ -3,6 +3,7 @@
 import React from "react";
 
 import { useState, useCallback, useRef, useEffect } from "react";
+import { useMarketData } from "@/hooks/use-market-data";
 import {
   X,
   ChevronDown,
@@ -633,14 +634,8 @@ function LendBorrowTab() {
 
 function SwapWidgetContent({ onClose }: { onClose: () => void }) {
   const [tab, setTab] = useState<"swap" | "lend">("swap");
-  const [tokens, setTokens] = useState<Token[]>(() => buildTokens([]));
-
-  useEffect(() => {
-    fetch("/api/market")
-      .then((res) => res.json())
-      .then((data) => setTokens(buildTokens(data.calibers ?? [])))
-      .catch(() => {});
-  }, []);
+  const { data: marketCalibers = [] } = useMarketData();
+  const tokens = buildTokens(marketCalibers);
 
   return (
     <div

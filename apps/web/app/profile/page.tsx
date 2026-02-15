@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import {
   Copy,
@@ -150,9 +151,8 @@ function profileToForm(profile: ProfileData): AddressForm {
 export default function ProfilePage() {
   const router = useRouter();
   const { isSignedIn, isSessionLoading } = useSiwe();
+  const queryClient = useQueryClient();
 
-  const [profile, setProfile] = useState<ProfileData | null>(null);
-  const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
 
   // Address editing
@@ -168,25 +168,16 @@ export default function ProfilePage() {
     }
   }, [isSessionLoading, isSignedIn, router]);
 
-  // Fetch profile data
-  const fetchProfile = useCallback(async () => {
-    try {
+  // Fetch profile data via TanStack Query
+  const { data: profile = null, isLoading: loading } = useQuery<ProfileData | null>({
+    queryKey: ["profile"],
+    queryFn: async () => {
       const res = await fetch("/api/users/profile");
-      if (!res.ok) return;
-      const data: ProfileData = await res.json();
-      setProfile(data);
-    } catch {
-      // Silently fail -- user will see empty state
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (isSignedIn) {
-      fetchProfile();
-    }
-  }, [isSignedIn, fetchProfile]);
+      if (!res.ok) return null;
+      return (await res.json()) as ProfileData;
+    },
+    enabled: !!isSignedIn,
+  });
 
   // Copy wallet address
   const handleCopy = useCallback(() => {
@@ -225,15 +216,14 @@ export default function ProfilePage() {
         return;
       }
 
-      const updated: ProfileData = await res.json();
-      setProfile(updated);
+      await queryClient.invalidateQueries({ queryKey: ["profile"] });
       setEditing(false);
     } catch {
       setSaveError("Network error. Please try again.");
     } finally {
       setSaving(false);
     }
-  }, [form]);
+  }, [form, queryClient]);
 
   // Update form field
   const updateField = (field: keyof AddressForm, value: string) => {

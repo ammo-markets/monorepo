@@ -1,21 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { caliberIcons } from "@/features/shared/caliber-icons";
-import type { MarketCaliberFromAPI } from "@/lib/types";
+import { useMarketData } from "@/hooks/use-market-data";
 import type { Caliber } from "@ammo-exchange/shared";
 
 export function MarketTicker() {
-  const [calibers, setCalibers] = useState<MarketCaliberFromAPI[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch("/api/market")
-      .then((res) => res.json())
-      .then((data) => setCalibers(data.calibers ?? []))
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
+  const { data: calibers = [], isLoading: loading } = useMarketData();
 
   if (loading) return <MarketTickerSkeleton />;
 

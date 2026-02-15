@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { useMarketData } from "@/hooks/use-market-data";
 import { useSearchParams } from "next/navigation";
 import { formatUnits } from "viem";
 import {
@@ -1106,23 +1107,12 @@ export function MintFlow() {
     .get("caliber")
     ?.toUpperCase() as Caliber | null;
 
-  const [caliberDetailsMap, setCaliberDetailsMap] = useState<Record<
-    Caliber,
-    CaliberDetailData
-  > | null>(null);
+  const { data: marketCalibers = [] } = useMarketData();
 
-  useEffect(() => {
-    fetch("/api/market")
-      .then((res) => res.json())
-      .then((json) => {
-        const calibers: MarketCaliberFromAPI[] = json.calibers ?? [];
-        if (calibers.length > 0) {
-          const details = buildAllCaliberDetails(calibers);
-          setCaliberDetailsMap(details);
-        }
-      })
-      .catch(() => {});
-  }, []);
+  const caliberDetailsMap = useMemo(() => {
+    if (marketCalibers.length === 0) return null;
+    return buildAllCaliberDetails(marketCalibers);
+  }, [marketCalibers]);
 
   const [step, setStep] = useState(() => {
     if (preselected) return 1;

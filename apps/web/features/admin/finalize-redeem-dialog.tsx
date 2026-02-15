@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { X } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useFinalizeRedeem } from "@/hooks/use-finalize-redeem";
 import { parseContractError } from "@/lib/errors";
 import type { Caliber } from "@ammo-exchange/shared";
@@ -45,6 +46,7 @@ export function FinalizeRedeemDialog({
   onOpenChange,
   onFinalized,
 }: FinalizeRedeemDialogProps) {
+  const queryClient = useQueryClient();
   const { finalizeRedeem, hash, error, isPending, isConfirming, isConfirmed, reset } =
     useFinalizeRedeem(order.caliber as Caliber);
 
@@ -52,11 +54,12 @@ export function FinalizeRedeemDialog({
   useEffect(() => {
     if (isConfirmed) {
       toast.success("Redeem order finalized");
+      void queryClient.invalidateQueries({ queryKey: ["admin"] });
       onFinalized(order.id);
       onOpenChange(false);
       reset();
     }
-  }, [isConfirmed, order.id, onFinalized, onOpenChange, reset]);
+  }, [isConfirmed, order.id, onFinalized, onOpenChange, reset, queryClient]);
 
   // React to error
   useEffect(() => {

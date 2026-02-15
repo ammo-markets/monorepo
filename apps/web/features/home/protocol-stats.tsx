@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import type { MarketCaliberFromAPI } from "@/lib/types";
+import { useEffect, useRef, useState, useMemo } from "react";
+import { useMarketData } from "@/hooks/use-market-data";
 
 function useCountUp(target: string, duration = 1200) {
   const [display, setDisplay] = useState(target);
@@ -87,32 +87,21 @@ function formatCompact(n: number): string {
 }
 
 export function ProtocolStats() {
-  const [stats, setStats] = useState({
-    tvl: "--",
-    roundsTokenized: "--",
-    uniqueHolders: "--",
-    volume24h: "--",
-  });
+  const { data: calibers = [] } = useMarketData();
 
-  useEffect(() => {
-    fetch("/api/market")
-      .then((res) => res.json())
-      .then((data) => {
-        const calibers: MarketCaliberFromAPI[] = data.calibers ?? [];
-        const totalRounds = calibers.reduce((sum, c) => sum + c.totalSupply, 0);
-        const tvl = calibers.reduce(
-          (sum, c) => sum + c.totalSupply * c.pricePerRound,
-          0,
-        );
-        setStats({
-          tvl: formatCompact(tvl),
-          roundsTokenized: totalRounds.toLocaleString("en-US"),
-          uniqueHolders: "--",
-          volume24h: "--",
-        });
-      })
-      .catch(() => {});
-  }, []);
+  const stats = useMemo(() => {
+    const totalRounds = calibers.reduce((sum, c) => sum + c.totalSupply, 0);
+    const tvl = calibers.reduce(
+      (sum, c) => sum + c.totalSupply * c.pricePerRound,
+      0,
+    );
+    return {
+      tvl: calibers.length > 0 ? formatCompact(tvl) : "--",
+      roundsTokenized: calibers.length > 0 ? totalRounds.toLocaleString("en-US") : "--",
+      uniqueHolders: "--",
+      volume24h: "--",
+    };
+  }, [calibers]);
 
   return (
     <section

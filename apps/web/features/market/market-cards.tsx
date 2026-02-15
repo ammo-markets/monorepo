@@ -2,9 +2,9 @@
 
 import React from "react";
 
-import { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { caliberIcons } from "@/features/shared/caliber-icons";
+import { useMarketData } from "@/hooks/use-market-data";
 import type { MarketCaliberFromAPI } from "@/lib/types";
 import type { Caliber } from "@ammo-exchange/shared";
 
@@ -130,16 +130,7 @@ function CaliberCardSkeleton() {
 }
 
 export function MarketCards() {
-  const [calibers, setCalibers] = useState<MarketCaliberFromAPI[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch("/api/market")
-      .then((res) => res.json())
-      .then((data) => setCalibers(data.calibers ?? []))
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
+  const { data: calibers = [], isLoading: loading } = useMarketData();
 
   return (
     <section

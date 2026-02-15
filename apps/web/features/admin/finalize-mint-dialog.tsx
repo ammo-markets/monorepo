@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { parseUnits } from "viem";
 import { toast } from "sonner";
 import { X } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useFinalizeMint } from "@/hooks/use-finalize-mint";
 import { parseContractError } from "@/lib/errors";
 import type { Caliber } from "@ammo-exchange/shared";
@@ -35,6 +36,7 @@ export function FinalizeMintDialog({
   onOpenChange,
   onFinalized,
 }: FinalizeMintDialogProps) {
+  const queryClient = useQueryClient();
   const [price, setPrice] = useState("");
   const [priceError, setPriceError] = useState("");
 
@@ -45,13 +47,14 @@ export function FinalizeMintDialog({
   useEffect(() => {
     if (isConfirmed) {
       toast.success("Mint order finalized");
+      void queryClient.invalidateQueries({ queryKey: ["admin"] });
       onFinalized(order.id);
       onOpenChange(false);
       reset();
       setPrice("");
       setPriceError("");
     }
-  }, [isConfirmed, order.id, onFinalized, onOpenChange, reset]);
+  }, [isConfirmed, order.id, onFinalized, onOpenChange, reset, queryClient]);
 
   // React to error
   useEffect(() => {

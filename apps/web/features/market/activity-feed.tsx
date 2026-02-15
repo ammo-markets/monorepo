@@ -1,15 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
-interface ActivityItem {
-  id: string;
-  type: "MINT" | "REDEEM";
-  amount: string;
-  walletAddress: string;
-  caliber: string;
-  updatedAt: string;
-}
+import { useActivity } from "@/hooks/use-activity";
+import type { ActivityItem } from "@/hooks/use-activity";
 
 function truncateAddress(addr: string): string {
   if (addr.length <= 10) return addr;
@@ -47,16 +39,7 @@ function TypeBadge({ type }: { type: "MINT" | "REDEEM" }) {
 }
 
 export function ActivityFeed() {
-  const [activity, setActivity] = useState<ActivityItem[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch("/api/activity")
-      .then((res) => res.json())
-      .then((data) => setActivity(data.activity ?? []))
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
+  const { data: activity = [], isLoading: loading, error } = useActivity();
 
   return (
     <div>
@@ -73,7 +56,13 @@ export function ActivityFeed() {
           border: "1px solid var(--border-default)",
         }}
       >
-        {loading ? (
+        {error ? (
+          <div className="px-4 py-8 text-center">
+            <span className="text-sm" style={{ color: "var(--red)" }}>
+              Failed to load activity
+            </span>
+          </div>
+        ) : loading ? (
           <div className="flex flex-col gap-3 p-4">
             {[1, 2, 3].map((i) => (
               <div key={i} className="h-8 w-full rounded shimmer" />

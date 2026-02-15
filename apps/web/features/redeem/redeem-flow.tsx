@@ -3,6 +3,7 @@
 import React from "react";
 
 import { useState, useCallback, useEffect, useRef, useMemo } from "react";
+import { useMarketData } from "@/hooks/use-market-data";
 import { useSearchParams } from "next/navigation";
 import { formatUnits } from "viem";
 import {
@@ -1637,22 +1638,12 @@ export function RedeemFlow() {
     .get("caliber")
     ?.toUpperCase() as Caliber | null;
 
-  const [caliberDetailsMap, setCaliberDetailsMap] = useState<Record<
-    Caliber,
-    CaliberDetailData
-  > | null>(null);
+  const { data: marketCalibers = [] } = useMarketData();
 
-  useEffect(() => {
-    fetch("/api/market")
-      .then((res) => res.json())
-      .then((json) => {
-        const calibers: MarketCaliberFromAPI[] = json.calibers ?? [];
-        if (calibers.length > 0) {
-          setCaliberDetailsMap(buildAllCaliberDetails(calibers));
-        }
-      })
-      .catch(() => {});
-  }, []);
+  const caliberDetailsMap = useMemo(() => {
+    if (marketCalibers.length === 0) return null;
+    return buildAllCaliberDetails(marketCalibers);
+  }, [marketCalibers]);
 
   const [step, setStep] = useState(0);
   const [selectedCaliber, setSelectedCaliber] = useState<Caliber | null>(

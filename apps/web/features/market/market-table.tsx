@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowUp,
@@ -11,6 +11,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { caliberIcons } from "@/features/shared/caliber-icons";
+import { useMarketData } from "@/hooks/use-market-data";
 import type { MarketCaliberFromAPI } from "@/lib/types";
 import type { Caliber } from "@ammo-exchange/shared";
 
@@ -263,16 +264,7 @@ function DataItem({ label, value }: { label: string; value: React.ReactNode }) {
 export function MarketTable() {
   const [sortKey, setSortKey] = useState<SortKey | null>(null);
   const [sortDir, setSortDir] = useState<SortDir>("desc");
-  const [calibers, setCalibers] = useState<MarketCaliberFromAPI[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    fetch("/api/market")
-      .then((res) => res.json())
-      .then((data) => setCalibers(data.calibers ?? []))
-      .catch(() => {})
-      .finally(() => setIsLoading(false));
-  }, []);
+  const { data: calibers = [], isLoading } = useMarketData();
 
   const handleSort = (key: SortKey) => {
     if (sortKey === key) {

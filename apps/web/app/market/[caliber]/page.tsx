@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { use, useMemo } from "react";
 import { notFound } from "next/navigation";
 import { Navbar, Footer } from "@/features/layout";
 import {
@@ -11,6 +11,7 @@ import {
   ActionPanelDesktop,
   ActionPanelMobile,
 } from "@/features/market";
+import { useMarketData } from "@/hooks/use-market-data";
 import type { CaliberDetailData, MarketCaliberFromAPI } from "@/lib/types";
 import { CALIBER_SPECS, FEES } from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
@@ -59,22 +60,13 @@ export default function CaliberDetailPage({
   const caliberId = resolveCaliberId(caliberSlug);
   if (!caliberId) notFound();
 
-  const [data, setData] = useState<CaliberDetailData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { data: calibers = [], isLoading: loading } = useMarketData();
 
-  useEffect(() => {
-    fetch("/api/market")
-      .then((res) => res.json())
-      .then((json) => {
-        const calibers: MarketCaliberFromAPI[] = json.calibers ?? [];
-        const match = calibers.find((c) => c.caliber === caliberId);
-        if (match) {
-          setData(buildCaliberDetail(caliberId, match));
-        }
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, [caliberId]);
+  const data = useMemo(() => {
+    const match = calibers.find((c) => c.caliber === caliberId);
+    if (match) return buildCaliberDetail(caliberId, match);
+    return null;
+  }, [calibers, caliberId]);
 
   if (loading) {
     return (

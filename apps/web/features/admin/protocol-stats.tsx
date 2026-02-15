@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import {
   DollarSign,
   Clock,
@@ -8,44 +7,10 @@ import {
   ArrowDownCircle,
   RefreshCw,
 } from "lucide-react";
-
-interface CaliberSupply {
-  caliber: string;
-  name: string;
-  totalSupply: number;
-}
-
-interface StatsData {
-  treasuryUsdc: string;
-  totalRedeemed: number;
-  totalMinted: number;
-  pendingOrders: number;
-  calibers: CaliberSupply[];
-}
+import { useAdminStats } from "@/hooks/use-admin-stats";
 
 export function ProtocolStats() {
-  const [stats, setStats] = useState<StatsData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  async function fetchStats() {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch("/api/admin/stats");
-      if (!res.ok) throw new Error("Failed to fetch stats");
-      const data = (await res.json()) as StatsData;
-      setStats(data);
-    } catch {
-      setError("Failed to load stats");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    void fetchStats();
-  }, []);
+  const { data: stats, isLoading: loading, error, refetch } = useAdminStats();
 
   if (loading) {
     return (
@@ -78,10 +43,10 @@ export function ProtocolStats() {
   if (error || !stats) {
     return (
       <div className="flex flex-col items-center justify-center gap-3 py-12 text-zinc-400">
-        <p>{error ?? "Failed to load stats"}</p>
+        <p>{error ? "Failed to load stats" : "Failed to load stats"}</p>
         <button
           type="button"
-          onClick={() => void fetchStats()}
+          onClick={() => void refetch()}
           className="rounded-lg border border-zinc-700 px-4 py-2 text-sm text-zinc-300 transition-colors hover:bg-zinc-800"
         >
           Retry
@@ -141,7 +106,7 @@ export function ProtocolStats() {
           </h3>
           <button
             type="button"
-            onClick={() => void fetchStats()}
+            onClick={() => void refetch()}
             title="Refresh stats"
             className="text-zinc-500 transition-colors hover:text-zinc-300"
           >

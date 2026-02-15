@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { formatUnits } from "viem";
 import {
@@ -14,6 +14,8 @@ import {
 } from "lucide-react";
 import { useWallet } from "@/hooks/use-wallet";
 import { useTokenBalances } from "@/hooks/use-token-balances";
+import { useMarketData } from "@/hooks/use-market-data";
+import { useOrders } from "@/hooks/use-orders";
 import { truncateAddress, snowtraceAddressUrl } from "@/lib/utils";
 import type { OrderFromAPI, MarketCaliberFromAPI } from "@/lib/types";
 import type { Caliber } from "@ammo-exchange/shared";
@@ -882,40 +884,10 @@ export function PortfolioDashboard() {
   const [orderFilter, setOrderFilter] = useState<OrderFilter>("All");
 
   // Market prices
-  const [marketData, setMarketData] = useState<MarketCaliberFromAPI[]>([]);
-  const [marketLoading, setMarketLoading] = useState(true);
+  const { data: marketData = [], isLoading: marketLoading } = useMarketData();
 
   // Orders
-  const [orders, setOrders] = useState<OrderFromAPI[]>([]);
-  const [ordersLoading, setOrdersLoading] = useState(true);
-
-  // Fetch market prices
-  useEffect(() => {
-    setMarketLoading(true);
-    fetch("/api/market")
-      .then((r) => r.json())
-      .then((data) => setMarketData(data.calibers ?? []))
-      .catch(() => setMarketData([]))
-      .finally(() => setMarketLoading(false));
-  }, []);
-
-  // Fetch orders (session cookie identifies the user)
-  useEffect(() => {
-    if (!address) {
-      setOrders([]);
-      setOrdersLoading(false);
-      return;
-    }
-    setOrdersLoading(true);
-    fetch("/api/orders")
-      .then((r) => {
-        if (!r.ok) return { orders: [] };
-        return r.json();
-      })
-      .then((data) => setOrders(data.orders ?? []))
-      .catch(() => setOrders([]))
-      .finally(() => setOrdersLoading(false));
-  }, [address]);
+  const { data: orders = [], isLoading: ordersLoading } = useOrders(address);
 
   // Compute holdings from on-chain balances + market prices
   const holdings: HoldingRow[] = useMemo(() => {

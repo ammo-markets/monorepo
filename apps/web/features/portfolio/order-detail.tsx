@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -10,6 +10,7 @@ import {
   MessageSquare,
   AlertTriangle,
 } from "lucide-react";
+import { useOrderDetail } from "@/hooks/use-orders";
 import type { OrderFromAPI, OrderStep, StepStatus } from "@/lib/types";
 import type { Caliber } from "@ammo-exchange/shared";
 import { CALIBER_SPECS } from "@ammo-exchange/shared";
@@ -501,22 +502,8 @@ function DetailRow({
 /* ────────────── Main Component ────────────── */
 
 export function OrderDetailView({ orderId }: { orderId: string }) {
-  const [order, setOrder] = useState<OrderFromAPI | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    setLoading(true);
-    setError(null);
-    fetch(`/api/orders/${orderId}`)
-      .then((r) => {
-        if (!r.ok) throw new Error("Order not found");
-        return r.json();
-      })
-      .then((data) => setOrder(data.order))
-      .catch((e) => setError(e.message))
-      .finally(() => setLoading(false));
-  }, [orderId]);
+  const { data: order, isLoading: loading, error: queryError } = useOrderDetail(orderId);
+  const error = queryError ? (queryError as Error).message : null;
 
   if (loading) {
     return <OrderDetailSkeleton />;
