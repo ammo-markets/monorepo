@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-15)
 ## Current Position
 
 Phase: 12 (1 of 5 in v1.3)
-Plan: --
-Status: Ready to plan
-Last activity: 2026-02-15 -- v1.3 roadmap created (5 phases, 20 requirements)
+Plan: 01 of 02 complete
+Status: Executing
+Last activity: 2026-02-15 -- Completed 12-01 (database schema models)
 
-Progress: [░░░░░░░░░░] 0% (v1.3)
+Progress: [█░░░░░░░░░] 10% (v1.3)
 
 ## Performance Metrics
 
@@ -33,11 +33,21 @@ Progress: [░░░░░░░░░░] 0% (v1.3)
 - Average duration: ~3 min
 - Total execution time: ~30 min
 
+**v1.3 Velocity:**
+
+| Phase | Plan | Duration | Tasks | Files |
+|-------|------|----------|-------|-------|
+| 12 | 01 | 3min | 2 | 4 |
+
 ## Accumulated Context
 
 ### Decisions
 
 All decisions logged in PROJECT.md Key Decisions table.
+
+- 12-01: ActivityLog has no status field (final-state-only, only completed transactions stored)
+- 12-01: String type for amount fields in ProtocolStats (consistent with Order.amount pattern)
+- 12-01: UserPreference created on first use, not eagerly for all users
 
 ### Pending Todos
 
@@ -56,5 +66,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-15
-Stopped at: v1.3 roadmap created -- ready to plan Phase 12
+Stopped at: Completed 12-01-PLAN.md -- ready for 12-02
 Resume file: None
