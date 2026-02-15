@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-15)
 Phase: All phases complete through v1.2
 Plan: N/A
 Status: Milestone v1.2 archived
-Last activity: 2026-02-15 -- Archived v1.2 Production Hardening milestone
+Last activity: 2026-02-15 - Completed quick task 1: Refactor manual fetch mutations to use TanStack Query useMutation hooks
 
 Progress: [####################] 100% (24/24 plans across 3 milestones)
 
@@ -46,6 +46,12 @@ None.
 ### Blockers/Concerns
 
 None.
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 1 | Refactor manual fetch mutations to use TanStack Query useMutation hooks | 2026-02-15 | 94bf174 | [1-refactor-manual-fetch-mutations-to-use-t](./quick/1-refactor-manual-fetch-mutations-to-use-t/) |
 
 ## Session Continuity
 
