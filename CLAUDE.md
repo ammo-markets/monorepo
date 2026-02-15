@@ -59,6 +59,8 @@ Required in `.env` at the root (or per-package):
 DATABASE_URL=postgresql://...      # Neon PostgreSQL connection string
 AVALANCHE_RPC_URL=https://...      # Avalanche C-Chain RPC
 FUJI_RPC_URL=https://...           # Avalanche Fuji testnet RPC
+SESSION_SECRET=xxxxxxxx...        # 32+ character secret for iron-session cookie encryption (required)
+ALLOWED_ORIGINS=https://...       # Comma-separated allowed origins for CORS (optional, defaults to http://localhost:3000)
 ```
 
 ## Tech Stack
