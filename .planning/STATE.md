@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-15)
 ## Current Position
 
 Phase: 9 of 11 (Authentication and API Hardening)
-Plan: 0 of 2 in current phase
-Status: Ready to plan
-Last activity: 2026-02-15 -- v1.2 roadmap created (3 phases, 24 requirements)
+Plan: 1 of 2 in current phase
+Status: Executing
+Last activity: 2026-02-15 -- Completed 09-01 SIWE auth infrastructure
 
-Progress: [##############░░░░░░] 70% (14/20 plans across all milestones)
+Progress: [###############░░░░░] 75% (15/20 plans across all milestones)
 
 ## Performance Metrics
 
@@ -39,12 +39,18 @@ Progress: [##############░░░░░░] 70% (14/20 plans across all milesto
 | 05-portfolio-and-data-integration | 2 | ~9min | ~5min |
 | 06-admin-dashboard | 2 | ~7min | ~4min |
 | 07-registration-and-indexing-fixes | 2 | ~3min | ~1.5min |
+| 09-authentication-and-api-hardening | 1 | ~4min | ~4min |
 
 ## Accumulated Context
 
 ### Decisions
 
 All v1.0 and v1.1 decisions logged in PROJECT.md Key Decisions table.
+
+**v1.2 Decisions:**
+- iron-session v8 with cookies() from next/headers (no request param, App Router pattern)
+- Registration moved server-side into /api/auth/verify for atomic auth+registration
+- Legacy /api/users/register kept for worker backward compat with serializable isolation
 
 ### Pending Todos
 
@@ -57,5 +63,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-15
-Stopped at: v1.2 roadmap created, ready to plan Phase 9
+Stopped at: Completed 09-01-PLAN.md (SIWE auth infrastructure)
 Resume file: None
