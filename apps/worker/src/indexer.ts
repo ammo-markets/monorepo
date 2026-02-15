@@ -1,6 +1,7 @@
 import { client } from "./lib/client";
 import {
   BATCH_SIZE,
+  CONFIRMATION_BLOCKS,
   MARKET_ADDRESSES,
   CURSOR_KEY,
   DEPLOYMENT_BLOCK,
@@ -289,9 +290,14 @@ export async function pollOnce(): Promise<void> {
     where: { contractAddress: CURSOR_KEY },
   });
 
-  // Use deployment block as floor -- never scan before contracts existed
+  // Roll back cursor by CONFIRMATION_BLOCKS to re-process recent blocks.
+  // This catches shallow reorgs where events may have been added or removed.
+  // Idempotent handlers (txHash-based upsert) make re-processing safe.
   const rawFrom = (cursor?.lastBlock ?? 0n) + 1n;
-  const fromBlock = rawFrom < DEPLOYMENT_BLOCK ? DEPLOYMENT_BLOCK : rawFrom;
+  const reorgSafeFrom =
+    rawFrom > CONFIRMATION_BLOCKS ? rawFrom - CONFIRMATION_BLOCKS : rawFrom;
+  const fromBlock =
+    reorgSafeFrom < DEPLOYMENT_BLOCK ? DEPLOYMENT_BLOCK : reorgSafeFrom;
 
   if (fromBlock > currentBlock) {
     console.log(
