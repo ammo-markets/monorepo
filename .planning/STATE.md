@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-15)
 ## Current Position
 
 Phase: 10 of 11 (Worker Hardening)
-Plan: 1 of 2 in current phase (done)
-Status: Executing
-Last activity: 2026-02-15 -- Completed 10-01 missing event handlers
+Plan: 2 of 2 in current phase (done)
+Status: Phase 10 Complete
+Last activity: 2026-02-15 -- Completed 10-02 worker hardening (retry, reorg, env, shutdown)
 
-Progress: [####################] 100% (21/22 plans across all milestones)
+Progress: [####################] 100% (22/22 plans across all milestones)
 
 ## Performance Metrics
 
@@ -45,6 +45,7 @@ Progress: [####################] 100% (21/22 plans across all milestones)
 | Phase 09.1 P03 | 3min | 3 tasks | 3 files |
 | Phase 09.1 P04 | 2min | 2 tasks | 2 files |
 | Phase 10 P01 | 2min | 2 tasks | 3 files |
+| Phase 10 P02 | 2min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -67,6 +68,9 @@ All v1.0 and v1.1 decisions logged in PROJECT.md Key Decisions table.
 - [Phase 09.1]: Client+server 18+ age validation for defense in depth
 - [Phase 10]: Lifecycle events are log-only (no DB writes) -- sufficient for testnet observability
 - [Phase 10]: RedeemCanceled sets status to CANCELLED, MintRefunded sets to FAILED
+- [Phase 10]: 5-block confirmation window for Avalanche reorg safety (~10s margin)
+- [Phase 10]: viem built-in retry transport instead of custom retry wrapper
+- [Phase 10]: env validation via side-effect import at top of entry point
 
 ### Pending Todos
 
@@ -79,5 +83,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-15
-Stopped at: Completed 10-01-PLAN.md (missing event handlers)
+Stopped at: Completed 10-02-PLAN.md (worker hardening -- Phase 10 complete)
 Resume file: None
