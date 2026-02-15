@@ -77,7 +77,7 @@ export async function handleRedeemFinalized(
   const caliber = addressToCaliber(meta.address);
   const prismaCaliber = CALIBER_TO_PRISMA[caliber] as PrismaCaliber;
 
-  await tx.order.updateMany({
+  const { count } = await tx.order.updateMany({
     where: {
       onChainOrderId: args.orderId.toString(),
       caliber: prismaCaliber,
@@ -88,4 +88,37 @@ export async function handleRedeemFinalized(
       status: "COMPLETED",
     },
   });
+
+  // Write ActivityLog entry for completed redeem
+  if (count > 0) {
+    try {
+      const order = await tx.order.findFirst({
+        where: {
+          onChainOrderId: args.orderId.toString(),
+          caliber: prismaCaliber,
+          type: "REDEEM",
+          status: "COMPLETED",
+        },
+        select: { id: true, caliber: true, amount: true, walletAddress: true },
+      });
+
+      if (order) {
+        await tx.activityLog.create({
+          data: {
+            type: "REDEEM",
+            caliber: order.caliber,
+            amount: order.amount,
+            txHash: meta.transactionHash,
+            walletAddress: order.walletAddress ?? "",
+            createdAt: new Date(),
+          },
+        });
+        console.log(
+          `[redeem] Created ActivityLog entry for redeem ${order.id}`,
+        );
+      }
+    } catch (error) {
+      console.error("[redeem] Failed to create ActivityLog entry:", error);
+    }
+  }
 }

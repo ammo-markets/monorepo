@@ -76,7 +76,7 @@ export async function handleMintFinalized(
   const caliber = addressToCaliber(meta.address);
   const prismaCaliber = CALIBER_TO_PRISMA[caliber] as PrismaCaliber;
 
-  await tx.order.updateMany({
+  const { count } = await tx.order.updateMany({
     where: {
       onChainOrderId: args.orderId.toString(),
       caliber: prismaCaliber,
@@ -87,4 +87,37 @@ export async function handleMintFinalized(
       status: "COMPLETED",
     },
   });
+
+  // Write ActivityLog entry for completed mint
+  if (count > 0) {
+    try {
+      const order = await tx.order.findFirst({
+        where: {
+          onChainOrderId: args.orderId.toString(),
+          caliber: prismaCaliber,
+          type: "MINT",
+          status: "COMPLETED",
+        },
+        select: { id: true, caliber: true, amount: true, walletAddress: true },
+      });
+
+      if (order) {
+        await tx.activityLog.create({
+          data: {
+            type: "MINT",
+            caliber: order.caliber,
+            amount: order.amount,
+            txHash: meta.transactionHash,
+            walletAddress: order.walletAddress ?? "",
+            createdAt: new Date(),
+          },
+        });
+        console.log(
+          `[mint] Created ActivityLog entry for mint ${order.id}`,
+        );
+      }
+    } catch (error) {
+      console.error("[mint] Failed to create ActivityLog entry:", error);
+    }
+  }
 }
