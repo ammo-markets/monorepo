@@ -58,9 +58,18 @@ Anyone worldwide can get price exposure to U.S. ammunition by minting ammo token
 
 ### Active
 
-<!-- Next milestone requirements will be defined via /gsd:new-milestone -->
+## Current Milestone: v1.3 UX Restructure & Data Enrichment
 
-(None -- define via `/gsd:new-milestone`)
+**Goal:** Split the app into a public landing site and a wallet-connected app with clean 4-tab navigation, enriched database for protocol stats/activity/preferences, and unified trade experience.
+
+**Target features:**
+- Public landing page (hero, how-it-works, caliber showcase, FAQ, Launch App CTA)
+- App shell with 4-tab nav: Dashboard, Trade, Portfolio, Profile
+- Personal dashboard with token balances and recent orders
+- Unified Trade page (mint/redeem/swap with inline caliber info and current prices)
+- Protocol stats tables (aggregate minting volume, user counts, TVL)
+- Rich activity log (human-readable transaction history with status changes)
+- User preferences (favorite calibers, display settings)
 
 ### Out of Scope
 
@@ -132,4 +141,4 @@ The full DeFi protocol is functional on Avalanche Fuji testnet with production-g
 | Explicit return types on hooks | Prevent TS2742 non-portable type inference errors | ✓ Good -- all hooks compile across packages |
 
 ---
-*Last updated: 2026-02-15 after v1.2 milestone*
+*Last updated: 2026-02-15 after v1.3 milestone started*
