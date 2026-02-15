@@ -35,7 +35,7 @@ Phase 8 (E2E Verification) superseded by v1.2.
 
 **Milestone Goal:** Fix all security, stability, and code quality gaps identified in senior developer review -- make the protocol deployable to production.
 
-- [ ] **Phase 9: Authentication and API Hardening** -- SIWE auth on all routes, admin authorization, rate limiting, CORS, and registration race fix
+- [x] **Phase 9: Authentication and API Hardening** -- SIWE auth on all routes, admin authorization, rate limiting, CORS, and registration race fix (completed 2026-02-15)
 - [ ] **Phase 10: Worker Hardening** -- Complete event coverage, retry logic, reorg protection, startup validation, graceful shutdown
 - [ ] **Phase 11: Frontend Data Layer and Quality** -- TanStack Query migration, error boundaries, cache invalidation, type safety fixes
 
@@ -54,8 +54,8 @@ Phase 8 (E2E Verification) superseded by v1.2.
 **Plans:** 2 plans
 
 Plans:
-- [ ] 09-01-PLAN.md -- SIWE authentication infrastructure (session creation, auth helpers, client hook, registration race fix)
-- [ ] 09-02-PLAN.md -- Route protection and API hardening (apply auth to all routes, admin authz, KYC gate, shipping ownership, CORS, rate limiting)
+- [x] 09-01-PLAN.md -- SIWE authentication infrastructure (session creation, auth helpers, client hook, registration race fix)
+- [x] 09-02-PLAN.md -- Route protection and API hardening (apply auth to all routes, admin authz, KYC gate, shipping ownership, CORS, rate limiting)
 
 ### Phase 10: Worker Hardening
 **Goal**: The event indexer handles every contract event reliably, recovers from RPC failures, and shuts down cleanly
@@ -101,10 +101,10 @@ Plans:
 | 5. Portfolio and Data Integration | v1.0 | 2/2 | Complete | 2026-02-11 |
 | 6. Admin Dashboard | v1.0 | 2/2 | Complete | 2026-02-11 |
 | 7. Registration and Indexing Fixes | v1.1 | 2/2 | Complete | 2026-02-15 |
-| 9. Authentication and API Hardening | v1.2 | 0/2 | In progress | - |
+| 9. Authentication and API Hardening | v1.2 | 2/2 | Complete | 2026-02-15 |
 | 10. Worker Hardening | v1.2 | 0/2 | Not started | - |
 | 11. Frontend Data Layer and Quality | v1.2 | 0/2 | Not started | - |
 
 ---
 *Roadmap created: 2026-02-10*
-*Last updated: 2026-02-15 (Phase 9 plans created)*
+*Last updated: 2026-02-15 (Phase 9 complete)*
