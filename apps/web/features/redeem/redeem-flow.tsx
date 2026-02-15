@@ -26,6 +26,8 @@ import { caliberIcons } from "@/features/shared/caliber-icons";
 import type { CaliberDetailData, MarketCaliberFromAPI } from "@/lib/types";
 import { CALIBER_SPECS, FEES } from "@ammo-exchange/shared";
 import { RedeemProgress } from "./redeem-progress";
+import { KycForm } from "./kyc-form";
+import type { KycFormData } from "./kyc-form";
 
 import { useWallet } from "@/hooks/use-wallet";
 import { useRedeemTransaction } from "@/hooks/use-redeem-transaction";
@@ -917,14 +919,22 @@ function ShieldIdIcon() {
 function StepKyc({
   kycStatus,
   kycLoading,
-  onVerify,
+  onSubmit,
+  kycPrefill,
   onSaveDraft,
   onGoPortfolio,
   onBack,
 }: {
   kycStatus: string;
   kycLoading: boolean;
-  onVerify: () => void;
+  onSubmit: (data: KycFormData) => Promise<void>;
+  kycPrefill?: {
+    fullName?: string | null;
+    dateOfBirth?: string | null;
+    state?: string | null;
+    govIdType?: string | null;
+    govIdNumber?: string | null;
+  };
   onSaveDraft: () => void;
   onGoPortfolio: () => void;
   onBack: () => void;
@@ -950,59 +960,12 @@ function StepKyc({
             shipment. This is a one-time process.
           </p>
 
-          {/* Bullet points */}
-          <div
-            className="mb-6 w-full rounded-lg px-5 py-4 text-left"
-            style={{
-              backgroundColor: "var(--bg-secondary)",
-              border: "1px solid var(--border-default)",
-            }}
-          >
-            <ul className="flex flex-col gap-3">
-              {[
-                {
-                  icon: <Shield size={14} />,
-                  text: "Government-issued photo ID",
-                },
-                { icon: <Clock size={14} />, text: "Takes 2-5 minutes" },
-                {
-                  icon: <Check size={14} />,
-                  text: "Verified by Persona (third-party)",
-                },
-              ].map((item) => (
-                <li
-                  key={item.text}
-                  className="flex items-center gap-3 text-sm"
-                  style={{ color: "var(--text-secondary)" }}
-                >
-                  <span
-                    className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full"
-                    style={{
-                      backgroundColor: "var(--brass-muted)",
-                      color: "var(--brass)",
-                    }}
-                  >
-                    {item.icon}
-                  </span>
-                  {item.text}
-                </li>
-              ))}
-            </ul>
-          </div>
+          <KycForm
+            onSubmit={onSubmit}
+            isSubmitting={kycLoading}
+            prefill={kycPrefill}
+          />
 
-          <PrimaryButton
-            onClick={onVerify}
-            icon={
-              kycLoading ? (
-                <Loader2 size={16} className="animate-spin" />
-              ) : (
-                <Shield size={16} />
-              )
-            }
-            disabled={kycLoading}
-          >
-            {kycLoading ? "Verifying..." : "Verify My Identity"}
-          </PrimaryButton>
           <button
             type="button"
             onClick={onSaveDraft}
@@ -1712,6 +1675,16 @@ export function RedeemFlow() {
   // KYC status from API
   const [kycStatus, setKycStatus] = useState<string>("NONE");
   const [kycLoading, setKycLoading] = useState(false);
+  const [kycPrefill, setKycPrefill] = useState<
+    | {
+        fullName?: string | null;
+        dateOfBirth?: string | null;
+        state?: string | null;
+        govIdType?: string | null;
+        govIdNumber?: string | null;
+      }
+    | undefined
+  >(undefined);
 
   const caliber =
     selectedCaliber && caliberDetailsMap
@@ -1779,6 +1752,15 @@ export function RedeemFlow() {
         .then((res) => res.json())
         .then((data) => {
           setKycStatus(data.kycStatus ?? "NONE");
+          setKycPrefill({
+            fullName: data.kycFullName,
+            dateOfBirth: data.kycDateOfBirth
+              ? new Date(data.kycDateOfBirth).toISOString().split("T")[0]
+              : null,
+            state: data.kycState,
+            govIdType: data.kycGovIdType,
+            govIdNumber: data.kycGovIdNumber,
+          });
         })
         .catch(() => {
           // On error, default to NONE so user can still verify
@@ -1800,23 +1782,26 @@ export function RedeemFlow() {
     }
   }, [step, kycStatus]);
 
-  const handleKycVerify = useCallback(async () => {
-    if (!wallet.address) return;
+  const handleKycSubmit = useCallback(async (data: KycFormData) => {
     setKycLoading(true);
     try {
       const res = await fetch("/api/users/kyc", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ wallet: wallet.address }),
+        body: JSON.stringify(data),
       });
-      const data = await res.json();
-      setKycStatus(data.kycStatus ?? "NONE");
+      const result = await res.json();
+      if (!res.ok) {
+        // Handle validation errors if needed
+        return;
+      }
+      setKycStatus(result.kycStatus ?? "NONE");
     } catch {
       // On error, stay on KYC step
     } finally {
       setKycLoading(false);
     }
-  }, [wallet.address]);
+  }, []);
 
   // ── Handlers ──
   function handleApprove() {
@@ -1880,7 +1865,8 @@ export function RedeemFlow() {
         <StepKyc
           kycStatus={kycStatus}
           kycLoading={kycLoading}
-          onVerify={handleKycVerify}
+          onSubmit={handleKycSubmit}
+          kycPrefill={kycPrefill}
           onSaveDraft={() => {
             window.location.href = "/portfolio";
           }}
