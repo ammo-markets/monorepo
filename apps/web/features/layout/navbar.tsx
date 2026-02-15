@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { AmmoLogo } from "./logo";
 import { WalletButton } from "./wallet-button";
 import { useWallet } from "@/hooks/use-wallet";
+import { useKeeperCheck } from "@/hooks/use-keeper-check";
+import { useSiwe } from "@/hooks/use-siwe";
 
 const navLinks = [
   { label: "Market", href: "/market" },
@@ -16,6 +18,19 @@ const navLinks = [
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { isConnected, isWrongNetwork, isReconnecting } = useWallet();
+  const { isKeeper } = useKeeperCheck();
+  const { isSignedIn } = useSiwe();
+
+  const allLinks = useMemo(() => {
+    const links = [...navLinks];
+    if (isSignedIn) {
+      links.push({ label: "Profile", href: "/profile" });
+    }
+    if (isKeeper) {
+      links.push({ label: "Admin", href: "/admin" });
+    }
+    return links;
+  }, [isSignedIn, isKeeper]);
 
   // Network badge label and status dot color
   const networkLabel = "Avalanche Fuji";
@@ -51,7 +66,7 @@ export function Navbar() {
 
         {/* Desktop nav links */}
         <div className="hidden items-center gap-1 lg:flex">
-          {navLinks.map((link) => (
+          {allLinks.map((link) => (
             <a
               key={link.label}
               href={link.href}
@@ -114,7 +129,7 @@ export function Navbar() {
           }}
         >
           <div className="flex flex-col gap-1 px-4 py-3">
-            {navLinks.map((link) => (
+            {allLinks.map((link) => (
               <a
                 key={link.label}
                 href={link.href}
