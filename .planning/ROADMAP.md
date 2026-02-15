@@ -37,7 +37,7 @@ Phase 8 (E2E Verification) superseded by v1.2.
 
 - [x] **Phase 9: Authentication and API Hardening** -- SIWE auth on all routes, admin authorization, rate limiting, CORS, and registration race fix (completed 2026-02-15)
 - [x] **Phase 9.1: Admin Protection, KYC Data & User Profile** -- Server-side admin page protection, KYC identity data collection, user profile page with shipping address (completed 2026-02-15)
-- [ ] **Phase 10: Worker Hardening** -- Complete event coverage, retry logic, reorg protection, startup validation, graceful shutdown
+- [x] **Phase 10: Worker Hardening** -- Complete event coverage, retry logic, reorg protection, startup validation, graceful shutdown (completed 2026-02-15)
 - [ ] **Phase 11: Frontend Data Layer and Quality** -- TanStack Query migration, error boundaries, cache invalidation, type safety fixes
 
 ## Phase Details
@@ -88,8 +88,8 @@ Plans:
 **Plans:** 2 plans in 2 waves
 
 Plans:
-- [ ] 10-01-PLAN.md -- Complete event coverage (MintRefunded, RedeemCanceled, Paused, Unpaused, fee update handlers + indexer wiring)
-- [ ] 10-02-PLAN.md -- RPC resilience and operational hardening (retry transport, reorg protection, env validation, graceful shutdown)
+- [x] 10-01-PLAN.md -- Complete event coverage (MintRefunded, RedeemCanceled, Paused, Unpaused, fee update handlers + indexer wiring)
+- [x] 10-02-PLAN.md -- RPC resilience and operational hardening (retry transport, reorg protection, env validation, graceful shutdown)
 
 ### Phase 11: Frontend Data Layer and Quality
 **Goal**: Every frontend component fetches data through TanStack Query with proper error handling, and all type safety issues are resolved
@@ -121,9 +121,9 @@ Plans:
 | 7. Registration and Indexing Fixes | v1.1 | 2/2 | Complete | 2026-02-15 |
 | 9. Authentication and API Hardening | v1.2 | 2/2 | Complete | 2026-02-15 |
 | 9.1 Admin Protection, KYC Data & Profile | v1.2 | 4/4 | Complete | 2026-02-15 |
-| 10. Worker Hardening | v1.2 | 0/2 | Not started | - |
+| 10. Worker Hardening | v1.2 | 2/2 | Complete | 2026-02-15 |
 | 11. Frontend Data Layer and Quality | v1.2 | 0/2 | Not started | - |
 
 ---
 *Roadmap created: 2026-02-10*
-*Last updated: 2026-02-15 (Phase 10 planned)*
+*Last updated: 2026-02-15 (Phase 10 complete)*
