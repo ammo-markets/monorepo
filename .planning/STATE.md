@@ -50,5 +50,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-15
-Stopped at: Milestone v1.2 archived
+Stopped at: Completed quick-1 (refactor manual fetch mutations to TanStack Query)
 Resume file: None
