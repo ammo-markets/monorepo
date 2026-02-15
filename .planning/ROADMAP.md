@@ -3,7 +3,8 @@
 ## Milestones
 
 - ✅ **v1.0 Fuji Testnet Integration** -- Phases 1-6 (shipped 2026-02-11)
-- **v1.1 End-to-End Flow Fix** -- Phases 7-8 (in progress)
+- ✅ **v1.1 End-to-End Flow Fix** -- Phase 7 (shipped 2026-02-15)
+- **v1.2 Production Hardening** -- Phases 9-11 (in progress)
 
 ## Phases
 
@@ -21,47 +22,75 @@ Full details: `.planning/milestones/v1.0-ROADMAP.md`
 
 </details>
 
-### v1.1 End-to-End Flow Fix
+<details>
+<summary>v1.1 End-to-End Flow Fix (Phase 7) -- SHIPPED 2026-02-15</summary>
 
-**Milestone Goal:** Fix critical gaps that prevent the v1.0 mint flow from working end-to-end -- user creation on wallet connect and worker event indexing from the correct starting block.
+- [x] Phase 7: Registration and Indexing Fixes (2/2 plans) -- completed 2026-02-15
 
-- [ ] **Phase 7: Registration and Indexing Fixes** -- Fix user auto-creation and worker start block so both subsystems function correctly
-- [ ] **Phase 8: End-to-End Verification** -- Verify the complete mint-to-finalize flow works from a user's perspective
+Phase 8 (E2E Verification) superseded by v1.2.
+
+</details>
+
+### v1.2 Production Hardening
+
+**Milestone Goal:** Fix all security, stability, and code quality gaps identified in senior developer review -- make the protocol deployable to production.
+
+- [ ] **Phase 9: Authentication and API Hardening** -- SIWE auth on all routes, admin authorization, rate limiting, CORS, and registration race fix
+- [ ] **Phase 10: Worker Hardening** -- Complete event coverage, retry logic, reorg protection, startup validation, graceful shutdown
+- [ ] **Phase 11: Frontend Data Layer and Quality** -- TanStack Query migration, error boundaries, cache invalidation, type safety fixes
 
 ## Phase Details
 
-### Phase 7: Registration and Indexing Fixes
-**Goal**: Users get a database record on first wallet connect, and the worker indexes events starting from the deployment block instead of scanning 51M empty blocks
-**Depends on**: Phase 6 (v1.0 complete)
-**Requirements**: REG-01, REG-02, IDX-01, IDX-02, IDX-03
+### Phase 9: Authentication and API Hardening
+**Goal**: Every API request is authenticated and authorized -- no route trusts client-supplied data without server-side verification
+**Depends on**: Phase 7 (v1.1 complete -- user registration exists)
+**Requirements**: AUTH-01, AUTH-02, AUTH-03, AUTH-04, AUTH-05, API-01, API-02, ERR-02
 **Success Criteria** (what must be TRUE):
-  1. User connects wallet for the first time and a database record is created without any prior on-chain activity
-  2. User's wallet address appears in API responses immediately after connecting
-  3. Deployment start block (51699730) is available in shared config package
-  4. Worker starts scanning from deployment block when block cursor is below it, not from block 0
-  5. Worker logs show scan progress (blocks scanned, events found) during backfill
-**Plans:** 2 plans
-
-Plans:
-- [ ] 07-01-PLAN.md -- User auto-registration on wallet connect (POST /api/users/register + useWallet hook)
-- [ ] 07-02-PLAN.md -- Deployment block config and worker indexing fix (shared config + worker floor + logging)
-
-### Phase 8: End-to-End Verification
-**Goal**: A user can perform a complete mint flow -- from wallet connect through token minting to admin finalization -- and see correct status at every step
-**Depends on**: Phase 7
-**Requirements**: E2E-01, E2E-02
-**Success Criteria** (what must be TRUE):
-  1. User connects wallet, initiates a mint, and sees the pending order appear in their portfolio
-  2. Admin sees the mint order in the admin dashboard order queue after the worker indexes the event
-  3. Admin finalizes the mint order and the user's portfolio shows the order status updated to completed
+  1. User signs a SIWE message on first visit and subsequent API calls include a verified session
+  2. Unauthenticated requests to any user-facing API route return 401 (not silently proceed with a fake address)
+  3. Non-keeper wallet calling admin API routes gets 403 (not just a UI redirect)
+  4. Rapid wallet connect/disconnect cycles do not create duplicate user records or crash the registration flow
+  5. API requests from unknown origins are rejected, and repeated requests from the same client are rate-limited
 **Plans**: TBD
 
 Plans:
-- [ ] 08-01: End-to-end mint flow verification and fixes
+- [ ] 09-01: SIWE authentication infrastructure (session creation, middleware, cookie/token management)
+- [ ] 09-02: Route protection and API hardening (apply auth to all routes, admin authz, KYC gate, shipping ownership, rate limiting, CORS)
+
+### Phase 10: Worker Hardening
+**Goal**: The event indexer handles every contract event reliably, recovers from RPC failures, and shuts down cleanly
+**Depends on**: Nothing (independent app, can run in parallel with Phase 9)
+**Requirements**: WRKR-01, WRKR-02, WRKR-03, WRKR-04, WRKR-05, WRKR-06, WRKR-07
+**Success Criteria** (what must be TRUE):
+  1. MintRefunded, RedeemCanceled, Paused, Unpaused, and fee update events are indexed and reflected in the database
+  2. Worker retries RPC calls on transient failures (network timeout, 429) with exponential backoff instead of crashing
+  3. Worker re-processes events within a confirmation window so shallow reorgs do not cause missed or phantom events
+  4. Worker refuses to start if required environment variables are missing (fails fast with clear error message)
+  5. Worker drains in-flight polling cycle on SIGTERM before exiting
+**Plans**: TBD
+
+Plans:
+- [ ] 10-01: Complete event coverage (MintRefunded, RedeemCanceled, Paused, Unpaused, fee updates)
+- [ ] 10-02: RPC resilience and operational hardening (retry logic, reorg protection, env validation, graceful shutdown)
+
+### Phase 11: Frontend Data Layer and Quality
+**Goal**: Every frontend component fetches data through TanStack Query with proper error handling, and all type safety issues are resolved
+**Depends on**: Phase 9 (auth middleware changes how API calls are made -- requests need session tokens)
+**Requirements**: DATA-01, DATA-02, DATA-03, DATA-04, ERR-01, QUAL-01, QUAL-02, QUAL-03, QUAL-04
+**Success Criteria** (what must be TRUE):
+  1. No component uses raw useEffect+fetch -- all data loading goes through TanStack Query hooks with loading/error states
+  2. Admin finalize actions (mint, redeem) trigger cache invalidation so order tables update without manual refresh
+  3. React Error Boundaries catch component crashes and show fallback UI instead of white-screening the entire app
+  4. Zero `as any` casts remain in the codebase, transaction hooks use `enabled` flags, and fee constants come from the shared package
+**Plans**: TBD
+
+Plans:
+- [ ] 11-01: TanStack Query migration and QueryClient configuration (replace all useEffect+fetch, configure retry/refetch, wire cache invalidation)
+- [ ] 11-02: Error boundaries and code quality fixes (React Error Boundaries, remove as any, enabled flags, shared fee constants, remove unused imports)
 
 ## Progress
 
-**Execution Order:** Phase 7 then Phase 8.
+**Execution Order:** Phase 9 then Phase 10 then Phase 11. (Phase 10 could run in parallel with Phase 9 since it targets a separate app, but sequential is simpler for solo dev.)
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|---------------|--------|-----------|
@@ -71,9 +100,11 @@ Plans:
 | 4. Mint and Redeem Flows | v1.0 | 2/2 | Complete | 2026-02-11 |
 | 5. Portfolio and Data Integration | v1.0 | 2/2 | Complete | 2026-02-11 |
 | 6. Admin Dashboard | v1.0 | 2/2 | Complete | 2026-02-11 |
-| 7. Registration and Indexing Fixes | v1.1 | 0/2 | Planning complete | - |
-| 8. End-to-End Verification | v1.1 | 0/1 | Not started | - |
+| 7. Registration and Indexing Fixes | v1.1 | 2/2 | Complete | 2026-02-15 |
+| 9. Authentication and API Hardening | v1.2 | 0/2 | Not started | - |
+| 10. Worker Hardening | v1.2 | 0/2 | Not started | - |
+| 11. Frontend Data Layer and Quality | v1.2 | 0/2 | Not started | - |
 
 ---
 *Roadmap created: 2026-02-10*
-*Last updated: 2026-02-11 (Phase 7 plans created)*
+*Last updated: 2026-02-15 (v1.2 Production Hardening roadmap created)*

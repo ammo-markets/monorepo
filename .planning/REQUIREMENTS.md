@@ -93,36 +93,36 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 | TBD | Pending |
-| AUTH-02 | TBD | Pending |
-| AUTH-03 | TBD | Pending |
-| AUTH-04 | TBD | Pending |
-| AUTH-05 | TBD | Pending |
-| WRKR-01 | TBD | Pending |
-| WRKR-02 | TBD | Pending |
-| WRKR-03 | TBD | Pending |
-| WRKR-04 | TBD | Pending |
-| WRKR-05 | TBD | Pending |
-| WRKR-06 | TBD | Pending |
-| WRKR-07 | TBD | Pending |
-| DATA-01 | TBD | Pending |
-| DATA-02 | TBD | Pending |
-| DATA-03 | TBD | Pending |
-| DATA-04 | TBD | Pending |
-| API-01 | TBD | Pending |
-| API-02 | TBD | Pending |
-| ERR-01 | TBD | Pending |
-| ERR-02 | TBD | Pending |
-| QUAL-01 | TBD | Pending |
-| QUAL-02 | TBD | Pending |
-| QUAL-03 | TBD | Pending |
-| QUAL-04 | TBD | Pending |
+| AUTH-01 | Phase 9 | Pending |
+| AUTH-02 | Phase 9 | Pending |
+| AUTH-03 | Phase 9 | Pending |
+| AUTH-04 | Phase 9 | Pending |
+| AUTH-05 | Phase 9 | Pending |
+| API-01 | Phase 9 | Pending |
+| API-02 | Phase 9 | Pending |
+| ERR-02 | Phase 9 | Pending |
+| WRKR-01 | Phase 10 | Pending |
+| WRKR-02 | Phase 10 | Pending |
+| WRKR-03 | Phase 10 | Pending |
+| WRKR-04 | Phase 10 | Pending |
+| WRKR-05 | Phase 10 | Pending |
+| WRKR-06 | Phase 10 | Pending |
+| WRKR-07 | Phase 10 | Pending |
+| DATA-01 | Phase 11 | Pending |
+| DATA-02 | Phase 11 | Pending |
+| DATA-03 | Phase 11 | Pending |
+| DATA-04 | Phase 11 | Pending |
+| ERR-01 | Phase 11 | Pending |
+| QUAL-01 | Phase 11 | Pending |
+| QUAL-02 | Phase 11 | Pending |
+| QUAL-03 | Phase 11 | Pending |
+| QUAL-04 | Phase 11 | Pending |
 
 **Coverage:**
-- v1.2 requirements: 26 total
-- Mapped to phases: 0
-- Unmapped: 26 ⚠️
+- v1.2 requirements: 24 total
+- Mapped to phases: 24
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-15*
-*Last updated: 2026-02-15 after initial definition*
+*Last updated: 2026-02-15 after roadmap creation (all requirements mapped)*
