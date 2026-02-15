@@ -3,7 +3,8 @@ import { env as _env } from "./lib/env";
 
 import { pollOnce } from "./indexer";
 import { client } from "./lib/client";
-import { POLL_INTERVAL_MS } from "./lib/constants";
+import { POLL_INTERVAL_MS, STATS_INTERVAL_MS } from "./lib/constants";
+import { backfillActivityLog, computeStats } from "./stats";
 
 async function main() {
   console.log("[worker] Starting Ammo Exchange event indexer...");
@@ -48,12 +49,23 @@ async function main() {
     `[worker] Polling every ${POLL_INTERVAL_MS / 1000}s for new events...`,
   );
 
+  // Backfill ActivityLog from completed orders (one-time on startup)
+  await backfillActivityLog();
+
+  // Compute stats once on startup, then every 15 minutes
+  await computeStats();
+  const statsIntervalId = setInterval(computeStats, STATS_INTERVAL_MS);
+  console.log(
+    `[worker] Computing stats every ${STATS_INTERVAL_MS / 60000} minutes`,
+  );
+
   // Graceful shutdown on SIGTERM / SIGINT -- drains in-flight work
   const shutdown = async () => {
     if (isShuttingDown) return; // Prevent double-shutdown
     isShuttingDown = true;
     console.log("[worker] Shutting down -- draining in-flight work...");
     clearInterval(intervalId);
+    clearInterval(statsIntervalId);
 
     // Wait for current poll cycle to complete
     if (currentPoll) {

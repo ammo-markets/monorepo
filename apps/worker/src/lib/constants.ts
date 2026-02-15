@@ -6,6 +6,9 @@ import type { Caliber } from "@ammo-exchange/shared";
 /** Polling interval in milliseconds (~2 Avalanche blocks per tick) */
 export const POLL_INTERVAL_MS = 4_000;
 
+/** Stats recomputation interval in milliseconds (15 minutes) */
+export const STATS_INTERVAL_MS = 15 * 60 * 1000;
+
 /** Max blocks per getContractEvents call (stays under Avalanche public RPC's 2,048 limit) */
 export const BATCH_SIZE = 2_000n;
 
