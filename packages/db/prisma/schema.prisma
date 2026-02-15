@@ -61,7 +61,8 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  orders Order[]
+  orders      Order[]
+  preferences UserPreference?
 
   @@index([walletAddress])
 }
@@ -130,4 +131,40 @@ model BlockCursor {
   updatedAt       DateTime @updatedAt
 
   @@index([contractAddress])
+}
+
+model ProtocolStats {
+  id            String   @id @default(cuid())
+  caliber       Caliber  @unique
+  totalMinted   String   @default("0")
+  totalRedeemed String   @default("0")
+  netSupply     String   @default("0")
+  userCount     Int      @default(0)
+  computedAt    DateTime @default(now())
+
+  @@index([caliber])
+}
+
+model ActivityLog {
+  id            String    @id @default(cuid())
+  type          OrderType
+  caliber       Caliber
+  amount        String
+  txHash        String?
+  walletAddress String
+  createdAt     DateTime  @default(now())
+
+  @@index([walletAddress])
+  @@index([createdAt])
+  @@index([type])
+}
+
+model UserPreference {
+  id               String    @id @default(cuid())
+  userId           String    @unique
+  favoriteCalibers Caliber[]
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
 }
