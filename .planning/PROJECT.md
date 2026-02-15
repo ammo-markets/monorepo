@@ -30,15 +30,32 @@ Anyone worldwide can get price exposure to U.S. ammunition by minting ammo token
 - ✓ 9 API routes serving real data (orders, balances, market, shipping, KYC, admin, stats) — v1.0
 - ✓ Portfolio reads on-chain balances and DB order history — v1.0
 - ✓ All mock data eliminated — v1.0
+- ✓ Auto-create user record on wallet connect — v1.1
+- ✓ Deployment block floor in shared config (51699730) — v1.1
+- ✓ Worker scans from deployment block instead of genesis — v1.1
 
 ### Active
 
-<!-- Current milestone: v1.1 End-to-End Flow Fix -->
+<!-- Current milestone: v1.2 Production Hardening -->
 
-- [ ] Auto-create user record in database when wallet connects for the first time
-- [ ] Add deployment start block (51699730) to shared config
-- [ ] Fix worker to use deployment block as floor — never scan below it
-- [ ] Verify full mint flow works end-to-end (connect → mint → indexed → visible in portfolio)
+- [ ] SIWE authentication with server-side session verification on all API routes
+- [ ] Admin API routes protected server-side (not just UI-gated)
+- [ ] KYC endpoint gated behind environment check (testnet auto-approve only)
+- [ ] Shipping address endpoint verifies order ownership
+- [ ] Worker handles all contract events (MintRefunded, RedeemCanceled, Paused, Unpaused, fee updates)
+- [ ] Worker RPC calls with retry logic and exponential backoff
+- [ ] All components migrated from useEffect+fetch to TanStack Query
+- [ ] Wallet registration race condition fixed
+- [ ] Worker chain reorg protection
+- [ ] API rate limiting
+- [ ] CORS configuration
+- [ ] Type safety fixes (remove as any casts)
+- [ ] Transaction hooks use idiomatic enabled flags
+- [ ] Worker env variable validation at startup
+- [ ] Worker graceful shutdown with drain
+- [ ] React Error Boundaries
+- [ ] TanStack Query cache invalidation after admin mutations
+- [ ] Silent error swallowing eliminated
 
 ### Out of Scope
 
@@ -51,15 +68,18 @@ Anyone worldwide can get price exposure to U.S. ammunition by minting ammo token
 - Uniswap pool creation/LP UI — users handle this via Uniswap directly
 - Batch keeper operations — single order finalization sufficient for MVP
 
-## Current Milestone: v1.1 End-to-End Flow Fix
+## Current Milestone: v1.2 Production Hardening
 
-**Goal:** Fix critical gaps that prevent the v1.0 mint flow from working end-to-end — user creation on wallet connect and worker event indexing from the correct starting block.
+**Goal:** Fix all security, stability, and code quality gaps identified in senior developer review — make the protocol deployable to production.
 
 **Target features:**
-- Auto user registration on wallet connect
-- Deployment start block in shared config (51699730)
-- Worker backfill from deployment block instead of genesis
-- Verified end-to-end mint flow
+- SIWE authentication on all API routes (wallet ownership proof)
+- Server-side admin authorization (not just UI gate)
+- Complete worker event coverage with retry logic and reorg protection
+- All frontend components on TanStack Query (no raw useEffect+fetch)
+- API hardening (rate limiting, CORS, input validation)
+- Error handling overhaul (Error Boundaries, proper error propagation, no silent swallowing)
+- Type safety and code quality fixes
 
 ## Current State
 
@@ -73,10 +93,15 @@ The full DeFi protocol is functional on Avalanche Fuji testnet:
 - Admin dashboard enables keeper finalization with protocol health monitoring
 - Zero mock data remains — all displays read from chain or database
 
-**Known gaps (discovered during manual testing):**
-- No user auto-creation on wallet connect — users only get DB records when worker processes their first event
-- Worker backfill starts from block 0 instead of deployment block — scans 51M+ empty blocks before finding events
-- Block cursor advances through empty blocks, wasting RPC calls on pre-deployment blocks
+**Known gaps (senior dev review, 2026-02-15):**
+- CRITICAL: No authentication — all APIs trust client-supplied wallet addresses
+- CRITICAL: Admin routes have no server-side auth (UI-only keeper check)
+- CRITICAL: Worker handles only 4/12+ contract events (missing refunds, cancels)
+- CRITICAL: No RPC retry logic in worker
+- HIGH: 9+ components use raw useEffect+fetch instead of TanStack Query
+- HIGH: No rate limiting, no CORS configuration
+- HIGH: No chain reorg protection in worker
+- MEDIUM: as any casts, missing error boundaries, silent error swallowing
 
 ## Context
 
@@ -119,4 +144,4 @@ The full DeFi protocol is functional on Avalanche Fuji testnet:
 | parseUnits for X18 price conversion | Human-readable price input converted to contract format | ✓ Good — "0.35" → 350000000000000000n |
 
 ---
-*Last updated: 2026-02-11 after v1.1 milestone start*
+*Last updated: 2026-02-15 after v1.2 milestone start*

@@ -14,3 +14,16 @@
 
 ---
 
+## v1.1 End-to-End Flow Fix (Shipped: 2026-02-15)
+
+**Phases completed:** 1 phase (Phase 7), 2 plans. Phase 8 (E2E Verification) superseded by v1.2.
+
+**Key accomplishments:**
+- Auto-create user DB record on wallet connect (fire-and-forget registration with upsert)
+- Deployment block floor in shared config -- worker scans from block 51699730 instead of 0
+- Progress logging during backfill for operational visibility
+
+**Last phase number:** 7 (Phase 8 superseded, not shipped)
+
+---
+
