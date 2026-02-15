@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-15)
 
 **Core value:** Anyone worldwide can get price exposure to U.S. ammunition by minting ammo tokens with USDC, while only verified U.S. residents in allowed states can redeem for physical delivery.
-**Current focus:** v1.2 Production Hardening -- Phase 9.1 in progress
+**Current focus:** v1.2 Production Hardening -- Phase 10 in progress
 
 ## Current Position
 
-Phase: 9.1 of 11 (Admin KYC Profile)
-Plan: 4 of 4 in current phase (done)
-Status: Phase complete
-Last activity: 2026-02-15 -- Completed 09.1-03 KYC identity form and API expansion
+Phase: 10 of 11 (Worker Hardening)
+Plan: 1 of 2 in current phase (done)
+Status: Executing
+Last activity: 2026-02-15 -- Completed 10-01 missing event handlers
 
-Progress: [####################] 100% (20/20 plans across all milestones)
+Progress: [####################] 100% (21/22 plans across all milestones)
 
 ## Performance Metrics
 
@@ -44,6 +44,7 @@ Progress: [####################] 100% (20/20 plans across all milestones)
 | Phase 09.1 P02 | 1min | 2 tasks | 2 files |
 | Phase 09.1 P03 | 3min | 3 tasks | 3 files |
 | Phase 09.1 P04 | 2min | 2 tasks | 2 files |
+| Phase 10 P01 | 2min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -64,6 +65,8 @@ All v1.0 and v1.1 decisions logged in PROJECT.md Key Decisions table.
 - [Phase 09.1]: Extracted profileSelect constant for consistent GET/PATCH response shape
 - [Phase 09.1]: Inline US_STATES in kyc-form.tsx to avoid coupling with redeem-flow.tsx
 - [Phase 09.1]: Client+server 18+ age validation for defense in depth
+- [Phase 10]: Lifecycle events are log-only (no DB writes) -- sufficient for testnet observability
+- [Phase 10]: RedeemCanceled sets status to CANCELLED, MintRefunded sets to FAILED
 
 ### Pending Todos
 
@@ -76,5 +79,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-15
-Stopped at: Completed 09.1-04-PLAN.md (user profile page and API)
+Stopped at: Completed 10-01-PLAN.md (missing event handlers)
 Resume file: None
