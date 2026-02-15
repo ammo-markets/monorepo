@@ -4,12 +4,15 @@ import { CONTRACT_ADDRESSES, CALIBER_SPECS } from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
 import { erc20Abi, formatUnits } from "viem";
 import { prisma } from "@ammo-exchange/db";
+import { requireKeeper } from "@/lib/auth";
 
 const CALIBERS: Caliber[] = ["9MM", "556", "22LR", "308"];
 const fuji = CONTRACT_ADDRESSES.fuji;
 
 export async function GET() {
   try {
+    await requireKeeper();
+
     // 1. Read treasury address
     const treasury = await publicClient.readContract({
       address: fuji.manager,
@@ -56,7 +59,8 @@ export async function GET() {
         totalSupply: Math.floor(Number(formatUnits(supplies[i]!, 18))),
       })),
     });
-  } catch {
+  } catch (error) {
+    if (error instanceof Response) return error;
     return Response.json(
       { error: "Failed to read protocol stats" },
       { status: 502 },
