@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-15)
 ## Current Position
 
 Phase: 9.1 of 11 (Admin KYC Profile)
-Plan: 2 of 4 in current phase (done)
-Status: Executing phase
-Last activity: 2026-02-15 -- Completed 09.1-01 schema expansion (KYC + shipping fields)
+Plan: 4 of 4 in current phase (done)
+Status: Phase complete
+Last activity: 2026-02-15 -- Completed 09.1-04 user profile page and API
 
-Progress: [#################░░░] 85% (17/20 plans across all milestones)
+Progress: [####################] 100% (20/20 plans across all milestones)
 
 ## Performance Metrics
 
@@ -42,6 +42,7 @@ Progress: [#################░░░] 85% (17/20 plans across all milestones)
 | 09-authentication-and-api-hardening | 2 | ~7min | ~3.5min |
 | Phase 09.1 P01 | 2min | 1 task | 2 files |
 | Phase 09.1 P02 | 1min | 2 tasks | 2 files |
+| Phase 09.1 P04 | 2min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -59,6 +60,7 @@ All v1.0 and v1.1 decisions logged in PROJECT.md Key Decisions table.
 - [Phase 09.1]: notFound() instead of redirect to hide admin route from non-keepers
 - [Phase 09.1]: Keep AdminLayoutGate as client-side fallback for hydration edge cases
 - [Phase 09.1]: All 11 new User fields nullable to preserve existing records
+- [Phase 09.1]: Extracted profileSelect constant for consistent GET/PATCH response shape
 
 ### Pending Todos
 
@@ -71,5 +73,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-15
-Stopped at: Completed 09.1-01-PLAN.md (schema expansion with KYC and shipping fields)
+Stopped at: Completed 09.1-04-PLAN.md (user profile page and API)
 Resume file: None
