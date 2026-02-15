@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-15)
 
 **Core value:** Anyone worldwide can get price exposure to U.S. ammunition by minting ammo tokens with USDC, while only verified U.S. residents in allowed states can redeem for physical delivery.
-**Current focus:** Phase 12 - Database Schema & Stats Worker
+**Current focus:** Phase 12 - Database Schema & Stats Worker (COMPLETE)
 
 ## Current Position
 
-Phase: 12 (1 of 5 in v1.3)
-Plan: 01 of 02 complete
-Status: Executing
-Last activity: 2026-02-15 -- Completed 12-01 (database schema models)
+Phase: 12 (1 of 5 in v1.3) -- COMPLETE
+Plan: 02 of 02 complete
+Status: Phase Complete
+Last activity: 2026-02-15 -- Completed 12-02 (stats worker & API endpoints)
 
-Progress: [█░░░░░░░░░] 10% (v1.3)
+Progress: [██░░░░░░░░] 20% (v1.3)
 
 ## Performance Metrics
 
@@ -38,6 +38,7 @@ Progress: [█░░░░░░░░░] 10% (v1.3)
 | Phase | Plan | Duration | Tasks | Files |
 |-------|------|----------|-------|-------|
 | 12 | 01 | 3min | 2 | 4 |
+| 12 | 02 | 3min | 4 | 8 |
 
 ## Accumulated Context
 
@@ -48,6 +49,9 @@ All decisions logged in PROJECT.md Key Decisions table.
 - 12-01: ActivityLog has no status field (final-state-only, only completed transactions stored)
 - 12-01: String type for amount fields in ProtocolStats (consistent with Order.amount pattern)
 - 12-01: UserPreference created on first use, not eagerly for all users
+- 12-02: Stats computed from DB only (no on-chain reads)
+- 12-02: ActivityLog handler writes use transaction client (tx) for atomicity
+- 12-02: Activity endpoint default limit 5, max 50
 
 ### Pending Todos
 
@@ -66,5 +70,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-15
-Stopped at: Completed 12-01-PLAN.md -- ready for 12-02
+Stopped at: Completed 12-02-PLAN.md -- Phase 12 complete, ready for Phase 13
 Resume file: None
