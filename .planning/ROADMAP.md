@@ -51,11 +51,11 @@ Phase 8 (E2E Verification) superseded by v1.2.
   3. Non-keeper wallet calling admin API routes gets 403 (not just a UI redirect)
   4. Rapid wallet connect/disconnect cycles do not create duplicate user records or crash the registration flow
   5. API requests from unknown origins are rejected, and repeated requests from the same client are rate-limited
-**Plans**: TBD
+**Plans:** 2 plans
 
 Plans:
-- [ ] 09-01: SIWE authentication infrastructure (session creation, middleware, cookie/token management)
-- [ ] 09-02: Route protection and API hardening (apply auth to all routes, admin authz, KYC gate, shipping ownership, rate limiting, CORS)
+- [ ] 09-01-PLAN.md -- SIWE authentication infrastructure (session creation, auth helpers, client hook, registration race fix)
+- [ ] 09-02-PLAN.md -- Route protection and API hardening (apply auth to all routes, admin authz, KYC gate, shipping ownership, CORS, rate limiting)
 
 ### Phase 10: Worker Hardening
 **Goal**: The event indexer handles every contract event reliably, recovers from RPC failures, and shuts down cleanly
@@ -101,10 +101,10 @@ Plans:
 | 5. Portfolio and Data Integration | v1.0 | 2/2 | Complete | 2026-02-11 |
 | 6. Admin Dashboard | v1.0 | 2/2 | Complete | 2026-02-11 |
 | 7. Registration and Indexing Fixes | v1.1 | 2/2 | Complete | 2026-02-15 |
-| 9. Authentication and API Hardening | v1.2 | 0/2 | Not started | - |
+| 9. Authentication and API Hardening | v1.2 | 0/2 | In progress | - |
 | 10. Worker Hardening | v1.2 | 0/2 | Not started | - |
 | 11. Frontend Data Layer and Quality | v1.2 | 0/2 | Not started | - |
 
 ---
 *Roadmap created: 2026-02-10*
-*Last updated: 2026-02-15 (v1.2 Production Hardening roadmap created)*
+*Last updated: 2026-02-15 (Phase 9 plans created)*
