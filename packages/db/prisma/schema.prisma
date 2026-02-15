@@ -42,6 +42,22 @@ model User {
   id            String    @id @default(cuid())
   walletAddress String    @unique
   kycStatus     KycStatus @default(NONE)
+
+  // KYC identity data (collected during verification)
+  kycFullName    String?
+  kycDateOfBirth DateTime?
+  kycState       String?    // 2-letter state code
+  kycGovIdType   String?    // DRIVERS_LICENSE, PASSPORT, STATE_ID
+  kycGovIdNumber String?
+
+  // Default shipping address (reusable across orders)
+  defaultShippingName  String?
+  defaultShippingLine1 String?
+  defaultShippingLine2 String?
+  defaultShippingCity  String?
+  defaultShippingState String?  // 2-letter state code
+  defaultShippingZip   String?
+
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
