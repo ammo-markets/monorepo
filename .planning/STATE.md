@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-15)
 
 **Core value:** Anyone worldwide can get price exposure to U.S. ammunition by minting ammo tokens with USDC, while only verified U.S. residents in allowed states can redeem for physical delivery.
-**Current focus:** v1.2 Production Hardening -- Phase 9 complete, ready for Phase 10
+**Current focus:** v1.2 Production Hardening -- Phase 9.1 in progress
 
 ## Current Position
 
-Phase: 9 of 11 (Authentication and API Hardening) -- COMPLETE
-Plan: 2 of 2 in current phase (done)
-Status: Phase complete
-Last activity: 2026-02-15 -- Completed 09-02 route protection and API hardening
+Phase: 9.1 of 11 (Admin KYC Profile)
+Plan: 2 of 4 in current phase (done)
+Status: Executing phase
+Last activity: 2026-02-15 -- Completed 09.1-02 admin layout protection and navbar links
 
-Progress: [################░░░░] 80% (16/20 plans across all milestones)
+Progress: [#################░░░] 85% (17/20 plans across all milestones)
 
 ## Performance Metrics
 
@@ -40,6 +40,7 @@ Progress: [################░░░░] 80% (16/20 plans across all milestones)
 | 06-admin-dashboard | 2 | ~7min | ~4min |
 | 07-registration-and-indexing-fixes | 2 | ~3min | ~1.5min |
 | 09-authentication-and-api-hardening | 2 | ~7min | ~3.5min |
+| Phase 09.1 P02 | 1min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -54,6 +55,8 @@ All v1.0 and v1.1 decisions logged in PROJECT.md Key Decisions table.
 - requireSession/requireKeeper throw Response (use try/catch, not return-check pattern)
 - In-memory rate limiter sufficient for testnet; Redis upgrade for production
 - Market and activity routes intentionally left public
+- [Phase 09.1]: notFound() instead of redirect to hide admin route from non-keepers
+- [Phase 09.1]: Keep AdminLayoutGate as client-side fallback for hydration edge cases
 
 ### Pending Todos
 
@@ -66,5 +69,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-15
-Stopped at: Completed 09-02-PLAN.md (route protection and API hardening) -- Phase 09 complete
+Stopped at: Completed 09.1-02-PLAN.md (admin layout protection and navbar links)
 Resume file: None
