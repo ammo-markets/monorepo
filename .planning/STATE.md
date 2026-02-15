@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-15)
 
 **Core value:** Anyone worldwide can get price exposure to U.S. ammunition by minting ammo tokens with USDC, while only verified U.S. residents in allowed states can redeem for physical delivery.
-**Current focus:** v1.2 Production Hardening -- Phase 10 in progress
+**Current focus:** v1.3 Frontend Data Layer & Quality -- Phase 11 in progress
 
 ## Current Position
 
-Phase: 10 of 11 (Worker Hardening)
-Plan: 2 of 2 in current phase (done)
-Status: Phase 10 Complete
-Last activity: 2026-02-15 -- Completed 10-02 worker hardening (retry, reorg, env, shutdown)
+Phase: 11 of 11 (Frontend Data Layer & Quality)
+Plan: 1 of 1 in current phase (done)
+Status: Phase 11 Complete
+Last activity: 2026-02-15 -- Completed 11-01 TanStack Query migration (all components migrated)
 
-Progress: [####################] 100% (22/22 plans across all milestones)
+Progress: [####################] 100% (23/23 plans across all milestones)
 
 ## Performance Metrics
 
@@ -46,6 +46,7 @@ Progress: [####################] 100% (22/22 plans across all milestones)
 | Phase 09.1 P04 | 2min | 2 tasks | 2 files |
 | Phase 10 P01 | 2min | 2 tasks | 3 files |
 | Phase 10 P02 | 2min | 2 tasks | 5 files |
+| Phase 11 P01 | 6min | 2 tasks | 20 files |
 
 ## Accumulated Context
 
@@ -71,6 +72,10 @@ All v1.0 and v1.1 decisions logged in PROJECT.md Key Decisions table.
 - [Phase 10]: 5-block confirmation window for Avalanche reorg safety (~10s margin)
 - [Phase 10]: viem built-in retry transport instead of custom retry wrapper
 - [Phase 10]: env validation via side-effect import at top of entry point
+- [Phase 11]: Module-level QueryClient with staleTime 30s, retry 2, refetchOnWindowFocus
+- [Phase 11]: useMarketData gets 60s staleTime (market data less volatile than default)
+- [Phase 11]: Admin finalize dialogs invalidate all ["admin"] queries broadly
+- [Phase 11]: Profile page uses inline useQuery (single consumer, no separate hook)
 
 ### Pending Todos
 
@@ -83,5 +88,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-15
-Stopped at: Completed 10-02-PLAN.md (worker hardening -- Phase 10 complete)
+Stopped at: Completed 11-01-PLAN.md (TanStack Query migration -- Phase 11 complete)
 Resume file: None
