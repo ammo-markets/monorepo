@@ -66,11 +66,11 @@ Full details: `.planning/milestones/v1.2-ROADMAP.md`
   3. UserPreference table stores favorite calibers and display settings per user
   4. Worker job periodically computes and caches protocol stats from chain and DB data
   5. API endpoints exist that serve protocol stats, activity log, and user preferences
-**Plans**: TBD
+**Plans:** 2 plans
 
 Plans:
-- [ ] 12-01: TBD
-- [ ] 12-02: TBD
+- [ ] 12-01-PLAN.md -- Prisma schema (ProtocolStats, ActivityLog, UserPreference) + migration + seed
+- [ ] 12-02-PLAN.md -- Stats worker cron job + API endpoints (stats, activity, preferences)
 
 ### Phase 13: App Shell Restructure
 **Goal**: App has clean separation between public landing routes and wallet-connected app routes with responsive 4-tab navigation
@@ -150,7 +150,7 @@ Phases execute in numeric order: 12 -> 13 -> 14 -> 15 -> 16
 | 9.1 Admin Protection, KYC Data & Profile | v1.2 | 4/4 | Complete | 2026-02-15 |
 | 10. Worker Hardening | v1.2 | 2/2 | Complete | 2026-02-15 |
 | 11. Frontend Data Layer and Quality | v1.2 | 2/2 | Complete | 2026-02-15 |
-| 12. Database Schema & Stats Worker | v1.3 | 0/TBD | Not started | - |
+| 12. Database Schema & Stats Worker | v1.3 | 0/2 | Planning | - |
 | 13. App Shell Restructure | v1.3 | 0/TBD | Not started | - |
 | 14. Dashboard | v1.3 | 0/TBD | Not started | - |
 | 15. Unified Trade Page | v1.3 | 0/TBD | Not started | - |
@@ -158,4 +158,4 @@ Phases execute in numeric order: 12 -> 13 -> 14 -> 15 -> 16
 
 ---
 *Roadmap created: 2026-02-10*
-*Last updated: 2026-02-15 (v1.3 milestone roadmap created)*
+*Last updated: 2026-02-15 (Phase 12 planned -- 2 plans)*
