@@ -5,7 +5,7 @@
 See: .planning/PROJECT.md (updated 2026-02-15)
 
 **Core value:** Anyone worldwide can get price exposure to U.S. ammunition by minting ammo tokens with USDC, while only verified U.S. residents in allowed states can redeem for physical delivery.
-**Current focus:** v1.3 Frontend Data Layer & Quality -- Phase 11 in progress
+**Current focus:** v1.2 Production Hardening -- Phase 11 complete (milestone complete)
 
 ## Current Position
 

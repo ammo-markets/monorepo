@@ -38,7 +38,7 @@ Phase 8 (E2E Verification) superseded by v1.2.
 - [x] **Phase 9: Authentication and API Hardening** -- SIWE auth on all routes, admin authorization, rate limiting, CORS, and registration race fix (completed 2026-02-15)
 - [x] **Phase 9.1: Admin Protection, KYC Data & User Profile** -- Server-side admin page protection, KYC identity data collection, user profile page with shipping address (completed 2026-02-15)
 - [x] **Phase 10: Worker Hardening** -- Complete event coverage, retry logic, reorg protection, startup validation, graceful shutdown (completed 2026-02-15)
-- [ ] **Phase 11: Frontend Data Layer and Quality** -- TanStack Query migration, error boundaries, cache invalidation, type safety fixes
+- [x] **Phase 11: Frontend Data Layer and Quality** -- TanStack Query migration, error boundaries, cache invalidation, type safety fixes (completed 2026-02-15)
 
 ## Phase Details
 
@@ -103,8 +103,8 @@ Plans:
 **Plans:** 2 plans in 2 waves
 
 Plans:
-- [ ] 11-01-PLAN.md -- TanStack Query hooks, QueryClient configuration, migrate all components from useEffect+fetch, cache invalidation on admin finalize
-- [ ] 11-02-PLAN.md -- React Error Boundaries for all route segments, remove as-any casts, remove unused React imports
+- [x] 11-01-PLAN.md -- TanStack Query hooks, QueryClient configuration, migrate all components from useEffect+fetch, cache invalidation on admin finalize
+- [x] 11-02-PLAN.md -- React Error Boundaries for all route segments, remove as-any casts, remove unused React imports
 
 ## Progress
 
@@ -122,8 +122,8 @@ Plans:
 | 9. Authentication and API Hardening | v1.2 | 2/2 | Complete | 2026-02-15 |
 | 9.1 Admin Protection, KYC Data & Profile | v1.2 | 4/4 | Complete | 2026-02-15 |
 | 10. Worker Hardening | v1.2 | 2/2 | Complete | 2026-02-15 |
-| 11. Frontend Data Layer and Quality | v1.2 | 0/2 | Not started | - |
+| 11. Frontend Data Layer and Quality | v1.2 | 2/2 | Complete | 2026-02-15 |
 
 ---
 *Roadmap created: 2026-02-10*
-*Last updated: 2026-02-15 (Phase 11 planned)*
+*Last updated: 2026-02-15 (Phase 11 complete)*
