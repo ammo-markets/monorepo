@@ -27,3 +27,22 @@
 
 ---
 
+
+## v1.2 Production Hardening (Shipped: 2026-02-15)
+
+**Phases completed:** 4 phases (9, 9.1, 10, 11), 10 plans, 20 tasks
+**Files changed:** 94 (+6,849 / -609)
+**Git range:** `4437533` (feat(09-01)) → `c55cd4e` (fix(11-02))
+
+**Key accomplishments:**
+- SIWE wallet authentication with iron-session cookies on all API routes, keeper-gated admin routes, and registration race condition fix
+- Server-side admin protection (non-keepers see 404), KYC identity form with zod validation, and user profile page with shipping address management
+- Worker handles all 11 CaliberMarket events with RPC retry/backoff, 5-block reorg protection, env validation, and graceful shutdown
+- All 15 frontend components migrated from useEffect+fetch to TanStack Query with cache invalidation on admin actions
+- Error boundaries on all 7 route segments, zero as-any casts, zero unused React imports
+- CORS origin whitelist and 100 req/min rate limiting middleware
+
+**Delivered:** Production-hardened DeFi protocol -- every API request authenticated, every contract event indexed reliably, every component on TanStack Query with error boundaries.
+
+---
+
