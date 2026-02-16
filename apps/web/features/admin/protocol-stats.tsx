@@ -1,8 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import {
   DollarSign,
-  Clock,
   ArrowUpCircle,
   ArrowDownCircle,
   RefreshCw,
@@ -85,60 +85,116 @@ export function ProtocolStats() {
     );
   }
 
-  const cards = [
-    {
-      label: "Treasury Balance",
-      value: `$${Number(stats.treasuryUsdc).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDC`,
-      icon: DollarSign,
-    },
-    {
-      label: "Pending Orders",
-      value: stats.pendingOrders.toLocaleString(),
-      icon: Clock,
-    },
-    {
-      label: "Completed Mints",
-      value: stats.totalMinted.toLocaleString(),
-      icon: ArrowUpCircle,
-    },
-    {
-      label: "Completed Redeems",
-      value: stats.totalRedeemed.toLocaleString(),
-      icon: ArrowDownCircle,
-    },
-  ];
+  const pendingMintHighlight = stats.pendingMints > 0;
+  const pendingRedeemHighlight = stats.pendingRedeems > 0;
+
+  function StatCard({
+    label,
+    value,
+    icon: Icon,
+  }: {
+    label: string;
+    value: string;
+    icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
+  }) {
+    return (
+      <div
+        className="rounded-lg border p-6"
+        style={{
+          borderColor: "var(--border-default)",
+          backgroundColor: "var(--bg-secondary)",
+        }}
+      >
+        <div
+          className="flex items-center gap-2 text-sm"
+          style={{ color: "var(--text-secondary)" }}
+        >
+          <Icon className="h-4 w-4" style={{ color: "var(--brass)" }} />
+          {label}
+        </div>
+        <p
+          className="mt-2 text-2xl font-bold"
+          style={{ color: "var(--text-primary)" }}
+        >
+          {value}
+        </p>
+      </div>
+    );
+  }
+
+  function PendingCard({
+    label,
+    value,
+    icon: Icon,
+    href,
+    highlighted,
+  }: {
+    label: string;
+    value: string;
+    icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
+    href: string;
+    highlighted: boolean;
+  }) {
+    return (
+      <Link
+        href={href}
+        className="block cursor-pointer rounded-lg border p-6 transition-colors hover:bg-[var(--bg-tertiary)]"
+        style={{
+          borderColor: highlighted ? "var(--brass)" : "var(--border-default)",
+          boxShadow: highlighted ? "0 0 0 1px var(--brass)" : "none",
+          backgroundColor: "var(--bg-secondary)",
+        }}
+      >
+        <div
+          className="flex items-center gap-2 text-sm"
+          style={{ color: "var(--text-secondary)" }}
+        >
+          <Icon className="h-4 w-4" style={{ color: "var(--brass)" }} />
+          {label}
+        </div>
+        <p
+          className="mt-2 text-2xl font-bold"
+          style={{ color: "var(--text-primary)" }}
+        >
+          {value}
+        </p>
+      </Link>
+    );
+  }
 
   return (
     <div className="space-y-6">
       {/* Summary cards */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {cards.map((card) => (
-          <div
-            key={card.label}
-            className="rounded-lg border p-6"
-            style={{
-              borderColor: "var(--border-default)",
-              backgroundColor: "var(--bg-secondary)",
-            }}
-          >
-            <div
-              className="flex items-center gap-2 text-sm"
-              style={{ color: "var(--text-secondary)" }}
-            >
-              <card.icon
-                className="h-4 w-4"
-                style={{ color: "var(--brass)" }}
-              />
-              {card.label}
-            </div>
-            <p
-              className="mt-2 text-2xl font-bold"
-              style={{ color: "var(--text-primary)" }}
-            >
-              {card.value}
-            </p>
-          </div>
-        ))}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        <StatCard
+          label="Treasury Balance"
+          value={`$${Number(stats.treasuryUsdc).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDC`}
+          icon={DollarSign}
+        />
+        <PendingCard
+          label="Pending Mints"
+          value={stats.pendingMints.toLocaleString()}
+          icon={ArrowUpCircle}
+          href="/admin/mint-orders"
+          highlighted={pendingMintHighlight}
+        />
+        <PendingCard
+          label="Pending Redeems"
+          value={stats.pendingRedeems.toLocaleString()}
+          icon={ArrowDownCircle}
+          href="/admin/redeem-orders"
+          highlighted={pendingRedeemHighlight}
+        />
+        <StatCard
+          label="Completed Mints"
+          value={stats.totalMinted.toLocaleString()}
+          icon={ArrowUpCircle}
+        />
+        <StatCard
+          label="Completed Redeems"
+          value={stats.totalRedeemed.toLocaleString()}
+          icon={ArrowDownCircle}
+        />
       </div>
 
       {/* Per-caliber supply table */}

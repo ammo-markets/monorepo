@@ -6,6 +6,7 @@ import { formatDistanceToNow } from "date-fns";
 import { Inbox, RefreshCw } from "lucide-react";
 import { truncateAddress } from "@/lib/utils";
 import { FinalizeMintDialog } from "./finalize-mint-dialog";
+import { RejectMintDialog } from "./reject-mint-dialog";
 import type { AdminMintOrder } from "./finalize-mint-dialog";
 
 function formatUsdc(amount: string): string {
@@ -17,6 +18,8 @@ export function MintOrdersTable() {
     null,
   );
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [rejectOrder, setRejectOrder] = useState<AdminMintOrder | null>(null);
+  const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
 
   const {
     data: orders,
@@ -38,6 +41,13 @@ export function MintOrdersTable() {
     (orderId: string) => {
       // Optimistically remove from the query cache will happen on next refetch.
       // Trigger immediate refetch to update the list.
+      void refetch();
+    },
+    [refetch],
+  );
+
+  const handleRejected = useCallback(
+    (orderId: string) => {
       void refetch();
     },
     [refetch],
@@ -184,26 +194,44 @@ export function MintOrdersTable() {
                   })}
                 </td>
                 <td className="px-4 py-3">
-                  <button
-                    type="button"
-                    disabled={!order.onChainOrderId}
-                    title={
-                      order.onChainOrderId
-                        ? "Finalize this mint order"
-                        : "Awaiting on-chain order ID"
-                    }
-                    onClick={() => {
-                      setSelectedOrder(order);
-                      setDialogOpen(true);
-                    }}
-                    className="rounded-md px-3 py-1 text-xs font-medium transition-colors hover:bg-[var(--brass-hover)] disabled:cursor-not-allowed disabled:opacity-50"
-                    style={{
-                      backgroundColor: "var(--brass)",
-                      color: "var(--bg-primary)",
-                    }}
-                  >
-                    Finalize
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      disabled={!order.onChainOrderId}
+                      title={
+                        order.onChainOrderId
+                          ? "Finalize this mint order"
+                          : "Awaiting on-chain order ID"
+                      }
+                      onClick={() => {
+                        setSelectedOrder(order);
+                        setDialogOpen(true);
+                      }}
+                      className="rounded-md px-3 py-1 text-xs font-medium transition-colors hover:bg-[var(--brass-hover)] disabled:cursor-not-allowed disabled:opacity-50"
+                      style={{
+                        backgroundColor: "var(--brass)",
+                        color: "var(--bg-primary)",
+                      }}
+                    >
+                      Finalize
+                    </button>
+                    <button
+                      type="button"
+                      disabled={!order.onChainOrderId}
+                      title={
+                        order.onChainOrderId
+                          ? "Reject this mint order"
+                          : "Awaiting on-chain order ID"
+                      }
+                      onClick={() => {
+                        setRejectOrder(order);
+                        setRejectDialogOpen(true);
+                      }}
+                      className="rounded-md bg-red-900/30 px-3 py-1 text-xs font-medium text-red-400 transition-colors hover:bg-red-900/50 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      Reject
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -220,6 +248,18 @@ export function MintOrdersTable() {
             if (!open) setSelectedOrder(null);
           }}
           onFinalized={handleFinalized}
+        />
+      )}
+
+      {rejectOrder && (
+        <RejectMintDialog
+          order={rejectOrder}
+          open={rejectDialogOpen}
+          onOpenChange={(open) => {
+            setRejectDialogOpen(open);
+            if (!open) setRejectOrder(null);
+          }}
+          onRejected={handleRejected}
         />
       )}
     </>

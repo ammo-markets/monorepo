@@ -6,6 +6,7 @@ import { formatDistanceToNow } from "date-fns";
 import { Inbox, RefreshCw } from "lucide-react";
 import { truncateAddress } from "@/lib/utils";
 import { FinalizeRedeemDialog } from "./finalize-redeem-dialog";
+import { CancelRedeemDialog } from "./cancel-redeem-dialog";
 import type { AdminRedeemOrder } from "./finalize-redeem-dialog";
 
 function formatTokenAmount(amount: string): string {
@@ -51,6 +52,8 @@ export function RedeemOrdersTable() {
     null,
   );
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [cancelOrder, setCancelOrder] = useState<AdminRedeemOrder | null>(null);
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
 
   const {
     data: orders,
@@ -69,6 +72,13 @@ export function RedeemOrdersTable() {
   });
 
   const handleFinalized = useCallback(
+    (orderId: string) => {
+      void refetch();
+    },
+    [refetch],
+  );
+
+  const handleCancelled = useCallback(
     (orderId: string) => {
       void refetch();
     },
@@ -239,26 +249,44 @@ export function RedeemOrdersTable() {
                   })}
                 </td>
                 <td className="px-4 py-3">
-                  <button
-                    type="button"
-                    disabled={!order.onChainOrderId}
-                    title={
-                      order.onChainOrderId
-                        ? "Finalize this redeem order"
-                        : "Awaiting on-chain order ID"
-                    }
-                    onClick={() => {
-                      setSelectedOrder(order);
-                      setDialogOpen(true);
-                    }}
-                    className="rounded-md px-3 py-1 text-xs font-medium transition-colors hover:bg-[var(--brass-hover)] disabled:cursor-not-allowed disabled:opacity-50"
-                    style={{
-                      backgroundColor: "var(--brass)",
-                      color: "var(--bg-primary)",
-                    }}
-                  >
-                    Finalize
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      disabled={!order.onChainOrderId}
+                      title={
+                        order.onChainOrderId
+                          ? "Finalize this redeem order"
+                          : "Awaiting on-chain order ID"
+                      }
+                      onClick={() => {
+                        setSelectedOrder(order);
+                        setDialogOpen(true);
+                      }}
+                      className="rounded-md px-3 py-1 text-xs font-medium transition-colors hover:bg-[var(--brass-hover)] disabled:cursor-not-allowed disabled:opacity-50"
+                      style={{
+                        backgroundColor: "var(--brass)",
+                        color: "var(--bg-primary)",
+                      }}
+                    >
+                      Finalize
+                    </button>
+                    <button
+                      type="button"
+                      disabled={!order.onChainOrderId}
+                      title={
+                        order.onChainOrderId
+                          ? "Cancel this redeem order"
+                          : "Awaiting on-chain order ID"
+                      }
+                      onClick={() => {
+                        setCancelOrder(order);
+                        setCancelDialogOpen(true);
+                      }}
+                      className="rounded-md bg-red-900/30 px-3 py-1 text-xs font-medium text-red-400 transition-colors hover:bg-red-900/50 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      Cancel
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -275,6 +303,18 @@ export function RedeemOrdersTable() {
             if (!open) setSelectedOrder(null);
           }}
           onFinalized={handleFinalized}
+        />
+      )}
+
+      {cancelOrder && (
+        <CancelRedeemDialog
+          order={cancelOrder}
+          open={cancelDialogOpen}
+          onOpenChange={(open) => {
+            setCancelDialogOpen(open);
+            if (!open) setCancelOrder(null);
+          }}
+          onCancelled={handleCancelled}
         />
       )}
     </>

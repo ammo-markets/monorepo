@@ -41,18 +41,21 @@ export async function GET() {
       ),
     );
 
-    // 4-6. Query order counts from DB
-    const [totalRedeemed, totalMinted, pendingOrders] = await Promise.all([
-      prisma.order.count({ where: { type: "REDEEM", status: "COMPLETED" } }),
-      prisma.order.count({ where: { type: "MINT", status: "COMPLETED" } }),
-      prisma.order.count({ where: { status: "PENDING" } }),
-    ]);
+    // 4-7. Query order counts from DB
+    const [totalRedeemed, totalMinted, pendingMints, pendingRedeems] =
+      await Promise.all([
+        prisma.order.count({ where: { type: "REDEEM", status: "COMPLETED" } }),
+        prisma.order.count({ where: { type: "MINT", status: "COMPLETED" } }),
+        prisma.order.count({ where: { type: "MINT", status: "PENDING" } }),
+        prisma.order.count({ where: { type: "REDEEM", status: "PENDING" } }),
+      ]);
 
     return Response.json({
       treasuryUsdc: formatUnits(usdcBalance, 6),
       totalRedeemed,
       totalMinted,
-      pendingOrders,
+      pendingMints,
+      pendingRedeems,
       calibers: CALIBERS.map((caliber, i) => ({
         caliber,
         name: CALIBER_SPECS[caliber].name,

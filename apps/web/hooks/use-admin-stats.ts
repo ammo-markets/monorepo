@@ -10,7 +10,8 @@ export interface StatsData {
   treasuryUsdc: string;
   totalRedeemed: number;
   totalMinted: number;
-  pendingOrders: number;
+  pendingMints: number;
+  pendingRedeems: number;
   calibers: CaliberSupply[];
 }
 
