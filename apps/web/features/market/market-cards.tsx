@@ -32,22 +32,7 @@ function CaliberCard({ caliber }: { caliber: MarketCaliberFromAPI }) {
   return (
     <a
       href={`/market/${caliber.caliber.toLowerCase()}`}
-      className="group block rounded-xl p-5 transition-all duration-150"
-      style={{
-        backgroundColor: "var(--bg-secondary)",
-        border: "1px solid var(--border-default)",
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.borderColor = "var(--brass-border)";
-        e.currentTarget.style.transform = "translateY(-2px)";
-        e.currentTarget.style.boxShadow =
-          "0 4px 12px rgba(0,0,0,0.2), 0 0 20px rgba(198,164,78,0.05)";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = "var(--border-default)";
-        e.currentTarget.style.transform = "translateY(0)";
-        e.currentTarget.style.boxShadow = "none";
-      }}
+      className="group block rounded-xl border border-border-default bg-ax-secondary p-5 transition-all duration-150 hover:border-brass-border hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.2),0_0_20px_rgba(198,164,78,0.05)]"
     >
       {/* Header */}
       <div className="flex items-center gap-3">

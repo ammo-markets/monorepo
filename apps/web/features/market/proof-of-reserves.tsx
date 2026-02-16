@@ -50,14 +50,8 @@ export function ProofOfReserves() {
             </p>
             <a
               href="#"
-              className="mt-1 inline-flex items-center gap-1 text-xs font-medium transition-colors duration-150"
+              className="mt-1 inline-flex items-center gap-1 text-xs font-medium transition-colors duration-150 hover:opacity-80"
               style={{ color: "var(--blue)" }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.opacity = "0.8";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.opacity = "1";
-              }}
             >
               {"View latest attestation \u2192"}
             </a>

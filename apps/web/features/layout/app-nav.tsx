@@ -59,29 +59,11 @@ export function AppNav() {
                 key={item.href}
                 href={item.href}
                 aria-current={active ? "page" : undefined}
-                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors duration-150"
-                style={{
-                  color: active ? "var(--accent)" : "var(--text-secondary)",
-                  backgroundColor: active
-                    ? "var(--bg-tertiary)"
-                    : "transparent",
-                  borderLeft: active
-                    ? "3px solid var(--accent)"
-                    : "3px solid transparent",
-                }}
-                onMouseEnter={(e) => {
-                  if (!active) {
-                    e.currentTarget.style.color = "var(--text-primary)";
-                    e.currentTarget.style.backgroundColor =
-                      "var(--bg-tertiary)";
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!active) {
-                    e.currentTarget.style.color = "var(--text-secondary)";
-                    e.currentTarget.style.backgroundColor = "transparent";
-                  }
-                }}
+                className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors duration-150 border-l-[3px] ${
+                  active
+                    ? "text-accent bg-ax-tertiary border-l-accent"
+                    : "text-text-secondary bg-transparent border-l-transparent hover:text-text-primary hover:bg-ax-tertiary"
+                }`}
               >
                 <item.icon size={20} />
                 <span>{item.label}</span>
@@ -93,30 +75,11 @@ export function AppNav() {
             <Link
               href="/admin"
               aria-current={isActiveLink(pathname, "/admin") ? "page" : undefined}
-              className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors duration-150"
-              style={{
-                color: isActiveLink(pathname, "/admin")
-                  ? "var(--accent)"
-                  : "var(--text-secondary)",
-                backgroundColor: isActiveLink(pathname, "/admin")
-                  ? "var(--bg-tertiary)"
-                  : "transparent",
-                borderLeft: isActiveLink(pathname, "/admin")
-                  ? "3px solid var(--accent)"
-                  : "3px solid transparent",
-              }}
-              onMouseEnter={(e) => {
-                if (!isActiveLink(pathname, "/admin")) {
-                  e.currentTarget.style.color = "var(--text-primary)";
-                  e.currentTarget.style.backgroundColor = "var(--bg-tertiary)";
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!isActiveLink(pathname, "/admin")) {
-                  e.currentTarget.style.color = "var(--text-secondary)";
-                  e.currentTarget.style.backgroundColor = "transparent";
-                }
-              }}
+              className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors duration-150 border-l-[3px] ${
+                isActiveLink(pathname, "/admin")
+                  ? "text-accent bg-ax-tertiary border-l-accent"
+                  : "text-text-secondary bg-transparent border-l-transparent hover:text-text-primary hover:bg-ax-tertiary"
+              }`}
             >
               <Shield size={20} />
               <span>Admin</span>

@@ -311,14 +311,7 @@ function DesktopStepper({ steps }: { steps: OrderStep[] }) {
                       href={step.link.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 underline decoration-dotted underline-offset-2 transition-colors duration-150"
-                      style={{ color: "var(--brass)" }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.color = "var(--brass-hover)";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.color = "var(--brass)";
-                      }}
+                      className="inline-flex items-center gap-1 underline decoration-dotted underline-offset-2 transition-colors duration-150 text-brass hover:text-brass-hover"
                     >
                       {step.meta}
                       <ExternalLink size={10} />
@@ -562,14 +555,7 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
       {/* Back link */}
       <Link
         href="/portfolio"
-        className="mb-8 inline-flex items-center gap-2 text-sm font-medium transition-colors duration-150"
-        style={{ color: "var(--brass)" }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.color = "var(--brass-hover)";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.color = "var(--brass)";
-        }}
+        className="mb-8 inline-flex items-center gap-2 text-sm font-medium transition-colors duration-150 text-brass hover:text-brass-hover"
       >
         <ArrowLeft size={16} />
         Back to Portfolio
@@ -658,14 +644,7 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
                 href={snowtraceUrl(order.txHash)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 font-mono text-sm transition-colors duration-150"
-                style={{ color: "var(--brass)" }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = "var(--brass-hover)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = "var(--brass)";
-                }}
+                className="inline-flex items-center gap-1.5 font-mono text-sm transition-colors duration-150 text-brass hover:text-brass-hover"
               >
                 {truncateAddress(order.txHash)}
                 <ExternalLink size={12} />
@@ -706,14 +685,7 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
             </p>
             <a
               href="#"
-              className="mt-1 inline-flex items-center gap-1.5 text-sm font-medium transition-colors duration-150"
-              style={{ color: "var(--brass)" }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.color = "var(--brass-hover)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.color = "var(--brass)";
-              }}
+              className="mt-1 inline-flex items-center gap-1.5 text-sm font-medium transition-colors duration-150 text-brass hover:text-brass-hover"
             >
               Contact Support
               <ArrowLeft size={14} className="rotate-180" />
@@ -722,20 +694,7 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
 
           <button
             type="button"
-            className="inline-flex items-center gap-2 self-start rounded-lg px-4 py-2.5 text-sm font-medium transition-colors duration-150 sm:self-auto"
-            style={{
-              backgroundColor: "transparent",
-              border: "1px solid var(--border-hover)",
-              color: "var(--text-secondary)",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "var(--bg-secondary)";
-              e.currentTarget.style.color = "var(--text-primary)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "transparent";
-              e.currentTarget.style.color = "var(--text-secondary)";
-            }}
+            className="inline-flex items-center gap-2 self-start rounded-lg px-4 py-2.5 text-sm font-medium transition-colors duration-150 sm:self-auto bg-transparent border border-border-hover text-text-secondary hover:bg-ax-secondary hover:text-text-primary"
           >
             <MessageSquare size={14} />
             Report a Problem

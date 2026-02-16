@@ -36,15 +36,8 @@ function SortHeader({
     <th
       className={`cursor-pointer select-none whitespace-nowrap px-4 py-3 text-xs font-semibold uppercase tracking-wide ${
         align === "right" ? "text-right" : "text-left"
-      }`}
-      style={{ color: isActive ? "var(--text-primary)" : "var(--text-muted)" }}
+      } ${isActive ? "text-text-primary" : "text-text-muted hover:text-text-secondary"}`}
       onClick={() => onSort(sortKey)}
-      onMouseEnter={(e) => {
-        if (!isActive) e.currentTarget.style.color = "var(--text-secondary)";
-      }}
-      onMouseLeave={(e) => {
-        if (!isActive) e.currentTarget.style.color = "var(--text-muted)";
-      }}
       aria-sort={
         isActive ? (currentDir === "asc" ? "ascending" : "descending") : "none"
       }
@@ -133,18 +126,8 @@ function MobileCaliberCard({
 
   return (
     <div
-      className="cursor-pointer rounded-xl p-4 transition-all duration-150"
-      style={{
-        backgroundColor: "var(--bg-secondary)",
-        border: "1px solid var(--border-default)",
-      }}
+      className="cursor-pointer rounded-xl border border-border-default bg-ax-secondary p-4 transition-all duration-150 hover:border-brass-border"
       onClick={() => router.push(`/market/${caliber.caliber.toLowerCase()}`)}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.borderColor = "var(--brass-border)";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = "var(--border-default)";
-      }}
       role="link"
       tabIndex={0}
       onKeyDown={(e) => {
@@ -372,7 +355,7 @@ export function MarketTable() {
                 return (
                   <tr
                     key={caliber.caliber}
-                    className="cursor-pointer transition-colors duration-100"
+                    className="cursor-pointer transition-colors duration-100 hover:bg-ax-tertiary"
                     style={{
                       borderBottom:
                         index < sorted.length - 1
@@ -382,13 +365,6 @@ export function MarketTable() {
                     onClick={() =>
                       router.push(`/market/${caliber.caliber.toLowerCase()}`)
                     }
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor =
-                        "var(--bg-tertiary)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = "transparent";
-                    }}
                   >
                     {/* # */}
                     <td className="px-4 py-4">
@@ -444,46 +420,18 @@ export function MarketTable() {
                       <div className="flex items-center justify-end gap-2">
                         <button
                           type="button"
-                          className="rounded-md px-3 py-1.5 text-xs font-semibold transition-colors duration-150"
-                          style={{
-                            backgroundColor: "var(--brass)",
-                            color: "var(--bg-primary)",
-                          }}
+                          className="rounded-md bg-brass px-3 py-1.5 text-xs font-semibold text-ax-primary transition-colors duration-150 hover:bg-brass-hover"
                           onClick={(e) => {
                             e.stopPropagation();
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor =
-                              "var(--brass-hover)";
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor =
-                              "var(--brass)";
                           }}
                         >
                           Mint
                         </button>
                         <button
                           type="button"
-                          className="flex items-center gap-1 rounded-md px-3 py-1.5 text-xs font-medium transition-colors duration-150"
-                          style={{
-                            backgroundColor: "transparent",
-                            border: "1px solid var(--border-hover)",
-                            color: "var(--text-secondary)",
-                          }}
+                          className="flex items-center gap-1 rounded-md border border-border-hover bg-transparent px-3 py-1.5 text-xs font-medium text-text-secondary transition-colors duration-150 hover:bg-ax-tertiary hover:text-text-primary"
                           onClick={(e) => {
                             e.stopPropagation();
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor =
-                              "var(--bg-tertiary)";
-                            e.currentTarget.style.color = "var(--text-primary)";
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor =
-                              "transparent";
-                            e.currentTarget.style.color =
-                              "var(--text-secondary)";
                           }}
                         >
                           Trade

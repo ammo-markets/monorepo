@@ -42,18 +42,8 @@ export function ConnectWalletCTA({
         </p>
         <button
           type="button"
-          className="inline-flex items-center gap-2.5 rounded-lg px-6 py-3 text-sm font-semibold transition-colors duration-150"
-          style={{
-            backgroundColor: "var(--brass)",
-            color: "var(--bg-primary)",
-          }}
+          className="inline-flex items-center gap-2.5 rounded-lg bg-brass px-6 py-3 text-sm font-semibold text-ax-primary transition-colors duration-150 hover:bg-brass-hover"
           onClick={connect}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = "var(--brass-hover)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "var(--brass)";
-          }}
         >
           <Wallet size={18} />
           Connect Wallet
@@ -77,18 +67,8 @@ export function ConnectWalletInline({
   return (
     <button
       type="button"
-      className="flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-semibold transition-colors duration-150"
-      style={{
-        backgroundColor: "var(--brass)",
-        color: "var(--bg-primary)",
-      }}
+      className="flex w-full items-center justify-center gap-2 rounded-xl bg-brass py-3.5 text-sm font-semibold text-ax-primary transition-colors duration-150 hover:bg-brass-hover"
       onClick={connect}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = "var(--brass-hover)";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.backgroundColor = "var(--brass)";
-      }}
     >
       <Wallet size={16} />
       {label}

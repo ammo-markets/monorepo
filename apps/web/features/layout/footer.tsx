@@ -36,14 +36,7 @@ function FooterColumn({
           <li key={link.label}>
             <a
               href={link.href}
-              className="text-sm transition-colors duration-150"
-              style={{ color: "var(--text-secondary)" }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.color = "var(--text-primary)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.color = "var(--text-secondary)";
-              }}
+              className="text-sm text-text-secondary transition-colors duration-150 hover:text-text-primary"
             >
               {link.label}
             </a>

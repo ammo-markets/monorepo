@@ -172,25 +172,11 @@ function StepSelectCaliber({
               key={cal.id}
               type="button"
               onClick={() => onSelect(cal.id)}
-              className="group relative flex flex-col gap-3 rounded-xl p-4 text-left transition-all duration-150"
-              style={{
-                backgroundColor: isSelected
-                  ? "var(--brass-muted)"
-                  : "var(--bg-secondary)",
-                border: isSelected
-                  ? "1.5px solid var(--brass)"
-                  : "1.5px solid var(--border-default)",
-              }}
-              onMouseEnter={(e) => {
-                if (!isSelected) {
-                  e.currentTarget.style.borderColor = "var(--border-hover)";
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!isSelected) {
-                  e.currentTarget.style.borderColor = "var(--border-default)";
-                }
-              }}
+              className={`group relative flex flex-col gap-3 rounded-xl p-4 text-left transition-all duration-150 ${
+                isSelected
+                  ? "bg-brass-muted border-[1.5px] border-brass"
+                  : "bg-ax-secondary border-[1.5px] border-border-default hover:border-border-hover"
+              }`}
             >
               {/* Selected check */}
               {isSelected && (
@@ -254,20 +240,11 @@ function StepSelectCaliber({
         type="button"
         disabled={!selected}
         onClick={onNext}
-        className="mt-6 flex w-full items-center justify-center rounded-xl py-3.5 text-sm font-bold transition-all duration-150"
-        style={{
-          backgroundColor: selected ? "var(--brass)" : "var(--bg-tertiary)",
-          color: selected ? "var(--bg-primary)" : "var(--text-muted)",
-          cursor: selected ? "pointer" : "not-allowed",
-          opacity: selected ? 1 : 0.5,
-        }}
-        onMouseEnter={(e) => {
-          if (selected)
-            e.currentTarget.style.backgroundColor = "var(--brass-hover)";
-        }}
-        onMouseLeave={(e) => {
-          if (selected) e.currentTarget.style.backgroundColor = "var(--brass)";
-        }}
+        className={`mt-6 flex w-full items-center justify-center rounded-xl py-3.5 text-sm font-bold transition-all duration-150 ${
+          selected
+            ? "bg-brass text-ax-primary cursor-pointer hover:bg-brass-hover"
+            : "bg-ax-tertiary text-text-muted cursor-not-allowed opacity-50"
+        }`}
       >
         Next
       </button>
@@ -318,14 +295,7 @@ function StepEnterAmount({
         <button
           type="button"
           onClick={onBack}
-          className="mb-5 flex items-center gap-1.5 text-sm font-medium transition-colors duration-150"
-          style={{ color: "var(--text-secondary)" }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.color = "var(--text-primary)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.color = "var(--text-secondary)";
-          }}
+          className="mb-5 flex items-center gap-1.5 text-sm font-medium transition-colors duration-150 text-text-secondary hover:text-text-primary"
         >
           <ArrowLeft size={16} />
           Back
@@ -461,31 +431,11 @@ function StepEnterAmount({
             key={amt}
             type="button"
             onClick={() => setUsdcAmount(amt.toString())}
-            className="flex-1 rounded-lg py-2 text-sm font-medium transition-all duration-150"
-            style={{
-              backgroundColor:
-                usdcAmount === amt.toString()
-                  ? "var(--brass-muted)"
-                  : "var(--bg-secondary)",
-              border:
-                usdcAmount === amt.toString()
-                  ? "1px solid var(--brass-border)"
-                  : "1px solid var(--border-default)",
-              color:
-                usdcAmount === amt.toString()
-                  ? "var(--brass)"
-                  : "var(--text-secondary)",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = "var(--border-hover)";
-            }}
-            onMouseLeave={(e) => {
-              if (usdcAmount !== amt.toString()) {
-                e.currentTarget.style.borderColor = "var(--border-default)";
-              } else {
-                e.currentTarget.style.borderColor = "var(--brass-border)";
-              }
-            }}
+            className={`flex-1 rounded-lg py-2 text-sm font-medium transition-all duration-150 ${
+              usdcAmount === amt.toString()
+                ? "bg-brass-muted border border-brass-border text-brass"
+                : "bg-ax-secondary border border-border-default text-text-secondary hover:border-border-hover"
+            }`}
           >
             ${amt}
           </button>
@@ -570,17 +520,7 @@ function StepEnterAmount({
         <button
           type="button"
           onClick={onConnect}
-          className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold transition-colors duration-150"
-          style={{
-            backgroundColor: "var(--brass)",
-            color: "var(--bg-primary)",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = "var(--brass-hover)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "var(--brass)";
-          }}
+          className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold transition-colors duration-150 bg-brass text-ax-primary hover:bg-brass-hover"
         >
           <Wallet size={16} />
           Connect Wallet to Continue
@@ -590,21 +530,11 @@ function StepEnterAmount({
           type="button"
           disabled={!isValid}
           onClick={onNext}
-          className="mt-6 flex w-full items-center justify-center rounded-xl py-3.5 text-sm font-bold transition-all duration-150"
-          style={{
-            backgroundColor: isValid ? "var(--brass)" : "var(--bg-tertiary)",
-            color: isValid ? "var(--bg-primary)" : "var(--text-muted)",
-            cursor: isValid ? "pointer" : "not-allowed",
-            opacity: isValid ? 1 : 0.5,
-          }}
-          onMouseEnter={(e) => {
-            if (isValid)
-              e.currentTarget.style.backgroundColor = "var(--brass-hover)";
-          }}
-          onMouseLeave={(e) => {
-            if (isValid)
-              e.currentTarget.style.backgroundColor = "var(--brass)";
-          }}
+          className={`mt-6 flex w-full items-center justify-center rounded-xl py-3.5 text-sm font-bold transition-all duration-150 ${
+            isValid
+              ? "bg-brass text-ax-primary cursor-pointer hover:bg-brass-hover"
+              : "bg-ax-tertiary text-text-muted cursor-not-allowed opacity-50"
+          }`}
         >
           Next
         </button>
@@ -655,14 +585,7 @@ function StepReview({
       <button
         type="button"
         onClick={onBack}
-        className="mb-5 flex items-center gap-1.5 text-sm font-medium transition-colors duration-150"
-        style={{ color: "var(--text-secondary)" }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.color = "var(--text-primary)";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.color = "var(--text-secondary)";
-        }}
+        className="mb-5 flex items-center gap-1.5 text-sm font-medium transition-colors duration-150 text-text-secondary hover:text-text-primary"
       >
         <ArrowLeft size={16} />
         Back
@@ -802,17 +725,7 @@ function StepReview({
             <button
               type="button"
               onClick={onRetry}
-              className="flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold transition-all duration-150"
-              style={{
-                backgroundColor: "var(--brass)",
-                color: "var(--bg-primary)",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "var(--brass-hover)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "var(--brass)";
-              }}
+              className="flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold transition-all duration-150 bg-brass text-ax-primary hover:bg-brass-hover"
             >
               Try Again
             </button>
@@ -824,17 +737,7 @@ function StepReview({
           <button
             type="button"
             onClick={onConnect}
-            className="flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold transition-all duration-150"
-            style={{
-              backgroundColor: "var(--brass)",
-              color: "var(--bg-primary)",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "var(--brass-hover)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "var(--brass)";
-            }}
+            className="flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold transition-all duration-150 bg-brass text-ax-primary hover:bg-brass-hover"
           >
             <Wallet size={16} />
             Connect Wallet
@@ -847,17 +750,7 @@ function StepReview({
             <button
               type="button"
               onClick={onApprove}
-              className="flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold transition-all duration-150"
-              style={{
-                backgroundColor: "var(--brass)",
-                color: "var(--bg-primary)",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "var(--brass-hover)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "var(--brass)";
-              }}
+              className="flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold transition-all duration-150 bg-brass text-ax-primary hover:bg-brass-hover"
             >
               Approve USDC Spending
             </button>
@@ -900,17 +793,7 @@ function StepReview({
           <button
             type="button"
             onClick={onConfirm}
-            className="flex w-full items-center justify-center gap-2 rounded-xl py-4 text-base font-bold transition-all duration-150"
-            style={{
-              backgroundColor: "var(--brass)",
-              color: "var(--bg-primary)",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "var(--brass-hover)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "var(--brass)";
-            }}
+            className="flex w-full items-center justify-center gap-2 rounded-xl py-4 text-base font-bold transition-all duration-150 bg-brass text-ax-primary hover:bg-brass-hover"
           >
             <Lock size={16} />
             Confirm Mint
@@ -986,17 +869,7 @@ function StepConfirmation({
         <button
           type="button"
           onClick={onRetry}
-          className="flex w-full items-center justify-center rounded-xl py-3.5 text-sm font-bold transition-all duration-150"
-          style={{
-            backgroundColor: "var(--brass)",
-            color: "var(--bg-primary)",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = "var(--brass-hover)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "var(--brass)";
-          }}
+          className="flex w-full items-center justify-center rounded-xl py-3.5 text-sm font-bold transition-all duration-150 bg-brass text-ax-primary hover:bg-brass-hover"
         >
           Try Again
         </button>
@@ -1117,17 +990,7 @@ function StepConfirmation({
         <button
           type="button"
           onClick={onMintMore}
-          className="flex w-full items-center justify-center rounded-xl py-3.5 text-sm font-bold transition-all duration-150"
-          style={{
-            backgroundColor: "var(--brass)",
-            color: "var(--bg-primary)",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = "var(--brass-hover)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "var(--brass)";
-          }}
+          className="flex w-full items-center justify-center rounded-xl py-3.5 text-sm font-bold transition-all duration-150 bg-brass text-ax-primary hover:bg-brass-hover"
         >
           Mint More
         </button>

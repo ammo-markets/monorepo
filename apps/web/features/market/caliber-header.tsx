@@ -20,14 +20,7 @@ export function CaliberHeader({ data }: CaliberHeaderProps) {
       >
         <a
           href="/market"
-          className="transition-colors duration-150"
-          style={{ color: "var(--brass)" }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.color = "var(--brass-hover)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.color = "var(--brass)";
-          }}
+          className="text-brass transition-colors duration-150 hover:text-brass-hover"
         >
           Market
         </a>

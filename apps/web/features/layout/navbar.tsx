@@ -70,16 +70,7 @@ export function Navbar() {
             <a
               key={link.label}
               href={link.href}
-              className="rounded-lg px-4 py-2 text-sm font-medium transition-colors duration-150"
-              style={{ color: "var(--text-secondary)" }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.color = "var(--text-primary)";
-                e.currentTarget.style.backgroundColor = "var(--bg-tertiary)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.color = "var(--text-secondary)";
-                e.currentTarget.style.backgroundColor = "transparent";
-              }}
+              className="rounded-lg px-4 py-2 text-sm font-medium text-text-secondary transition-colors duration-150 hover:bg-ax-tertiary hover:text-text-primary"
             >
               {link.label}
             </a>

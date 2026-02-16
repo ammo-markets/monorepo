@@ -98,22 +98,7 @@ export function Hero() {
         <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
           <a
             href="/dashboard"
-            className="group inline-flex items-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold transition-all duration-150"
-            style={{
-              backgroundColor: "var(--brass)",
-              color: "var(--bg-primary)",
-              boxShadow: "0 0 20px rgba(198, 164, 78, 0.15)",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "var(--brass-hover)";
-              e.currentTarget.style.boxShadow =
-                "0 0 30px rgba(198, 164, 78, 0.25)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "var(--brass)";
-              e.currentTarget.style.boxShadow =
-                "0 0 20px rgba(198, 164, 78, 0.15)";
-            }}
+            className="group inline-flex items-center gap-2 rounded-lg bg-brass px-6 py-3 text-sm font-semibold text-ax-primary shadow-[0_0_20px_rgba(198,164,78,0.15)] transition-all duration-150 hover:bg-brass-hover hover:shadow-[0_0_30px_rgba(198,164,78,0.25)]"
           >
             Launch App
             <ArrowRight
@@ -123,20 +108,7 @@ export function Hero() {
           </a>
           <a
             href="#market"
-            className="inline-flex items-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold transition-all duration-150"
-            style={{
-              backgroundColor: "transparent",
-              border: "1px solid var(--border-hover)",
-              color: "var(--text-primary)",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "var(--bg-tertiary)";
-              e.currentTarget.style.borderColor = "var(--brass-border)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "transparent";
-              e.currentTarget.style.borderColor = "var(--border-hover)";
-            }}
+            className="inline-flex items-center gap-2 rounded-lg border border-border-hover bg-transparent px-6 py-3 text-sm font-semibold text-text-primary transition-all duration-150 hover:border-brass-border hover:bg-ax-tertiary"
           >
             View Market
           </a>

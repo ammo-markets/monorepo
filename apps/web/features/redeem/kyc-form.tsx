@@ -285,21 +285,11 @@ export function KycForm({ onSubmit, isSubmitting, prefill }: KycFormProps) {
         type="button"
         disabled={isSubmitting}
         onClick={handleSubmit}
-        className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold transition-all duration-150"
-        style={{
-          backgroundColor: isSubmitting ? "var(--bg-tertiary)" : "var(--brass)",
-          color: isSubmitting ? "var(--text-muted)" : "var(--bg-primary)",
-          cursor: isSubmitting ? "not-allowed" : "pointer",
-          opacity: isSubmitting ? 0.5 : 1,
-        }}
-        onMouseEnter={(e) => {
-          if (!isSubmitting)
-            e.currentTarget.style.backgroundColor = "var(--brass-hover)";
-        }}
-        onMouseLeave={(e) => {
-          if (!isSubmitting)
-            e.currentTarget.style.backgroundColor = "var(--brass)";
-        }}
+        className={`mt-6 flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold transition-all duration-150 ${
+          isSubmitting
+            ? "cursor-not-allowed bg-ax-tertiary text-text-muted opacity-50"
+            : "cursor-pointer bg-brass text-ax-primary hover:bg-brass-hover"
+        }`}
       >
         {isSubmitting ? (
           <>

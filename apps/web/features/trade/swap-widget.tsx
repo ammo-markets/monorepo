@@ -214,21 +214,11 @@ function TokenSelector({
             <button
               key={t.id}
               type="button"
-              className="flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm transition-colors duration-100"
-              style={{
-                color:
-                  t.id === selected ? "var(--brass)" : "var(--text-primary)",
-                backgroundColor:
-                  t.id === selected ? "var(--brass-muted)" : "transparent",
-              }}
-              onMouseEnter={(e) => {
-                if (t.id !== selected)
-                  e.currentTarget.style.backgroundColor = "var(--bg-tertiary)";
-              }}
-              onMouseLeave={(e) => {
-                if (t.id !== selected)
-                  e.currentTarget.style.backgroundColor = "transparent";
-              }}
+              className={`flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm transition-colors duration-100 ${
+                t.id === selected
+                  ? "text-brass bg-brass-muted"
+                  : "text-text-primary bg-transparent hover:bg-ax-tertiary"
+              }`}
               onClick={() => {
                 onSelect(t.id);
                 setOpen(false);
@@ -333,20 +323,7 @@ function SwapTab({ tokens }: { tokens: Token[] }) {
               <button
                 key={pct}
                 type="button"
-                className="rounded-md px-2.5 py-1 text-[11px] font-medium transition-colors duration-100"
-                style={{
-                  backgroundColor: "var(--bg-tertiary)",
-                  color: "var(--text-secondary)",
-                  border: "1px solid var(--border-default)",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = "var(--brass-border)";
-                  e.currentTarget.style.color = "var(--brass)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = "var(--border-default)";
-                  e.currentTarget.style.color = "var(--text-secondary)";
-                }}
+                className="rounded-md px-2.5 py-1 text-[11px] font-medium transition-colors duration-100 bg-ax-tertiary text-text-secondary border border-border-default hover:border-brass-border hover:text-brass"
                 onClick={() =>
                   setPayAmount((payData.balance * fraction).toFixed(2))
                 }
@@ -363,20 +340,9 @@ function SwapTab({ tokens }: { tokens: Token[] }) {
         <button
           type="button"
           onClick={handleSwapDirection}
-          className="flex h-10 w-10 items-center justify-center rounded-full shadow-lg transition-all duration-300"
+          className="flex h-10 w-10 items-center justify-center rounded-full shadow-lg transition-all duration-300 bg-ax-tertiary border-2 border-border-hover text-text-secondary hover:border-brass-border hover:text-brass"
           style={{
-            backgroundColor: "var(--bg-tertiary)",
-            border: "2px solid var(--border-hover)",
-            color: "var(--text-secondary)",
             transform: rotated ? "rotate(180deg)" : "rotate(0deg)",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.borderColor = "var(--brass-border)";
-            e.currentTarget.style.color = "var(--brass)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.borderColor = "var(--border-hover)";
-            e.currentTarget.style.color = "var(--text-secondary)";
           }}
           aria-label="Swap direction"
         >
@@ -512,18 +478,8 @@ function SwapTab({ tokens }: { tokens: Token[] }) {
       {!isConnected ? (
         <button
           type="button"
-          className="flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-semibold transition-colors duration-150"
-          style={{
-            backgroundColor: "var(--brass)",
-            color: "var(--bg-primary)",
-          }}
+          className="flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-semibold transition-colors duration-150 bg-brass text-ax-primary hover:bg-brass-hover"
           onClick={connect}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = "var(--brass-hover)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "var(--brass)";
-          }}
         >
           Connect Wallet to Swap
         </button>
@@ -531,27 +487,11 @@ function SwapTab({ tokens }: { tokens: Token[] }) {
         <button
           type="button"
           disabled={payNum <= 0 || payNum > payData.balance}
-          className="w-full rounded-xl py-3.5 text-sm font-semibold transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-40"
-          style={{
-            backgroundColor:
-              payNum > 0 && payNum <= payData.balance
-                ? "var(--brass)"
-                : "var(--bg-tertiary)",
-            color:
-              payNum > 0 && payNum <= payData.balance
-                ? "var(--bg-primary)"
-                : "var(--text-muted)",
-          }}
-          onMouseEnter={(e) => {
-            if (payNum > 0 && payNum <= payData.balance) {
-              e.currentTarget.style.backgroundColor = "var(--brass-hover)";
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (payNum > 0 && payNum <= payData.balance) {
-              e.currentTarget.style.backgroundColor = "var(--brass)";
-            }
-          }}
+          className={`w-full rounded-xl py-3.5 text-sm font-semibold transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-40 ${
+            payNum > 0 && payNum <= payData.balance
+              ? "bg-brass text-ax-primary hover:bg-brass-hover"
+              : "bg-ax-tertiary text-text-muted"
+          }`}
         >
           {payNum <= 0
             ? "Enter an amount"
@@ -607,17 +547,7 @@ function LendBorrowTab() {
           href={card.href}
           target="_blank"
           rel="noopener noreferrer"
-          className="group flex flex-col gap-3 rounded-xl p-4 transition-all duration-200"
-          style={{
-            backgroundColor: "var(--bg-secondary)",
-            border: "1px solid var(--border-default)",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.borderColor = "var(--brass-border)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.borderColor = "var(--border-default)";
-          }}
+          className="group flex flex-col gap-3 rounded-xl p-4 transition-all duration-200 bg-ax-secondary border border-border-default hover:border-brass-border"
         >
           <div className="flex items-center gap-2.5">
             <AaveLogo size={24} />
@@ -685,16 +615,7 @@ function SwapWidgetContent({ onClose }: { onClose: () => void }) {
         <button
           type="button"
           onClick={onClose}
-          className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors duration-150"
-          style={{ color: "var(--text-secondary)" }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = "var(--bg-tertiary)";
-            e.currentTarget.style.color = "var(--text-primary)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "transparent";
-            e.currentTarget.style.color = "var(--text-secondary)";
-          }}
+          className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors duration-150 text-text-secondary hover:bg-ax-tertiary hover:text-text-primary"
           aria-label="Close"
         >
           <X size={18} />
@@ -713,28 +634,11 @@ function SwapWidgetContent({ onClose }: { onClose: () => void }) {
               role="tab"
               aria-selected={isActive}
               onClick={() => setTab(t)}
-              className="rounded-lg px-4 py-2 text-sm font-medium transition-all duration-150"
-              style={{
-                backgroundColor: isActive
-                  ? "var(--brass-muted)"
-                  : "transparent",
-                color: isActive ? "var(--brass)" : "var(--text-muted)",
-                border: isActive
-                  ? "1px solid var(--brass-border)"
-                  : "1px solid transparent",
-              }}
-              onMouseEnter={(e) => {
-                if (!isActive) {
-                  e.currentTarget.style.color = "var(--text-secondary)";
-                  e.currentTarget.style.backgroundColor = "var(--bg-tertiary)";
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!isActive) {
-                  e.currentTarget.style.color = "var(--text-muted)";
-                  e.currentTarget.style.backgroundColor = "transparent";
-                }
-              }}
+              className={`rounded-lg px-4 py-2 text-sm font-medium transition-all duration-150 ${
+                isActive
+                  ? "bg-brass-muted text-brass border border-brass-border"
+                  : "bg-transparent text-text-muted border border-transparent hover:text-text-secondary hover:bg-ax-tertiary"
+              }`}
             >
               {label}
             </button>
@@ -778,20 +682,7 @@ export function SwapWidget({ defaultOpen = false, trigger }: SwapWidgetProps) {
     <button
       type="button"
       onClick={handleOpen}
-      className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-150"
-      style={{
-        backgroundColor: "transparent",
-        border: "1px solid var(--border-hover)",
-        color: "var(--text-primary)",
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.borderColor = "var(--brass-border)";
-        e.currentTarget.style.color = "var(--brass)";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = "var(--border-hover)";
-        e.currentTarget.style.color = "var(--text-primary)";
-      }}
+      className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-150 bg-transparent border border-border-hover text-text-primary hover:border-brass-border hover:text-brass"
     >
       <ArrowDownUp size={16} />
       Trade

@@ -287,17 +287,7 @@ function EmptyHoldings() {
       </p>
       <a
         href="/trade?tab=mint"
-        className="inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold transition-colors duration-150"
-        style={{
-          backgroundColor: "var(--brass)",
-          color: "var(--bg-primary)",
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = "var(--brass-hover)";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = "var(--brass)";
-        }}
+        className="inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold transition-colors duration-150 bg-brass text-ax-primary hover:bg-brass-hover"
       >
         Start Minting
         <ArrowRight size={16} />
@@ -326,17 +316,7 @@ function EmptyOrders() {
       </p>
       <a
         href="/trade?tab=mint"
-        className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-colors duration-150"
-        style={{
-          backgroundColor: "var(--brass)",
-          color: "var(--bg-primary)",
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = "var(--brass-hover)";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = "var(--brass)";
-        }}
+        className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-colors duration-150 bg-brass text-ax-primary hover:bg-brass-hover"
       >
         Start Minting
       </a>
@@ -402,55 +382,19 @@ function HoldingsDesktopRow({
         <div className="flex items-center justify-end gap-2">
           <a
             href={`/trade?tab=mint&caliber=${holding.caliber.toLowerCase()}`}
-            className="rounded-md px-3 py-1.5 text-xs font-semibold transition-colors duration-150"
-            style={{
-              backgroundColor: "var(--brass)",
-              color: "var(--bg-primary)",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "var(--brass-hover)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "var(--brass)";
-            }}
+            className="rounded-md px-3 py-1.5 text-xs font-semibold transition-colors duration-150 bg-brass text-ax-primary hover:bg-brass-hover"
           >
             Mint More
           </a>
           <a
             href={`/trade?tab=redeem&caliber=${holding.caliber.toLowerCase()}`}
-            className="rounded-md px-3 py-1.5 text-xs font-medium transition-colors duration-150"
-            style={{
-              backgroundColor: "transparent",
-              border: "1px solid var(--border-hover)",
-              color: "var(--text-secondary)",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "var(--bg-tertiary)";
-              e.currentTarget.style.color = "var(--text-primary)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "transparent";
-              e.currentTarget.style.color = "var(--text-secondary)";
-            }}
+            className="rounded-md px-3 py-1.5 text-xs font-medium transition-colors duration-150 bg-transparent border border-border-hover text-text-secondary hover:bg-ax-tertiary hover:text-text-primary"
           >
             Redeem
           </a>
           <button
             type="button"
-            className="flex items-center gap-1 rounded-md px-3 py-1.5 text-xs font-medium transition-colors duration-150"
-            style={{
-              backgroundColor: "transparent",
-              border: "1px solid var(--border-hover)",
-              color: "var(--text-secondary)",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "var(--bg-tertiary)";
-              e.currentTarget.style.color = "var(--text-primary)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "transparent";
-              e.currentTarget.style.color = "var(--text-secondary)";
-            }}
+            className="flex items-center gap-1 rounded-md px-3 py-1.5 text-xs font-medium transition-colors duration-150 bg-transparent border border-border-hover text-text-secondary hover:bg-ax-tertiary hover:text-text-primary"
           >
             Trade
             <ExternalLink size={11} />
@@ -586,17 +530,11 @@ function OrdersDesktopRow({
   const amount = Math.floor(Number(order.amount));
   return (
     <tr
-      className="cursor-pointer transition-colors duration-100"
+      className="cursor-pointer transition-colors duration-100 hover:bg-ax-tertiary"
       style={{
         borderBottom: isLast ? "none" : "1px solid var(--border-default)",
       }}
       onClick={() => router.push(`/portfolio/orders/${order.id}`)}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = "var(--bg-tertiary)";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.backgroundColor = "transparent";
-      }}
     >
       {/* Order ID */}
       <td className="px-6 py-4">
@@ -650,18 +588,9 @@ function OrderMobileCard({ order }: { order: OrderFromAPI }) {
   const amount = Math.floor(Number(order.amount));
   return (
     <div
-      className="cursor-pointer rounded-xl p-4 transition-all duration-150"
-      style={{
-        backgroundColor: "var(--bg-secondary)",
-        border: "1px solid var(--border-default)",
-      }}
+      className="cursor-pointer rounded-xl p-4 transition-all duration-150 bg-ax-secondary border border-border-default hover:border-brass-border"
       onClick={() => router.push(`/portfolio/orders/${order.id}`)}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.borderColor = "var(--brass-border)";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = "var(--border-default)";
-      }}
+
       role="link"
       tabIndex={0}
       onKeyDown={(e) => {
@@ -801,14 +730,7 @@ function PrimersSection({ primers }: { primers: number }) {
             </p>
             <a
               href="#"
-              className="mt-2 inline-flex items-center gap-1 text-sm font-medium transition-colors duration-150"
-              style={{ color: "var(--brass)" }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.color = "var(--brass-hover)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.color = "var(--brass)";
-              }}
+              className="mt-2 inline-flex items-center gap-1 text-sm font-medium transition-colors duration-150 text-brass hover:text-brass-hover"
             >
               Learn More
               <ArrowRight size={14} />
@@ -989,18 +911,9 @@ export function PortfolioDashboard() {
               </span>
               <button
                 type="button"
-                className="flex h-7 w-7 items-center justify-center rounded-md transition-colors duration-150"
-                style={{ color: "var(--text-muted)" }}
+                className="flex h-7 w-7 items-center justify-center rounded-md transition-colors duration-150 text-text-muted hover:bg-ax-tertiary hover:text-text-secondary"
                 onClick={handleCopyAddress}
                 aria-label="Copy address"
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "var(--bg-tertiary)";
-                  e.currentTarget.style.color = "var(--text-secondary)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "transparent";
-                  e.currentTarget.style.color = "var(--text-muted)";
-                }}
               >
                 {copiedAddress ? <Check size={14} /> : <Copy size={14} />}
               </button>
@@ -1008,17 +921,8 @@ export function PortfolioDashboard() {
                 href={snowtraceAddressUrl(address)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex h-7 w-7 items-center justify-center rounded-md transition-colors duration-150"
-                style={{ color: "var(--text-muted)" }}
+                className="flex h-7 w-7 items-center justify-center rounded-md transition-colors duration-150 text-text-muted hover:bg-ax-tertiary hover:text-text-secondary"
                 aria-label="View on explorer"
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "var(--bg-tertiary)";
-                  e.currentTarget.style.color = "var(--text-secondary)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "transparent";
-                  e.currentTarget.style.color = "var(--text-muted)";
-                }}
               >
                 <ExternalLink size={14} />
               </a>
@@ -1094,19 +998,12 @@ export function PortfolioDashboard() {
                     {holdings.map((holding, i) => (
                       <tr
                         key={holding.caliber}
-                        className="transition-colors duration-100"
+                        className="transition-colors duration-100 hover:bg-ax-tertiary"
                         style={{
                           borderBottom:
                             i < holdings.length - 1
                               ? "1px solid var(--border-default)"
                               : "none",
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor =
-                            "var(--bg-tertiary)";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = "transparent";
                         }}
                       >
                         <HoldingsDesktopRow

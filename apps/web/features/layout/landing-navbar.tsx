@@ -16,17 +16,7 @@ export function LandingNavbar() {
         <AmmoLogo />
         <Link
           href="/dashboard"
-          className="rounded-lg px-5 py-2 text-sm font-semibold transition-colors duration-150"
-          style={{
-            backgroundColor: "var(--accent)",
-            color: "var(--bg-primary)",
-          }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLElement).style.opacity = "0.9";
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLElement).style.opacity = "1";
-          }}
+          className="rounded-lg bg-accent px-5 py-2 text-sm font-semibold text-ax-primary transition-colors duration-150 hover:opacity-90"
         >
           Launch App
         </Link>

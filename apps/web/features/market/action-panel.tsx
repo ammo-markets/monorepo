@@ -242,32 +242,11 @@ function PanelContent({ data, walletConnected = false }: ActionPanelProps) {
           {/* CTA */}
           <a
             href={`/trade?tab=mint&caliber=${data.id.toLowerCase()}`}
-            className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold transition-all duration-150 no-underline"
-            style={{
-              backgroundColor: walletConnected ? "var(--brass)" : "transparent",
-              color: walletConnected
-                ? "var(--bg-primary)"
-                : "var(--text-primary)",
-              border: walletConnected
-                ? "none"
-                : "1px solid var(--border-hover)",
-            }}
-            onMouseEnter={(e) => {
-              if (walletConnected) {
-                e.currentTarget.style.backgroundColor = "var(--brass-hover)";
-              } else {
-                e.currentTarget.style.backgroundColor = "var(--bg-tertiary)";
-                e.currentTarget.style.borderColor = "var(--brass-border)";
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (walletConnected) {
-                e.currentTarget.style.backgroundColor = "var(--brass)";
-              } else {
-                e.currentTarget.style.backgroundColor = "transparent";
-                e.currentTarget.style.borderColor = "var(--border-hover)";
-              }
-            }}
+            className={`mt-5 flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold transition-all duration-150 no-underline ${
+              walletConnected
+                ? "bg-brass text-ax-primary hover:bg-brass-hover"
+                : "bg-transparent text-text-primary border border-border-hover hover:bg-ax-tertiary hover:border-brass-border"
+            }`}
           >
             {walletConnected ? (
               <>Mint {data.symbol}</>
@@ -411,32 +390,11 @@ function PanelContent({ data, walletConnected = false }: ActionPanelProps) {
           {/* CTA */}
           <a
             href={`/trade?tab=redeem&caliber=${data.id.toLowerCase()}`}
-            className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold transition-all duration-150 no-underline"
-            style={{
-              backgroundColor: walletConnected ? "var(--brass)" : "transparent",
-              color: walletConnected
-                ? "var(--bg-primary)"
-                : "var(--text-primary)",
-              border: walletConnected
-                ? "none"
-                : "1px solid var(--border-hover)",
-            }}
-            onMouseEnter={(e) => {
-              if (walletConnected) {
-                e.currentTarget.style.backgroundColor = "var(--brass-hover)";
-              } else {
-                e.currentTarget.style.backgroundColor = "var(--bg-tertiary)";
-                e.currentTarget.style.borderColor = "var(--brass-border)";
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (walletConnected) {
-                e.currentTarget.style.backgroundColor = "var(--brass)";
-              } else {
-                e.currentTarget.style.backgroundColor = "transparent";
-                e.currentTarget.style.borderColor = "var(--border-hover)";
-              }
-            }}
+            className={`mt-5 flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold transition-all duration-150 no-underline ${
+              walletConnected
+                ? "bg-brass text-ax-primary hover:bg-brass-hover"
+                : "bg-transparent text-text-primary border border-border-hover hover:bg-ax-tertiary hover:border-brass-border"
+            }`}
           >
             {walletConnected ? (
               <>{"Continue to Redeem \u2192"}</>
