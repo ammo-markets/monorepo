@@ -66,7 +66,7 @@ Full details: `.planning/milestones/v1.3-ROADMAP.md`
 - [x] **Phase 18: Theme & Accessibility Foundation** - Unified design system and color contrast fixes (completed 2026-02-16)
 - [x] **Phase 19: Interactive States & ARIA** - Focus-visible, hover classes, and screen reader support (completed 2026-02-16)
 - [x] **Phase 20: Navigation & Wallet** - Nav improvements and wallet dropdown (completed 2026-02-16)
-- [ ] **Phase 21: User Flow Improvements** - Mint/redeem UX, profile KYC, swap Coming Soon
+- [x] **Phase 21: User Flow Improvements** - Mint/redeem UX, profile KYC, swap Coming Soon (completed 2026-02-16)
 - [ ] **Phase 22: Admin Enhancements** - Reject/refund actions, dashboard enrichment, order details, table filters
 - [ ] **Phase 23: Landing Page & Cleanup** - Trust strip, social proof, swap widget refactor
 
@@ -131,8 +131,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 21-01-PLAN.md -- Mint flow disclosures (processing time, price disclaimer) and swap Coming Soon label
-- [ ] 21-02-PLAN.md -- Redeem KYC pre-check gate and profile page KYC completion form
+- [x] 21-01-PLAN.md -- Mint flow disclosures (processing time, price disclaimer) and swap Coming Soon label
+- [x] 21-02-PLAN.md -- Redeem KYC pre-check gate and profile page KYC completion form
 
 ### Phase 22: Admin Enhancements
 **Goal**: Admin can efficiently manage orders with reject/refund actions, enriched dashboard, and detailed views
@@ -191,11 +191,11 @@ Phases execute in numeric order: 18 -> 19 -> 20 -> 21 -> 22 -> 23
 | 18. Theme & Accessibility Foundation | v1.4 | 2/2 | Complete | 2026-02-16 |
 | 19. Interactive States & ARIA | v1.4 | 2/2 | Complete | 2026-02-16 |
 | 20. Navigation & Wallet | v1.4 | 2/2 | Complete | 2026-02-16 |
-| 21. User Flow Improvements | v1.4 | 0/2 | Not started | - |
+| 21. User Flow Improvements | v1.4 | 2/2 | Complete | 2026-02-16 |
 | 22. Admin Enhancements | v1.4 | 0/2 | Not started | - |
 | 23. Landing Page & Cleanup | v1.4 | 0/2 | Not started | - |
 
 ---
 
 _Roadmap created: 2026-02-10_
-_Last updated: 2026-02-16 (v1.4 milestone roadmap added)_
+_Last updated: 2026-02-16 (Phase 21 complete)_
