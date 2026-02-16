@@ -24,7 +24,14 @@ export async function GET(request: NextRequest) {
       createdAt: row.createdAt.toISOString(),
     }));
 
-    return Response.json({ activity });
+    return Response.json(
+      { activity },
+      {
+        headers: {
+          "Cache-Control": "s-maxage=10, stale-while-revalidate=60",
+        },
+      },
+    );
   } catch {
     return Response.json(
       { error: "Failed to fetch activity" },

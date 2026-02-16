@@ -34,12 +34,19 @@ export async function GET() {
       0,
     );
 
-    return Response.json({
-      stats,
-      totalVolumeRounds,
-      registeredUsers,
-      roundsTokenized,
-    });
+    return Response.json(
+      {
+        stats,
+        totalVolumeRounds,
+        registeredUsers,
+        roundsTokenized,
+      },
+      {
+        headers: {
+          "Cache-Control": "s-maxage=60, stale-while-revalidate=300",
+        },
+      },
+    );
   } catch {
     return Response.json(
       { error: "Failed to fetch protocol stats" },
