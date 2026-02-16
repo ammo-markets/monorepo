@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { Navbar, Footer } from "@/features/layout";
 import { MintFlow } from "@/features/mint";
 
 export const metadata: Metadata = {
@@ -39,17 +38,8 @@ function MintFlowLoading() {
 
 export default function MintPage() {
   return (
-    <div
-      className="flex min-h-screen flex-col"
-      style={{ backgroundColor: "var(--bg-primary)" }}
-    >
-      <Navbar />
-      <main className="flex-1">
-        <Suspense fallback={<MintFlowLoading />}>
-          <MintFlow />
-        </Suspense>
-      </main>
-      <Footer />
-    </div>
+    <Suspense fallback={<MintFlowLoading />}>
+      <MintFlow />
+    </Suspense>
   );
 }

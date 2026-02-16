@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import { useSiwe } from "@/hooks/use-siwe";
 import { useSaveProfile } from "@/hooks/use-save-profile";
-import { Navbar, Footer } from "@/features/layout";
 
 /* ── Types ── */
 
@@ -172,15 +171,16 @@ export default function ProfilePage() {
   }, [isSessionLoading, isSignedIn, router]);
 
   // Fetch profile data via TanStack Query
-  const { data: profile = null, isLoading: loading } = useQuery<ProfileData | null>({
-    queryKey: ["profile"],
-    queryFn: async () => {
-      const res = await fetch("/api/users/profile");
-      if (!res.ok) return null;
-      return (await res.json()) as ProfileData;
-    },
-    enabled: !!isSignedIn,
-  });
+  const { data: profile = null, isLoading: loading } =
+    useQuery<ProfileData | null>({
+      queryKey: ["profile"],
+      queryFn: async () => {
+        const res = await fetch("/api/users/profile");
+        if (!res.ok) return null;
+        return (await res.json()) as ProfileData;
+      },
+      enabled: !!isSignedIn,
+    });
 
   // Copy wallet address
   const handleCopy = useCallback(() => {
@@ -219,21 +219,12 @@ export default function ProfilePage() {
 
   if (isSessionLoading || (isSignedIn && loading)) {
     return (
-      <div
-        className="flex min-h-screen flex-col"
-        style={{ backgroundColor: "var(--bg-primary)" }}
-      >
-        <Navbar />
-        <main className="flex-1">
-          <div className="flex min-h-[60vh] items-center justify-center">
-            <Loader2
-              size={32}
-              className="animate-spin"
-              style={{ color: "var(--text-muted)" }}
-            />
-          </div>
-        </main>
-        <Footer />
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <Loader2
+          size={32}
+          className="animate-spin"
+          style={{ color: "var(--text-muted)" }}
+        />
       </div>
     );
   }
@@ -259,12 +250,6 @@ export default function ProfilePage() {
   /* ── Render ── */
 
   return (
-    <div
-      className="flex min-h-screen flex-col"
-      style={{ backgroundColor: "var(--bg-primary)" }}
-    >
-      <Navbar />
-      <main className="flex-1">
     <div className="mx-auto max-w-2xl px-4 py-8">
       <h1
         className="text-2xl font-bold"
@@ -539,16 +524,13 @@ export default function ProfilePage() {
                 className="text-sm leading-relaxed"
                 style={{ color: "var(--text-primary)" }}
               >
-                <div className="font-medium">
-                  {profile.defaultShippingName}
-                </div>
+                <div className="font-medium">{profile.defaultShippingName}</div>
                 <div>{profile.defaultShippingLine1}</div>
                 {profile.defaultShippingLine2 && (
                   <div>{profile.defaultShippingLine2}</div>
                 )}
                 <div>
-                  {profile.defaultShippingCity},{" "}
-                  {profile.defaultShippingState}{" "}
+                  {profile.defaultShippingCity}, {profile.defaultShippingState}{" "}
                   {profile.defaultShippingZip}
                 </div>
               </div>
@@ -586,9 +568,6 @@ export default function ProfilePage() {
           )}
         </div>
       </div>
-    </div>
-      </main>
-      <Footer />
     </div>
   );
 }

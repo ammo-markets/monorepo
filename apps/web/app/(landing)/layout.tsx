@@ -1,4 +1,4 @@
-import { Navbar, Footer } from "@/features/layout";
+import { LandingNavbar, Footer } from "@/features/layout";
 
 export default function LandingLayout({
   children,
@@ -7,7 +7,7 @@ export default function LandingLayout({
 }>) {
   return (
     <div className="flex min-h-screen flex-col">
-      <Navbar />
+      <LandingNavbar />
       <main className="flex-1">{children}</main>
       <Footer />
     </div>

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { Navbar, Footer } from "@/features/layout";
 import { RedeemFlow } from "@/features/redeem";
 
 export const metadata: Metadata = {
@@ -40,17 +39,8 @@ function RedeemFlowLoading() {
 
 export default function RedeemPage() {
   return (
-    <div
-      className="flex min-h-screen flex-col"
-      style={{ backgroundColor: "var(--bg-primary)" }}
-    >
-      <Navbar />
-      <main className="flex-1">
-        <Suspense fallback={<RedeemFlowLoading />}>
-          <RedeemFlow />
-        </Suspense>
-      </main>
-      <Footer />
-    </div>
+    <Suspense fallback={<RedeemFlowLoading />}>
+      <RedeemFlow />
+    </Suspense>
   );
 }

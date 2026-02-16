@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Navbar, Footer } from "@/features/layout";
 import { PortfolioDashboard } from "@/features/portfolio";
 
 export const metadata: Metadata = {
@@ -9,16 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function PortfolioPage() {
-  return (
-    <div
-      className="flex min-h-screen flex-col"
-      style={{ backgroundColor: "var(--bg-primary)" }}
-    >
-      <Navbar />
-      <main className="flex-1">
-        <PortfolioDashboard />
-      </main>
-      <Footer />
-    </div>
-  );
+  return <PortfolioDashboard />;
 }

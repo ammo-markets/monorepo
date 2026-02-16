@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Navbar, Footer } from "@/features/layout";
 import { OrderDetailView } from "@/features/portfolio";
 
 export const metadata: Metadata = {
@@ -15,16 +14,5 @@ export default async function OrderDetailPage({
 }) {
   const { id } = await params;
 
-  return (
-    <div
-      className="flex min-h-screen flex-col"
-      style={{ backgroundColor: "var(--bg-primary)" }}
-    >
-      <Navbar />
-      <main className="flex-1">
-        <OrderDetailView orderId={id} />
-      </main>
-      <Footer />
-    </div>
-  );
+  return <OrderDetailView orderId={id} />;
 }

@@ -270,6 +270,7 @@ const steps = [
 export function HowItWorks() {
   return (
     <section
+      id="how-it-works"
       className="py-24 px-4 lg:py-32"
       style={{ backgroundColor: "var(--bg-primary)" }}
     >

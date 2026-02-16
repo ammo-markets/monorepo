@@ -3,9 +3,9 @@
 import { AmmoLogo } from "./logo";
 
 const productLinks = [
-  { label: "Market", href: "/market" },
-  { label: "Mint", href: "/mint" },
-  { label: "Redeem", href: "/redeem" },
+  { label: "Launch App", href: "/dashboard" },
+  { label: "How It Works", href: "#how-it-works" },
+  { label: "FAQ", href: "#faq" },
 ];
 
 const resourceLinks = [

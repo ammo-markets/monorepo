@@ -107,6 +107,7 @@ function FaqAccordionItem({ item }: { item: FaqItem }) {
 export function Faq() {
   return (
     <section
+      id="faq"
       className="px-4 py-24 lg:py-32"
       style={{ backgroundColor: "var(--bg-secondary)" }}
     >
