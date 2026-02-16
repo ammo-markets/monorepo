@@ -73,6 +73,7 @@ completed: 2026-02-16
 - **Files modified:** 19
 
 ## Accomplishments
+
 - Added 6 Tailwind color mappings from CSS variables to enable hover: class usage
 - Added global focus-visible CSS rule for keyboard accessibility on all raw interactive elements
 - Eliminated 894 lines of inline JS hover handlers across 18 component files
@@ -86,6 +87,7 @@ Each task was committed atomically:
 2. **Task 2: Migrate all onMouseEnter/onMouseLeave to Tailwind hover: classes** - `c8d31f0` (feat)
 
 ## Files Created/Modified
+
 - `apps/web/app/globals.css` - Added 6 color mappings to @theme inline + focus-visible rule
 - `apps/web/features/dashboard/quick-actions.tsx` - Brass button + ghost button hover
 - `apps/web/features/home/hero.tsx` - Primary CTA with shadow + ghost button hover
@@ -107,6 +109,7 @@ Each task was committed atomically:
 - `apps/web/features/trade/swap-widget.tsx` - Token selector, pills, tabs, direction button, CTAs
 
 ## Decisions Made
+
 - Mapped 6 new Tailwind colors from CSS variables to enable `hover:text-text-primary` patterns
 - Used className template literals with ternary for conditional hover (active items get no hover, inactive get hover)
 - Kept `setShowTooltip` onMouseEnter/onMouseLeave handlers as they control tooltip visibility (functional, not styling)
@@ -117,6 +120,7 @@ Each task was committed atomically:
 ### Auto-fixed Issues
 
 **1. [Rule 1 - Bug] Fixed duplicate className attribute in market-table.tsx**
+
 - **Found during:** Task 2 (market-table migration)
 - **Issue:** Mint button had two `className` attributes from a previous edit
 - **Fix:** Removed the first empty className, kept the one with proper classes
@@ -130,6 +134,7 @@ Each task was committed atomically:
 **Impact on plan:** Minor fix for pre-existing issue. No scope creep.
 
 ## Issues Encountered
+
 - CSS specificity: inline `style` has higher specificity than Tailwind classes, requiring conditional base+hover states to all move into className together (not partially)
 - Auto-formatter modified files between read and edit operations, requiring re-reads before edits
 
@@ -138,6 +143,7 @@ Each task was committed atomically:
 None - no external service configuration required.
 
 ## Next Phase Readiness
+
 - All hover states are now declarative Tailwind classes
 - Focus-visible states provide keyboard accessibility
 - Ready for Phase 20 (Navigation & Discoverability)
@@ -149,5 +155,6 @@ None - no external service configuration required.
 - [x] Commit c8d31f0 (Task 2) exists
 
 ---
-*Phase: 19-interactive-states-aria*
-*Completed: 2026-02-16*
+
+_Phase: 19-interactive-states-aria_
+_Completed: 2026-02-16_

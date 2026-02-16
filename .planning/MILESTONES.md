@@ -66,4 +66,3 @@
 **Delivered:** Full UX restructure -- visitors see a polished landing page, authenticated users get a 4-tab app with dashboard, unified trade, and enriched protocol data.
 
 ---
-

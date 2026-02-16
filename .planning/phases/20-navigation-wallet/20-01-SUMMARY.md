@@ -15,7 +15,8 @@ affects: [20-navigation-wallet]
 # Tech tracking
 tech-stack:
   added: []
-  patterns: [DropdownMenu for wallet actions, AlertDialog for destructive confirmations]
+  patterns:
+    [DropdownMenu for wallet actions, AlertDialog for destructive confirmations]
 
 key-files:
   created: []
@@ -48,6 +49,7 @@ completed: 2026-02-16
 - **Files modified:** 1
 
 ## Accomplishments
+
 - Replaced instant-disconnect wallet button (State D) with DropdownMenu offering three actions
 - Added "Copy Address" option using navigator.clipboard API
 - Added "View on Explorer" option linking to Snowtrace testnet
@@ -61,9 +63,11 @@ Each task was committed atomically:
 1. **Task 1: Add wallet dropdown menu with copy, explorer, and disconnect options** - `936abd5` (feat)
 
 ## Files Created/Modified
+
 - `apps/web/features/layout/wallet-button.tsx` - Wallet button with DropdownMenu and AlertDialog for connected+signed-in state
 
 ## Decisions Made
+
 - Used `AVALANCHE_FUJI.blockExplorers.default` for explorer links (testnet-appropriate for current deployment)
 - No toast notification on copy address -- kept interaction minimal per plan
 - Used HTML entity `&apos;` for apostrophe in AlertDialog description for JSX compliance
@@ -73,12 +77,15 @@ Each task was committed atomically:
 None - plan executed exactly as written.
 
 ## Issues Encountered
+
 None
 
 ## User Setup Required
+
 None - no external service configuration required.
 
 ## Next Phase Readiness
+
 - Wallet dropdown complete, ready for plan 02 (if applicable)
 - All wallet button states functional with proper accessibility labels
 
@@ -90,5 +97,6 @@ None - no external service configuration required.
 - [x] All 6 verification grep checks pass
 
 ---
-*Phase: 20-navigation-wallet*
-*Completed: 2026-02-16*
+
+_Phase: 20-navigation-wallet_
+_Completed: 2026-02-16_

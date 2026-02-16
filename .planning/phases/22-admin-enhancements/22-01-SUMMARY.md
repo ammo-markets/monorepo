@@ -59,6 +59,7 @@ completed: 2026-02-16
 - **Files modified:** 10
 
 ## Accomplishments
+
 - Admin can reject mint orders and cancel redeem orders via on-chain refundMint/cancelRedeem calls
 - AlertDialog confirmation with required reason textarea for both destructive actions
 - Dashboard shows separate Pending Mints and Pending Redeems stat cards with brass highlight when count > 0
@@ -72,6 +73,7 @@ Each task was committed atomically:
 2. **Task 2: Add inline reject/cancel buttons to order tables and enrich dashboard stat cards** - `245c6ec` (feat)
 
 ## Files Created/Modified
+
 - `apps/web/hooks/use-refund-mint.ts` - Hook wrapping CaliberMarket.refundMint with reasonCode
 - `apps/web/hooks/use-cancel-redeem.ts` - Hook wrapping CaliberMarket.cancelRedeem with reasonCode
 - `apps/web/features/admin/reject-mint-dialog.tsx` - AlertDialog for rejecting mint orders with reason
@@ -84,6 +86,7 @@ Each task was committed atomically:
 - `apps/web/features/admin/index.ts` - Added exports for new dialog components
 
 ## Decisions Made
+
 - Used `reasonCode=1` as default for on-chain refundMint/cancelRedeem calls (ABI requires uint8 reasonCode parameter alongside orderId)
 - Pending stat cards use Next.js Link component for client-side navigation to order table pages
 
@@ -92,6 +95,7 @@ Each task was committed atomically:
 ### Auto-fixed Issues
 
 **1. [Rule 1 - Bug] Added missing reasonCode argument to refundMint and cancelRedeem hooks**
+
 - **Found during:** Task 1 (hook creation)
 - **Issue:** Plan specified `args: [orderId]` but contract ABI requires `[orderId, reasonCode]` (uint8)
 - **Fix:** Added `reasonCode` parameter with default value of 1 to both hooks
@@ -105,15 +109,19 @@ Each task was committed atomically:
 **Impact on plan:** Essential fix for contract call correctness. No scope creep.
 
 ## Issues Encountered
+
 None
 
 ## User Setup Required
+
 None - no external service configuration required.
 
 ## Next Phase Readiness
+
 - Admin reject/cancel flows complete, ready for Phase 22 Plan 02
 - All type checks pass
 
 ---
-*Phase: 22-admin-enhancements*
-*Completed: 2026-02-16*
+
+_Phase: 22-admin-enhancements_
+_Completed: 2026-02-16_

@@ -52,6 +52,7 @@ completed: 2026-02-16
 - **Files modified:** 2
 
 ## Accomplishments
+
 - Processing time disclosure (24-48h) shown prominently before user enters mint amount
 - Price disclaimer explaining admin-set pricing shown before user confirms mint order
 - Swap tab replaced with Coming Soon placeholder explaining future DEX trading functionality
@@ -65,10 +66,12 @@ Each task was committed atomically:
 2. **Task 2: Replace swap tab with Coming Soon placeholder** - `9e3a61f` (feat)
 
 ## Files Created/Modified
+
 - `apps/web/features/mint/mint-flow.tsx` - Added processing time banner in StepEnterAmount and price disclaimer in StepReview
 - `apps/web/features/trade/trade-tabs.tsx` - Added "Soon" badge to swap tab, replaced SwapWidget with Coming Soon placeholder, removed SwapWidget import
 
 ## Decisions Made
+
 - Used `borderLeft: "3px solid var(--text-muted)"` for price disclaimer to visually differentiate it from the amber processing time warning
 - Badge shows "Soon" (not "Coming Soon") to keep the tab button compact on small screens
 - Included Info icon with flex layout in price disclaimer for consistent iconography
@@ -78,12 +81,15 @@ Each task was committed atomically:
 None - plan executed exactly as written.
 
 ## Issues Encountered
+
 None
 
 ## User Setup Required
+
 None - no external service configuration required.
 
 ## Next Phase Readiness
+
 - Mint flow now has proper user disclosures for processing time and pricing
 - Swap tab clearly marked as upcoming feature
 - Ready for Phase 21 Plan 02
@@ -96,5 +102,6 @@ None - no external service configuration required.
 - FOUND: commit 9e3a61f (Task 2)
 
 ---
-*Phase: 21-user-flow-improvements*
-*Completed: 2026-02-16*
+
+_Phase: 21-user-flow-improvements_
+_Completed: 2026-02-16_

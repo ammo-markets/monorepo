@@ -50,6 +50,7 @@ completed: 2026-02-16
 - **Files modified:** 2
 
 ## Accomplishments
+
 - Unverified users see a prominent KYC banner above Step 0 in redeem flow, preventing wasted time on shipping info
 - "Next" button on Step 0 blocks progression for NONE/REJECTED KYC status, re-shows banner
 - Profile page now has inline KYC form for unverified users with id="kyc" anchor for direct linking
@@ -63,10 +64,12 @@ Each task was committed atomically:
 2. **Task 2: Add KYC verification form to profile page** - `e1079a1` (feat)
 
 ## Files Created/Modified
+
 - `apps/web/features/redeem/redeem-flow.tsx` - Added showKycPrompt state, KYC banner above Step 0, blocked Next handler for unverified users
 - `apps/web/app/(app)/profile/page.tsx` - Added KycForm imports, useKycStatus/useKycSubmit hooks, conditional KYC section with form/pending/verified states
 
 ## Decisions Made
+
 - Used banner above Step 0 rather than a new step to avoid renumbering all existing steps
 - PENDING users can proceed past Step 0 since they already have an active KYC submission and will hit the Step 2 pending check
 - Profile page uses useKycStatus hook (independent of profile query) for real-time KYC status, with fallback to profile.kycStatus
@@ -77,16 +80,20 @@ Each task was committed atomically:
 None - plan executed exactly as written.
 
 ## Issues Encountered
+
 None
 
 ## User Setup Required
+
 None - no external service configuration required.
 
 ## Next Phase Readiness
+
 - KYC pre-check and profile form complete
 - Ready for next phase plans
 - All type checks pass
 
 ---
-*Phase: 21-user-flow-improvements*
-*Completed: 2026-02-16*
+
+_Phase: 21-user-flow-improvements_
+_Completed: 2026-02-16_

@@ -10,7 +10,8 @@ provides:
   - Unified CSS variable system (single :root block)
   - WCAG AA compliant muted text colors
   - Dark-only mode enforcement without next-themes
-affects: [19-component-accessibility, 20-form-accessibility, 21-responsive-layout]
+affects:
+  [19-component-accessibility, 20-form-accessibility, 21-responsive-layout]
 
 # Tech tracking
 tech-stack:
@@ -51,6 +52,7 @@ completed: 2026-02-16
 - **Files modified:** 4 (globals.css, sonner.tsx, package.json, pnpm-lock.yaml)
 
 ## Accomplishments
+
 - Unified shadcn oklch colors and Ammo Exchange hex tokens into single :root block with section comments
 - Upgraded --text-muted (#55556a -> #8585a0) and --muted-foreground (oklch 0.48 -> 0.63) for WCAG AA compliance
 - Removed next-themes dependency and all useTheme references
@@ -64,12 +66,14 @@ Each task was committed atomically:
 2. **Task 2: Remove next-themes and enforce dark-only** - `4fff7f4` (feat)
 
 ## Files Created/Modified
+
 - `apps/web/app/globals.css` - Unified CSS variable system with WCAG AA contrast
 - `apps/web/components/ui/sonner.tsx` - Hardcoded dark theme, removed useTheme
 - `apps/web/package.json` - Removed next-themes dependency
 - `pnpm-lock.yaml` - Updated lockfile
 
 ## Decisions Made
+
 - Kept `@custom-variant dark` line because 15 shadcn UI components use `dark:` prefixes internally
 - Upgraded both --text-muted (hex) and --muted-foreground (oklch) since they serve similar purposes in different systems
 
@@ -86,10 +90,12 @@ None.
 None - no external service configuration required.
 
 ## Next Phase Readiness
+
 - Single design token source of truth established for all v1.4 phases
 - All subsequent component work can reference unified :root variables
 - No blockers for Phase 18 Plan 02
 
 ---
-*Phase: 18-theme-accessibility-foundation*
-*Completed: 2026-02-16*
+
+_Phase: 18-theme-accessibility-foundation_
+_Completed: 2026-02-16_

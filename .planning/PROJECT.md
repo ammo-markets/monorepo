@@ -71,6 +71,7 @@ Anyone worldwide can get price exposure to U.S. ammunition by minting ammo token
 **Goal:** Address UI/UX critique — fix critical UX issues, accessibility gaps, theme inconsistencies, and admin usability.
 
 **Target features:**
+
 - Wallet dropdown menu (replace instant disconnect)
 - Focus-visible states + CSS hover (replace inline JS hover)
 - Admin responsive mobile navigation
@@ -147,27 +148,27 @@ The full DeFi protocol is functional on Avalanche Fuji testnet with production-g
 
 ## Key Decisions
 
-| Decision                                    | Rationale                                                                               | Outcome                                          |
-| ------------------------------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------ |
-| Fuji testnet first                          | Validate full flow before mainnet costs/risks                                           | ✓ Good -- full stack validated on Fuji           |
-| Next.js API routes over separate API server | Single deployment, shared DB access, simpler stack                                      | ✓ Good -- 15 routes, clean separation            |
-| Admin in same app (/admin/\*)               | Shares wagmi setup, Prisma, UI components. 1-2 admin wallets don't justify separate app | ✓ Good -- code reuse worked well                 |
-| Worker as indexer, not keeper               | Admin must review and trigger finalization. Human-in-the-loop for off-chain procurement | ✓ Good -- clean separation of concerns           |
-| SIWE + iron-session for auth                | Wallet-native auth, no passwords, server-side session verification                      | ✓ Good -- cookies() pattern, no request param    |
-| Server-side admin protection                | notFound() in async layout, no content flash for non-keepers                            | ✓ Good -- defense in depth                       |
-| TanStack Query for frontend data            | Centralized caching, automatic retries, cache invalidation on mutations                 | ✓ Good -- 15 components migrated, zero raw fetch |
-| viem built-in retry transport               | Native exponential backoff for RPC, no custom wrapper needed                            | ✓ Good -- handles 429/5xx/timeouts               |
-| 5-block reorg confirmation window           | Avalanche ~10s margin, idempotent handlers make re-processing safe                      | ✓ Good -- conservative but cheap                 |
-| In-memory rate limiter                      | Sufficient for testnet, Redis upgrade documented for production                         | ✓ Good -- simple and effective                   |
-| Polling-based indexer over WebSocket        | getContractEvents more reliable than watchContractEvent for batch processing            | ✓ Good -- crash recovery via BlockCursor         |
-| Bidirectional caliber mapping               | Bridge Prisma naming constraints (NINE_MM) to shared types (9MM)                        | ✓ Good -- zero type mismatches                   |
-| Explicit return types on hooks              | Prevent TS2742 non-portable type inference errors                                       | ✓ Good -- all hooks compile across packages      |
-| Route groups for landing/app split          | Same Next.js app, no separate deployment, distinct layouts per audience                  | ✓ Good -- clean separation with shared infra     |
-| CSS-driven responsive nav (single component)| One AppNav renders sidebar (desktop) and bottom tabs (mobile) via Tailwind breakpoints   | ✓ Good -- no duplication, instant responsiveness |
-| Stats computed from DB only                 | No on-chain reads in cron -- DB already has all order data from indexer                  | ✓ Good -- fast and reliable                      |
-| URL param caliber pre-selection             | CaliberInfoPanel syncs to ?caliber= param, MintFlow/RedeemFlow read it to skip step 0   | ✓ Good -- single selection, smooth UX            |
-| useState FAQ accordion                      | No external library needed for simple expand/collapse behavior                           | ✓ Good -- zero added dependencies                |
+| Decision                                     | Rationale                                                                               | Outcome                                          |
+| -------------------------------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| Fuji testnet first                           | Validate full flow before mainnet costs/risks                                           | ✓ Good -- full stack validated on Fuji           |
+| Next.js API routes over separate API server  | Single deployment, shared DB access, simpler stack                                      | ✓ Good -- 15 routes, clean separation            |
+| Admin in same app (/admin/\*)                | Shares wagmi setup, Prisma, UI components. 1-2 admin wallets don't justify separate app | ✓ Good -- code reuse worked well                 |
+| Worker as indexer, not keeper                | Admin must review and trigger finalization. Human-in-the-loop for off-chain procurement | ✓ Good -- clean separation of concerns           |
+| SIWE + iron-session for auth                 | Wallet-native auth, no passwords, server-side session verification                      | ✓ Good -- cookies() pattern, no request param    |
+| Server-side admin protection                 | notFound() in async layout, no content flash for non-keepers                            | ✓ Good -- defense in depth                       |
+| TanStack Query for frontend data             | Centralized caching, automatic retries, cache invalidation on mutations                 | ✓ Good -- 15 components migrated, zero raw fetch |
+| viem built-in retry transport                | Native exponential backoff for RPC, no custom wrapper needed                            | ✓ Good -- handles 429/5xx/timeouts               |
+| 5-block reorg confirmation window            | Avalanche ~10s margin, idempotent handlers make re-processing safe                      | ✓ Good -- conservative but cheap                 |
+| In-memory rate limiter                       | Sufficient for testnet, Redis upgrade documented for production                         | ✓ Good -- simple and effective                   |
+| Polling-based indexer over WebSocket         | getContractEvents more reliable than watchContractEvent for batch processing            | ✓ Good -- crash recovery via BlockCursor         |
+| Bidirectional caliber mapping                | Bridge Prisma naming constraints (NINE_MM) to shared types (9MM)                        | ✓ Good -- zero type mismatches                   |
+| Explicit return types on hooks               | Prevent TS2742 non-portable type inference errors                                       | ✓ Good -- all hooks compile across packages      |
+| Route groups for landing/app split           | Same Next.js app, no separate deployment, distinct layouts per audience                 | ✓ Good -- clean separation with shared infra     |
+| CSS-driven responsive nav (single component) | One AppNav renders sidebar (desktop) and bottom tabs (mobile) via Tailwind breakpoints  | ✓ Good -- no duplication, instant responsiveness |
+| Stats computed from DB only                  | No on-chain reads in cron -- DB already has all order data from indexer                 | ✓ Good -- fast and reliable                      |
+| URL param caliber pre-selection              | CaliberInfoPanel syncs to ?caliber= param, MintFlow/RedeemFlow read it to skip step 0   | ✓ Good -- single selection, smooth UX            |
+| useState FAQ accordion                       | No external library needed for simple expand/collapse behavior                          | ✓ Good -- zero added dependencies                |
 
 ---
 
-*Last updated: 2026-02-16 after v1.4 milestone started*
+_Last updated: 2026-02-16 after v1.4 milestone started_

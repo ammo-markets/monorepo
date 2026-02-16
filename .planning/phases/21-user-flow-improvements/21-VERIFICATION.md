@@ -17,46 +17,46 @@ re_verification: false
 
 ### Observable Truths
 
-| #   | Truth                                                                                                           | Status     | Evidence                                                                                   |
-| --- | --------------------------------------------------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------ |
-| 1   | User sees "24-48 hour processing time" disclosure prominently before starting a mint                           | ✓ VERIFIED | Processing time banner at line 306-325 in mint-flow.tsx, shown before amount input        |
-| 2   | User sees a disclaimer explaining that the admin sets the final price at fulfillment                           | ✓ VERIFIED | Price disclaimer at line 732-754 in mint-flow.tsx, shown in review step before confirming |
+| #   | Truth                                                                                                             | Status     | Evidence                                                                                         |
+| --- | ----------------------------------------------------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------ |
+| 1   | User sees "24-48 hour processing time" disclosure prominently before starting a mint                              | ✓ VERIFIED | Processing time banner at line 306-325 in mint-flow.tsx, shown before amount input               |
+| 2   | User sees a disclaimer explaining that the admin sets the final price at fulfillment                              | ✓ VERIFIED | Price disclaimer at line 732-754 in mint-flow.tsx, shown in review step before confirming        |
 | 3   | Starting a redeem flow checks KYC status first -- unverified users see a prompt to complete KYC before proceeding | ✓ VERIFIED | KYC pre-check banner at line 1759-1807 in redeem-flow.tsx, blocks Next handler at line 1819-1822 |
-| 4   | User can initiate and complete KYC verification directly from the Profile page (not only during redeem)        | ✓ VERIFIED | KycForm embedded at line 374-378 in profile/page.tsx with id="kyc" anchor at line 329     |
-| 5   | Swap tab displays a "Coming Soon" badge with an explanation of what it will offer                              | ✓ VERIFIED | "Soon" badge at line 68-78, Coming Soon placeholder at line 152-184 in trade-tabs.tsx     |
+| 4   | User can initiate and complete KYC verification directly from the Profile page (not only during redeem)           | ✓ VERIFIED | KycForm embedded at line 374-378 in profile/page.tsx with id="kyc" anchor at line 329            |
+| 5   | Swap tab displays a "Coming Soon" badge with an explanation of what it will offer                                 | ✓ VERIFIED | "Soon" badge at line 68-78, Coming Soon placeholder at line 152-184 in trade-tabs.tsx            |
 
 **Score:** 5/5 truths verified
 
 ### Required Artifacts
 
-| Artifact                                        | Expected                                                     | Status     | Details                                                                                     |
-| ----------------------------------------------- | ------------------------------------------------------------ | ---------- | ------------------------------------------------------------------------------------------- |
-| `apps/web/features/mint/mint-flow.tsx`          | Processing time banner and price disclaimer in mint flow     | ✓ VERIFIED | Contains "24-48 hours" (4 occurrences), substantive disclosure banners with icons and text |
-| `apps/web/features/trade/trade-tabs.tsx`        | Coming Soon state for swap tab                               | ✓ VERIFIED | Contains "Coming Soon" heading, "Soon" badge, and explanation of swap functionality        |
-| `apps/web/features/redeem/redeem-flow.tsx`      | KYC pre-check gate before redeem Step 0                      | ✓ VERIFIED | Contains kycStatus checks, showKycPrompt state, banner with "Complete Verification" link   |
-| `apps/web/app/(app)/profile/page.tsx`           | Embedded KYC form on profile page for unverified users       | ✓ VERIFIED | Imports KycForm, uses useKycStatus/useKycSubmit hooks, renders form conditionally          |
+| Artifact                                   | Expected                                                 | Status     | Details                                                                                    |
+| ------------------------------------------ | -------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------ |
+| `apps/web/features/mint/mint-flow.tsx`     | Processing time banner and price disclaimer in mint flow | ✓ VERIFIED | Contains "24-48 hours" (4 occurrences), substantive disclosure banners with icons and text |
+| `apps/web/features/trade/trade-tabs.tsx`   | Coming Soon state for swap tab                           | ✓ VERIFIED | Contains "Coming Soon" heading, "Soon" badge, and explanation of swap functionality        |
+| `apps/web/features/redeem/redeem-flow.tsx` | KYC pre-check gate before redeem Step 0                  | ✓ VERIFIED | Contains kycStatus checks, showKycPrompt state, banner with "Complete Verification" link   |
+| `apps/web/app/(app)/profile/page.tsx`      | Embedded KYC form on profile page for unverified users   | ✓ VERIFIED | Imports KycForm, uses useKycStatus/useKycSubmit hooks, renders form conditionally          |
 
 ### Key Link Verification
 
-| From                          | To                                    | Via                                           | Status     | Details                                                    |
-| ----------------------------- | ------------------------------------- | --------------------------------------------- | ---------- | ---------------------------------------------------------- |
-| profile/page.tsx              | features/redeem/kyc-form.tsx          | KycForm import and rendering                  | ✓ WIRED    | Line 18 import, line 374 render with prefill and onSubmit |
-| profile/page.tsx              | hooks/use-kyc.ts                      | useKycStatus and useKycSubmit hooks           | ✓ WIRED    | Line 20 import, line 166-169 usage, line 172-176 handler  |
-| trade-tabs.tsx                | swap tab content                      | activeTab === "swap" conditional rendering    | ✓ WIRED    | Line 152 condition, Coming Soon placeholder renders       |
-| redeem-flow.tsx               | KYC pre-check logic                   | showKycPrompt state and kycStatus checks      | ✓ WIRED    | Line 1595 state, line 1628-1637 effect, line 1819-1822 Next handler block |
-| redeem-flow KYC banner        | profile#kyc anchor                    | Link to /profile#kyc for verification         | ✓ WIRED    | Line 1790 href, profile page has id="kyc" at line 329     |
+| From                   | To                           | Via                                        | Status  | Details                                                                   |
+| ---------------------- | ---------------------------- | ------------------------------------------ | ------- | ------------------------------------------------------------------------- |
+| profile/page.tsx       | features/redeem/kyc-form.tsx | KycForm import and rendering               | ✓ WIRED | Line 18 import, line 374 render with prefill and onSubmit                 |
+| profile/page.tsx       | hooks/use-kyc.ts             | useKycStatus and useKycSubmit hooks        | ✓ WIRED | Line 20 import, line 166-169 usage, line 172-176 handler                  |
+| trade-tabs.tsx         | swap tab content             | activeTab === "swap" conditional rendering | ✓ WIRED | Line 152 condition, Coming Soon placeholder renders                       |
+| redeem-flow.tsx        | KYC pre-check logic          | showKycPrompt state and kycStatus checks   | ✓ WIRED | Line 1595 state, line 1628-1637 effect, line 1819-1822 Next handler block |
+| redeem-flow KYC banner | profile#kyc anchor           | Link to /profile#kyc for verification      | ✓ WIRED | Line 1790 href, profile page has id="kyc" at line 329                     |
 
 ### Requirements Coverage
 
 Phase 21 addresses the following user flow improvements:
 
-| Requirement                                              | Status      | Supporting Truths |
-| -------------------------------------------------------- | ----------- | ----------------- |
+| Requirement                                             | Status      | Supporting Truths |
+| ------------------------------------------------------- | ----------- | ----------------- |
 | Clear processing time disclosure before mint commitment | ✓ SATISFIED | Truth 1           |
-| Price disclaimer explaining admin-set fulfillment price  | ✓ SATISFIED | Truth 2           |
-| KYC pre-check blocking unverified users at redeem start  | ✓ SATISFIED | Truth 3           |
-| Standalone KYC completion path via profile page          | ✓ SATISFIED | Truth 4           |
-| Coming Soon state for incomplete swap functionality      | ✓ SATISFIED | Truth 5           |
+| Price disclaimer explaining admin-set fulfillment price | ✓ SATISFIED | Truth 2           |
+| KYC pre-check blocking unverified users at redeem start | ✓ SATISFIED | Truth 3           |
+| Standalone KYC completion path via profile page         | ✓ SATISFIED | Truth 4           |
+| Coming Soon state for incomplete swap functionality     | ✓ SATISFIED | Truth 5           |
 
 ### Anti-Patterns Found
 
@@ -78,9 +78,10 @@ Phase 21 addresses the following user flow improvements:
 
 **Test:** Enter valid USDC amount and proceed to Step 3 (Review)
 **Expected:** Two disclaimer boxes appear below order summary:
+
 1. Amber-bordered: "Tokens will be minted after physical ammunition is verified..."
 2. Muted-bordered: "The final token amount is determined by the admin at fulfillment..."
-**Why human:** Visual distinction between two disclaimers and placement order verification
+   **Why human:** Visual distinction between two disclaimers and placement order verification
 
 #### 3. Swap Tab Coming Soon Badge
 
