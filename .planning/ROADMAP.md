@@ -50,7 +50,7 @@ Full details: `.planning/milestones/v1.2-ROADMAP.md`
 
 - [x] **Phase 12: Database Schema & Stats Worker** - New tables and periodic stats computation
 - [x] **Phase 13: App Shell Restructure** - Route groups, 4-tab nav, wallet gate
-- [ ] **Phase 14: Dashboard** - Personal dashboard with balances, orders, and quick actions
+- [x] **Phase 14: Dashboard** - Personal dashboard with balances, orders, and quick actions
 - [ ] **Phase 15: Unified Trade Page** - Combined mint/redeem/swap with inline caliber info
 - [ ] **Phase 16: Landing Page** - Public marketing page with hero, how-it-works, caliber showcase, FAQ
 
@@ -99,7 +99,7 @@ Plans:
 **Plans:** 1 plan
 
 Plans:
-- [ ] 14-01-PLAN.md -- Dashboard page with balance cards, recent orders, quick actions, pending banner
+- [x] 14-01-PLAN.md -- Dashboard page with balance cards, recent orders, quick actions, pending banner
 
 ### Phase 15: Unified Trade Page
 **Goal**: Users have a single trade page where they can mint, redeem, or swap any caliber with full context
@@ -151,10 +151,10 @@ Phases execute in numeric order: 12 -> 13 -> 14 -> 15 -> 16
 | 11. Frontend Data Layer and Quality | v1.2 | 2/2 | Complete | 2026-02-15 |
 | 12. Database Schema & Stats Worker | v1.3 | 2/2 | Complete | 2026-02-15 |
 | 13. App Shell Restructure | v1.3 | 2/2 | Complete | 2026-02-16 |
-| 14. Dashboard | v1.3 | 0/TBD | Not started | - |
+| 14. Dashboard | v1.3 | 1/1 | Complete | 2026-02-16 |
 | 15. Unified Trade Page | v1.3 | 0/TBD | Not started | - |
 | 16. Landing Page | v1.3 | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-02-10*
-*Last updated: 2026-02-16 (Phase 13 complete -- 2/2 plans)*
+*Last updated: 2026-02-16 (Phase 14 complete -- 1/1 plans)*
