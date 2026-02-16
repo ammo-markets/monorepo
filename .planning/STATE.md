@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-15)
 
 **Core value:** Anyone worldwide can get price exposure to U.S. ammunition by minting ammo tokens with USDC, while only verified U.S. residents in allowed states can redeem for physical delivery.
-**Current focus:** Phase 12 - Database Schema & Stats Worker (COMPLETE)
+**Current focus:** Phase 13 - App Shell Restructure (IN PROGRESS)
 
 ## Current Position
 
-Phase: 12 (1 of 5 in v1.3) -- COMPLETE
-Plan: 02 of 02 complete
-Status: Phase Complete
-Last activity: 2026-02-15 -- Completed 12-02 (stats worker & API endpoints)
+Phase: 13 (2 of 5 in v1.3)
+Plan: 01 of 02 complete
+Status: Executing
+Last activity: 2026-02-16 -- Completed 13-01 (route group split with wallet gate)
 
-Progress: [██░░░░░░░░] 20% (v1.3)
+Progress: [███░░░░░░░] 30% (v1.3)
 
 ## Performance Metrics
 
@@ -39,6 +39,7 @@ Progress: [██░░░░░░░░] 20% (v1.3)
 |-------|------|----------|-------|-------|
 | 12 | 01 | 3min | 2 | 4 |
 | 12 | 02 | 3min | 4 | 8 |
+| 13 | 01 | 2min | 1 | 19 |
 
 ## Accumulated Context
 
@@ -52,6 +53,9 @@ All decisions logged in PROJECT.md Key Decisions table.
 - 12-02: Stats computed from DB only (no on-chain reads)
 - 12-02: ActivityLog handler writes use transaction client (tx) for atomicity
 - 12-02: Activity endpoint default limit 5, max 50
+- 13-01: Reconnection grace period in (app) layout to prevent flash-redirect on page refresh
+- 13-01: Landing layout wraps children in main.flex-1; page renders content only
+- 13-01: App layout returns null synchronously when disconnected; redirect in useEffect
 
 ### Pending Todos
 
@@ -69,6 +73,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-15
-Stopped at: Completed 12-02-PLAN.md -- Phase 12 complete, ready for Phase 13
+Last session: 2026-02-16
+Stopped at: Completed 13-01-PLAN.md -- Route group split done, ready for 13-02
 Resume file: None
