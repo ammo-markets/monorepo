@@ -57,6 +57,12 @@
   --color-ax-secondary: var(--bg-secondary);
   --color-ax-tertiary: var(--bg-tertiary);
   --color-ax-glass: var(--bg-glass);
+  --color-border-hover: var(--border-hover);
+  --color-border-active: var(--border-active);
+  --color-border-default: var(--border-default);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
 
   /* Font families */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
@@ -137,6 +143,19 @@
   body {
     background-color: var(--bg-primary);
     color: var(--text-primary);
+  }
+
+  /* Focus-visible for raw interactive elements not using shadcn Button */
+  a:focus-visible,
+  button:focus-visible,
+  [role="button"]:focus-visible,
+  [role="tab"]:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
   }
 }
 
