@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 
 Milestone: v1.4 UI/UX Polish & Accessibility
 Phase: 19 of 23 (Interactive States & ARIA)
-Plan: 0 of 2 in current phase
-Status: Ready to plan
-Last activity: 2026-02-16 -- Phase 18 complete, verified, ready for Phase 19
+Plan: 2 of 2 in current phase
+Status: Phase 19 complete
+Last activity: 2026-02-16 -- Phase 19 plan 02 complete
 
-Progress: [##░░░░░░░░] 17% (2/12 v1.4 plans)
+Progress: [####░░░░░░] 33% (4/12 v1.4 plans)
 
 ## Performance Metrics
 
@@ -49,6 +49,9 @@ All decisions logged in PROJECT.md Key Decisions table.
 - [18-01] Upgraded --text-muted to #8585a0 and --muted-foreground to oklch(0.63) for WCAG AA
 - [18-02] KycBadge NONE/default uses CSS variables; semantic green/yellow/red preserved as Tailwind
 - [18-02] Primary action buttons use --brass bg with --bg-primary text for contrast
+- [19-02] Used aria-current="page" on active nav links per WAI-ARIA spec
+- [19-02] Changed time-range-selector from role="group" to role="tablist" for semantic correctness
+- [19-02] Added aria-labels to wallet button states for mobile accessibility (text hidden via sm:inline)
 
 ### Pending Todos
 
@@ -67,5 +70,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-16
-Stopped at: Phase 18 verified and complete -- ready to plan Phase 19
+Stopped at: Completed 19-02-PLAN.md -- Phase 19 complete
 Resume file: None
