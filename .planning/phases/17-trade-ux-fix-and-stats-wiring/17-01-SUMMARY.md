@@ -58,6 +58,7 @@ completed: 2026-02-16
 - **Files modified:** 4
 
 ## Accomplishments
+
 - MintFlow skips step 0 (caliber selection) when ?caliber= URL param is set from Trade page CaliberInfoPanel
 - RedeemFlow hides caliber card grid when embedded, shows streamlined "Enter Amount" heading
 - useProtocolStats hook created following existing useMarketData pattern
@@ -71,12 +72,14 @@ Each task was committed atomically:
 2. **Task 2: Wire ProtocolStats to /api/stats endpoint with TanStack Query hook** - `8d484dd` (feat)
 
 ## Files Created/Modified
+
 - `apps/web/hooks/use-protocol-stats.ts` - TanStack Query hook for /api/stats with 1min stale time
 - `apps/web/features/mint/mint-flow.tsx` - isEmbedded guard on step 0, hideBack prop on StepEnterAmount, embedded-aware handleMintMore
 - `apps/web/features/redeem/redeem-flow.tsx` - isEmbedded prop on StepSelectCaliberAmount to hide caliber cards, embedded-aware handleRedeemMore
 - `apps/web/features/home/protocol-stats.tsx` - Wired to useProtocolStats for unique holders and total volume
 
 ## Decisions Made
+
 - isEmbedded detection via `searchParams.get('caliber') !== null` keeps it internal -- no exported API changes
 - Hide Back button entirely in MintFlow when embedded (user can re-select caliber via CaliberInfoPanel above)
 - RedeemFlow keeps step 0 structure but conditionally hides caliber grid and changes heading when embedded
@@ -88,16 +91,20 @@ Each task was committed atomically:
 None - plan executed exactly as written.
 
 ## Issues Encountered
+
 None
 
 ## User Setup Required
+
 None - no external service configuration required.
 
 ## Next Phase Readiness
+
 - Trade page UX is clean: single caliber selection via CaliberInfoPanel
 - Landing page ProtocolStats shows real data from worker-computed stats
 - No blockers for future phases
 
 ---
-*Phase: 17-trade-ux-fix-and-stats-wiring*
-*Completed: 2026-02-16*
+
+_Phase: 17-trade-ux-fix-and-stats-wiring_
+_Completed: 2026-02-16_

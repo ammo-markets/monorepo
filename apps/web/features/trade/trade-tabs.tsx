@@ -5,14 +5,25 @@ import { Plus, ArrowDownToLine, ArrowDownUp } from "lucide-react";
 import { MintFlow } from "@/features/mint";
 import { RedeemFlow } from "@/features/redeem";
 import { SwapWidget } from "@/features/trade/swap-widget";
+import { CaliberInfoPanel } from "@/features/trade/caliber-info-panel";
 import type { Caliber } from "@ammo-exchange/shared";
+import type { MarketCaliberFromAPI } from "@/lib/types";
 
 type TradeTab = "mint" | "redeem" | "swap";
+
+interface TokenBalances {
+  usdc: bigint | undefined;
+  tokens: Record<Caliber, bigint | undefined>;
+  isLoading: boolean;
+}
 
 interface TradeTabsProps {
   selectedCaliber: Caliber | null;
   activeTab: TradeTab;
   onTabChange: (tab: TradeTab) => void;
+  marketData: MarketCaliberFromAPI[];
+  onSelectCaliber: (cal: Caliber) => void;
+  tokenBalances: TokenBalances;
 }
 
 const TABS: { id: TradeTab; label: string; icon: typeof Plus }[] = [
@@ -25,7 +36,11 @@ export function TradeTabs({
   selectedCaliber,
   activeTab,
   onTabChange,
+  marketData,
+  onSelectCaliber,
+  tokenBalances,
 }: TradeTabsProps) {
+  const showCaliberPanel = activeTab === "mint" || activeTab === "redeem";
   return (
     <div>
       {/* Tab buttons */}
@@ -68,37 +83,66 @@ export function TradeTabs({
         })}
       </div>
 
+      {/* Caliber selection (mint/redeem only) */}
+      {showCaliberPanel && (
+        <div className="mb-6">
+          <CaliberInfoPanel
+            selectedCaliber={selectedCaliber}
+            onSelectCaliber={onSelectCaliber}
+            marketData={marketData}
+            balances={tokenBalances}
+            mode={activeTab as "mint" | "redeem"}
+          />
+        </div>
+      )}
+
       {/* Tab content */}
       <div>
-        {activeTab === "mint" && (
-          <Suspense
-            fallback={
-              <div
-                className="py-12 text-center text-sm"
-                style={{ color: "var(--text-muted)" }}
-              >
-                Loading...
-              </div>
-            }
-          >
-            <MintFlow />
-          </Suspense>
-        )}
+        {activeTab === "mint" &&
+          (selectedCaliber ? (
+            <Suspense
+              fallback={
+                <div
+                  className="py-12 text-center text-sm"
+                  style={{ color: "var(--text-muted)" }}
+                >
+                  Loading...
+                </div>
+              }
+            >
+              <MintFlow key={selectedCaliber} selectedCaliber={selectedCaliber!} />
+            </Suspense>
+          ) : (
+            <div
+              className="py-12 text-center text-sm"
+              style={{ color: "var(--text-muted)" }}
+            >
+              Select a caliber above to start minting
+            </div>
+          ))}
 
-        {activeTab === "redeem" && (
-          <Suspense
-            fallback={
-              <div
-                className="py-12 text-center text-sm"
-                style={{ color: "var(--text-muted)" }}
-              >
-                Loading...
-              </div>
-            }
-          >
-            <RedeemFlow />
-          </Suspense>
-        )}
+        {activeTab === "redeem" &&
+          (selectedCaliber ? (
+            <Suspense
+              fallback={
+                <div
+                  className="py-12 text-center text-sm"
+                  style={{ color: "var(--text-muted)" }}
+                >
+                  Loading...
+                </div>
+              }
+            >
+              <RedeemFlow key={selectedCaliber} selectedCaliber={selectedCaliber!} />
+            </Suspense>
+          ) : (
+            <div
+              className="py-12 text-center text-sm"
+              style={{ color: "var(--text-muted)" }}
+            >
+              Select a caliber above to start redeeming
+            </div>
+          ))}
 
         {activeTab === "swap" && (
           <div className="flex justify-center">

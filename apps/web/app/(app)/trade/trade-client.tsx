@@ -3,13 +3,15 @@
 import { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useMarketData } from "@/hooks/use-market-data";
-import { CaliberInfoPanel, TradeTabs } from "@/features/trade";
+import { useTokenBalances } from "@/hooks/use-token-balances";
+import { TradeTabs } from "@/features/trade";
 import type { Caliber } from "@ammo-exchange/shared";
 
 type TradeTab = "mint" | "redeem" | "swap";
 
 export function TradePageClient() {
   const { data: marketData = [] } = useMarketData();
+  const tokenBalances = useTokenBalances();
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -47,22 +49,17 @@ export function TradePageClient() {
           Trade
         </h1>
         <p className="mt-2 text-sm" style={{ color: "var(--text-secondary)" }}>
-          Select a caliber and choose your action below
+          Select an action and caliber below
         </p>
-      </div>
-
-      <div className="mb-8">
-        <CaliberInfoPanel
-          selectedCaliber={selectedCaliber}
-          onSelectCaliber={handleSelectCaliber}
-          marketData={marketData}
-        />
       </div>
 
       <TradeTabs
         selectedCaliber={selectedCaliber}
         activeTab={activeTab}
         onTabChange={handleTabChange}
+        marketData={marketData}
+        onSelectCaliber={handleSelectCaliber}
+        tokenBalances={tokenBalances}
       />
     </div>
   );
