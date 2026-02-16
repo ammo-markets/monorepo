@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 
 Milestone: v1.4 UI/UX Polish & Accessibility
 Phase: 22 of 23 (Admin Enhancements)
-Plan: 0 of 2 in current phase
-Status: Ready to plan
-Last activity: 2026-02-16 -- Phase 21 complete, verified, ready for Phase 22
+Plan: 1 of 2 in current phase
+Status: Executing
+Last activity: 2026-02-16 -- Completed 22-01 (reject/cancel actions + dashboard stats)
 
-Progress: [######░░░░] 67% (8/12 v1.4 plans)
+Progress: [#######░░░] 75% (9/12 v1.4 plans)
 
 ## Performance Metrics
 
@@ -65,6 +65,8 @@ All decisions logged in PROJECT.md Key Decisions table.
 - [21-02] KYC gate as banner above Step 0 (not separate step) to avoid renumbering
 - [21-02] PENDING users allowed past Step 0 (they hit Step 2 KYC check)
 - [21-02] Profile page invalidates both kyc and profile queries on KYC submit
+- [22-01] Used reasonCode=1 default for on-chain refundMint/cancelRedeem (ABI requires uint8 param)
+- [22-01] Pending stat cards use Link component for client-side navigation to order tables
 
 ### Pending Todos
 
@@ -83,5 +85,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-16
-Stopped at: Phase 21 complete -- ready for Phase 22
+Stopped at: Completed 22-01-PLAN.md
 Resume file: None
