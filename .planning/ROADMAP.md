@@ -82,11 +82,11 @@ Full details: `.planning/milestones/v1.3-ROADMAP.md`
   3. Border radius values throughout the app reference a consistent CSS variable scale
   4. The app enforces dark mode only with no unused theme toggle code remaining
   5. All muted text meets WCAG AA contrast ratio (4.5:1 minimum against background)
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 18-01: Consolidate CSS variable systems and enforce dark mode
-- [ ] 18-02: Apply unified theme to admin sidebar, border radius scale, and contrast fix
+- [ ] 18-01-PLAN.md -- Consolidate CSS variable systems, fix contrast, remove next-themes, enforce dark-only
+- [ ] 18-02-PLAN.md -- Migrate admin components from hardcoded Tailwind colors to unified theme variables
 
 ### Phase 19: Interactive States & ARIA
 **Goal**: Every interactive element communicates its state to all users (sighted and assistive tech)
