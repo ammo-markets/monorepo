@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useMemo } from "react";
 import { useMarketData } from "@/hooks/use-market-data";
+import { useProtocolStats } from "@/hooks/use-protocol-stats";
 
 function useCountUp(target: string, duration = 1200) {
   const [display, setDisplay] = useState(target);
@@ -88,21 +89,35 @@ function formatCompact(n: number): string {
 
 export function ProtocolStats() {
   const { data: calibers = [] } = useMarketData();
+  const { data: protocolStats } = useProtocolStats();
 
   const stats = useMemo(() => {
+    // TVL and rounds from market data (real-time from chain)
     const totalRounds = calibers.reduce((sum, c) => sum + c.totalSupply, 0);
     const tvl = calibers.reduce(
       (sum, c) => sum + c.totalSupply * c.pricePerRound,
       0,
     );
+
+    // Unique holders from /api/stats
+    const holders =
+      protocolStats?.stats?.reduce((sum, s) => sum + s.userCount, 0) ?? 0;
+
+    // Total volume from /api/stats (totalMinted across all calibers)
+    const totalMinted =
+      protocolStats?.stats?.reduce(
+        (sum, s) => sum + Number(s.totalMinted),
+        0,
+      ) ?? 0;
+
     return {
       tvl: calibers.length > 0 ? formatCompact(tvl) : "--",
       roundsTokenized:
         calibers.length > 0 ? totalRounds.toLocaleString("en-US") : "--",
-      uniqueHolders: "--",
-      volume24h: "--",
+      uniqueHolders: holders > 0 ? holders.toLocaleString("en-US") : "--",
+      totalVolume: totalMinted > 0 ? totalMinted.toLocaleString("en-US") : "--",
     };
-  }, [calibers]);
+  }, [calibers, protocolStats]);
 
   return (
     <section
@@ -116,7 +131,7 @@ export function ProtocolStats() {
         <StatItem value={stats.tvl} label="Total Value Locked" />
         <StatItem value={stats.roundsTokenized} label="Rounds Tokenized" />
         <StatItem value={stats.uniqueHolders} label="Unique Holders" />
-        <StatItem value={stats.volume24h} label="24h Volume" />
+        <StatItem value={stats.totalVolume} label="Total Volume" />
       </div>
     </section>
   );
