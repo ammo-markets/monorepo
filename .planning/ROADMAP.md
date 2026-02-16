@@ -96,11 +96,10 @@ Plans:
   2. User sees last 5 orders with status, amount, and timestamp on dashboard
   3. User can initiate Mint or Redeem directly from dashboard quick action buttons
   4. User sees a banner when they have pending orders that need attention
-**Plans**: TBD
+**Plans:** 1 plan
 
 Plans:
-- [ ] 14-01: TBD
-- [ ] 14-02: TBD
+- [ ] 14-01-PLAN.md -- Dashboard page with balance cards, recent orders, quick actions, pending banner
 
 ### Phase 15: Unified Trade Page
 **Goal**: Users have a single trade page where they can mint, redeem, or swap any caliber with full context
