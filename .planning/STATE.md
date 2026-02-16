@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 
 Milestone: v1.4 UI/UX Polish & Accessibility
 Phase: 18 of 23 (Theme & Accessibility Foundation)
-Plan: 0 of 2 in current phase
-Status: Ready to plan
-Last activity: 2026-02-16 -- Roadmap created for v1.4
+Plan: 1 of 2 in current phase
+Status: Executing
+Last activity: 2026-02-16 -- Completed 18-01 (Unified CSS Variables)
 
-Progress: [░░░░░░░░░░] 0% (0/12 v1.4 plans)
+Progress: [#░░░░░░░░░] 8% (1/12 v1.4 plans)
 
 ## Performance Metrics
 
@@ -45,6 +45,9 @@ Progress: [░░░░░░░░░░] 0% (0/12 v1.4 plans)
 
 All decisions logged in PROJECT.md Key Decisions table.
 
+- [18-01] Kept @custom-variant dark line (15 shadcn components use dark: prefixes)
+- [18-01] Upgraded --text-muted to #8585a0 and --muted-foreground to oklch(0.63) for WCAG AA
+
 ### Pending Todos
 
 None.
@@ -62,5 +65,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-16
-Stopped at: v1.4 roadmap created -- ready to plan Phase 18
+Stopped at: Completed 18-01-PLAN.md
 Resume file: None
