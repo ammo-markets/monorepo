@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Copy,
   Check,
@@ -10,10 +10,14 @@ import {
   Loader2,
   Pencil,
   Wallet,
+  Clock,
 } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import { useSaveProfile } from "@/hooks/use-save-profile";
 import { ConnectWalletCTA } from "@/features/shared/connect-wallet-cta";
+import { KycForm } from "@/features/redeem/kyc-form";
+import type { KycFormData } from "@/features/redeem/kyc-form";
+import { useKycStatus, useKycSubmit } from "@/hooks/use-kyc";
 
 /* ── Types ── */
 
@@ -156,6 +160,22 @@ export default function ProfilePage() {
     error: saveError,
   } = useSaveProfile<AddressForm>();
 
+  const queryClient = useQueryClient();
+
+  // KYC hooks
+  const { data: kycData, isLoading: kycLoading } = useKycStatus(
+    isSignedIn ? "connected" : undefined,
+  );
+  const { mutateAsync: submitKyc, isPending: kycSubmitting } = useKycSubmit();
+
+  const handleKycSubmit = useCallback(
+    async (data: KycFormData) => {
+      await submitKyc(data);
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+    },
+    [submitKyc, queryClient],
+  );
+
   const [copied, setCopied] = useState(false);
 
   // Address editing
@@ -236,7 +256,9 @@ export default function ProfilePage() {
 
   /* ── Derived ── */
 
-  const badge = getKycBadge(profile.kycStatus);
+  const effectiveKycStatus = kycData?.kycStatus ?? profile.kycStatus;
+  const kycPrefill = kycData?.kycPrefill;
+  const badge = getKycBadge(effectiveKycStatus);
   const hasAddress = profile.defaultShippingName !== null;
 
   const inputClass =
@@ -304,6 +326,7 @@ export default function ProfilePage() {
 
         {/* ── Section B: KYC Status ── */}
         <div
+          id="kyc"
           className="rounded-xl p-5"
           style={{
             backgroundColor: "var(--bg-secondary)",
@@ -326,16 +349,35 @@ export default function ProfilePage() {
             >
               {badge.label}
             </span>
-            {profile.kycStatus !== "APPROVED" && (
-              <a
-                href="/trade?tab=redeem"
-                className="text-xs font-medium transition-opacity duration-150 hover:opacity-80"
-                style={{ color: "var(--brass)" }}
-              >
-                Complete verification &rarr;
-              </a>
-            )}
           </div>
+
+          {/* Pending state */}
+          {effectiveKycStatus === "PENDING" && (
+            <div className="mt-4 flex gap-3 rounded-lg px-4 py-3" style={{ backgroundColor: "rgba(243, 156, 18, 0.08)", border: "1px solid rgba(243, 156, 18, 0.2)" }}>
+              <Clock size={16} className="mt-0.5 flex-shrink-0" style={{ color: "var(--amber)" }} />
+              <p className="text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                Your identity verification is being reviewed. This usually takes a few minutes to a few hours.
+              </p>
+            </div>
+          )}
+
+          {/* KYC form for unverified / rejected users */}
+          {(effectiveKycStatus === "NONE" || effectiveKycStatus === "REJECTED") && (
+            <div className="mt-4">
+              <p
+                className="mb-4 text-sm leading-relaxed"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                Complete identity verification to enable physical ammunition
+                redemption. This is a one-time process.
+              </p>
+              <KycForm
+                onSubmit={handleKycSubmit}
+                isSubmitting={kycSubmitting}
+                prefill={kycPrefill}
+              />
+            </div>
+          )}
         </div>
 
         {/* ── Section C: Shipping Address ── */}
