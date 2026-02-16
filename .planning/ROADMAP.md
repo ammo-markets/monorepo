@@ -128,11 +128,11 @@ Plans:
   3. Starting a redeem flow checks KYC status first -- unverified users see a prompt to complete KYC before proceeding
   4. User can initiate and complete KYC verification directly from the Profile page (not only during redeem)
   5. Swap tab displays a "Coming Soon" badge with an explanation of what it will offer
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 21-01: Mint flow disclosures and swap Coming Soon label
-- [ ] 21-02: Redeem KYC pre-check and profile KYC completion
+- [ ] 21-01-PLAN.md -- Mint flow disclosures (processing time, price disclaimer) and swap Coming Soon label
+- [ ] 21-02-PLAN.md -- Redeem KYC pre-check gate and profile page KYC completion form
 
 ### Phase 22: Admin Enhancements
 **Goal**: Admin can efficiently manage orders with reject/refund actions, enriched dashboard, and detailed views
