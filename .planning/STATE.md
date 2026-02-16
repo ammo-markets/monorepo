@@ -5,15 +5,15 @@
 See: .planning/PROJECT.md (updated 2026-02-16)
 
 **Core value:** Anyone worldwide can get price exposure to U.S. ammunition by minting ammo tokens with USDC, while only verified U.S. residents in allowed states can redeem for physical delivery.
-**Current focus:** Phase 19 - Interactive States & ARIA
+**Current focus:** Phase 20 - Navigation & Wallet
 
 ## Current Position
 
 Milestone: v1.4 UI/UX Polish & Accessibility
-Phase: 19 of 23 (Interactive States & ARIA)
-Plan: 2 of 2 in current phase
-Status: Phase 19 complete
-Last activity: 2026-02-16 -- Phase 19 plan 02 complete
+Phase: 20 of 23 (Navigation & Wallet)
+Plan: 0 of 2 in current phase
+Status: Ready to plan
+Last activity: 2026-02-16 -- Phase 19 complete, verified, ready for Phase 20
 
 Progress: [####░░░░░░] 33% (4/12 v1.4 plans)
 
@@ -69,10 +69,9 @@ None.
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 1 | Refactor manual fetch mutations to use TanStack Query useMutation hooks | 2026-02-15 | 94bf174 | [1-refactor-manual-fetch-mutations-to-use-t](./quick/1-refactor-manual-fetch-mutations-to-use-t/) |
-| Phase 19 P01 | 25min | 2 tasks | 19 files |
 
 ## Session Continuity
 
 Last session: 2026-02-16
-Stopped at: Completed 19-02-PLAN.md -- Phase 19 complete
+Stopped at: Phase 19 verified and complete -- ready to plan Phase 20
 Resume file: None

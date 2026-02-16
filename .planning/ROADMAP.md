@@ -64,7 +64,7 @@ Full details: `.planning/milestones/v1.3-ROADMAP.md`
 **Milestone Goal:** Address UI/UX critique -- fix accessibility gaps, theme inconsistencies, navigation issues, flow UX problems, and admin usability.
 
 - [x] **Phase 18: Theme & Accessibility Foundation** - Unified design system and color contrast fixes (completed 2026-02-16)
-- [ ] **Phase 19: Interactive States & ARIA** - Focus-visible, hover classes, and screen reader support
+- [x] **Phase 19: Interactive States & ARIA** - Focus-visible, hover classes, and screen reader support (completed 2026-02-16)
 - [ ] **Phase 20: Navigation & Wallet** - Nav improvements and wallet dropdown
 - [ ] **Phase 21: User Flow Improvements** - Mint/redeem UX, profile KYC, swap Coming Soon
 - [ ] **Phase 22: Admin Enhancements** - Reject/refund actions, dashboard enrichment, order details, table filters
@@ -189,7 +189,7 @@ Phases execute in numeric order: 18 -> 19 -> 20 -> 21 -> 22 -> 23
 | 16. Landing Page | v1.3 | 1/1 | Complete | 2026-02-16 |
 | 17. Trade UX Fix & Stats Wiring | v1.3 | 1/1 | Complete | 2026-02-16 |
 | 18. Theme & Accessibility Foundation | v1.4 | 2/2 | Complete | 2026-02-16 |
-| 19. Interactive States & ARIA | v1.4 | 0/2 | Planned | - |
+| 19. Interactive States & ARIA | v1.4 | 2/2 | Complete | 2026-02-16 |
 | 20. Navigation & Wallet | v1.4 | 0/2 | Not started | - |
 | 21. User Flow Improvements | v1.4 | 0/2 | Not started | - |
 | 22. Admin Enhancements | v1.4 | 0/2 | Not started | - |
