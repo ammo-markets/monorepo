@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 
 Milestone: v1.4 UI/UX Polish & Accessibility
 Phase: 18 of 23 (Theme & Accessibility Foundation)
-Plan: 1 of 2 in current phase
-Status: Executing
-Last activity: 2026-02-16 -- Completed 18-01 (Unified CSS Variables)
+Plan: 2 of 2 in current phase (PHASE COMPLETE)
+Status: Phase 18 Complete
+Last activity: 2026-02-16 -- Completed 18-02 (Admin Theme Migration)
 
-Progress: [#░░░░░░░░░] 8% (1/12 v1.4 plans)
+Progress: [##░░░░░░░░] 17% (2/12 v1.4 plans)
 
 ## Performance Metrics
 
@@ -47,6 +47,8 @@ All decisions logged in PROJECT.md Key Decisions table.
 
 - [18-01] Kept @custom-variant dark line (15 shadcn components use dark: prefixes)
 - [18-01] Upgraded --text-muted to #8585a0 and --muted-foreground to oklch(0.63) for WCAG AA
+- [18-02] KycBadge NONE/default uses CSS variables; semantic green/yellow/red preserved as Tailwind
+- [18-02] Primary action buttons use --brass bg with --bg-primary text for contrast
 
 ### Pending Todos
 
@@ -65,5 +67,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-16
-Stopped at: Completed 18-01-PLAN.md
+Stopped at: Completed 18-02-PLAN.md (Phase 18 complete)
 Resume file: None
