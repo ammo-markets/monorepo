@@ -100,15 +100,25 @@ export function FinalizeMintDialog({
       />
 
       {/* Dialog */}
-      <div className="relative z-10 w-full max-w-md rounded-xl border border-zinc-800 bg-zinc-950 p-6 shadow-2xl">
+      <div
+        className="relative z-10 w-full max-w-md rounded-xl border p-6 shadow-2xl"
+        style={{
+          borderColor: "var(--border-default)",
+          backgroundColor: "var(--bg-primary)",
+        }}
+      >
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-zinc-100">
+          <h2
+            className="text-lg font-semibold"
+            style={{ color: "var(--text-primary)" }}
+          >
             Finalize Mint Order
           </h2>
           <button
             type="button"
             onClick={() => onOpenChange(false)}
-            className="text-zinc-500 transition-colors hover:text-zinc-300"
+            className="transition-colors hover:text-[var(--text-primary)]"
+            style={{ color: "var(--text-muted)" }}
           >
             <X className="h-5 w-5" />
           </button>
@@ -116,24 +126,35 @@ export function FinalizeMintDialog({
 
         <div className="mt-4 space-y-3 text-sm">
           <div className="flex justify-between">
-            <span className="text-zinc-400">Order ID</span>
-            <span className="font-mono text-zinc-200">
+            <span style={{ color: "var(--text-secondary)" }}>Order ID</span>
+            <span
+              className="font-mono"
+              style={{ color: "var(--text-primary)" }}
+            >
               {order.id.slice(0, 8)}
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-zinc-400">Wallet</span>
-            <span className="font-mono text-xs text-zinc-200">
+            <span style={{ color: "var(--text-secondary)" }}>Wallet</span>
+            <span
+              className="font-mono text-xs"
+              style={{ color: "var(--text-primary)" }}
+            >
               {order.walletAddress ?? "N/A"}
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-zinc-400">Caliber</span>
-            <span className="text-zinc-200">{order.caliber}</span>
+            <span style={{ color: "var(--text-secondary)" }}>Caliber</span>
+            <span style={{ color: "var(--text-primary)" }}>
+              {order.caliber}
+            </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-zinc-400">USDC Amount</span>
-            <span className="font-mono text-zinc-200">
+            <span style={{ color: "var(--text-secondary)" }}>USDC Amount</span>
+            <span
+              className="font-mono"
+              style={{ color: "var(--text-primary)" }}
+            >
               {formatUsdc(order.amount)} USDC
             </span>
           </div>
@@ -143,7 +164,8 @@ export function FinalizeMintDialog({
         <div className="mt-5">
           <label
             htmlFor="actual-price"
-            className="block text-sm font-medium text-zinc-300"
+            className="block text-sm font-medium"
+            style={{ color: "var(--text-primary)" }}
           >
             Actual Price Per Round (USD)
           </label>
@@ -157,7 +179,12 @@ export function FinalizeMintDialog({
               setPrice(e.target.value);
               setPriceError("");
             }}
-            className="mt-1.5 w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+            className="mt-1.5 w-full rounded-lg border px-3 py-2 text-sm outline-none focus:border-[var(--brass)] focus:ring-1 focus:ring-[var(--brass)]"
+            style={{
+              borderColor: "var(--border-hover)",
+              backgroundColor: "var(--bg-secondary)",
+              color: "var(--text-primary)",
+            }}
           />
           {priceError && (
             <p className="mt-1 text-xs text-red-400">{priceError}</p>
@@ -165,7 +192,12 @@ export function FinalizeMintDialog({
         </div>
 
         {hash && (
-          <p className="mt-3 break-all text-xs text-zinc-500">Tx: {hash}</p>
+          <p
+            className="mt-3 break-all text-xs"
+            style={{ color: "var(--text-muted)" }}
+          >
+            Tx: {hash}
+          </p>
         )}
 
         {/* Actions */}
@@ -173,7 +205,11 @@ export function FinalizeMintDialog({
           <button
             type="button"
             onClick={() => onOpenChange(false)}
-            className="flex-1 rounded-lg border border-zinc-700 px-4 py-2 text-sm font-medium text-zinc-300 transition-colors hover:bg-zinc-800"
+            className="flex-1 rounded-lg border px-4 py-2 text-sm font-medium transition-colors hover:bg-[var(--bg-tertiary)]"
+            style={{
+              borderColor: "var(--border-hover)",
+              color: "var(--text-primary)",
+            }}
           >
             Cancel
           </button>
@@ -181,7 +217,11 @@ export function FinalizeMintDialog({
             type="button"
             onClick={handleConfirm}
             disabled={isPending || isConfirming}
-            className="flex-1 rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-amber-500 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors hover:bg-[var(--brass-hover)] disabled:cursor-not-allowed disabled:opacity-50"
+            style={{
+              backgroundColor: "var(--brass)",
+              color: "var(--bg-primary)",
+            }}
           >
             {buttonLabel}
           </button>

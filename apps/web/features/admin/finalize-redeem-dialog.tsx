@@ -96,15 +96,25 @@ export function FinalizeRedeemDialog({
       />
 
       {/* Dialog */}
-      <div className="relative z-10 w-full max-w-md rounded-xl border border-zinc-800 bg-zinc-950 p-6 shadow-2xl">
+      <div
+        className="relative z-10 w-full max-w-md rounded-xl border p-6 shadow-2xl"
+        style={{
+          borderColor: "var(--border-default)",
+          backgroundColor: "var(--bg-primary)",
+        }}
+      >
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-zinc-100">
+          <h2
+            className="text-lg font-semibold"
+            style={{ color: "var(--text-primary)" }}
+          >
             Finalize Redeem Order
           </h2>
           <button
             type="button"
             onClick={() => onOpenChange(false)}
-            className="text-zinc-500 transition-colors hover:text-zinc-300"
+            className="transition-colors hover:text-[var(--text-primary)]"
+            style={{ color: "var(--text-muted)" }}
           >
             <X className="h-5 w-5" />
           </button>
@@ -112,36 +122,47 @@ export function FinalizeRedeemDialog({
 
         <div className="mt-4 space-y-3 text-sm">
           <div className="flex justify-between">
-            <span className="text-zinc-400">Order ID</span>
-            <span className="font-mono text-zinc-200">
+            <span style={{ color: "var(--text-secondary)" }}>Order ID</span>
+            <span
+              className="font-mono"
+              style={{ color: "var(--text-primary)" }}
+            >
               {order.id.slice(0, 8)}
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-zinc-400">Wallet</span>
-            <span className="font-mono text-xs text-zinc-200">
+            <span style={{ color: "var(--text-secondary)" }}>Wallet</span>
+            <span
+              className="font-mono text-xs"
+              style={{ color: "var(--text-primary)" }}
+            >
               {order.walletAddress ?? "N/A"}
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-zinc-400">Caliber</span>
-            <span className="text-zinc-200">{order.caliber}</span>
+            <span style={{ color: "var(--text-secondary)" }}>Caliber</span>
+            <span style={{ color: "var(--text-primary)" }}>
+              {order.caliber}
+            </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-zinc-400">Token Amount</span>
-            <span className="font-mono text-zinc-200">
+            <span style={{ color: "var(--text-secondary)" }}>Token Amount</span>
+            <span
+              className="font-mono"
+              style={{ color: "var(--text-primary)" }}
+            >
               {formatTokenAmount(order.amount)} rounds
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-zinc-400">KYC Status</span>
-            <span className="text-zinc-200">
+            <span style={{ color: "var(--text-secondary)" }}>KYC Status</span>
+            <span style={{ color: "var(--text-primary)" }}>
               {order.user?.kycStatus ?? "NONE"}
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-zinc-400">Shipping</span>
-            <span className="text-zinc-200">
+            <span style={{ color: "var(--text-secondary)" }}>Shipping</span>
+            <span style={{ color: "var(--text-primary)" }}>
               {order.shippingAddress
                 ? `${order.shippingAddress.city}, ${order.shippingAddress.state}`
                 : "None"}
@@ -150,7 +171,12 @@ export function FinalizeRedeemDialog({
         </div>
 
         {hash && (
-          <p className="mt-3 break-all text-xs text-zinc-500">Tx: {hash}</p>
+          <p
+            className="mt-3 break-all text-xs"
+            style={{ color: "var(--text-muted)" }}
+          >
+            Tx: {hash}
+          </p>
         )}
 
         {/* Actions */}
@@ -158,7 +184,11 @@ export function FinalizeRedeemDialog({
           <button
             type="button"
             onClick={() => onOpenChange(false)}
-            className="flex-1 rounded-lg border border-zinc-700 px-4 py-2 text-sm font-medium text-zinc-300 transition-colors hover:bg-zinc-800"
+            className="flex-1 rounded-lg border px-4 py-2 text-sm font-medium transition-colors hover:bg-[var(--bg-tertiary)]"
+            style={{
+              borderColor: "var(--border-hover)",
+              color: "var(--text-primary)",
+            }}
           >
             Cancel
           </button>
@@ -166,7 +196,11 @@ export function FinalizeRedeemDialog({
             type="button"
             onClick={handleConfirm}
             disabled={isPending || isConfirming}
-            className="flex-1 rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-amber-500 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors hover:bg-[var(--brass-hover)] disabled:cursor-not-allowed disabled:opacity-50"
+            style={{
+              backgroundColor: "var(--brass)",
+              color: "var(--bg-primary)",
+            }}
           >
             {buttonLabel}
           </button>

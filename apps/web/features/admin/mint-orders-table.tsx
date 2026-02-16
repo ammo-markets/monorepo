@@ -45,7 +45,10 @@ export function MintOrdersTable() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-12 text-zinc-400">
+      <div
+        className="flex items-center justify-center py-12"
+        style={{ color: "var(--text-secondary)" }}
+      >
         <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
         Loading...
       </div>
@@ -54,12 +57,19 @@ export function MintOrdersTable() {
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center gap-3 py-12 text-zinc-400">
+      <div
+        className="flex flex-col items-center justify-center gap-3 py-12"
+        style={{ color: "var(--text-secondary)" }}
+      >
         <p>Failed to load orders</p>
         <button
           type="button"
           onClick={() => refetch()}
-          className="rounded-lg border border-zinc-700 px-4 py-2 text-sm text-zinc-300 transition-colors hover:bg-zinc-800"
+          className="rounded-lg border px-4 py-2 text-sm transition-colors hover:bg-[var(--bg-tertiary)]"
+          style={{
+            borderColor: "var(--border-hover)",
+            color: "var(--text-primary)",
+          }}
         >
           Retry
         </button>
@@ -69,7 +79,10 @@ export function MintOrdersTable() {
 
   if (!orders || orders.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center gap-2 py-12 text-zinc-500">
+      <div
+        className="flex flex-col items-center justify-center gap-2 py-12"
+        style={{ color: "var(--text-muted)" }}
+      >
         <Inbox className="h-8 w-8" />
         <p className="text-sm">No pending mint orders</p>
       </div>
@@ -78,39 +91,94 @@ export function MintOrdersTable() {
 
   return (
     <>
-      <div className="overflow-x-auto rounded-xl border border-zinc-800">
+      <div
+        className="overflow-x-auto rounded-xl border"
+        style={{ borderColor: "var(--border-default)" }}
+      >
         <table className="w-full text-left text-sm">
           <thead>
-            <tr className="border-b border-zinc-800 bg-zinc-900/50">
-              <th className="px-4 py-3 font-medium text-zinc-400">Order ID</th>
-              <th className="px-4 py-3 font-medium text-zinc-400">Wallet</th>
-              <th className="px-4 py-3 font-medium text-zinc-400">Caliber</th>
-              <th className="px-4 py-3 font-medium text-zinc-400 text-right">
+            <tr
+              className="border-b"
+              style={{
+                borderColor: "var(--border-default)",
+                backgroundColor: "var(--bg-secondary)",
+              }}
+            >
+              <th
+                className="px-4 py-3 font-medium"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                Order ID
+              </th>
+              <th
+                className="px-4 py-3 font-medium"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                Wallet
+              </th>
+              <th
+                className="px-4 py-3 font-medium"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                Caliber
+              </th>
+              <th
+                className="px-4 py-3 font-medium text-right"
+                style={{ color: "var(--text-secondary)" }}
+              >
                 USDC Amount
               </th>
-              <th className="px-4 py-3 font-medium text-zinc-400">Time</th>
-              <th className="px-4 py-3 font-medium text-zinc-400">Actions</th>
+              <th
+                className="px-4 py-3 font-medium"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                Time
+              </th>
+              <th
+                className="px-4 py-3 font-medium"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody>
             {orders.map((order) => (
               <tr
                 key={order.id}
-                className="border-b border-zinc-800/50 transition-colors hover:bg-zinc-900/30"
+                className="border-b transition-colors hover:bg-[var(--bg-secondary)]"
+                style={{ borderColor: "var(--border-default)" }}
               >
-                <td className="px-4 py-3 font-mono text-xs text-zinc-300">
+                <td
+                  className="px-4 py-3 font-mono text-xs"
+                  style={{ color: "var(--text-primary)" }}
+                >
                   {order.id.slice(0, 8)}
                 </td>
-                <td className="px-4 py-3 font-mono text-xs text-zinc-300">
+                <td
+                  className="px-4 py-3 font-mono text-xs"
+                  style={{ color: "var(--text-primary)" }}
+                >
                   {order.walletAddress
                     ? truncateAddress(order.walletAddress)
                     : "N/A"}
                 </td>
-                <td className="px-4 py-3 text-zinc-200">{order.caliber}</td>
-                <td className="px-4 py-3 text-right font-mono text-zinc-200">
+                <td
+                  className="px-4 py-3"
+                  style={{ color: "var(--text-primary)" }}
+                >
+                  {order.caliber}
+                </td>
+                <td
+                  className="px-4 py-3 text-right font-mono"
+                  style={{ color: "var(--text-primary)" }}
+                >
                   {formatUsdc(order.amount)} USDC
                 </td>
-                <td className="px-4 py-3 text-zinc-400">
+                <td
+                  className="px-4 py-3"
+                  style={{ color: "var(--text-secondary)" }}
+                >
                   {formatDistanceToNow(new Date(order.createdAt), {
                     addSuffix: true,
                   })}
@@ -128,7 +196,11 @@ export function MintOrdersTable() {
                       setSelectedOrder(order);
                       setDialogOpen(true);
                     }}
-                    className="rounded-md bg-amber-600/80 px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-amber-500 disabled:cursor-not-allowed disabled:bg-zinc-800 disabled:text-zinc-500"
+                    className="rounded-md px-3 py-1 text-xs font-medium transition-colors hover:bg-[var(--brass-hover)] disabled:cursor-not-allowed disabled:opacity-50"
+                    style={{
+                      backgroundColor: "var(--brass)",
+                      color: "var(--bg-primary)",
+                    }}
                   >
                     Finalize
                   </button>

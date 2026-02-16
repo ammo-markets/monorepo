@@ -20,19 +20,42 @@ export function ProtocolStats() {
           {Array.from({ length: 4 }).map((_, i) => (
             <div
               key={i}
-              className="animate-pulse rounded-lg border border-zinc-800 bg-zinc-900 p-6"
+              className="animate-pulse rounded-lg border p-6"
+              style={{
+                borderColor: "var(--border-default)",
+                backgroundColor: "var(--bg-secondary)",
+              }}
             >
-              <div className="mb-3 h-4 w-20 rounded bg-zinc-700" />
-              <div className="h-8 w-24 rounded bg-zinc-700" />
+              <div
+                className="mb-3 h-4 w-20 rounded"
+                style={{ backgroundColor: "var(--bg-tertiary)" }}
+              />
+              <div
+                className="h-8 w-24 rounded"
+                style={{ backgroundColor: "var(--bg-tertiary)" }}
+              />
             </div>
           ))}
         </div>
         {/* Skeleton table */}
-        <div className="animate-pulse rounded-lg border border-zinc-800 bg-zinc-900 p-6">
-          <div className="mb-4 h-4 w-32 rounded bg-zinc-700" />
+        <div
+          className="animate-pulse rounded-lg border p-6"
+          style={{
+            borderColor: "var(--border-default)",
+            backgroundColor: "var(--bg-secondary)",
+          }}
+        >
+          <div
+            className="mb-4 h-4 w-32 rounded"
+            style={{ backgroundColor: "var(--bg-tertiary)" }}
+          />
           <div className="space-y-2">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="h-6 w-full rounded bg-zinc-800" />
+              <div
+                key={i}
+                className="h-6 w-full rounded"
+                style={{ backgroundColor: "var(--bg-tertiary)" }}
+              />
             ))}
           </div>
         </div>
@@ -42,12 +65,19 @@ export function ProtocolStats() {
 
   if (error || !stats) {
     return (
-      <div className="flex flex-col items-center justify-center gap-3 py-12 text-zinc-400">
+      <div
+        className="flex flex-col items-center justify-center gap-3 py-12"
+        style={{ color: "var(--text-secondary)" }}
+      >
         <p>{error ? "Failed to load stats" : "Failed to load stats"}</p>
         <button
           type="button"
           onClick={() => void refetch()}
-          className="rounded-lg border border-zinc-700 px-4 py-2 text-sm text-zinc-300 transition-colors hover:bg-zinc-800"
+          className="rounded-lg border px-4 py-2 text-sm transition-colors hover:bg-[var(--bg-tertiary)]"
+          style={{
+            borderColor: "var(--border-hover)",
+            color: "var(--text-primary)",
+          }}
         >
           Retry
         </button>
@@ -85,13 +115,26 @@ export function ProtocolStats() {
         {cards.map((card) => (
           <div
             key={card.label}
-            className="rounded-lg border border-zinc-800 bg-zinc-900 p-6"
+            className="rounded-lg border p-6"
+            style={{
+              borderColor: "var(--border-default)",
+              backgroundColor: "var(--bg-secondary)",
+            }}
           >
-            <div className="flex items-center gap-2 text-sm text-zinc-400">
-              <card.icon className="h-4 w-4 text-amber-400" />
+            <div
+              className="flex items-center gap-2 text-sm"
+              style={{ color: "var(--text-secondary)" }}
+            >
+              <card.icon
+                className="h-4 w-4"
+                style={{ color: "var(--brass)" }}
+              />
               {card.label}
             </div>
-            <p className="mt-2 text-2xl font-bold text-zinc-100">
+            <p
+              className="mt-2 text-2xl font-bold"
+              style={{ color: "var(--text-primary)" }}
+            >
               {card.value}
             </p>
           </div>
@@ -99,26 +142,55 @@ export function ProtocolStats() {
       </div>
 
       {/* Per-caliber supply table */}
-      <div className="rounded-lg border border-zinc-800 bg-zinc-900">
-        <div className="flex items-center justify-between border-b border-zinc-800 px-6 py-4">
-          <h3 className="text-sm font-semibold text-zinc-200">
+      <div
+        className="rounded-lg border"
+        style={{
+          borderColor: "var(--border-default)",
+          backgroundColor: "var(--bg-secondary)",
+        }}
+      >
+        <div
+          className="flex items-center justify-between border-b px-6 py-4"
+          style={{ borderColor: "var(--border-default)" }}
+        >
+          <h3
+            className="text-sm font-semibold"
+            style={{ color: "var(--text-primary)" }}
+          >
             Per-Caliber Token Supply
           </h3>
           <button
             type="button"
             onClick={() => void refetch()}
             title="Refresh stats"
-            className="text-zinc-500 transition-colors hover:text-zinc-300"
+            className="transition-colors hover:text-[var(--text-primary)]"
+            style={{ color: "var(--text-muted)" }}
           >
             <RefreshCw className="h-4 w-4" />
           </button>
         </div>
         <table className="w-full text-left text-sm">
           <thead>
-            <tr className="border-b border-zinc-800/50">
-              <th className="px-6 py-3 font-medium text-zinc-400">Caliber</th>
-              <th className="px-6 py-3 font-medium text-zinc-400">Name</th>
-              <th className="px-6 py-3 font-medium text-zinc-400 text-right">
+            <tr
+              className="border-b"
+              style={{ borderColor: "var(--border-default)" }}
+            >
+              <th
+                className="px-6 py-3 font-medium"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                Caliber
+              </th>
+              <th
+                className="px-6 py-3 font-medium"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                Name
+              </th>
+              <th
+                className="px-6 py-3 font-medium text-right"
+                style={{ color: "var(--text-secondary)" }}
+              >
                 Total Supply (rounds)
               </th>
             </tr>
@@ -127,13 +199,25 @@ export function ProtocolStats() {
             {stats.calibers.map((cal) => (
               <tr
                 key={cal.caliber}
-                className="border-b border-zinc-800/50 last:border-b-0"
+                className="border-b last:border-b-0"
+                style={{ borderColor: "var(--border-default)" }}
               >
-                <td className="px-6 py-3 font-mono text-sm text-zinc-200">
+                <td
+                  className="px-6 py-3 font-mono text-sm"
+                  style={{ color: "var(--text-primary)" }}
+                >
                   {cal.caliber}
                 </td>
-                <td className="px-6 py-3 text-zinc-300">{cal.name}</td>
-                <td className="px-6 py-3 text-right font-mono text-zinc-200">
+                <td
+                  className="px-6 py-3"
+                  style={{ color: "var(--text-primary)" }}
+                >
+                  {cal.name}
+                </td>
+                <td
+                  className="px-6 py-3 text-right font-mono"
+                  style={{ color: "var(--text-primary)" }}
+                >
                   {cal.totalSupply.toLocaleString()}
                 </td>
               </tr>
