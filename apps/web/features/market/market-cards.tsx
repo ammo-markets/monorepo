@@ -5,6 +5,7 @@ import { ArrowRight } from "lucide-react";
 import { caliberIcons } from "@/features/shared/caliber-icons";
 import { useMarketData } from "@/hooks/use-market-data";
 import type { MarketCaliberFromAPI } from "@/lib/types";
+import { CALIBER_SPECS } from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
 
 function SectionTitle({
@@ -86,6 +87,25 @@ function CaliberCard({ caliber }: { caliber: MarketCaliberFromAPI }) {
       {/* Supply info */}
       <div className="mt-4 text-xs" style={{ color: "var(--text-muted)" }}>
         Supply: {caliber.totalSupply.toLocaleString("en-US")} rounds
+      </div>
+
+      {/* Specs */}
+      <div
+        className="mt-2 flex gap-3 text-xs"
+        style={{ color: "var(--text-muted)" }}
+      >
+        <span>
+          {CALIBER_SPECS[caliber.caliber as Caliber].grainWeight}gr
+        </span>
+        <span aria-hidden="true">&middot;</span>
+        <span>
+          {CALIBER_SPECS[caliber.caliber as Caliber].caseType.charAt(0).toUpperCase() +
+            CALIBER_SPECS[caliber.caliber as Caliber].caseType.slice(1)}
+        </span>
+        <span aria-hidden="true">&middot;</span>
+        <span>
+          {CALIBER_SPECS[caliber.caliber as Caliber].minMintRounds} rd min
+        </span>
       </div>
 
       {/* Footer */}

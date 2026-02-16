@@ -97,7 +97,7 @@ export function Hero() {
         {/* CTAs */}
         <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
           <a
-            href="/mint"
+            href="/dashboard"
             className="group inline-flex items-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold transition-all duration-150"
             style={{
               backgroundColor: "var(--brass)",
@@ -115,7 +115,7 @@ export function Hero() {
                 "0 0 20px rgba(198, 164, 78, 0.15)";
             }}
           >
-            Start Minting
+            Launch App
             <ArrowRight
               size={16}
               className="transition-transform duration-150 group-hover:translate-x-0.5"
