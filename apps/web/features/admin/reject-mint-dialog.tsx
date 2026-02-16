@@ -35,14 +35,26 @@ export function RejectMintDialog({
   const [reason, setReason] = useState("");
   const [reasonError, setReasonError] = useState("");
 
-  const { refundMint, hash, error, isPending, isConfirming, isConfirmed, reset } =
-    useRefundMint(order.caliber as Caliber);
+  const {
+    refundMint,
+    hash,
+    error,
+    isPending,
+    isConfirming,
+    isConfirmed,
+    reset,
+  } = useRefundMint(order.caliber as Caliber);
 
   // React to confirmation
   useEffect(() => {
     if (isConfirmed) {
       toast.success("Mint order rejected");
-      void queryClient.invalidateQueries({ queryKey: ["admin"] });
+      void queryClient.invalidateQueries({
+        queryKey: ["admin", "orders", "MINT"],
+      });
+      void queryClient.invalidateQueries({
+        queryKey: ["admin", "stats"],
+      });
       onRejected(order.id);
       onOpenChange(false);
       reset();
@@ -113,9 +125,7 @@ export function RejectMintDialog({
               color: "var(--text-primary)",
             }}
           />
-          {reasonError && (
-            <p className="text-xs text-red-400">{reasonError}</p>
-          )}
+          {reasonError && <p className="text-xs text-red-400">{reasonError}</p>}
         </div>
 
         {hash && (

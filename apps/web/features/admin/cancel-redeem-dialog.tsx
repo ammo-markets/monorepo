@@ -49,7 +49,12 @@ export function CancelRedeemDialog({
   useEffect(() => {
     if (isConfirmed) {
       toast.success("Redeem order cancelled");
-      void queryClient.invalidateQueries({ queryKey: ["admin"] });
+      void queryClient.invalidateQueries({
+        queryKey: ["admin", "orders", "REDEEM"],
+      });
+      void queryClient.invalidateQueries({
+        queryKey: ["admin", "stats"],
+      });
       onCancelled(order.id);
       onOpenChange(false);
       reset();
@@ -121,9 +126,7 @@ export function CancelRedeemDialog({
               color: "var(--text-primary)",
             }}
           />
-          {reasonError && (
-            <p className="text-xs text-red-400">{reasonError}</p>
-          )}
+          {reasonError && <p className="text-xs text-red-400">{reasonError}</p>}
         </div>
 
         {hash && (

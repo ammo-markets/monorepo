@@ -56,7 +56,12 @@ export function FinalizeMintDialog({
   useEffect(() => {
     if (isConfirmed) {
       toast.success("Mint order finalized");
-      void queryClient.invalidateQueries({ queryKey: ["admin"] });
+      void queryClient.invalidateQueries({
+        queryKey: ["admin", "orders", "MINT"],
+      });
+      void queryClient.invalidateQueries({
+        queryKey: ["admin", "stats"],
+      });
       onFinalized(order.id);
       onOpenChange(false);
       reset();

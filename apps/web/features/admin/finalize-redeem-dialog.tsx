@@ -63,7 +63,12 @@ export function FinalizeRedeemDialog({
   useEffect(() => {
     if (isConfirmed) {
       toast.success("Redeem order finalized");
-      void queryClient.invalidateQueries({ queryKey: ["admin"] });
+      void queryClient.invalidateQueries({
+        queryKey: ["admin", "orders", "REDEEM"],
+      });
+      void queryClient.invalidateQueries({
+        queryKey: ["admin", "stats"],
+      });
       onFinalized(order.id);
       onOpenChange(false);
       reset();
