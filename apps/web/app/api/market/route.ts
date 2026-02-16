@@ -17,49 +17,54 @@ const priceOracleAbi = [
   },
 ] as const;
 
+const CACHE_HEADERS = {
+  "Cache-Control": "s-maxage=60, stale-while-revalidate=300",
+};
+
 export async function GET() {
   try {
-    // Step 1: Read oracle addresses from each CaliberMarket using individual reads
-    // (avoids multicall tuple type inference issues with mapped arrays)
-    const oracleAddresses = await Promise.all(
-      CALIBERS.map((caliber) =>
-        publicClient.readContract({
+    // Phase 1: Read oracle addresses + totalSupply in a single multicall (8 calls, 1 RPC round trip)
+    const phase1 = await publicClient.multicall({
+      contracts: [
+        ...CALIBERS.map((caliber) => ({
           address: fuji.calibers[caliber].market,
           abi: CaliberMarketAbi,
-          functionName: "oracle",
-        }),
-      ),
+          functionName: "oracle" as const,
+        })),
+        ...CALIBERS.map((caliber) => ({
+          address: fuji.calibers[caliber].token,
+          abi: AmmoTokenAbi,
+          functionName: "totalSupply" as const,
+        })),
+      ],
+    });
+
+    // Extract results: first 4 = oracles, next 4 = supplies
+    const oracleResults = phase1.slice(0, 4);
+    const supplyResults = phase1.slice(4);
+
+    // Phase 2: Read prices from resolved oracle addresses (4 calls, 1 RPC round trip)
+    const oracleAddresses = oracleResults.map((r) =>
+      r.status === "success" ? (r.result as `0x${string}`) : ("0x0" as const),
     );
 
-    // Step 2: Read prices from each oracle
-    const prices = await Promise.all(
-      oracleAddresses.map((oracleAddress) =>
-        publicClient
-          .readContract({
-            address: oracleAddress,
-            abi: priceOracleAbi,
-            functionName: "getPrice",
-          })
-          .catch(() => BigInt(0)),
-      ),
-    );
-
-    // Step 3: Read totalSupply for each AmmoToken
-    const supplies = await Promise.all(
-      CALIBERS.map((caliber) =>
-        publicClient
-          .readContract({
-            address: fuji.calibers[caliber].token,
-            abi: AmmoTokenAbi,
-            functionName: "totalSupply",
-          })
-          .catch(() => BigInt(0)),
-      ),
-    );
+    const phase2 = await publicClient.multicall({
+      contracts: oracleAddresses.map((addr) => ({
+        address: addr,
+        abi: priceOracleAbi,
+        functionName: "getPrice" as const,
+      })),
+    });
 
     const calibers = CALIBERS.map((caliber, i) => {
-      const priceX18 = prices[i]!;
-      const supply = supplies[i]!;
+      const priceX18 =
+        phase2[i]!.status === "success"
+          ? (phase2[i]!.result as bigint)
+          : BigInt(0);
+      const supply =
+        supplyResults[i]!.status === "success"
+          ? (supplyResults[i]!.result as bigint)
+          : BigInt(0);
 
       return {
         caliber,
@@ -70,7 +75,7 @@ export async function GET() {
       };
     });
 
-    return Response.json({ calibers });
+    return Response.json({ calibers }, { headers: CACHE_HEADERS });
   } catch {
     return Response.json(
       { error: "Failed to read market prices" },
