@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 
 Milestone: v1.4 UI/UX Polish & Accessibility
 Phase: 21 of 23 (User Flow Improvements)
-Plan: 0 of 2 in current phase
-Status: Ready to plan
-Last activity: 2026-02-16 -- Phase 20 complete, verified, ready for Phase 21
+Plan: 1 of 2 in current phase
+Status: Executing
+Last activity: 2026-02-16 -- Completed 21-01 (mint disclosures & swap coming soon)
 
-Progress: [#####░░░░░] 50% (6/12 v1.4 plans)
+Progress: [######░░░░] 58% (7/12 v1.4 plans)
 
 ## Performance Metrics
 
@@ -60,6 +60,8 @@ All decisions logged in PROJECT.md Key Decisions table.
 - [20-02] Used BarChart3 icon for Market nav item (charts-appropriate)
 - [20-02] Dynamic grid-cols-5/6 for mobile tabs based on keeper status
 - [20-02] Admin mobile nav uses collapsible dropdown rather than sheet/drawer for simplicity
+- [21-01] Used borderLeft muted color for price disclaimer to differentiate from processing time warning
+- [21-01] Badge text "Soon" instead of full "Coming Soon" to keep tab compact
 
 ### Pending Todos
 
@@ -78,5 +80,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-16
-Stopped at: Phase 20 complete -- ready for Phase 21
+Stopped at: Completed 21-01-PLAN.md
 Resume file: None
