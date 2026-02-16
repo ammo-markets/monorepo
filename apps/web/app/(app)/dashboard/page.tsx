@@ -8,8 +8,8 @@ import { useOrders } from "@/hooks/use-orders";
 import {
   BalanceCards,
   RecentOrders,
-  QuickActions,
   PendingBanner,
+  TestnetFaucetBanner,
 } from "@/features/dashboard";
 import { ConnectWalletCTA } from "@/features/shared/connect-wallet-cta";
 
@@ -59,16 +59,14 @@ export default function DashboardPage() {
 
       <div className="flex flex-col gap-6">
         <PendingBanner pendingCount={pendingCount} />
+        <TestnetFaucetBanner onSuccess={refetch} />
 
         <BalanceCards
           balances={tokens}
           usdc={usdc}
           marketData={marketData}
           isLoading={balancesLoading || marketLoading}
-          onRefetch={refetch}
         />
-
-        <QuickActions />
 
         <section>
           <h2

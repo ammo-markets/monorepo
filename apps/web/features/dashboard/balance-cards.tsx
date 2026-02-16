@@ -1,11 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { formatUnits } from "viem";
 import type { Caliber } from "@ammo-exchange/shared";
 import { CALIBER_SPECS } from "@ammo-exchange/shared";
 import type { MarketCaliberFromAPI } from "@/lib/types";
 import { caliberIcons } from "@/features/shared/caliber-icons";
-import { UsdcFaucetButton } from "./usdc-faucet-button";
 
 /* ────────────── Constants ────────────── */
 
@@ -18,7 +18,6 @@ interface BalanceCardsProps {
   usdc: bigint | undefined;
   marketData: MarketCaliberFromAPI[];
   isLoading: boolean;
-  onRefetch?: () => void;
 }
 
 /* ────────────── Helpers ────────────── */
@@ -54,6 +53,7 @@ function BalanceCardsSkeleton() {
       <div className="mb-6">
         <div className="mb-2 h-4 w-24 rounded shimmer" />
         <div className="h-9 w-40 rounded shimmer" />
+        <div className="mt-1 h-4 w-28 rounded shimmer" />
       </div>
       {/* Grid skeleton */}
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -75,17 +75,6 @@ function BalanceCardsSkeleton() {
           </div>
         ))}
       </div>
-      {/* USDC skeleton */}
-      <div
-        className="mt-3 flex items-center justify-between rounded-xl px-4 py-3"
-        style={{
-          backgroundColor: "var(--bg-secondary)",
-          border: "1px solid var(--border-default)",
-        }}
-      >
-        <div className="h-4 w-20 rounded shimmer" />
-        <div className="h-5 w-24 rounded shimmer" />
-      </div>
     </div>
   );
 }
@@ -97,7 +86,6 @@ export function BalanceCards({
   usdc,
   marketData,
   isLoading,
-  onRefetch,
 }: BalanceCardsProps) {
   if (isLoading) return <BalanceCardsSkeleton />;
 
@@ -119,7 +107,21 @@ export function BalanceCards({
           className="font-mono text-3xl font-bold tabular-nums tracking-tight"
           style={{ color: "var(--text-primary)" }}
         >
-          ${(totalValue + usdcBalance).toFixed(2)}
+          $
+          {(totalValue + usdcBalance).toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
+        </p>
+        <p
+          className="mt-1 font-mono text-sm tabular-nums"
+          style={{ color: "var(--text-muted)" }}
+        >
+          {usdcBalance.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}{" "}
+          USDC
         </p>
       </div>
 
@@ -128,9 +130,10 @@ export function BalanceCards({
         {holdings.map((h) => {
           const Icon = caliberIcons[h.caliber];
           return (
-            <div
+            <Link
               key={h.caliber}
-              className="rounded-xl p-4"
+              href={`/trade?caliber=${h.caliber.toLowerCase()}`}
+              className="rounded-xl p-4 transition-colors hover:border-[var(--brass-border)]"
               style={{
                 backgroundColor: "var(--bg-secondary)",
                 border: "1px solid var(--border-default)",
@@ -165,46 +168,9 @@ export function BalanceCards({
                   ${h.price.toFixed(4)}/rd
                 </span>
               </div>
-            </div>
+            </Link>
           );
         })}
-      </div>
-
-      {/* USDC Balance Row */}
-      <div
-        className="mt-3 flex items-center justify-between rounded-xl px-4 py-3"
-        style={{
-          backgroundColor: "var(--bg-secondary)",
-          border: "1px solid var(--border-default)",
-        }}
-      >
-        <div className="flex items-center gap-2">
-          <span
-            className="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold"
-            style={{
-              backgroundColor:
-                "color-mix(in srgb, var(--blue) 15%, transparent)",
-              color: "var(--blue)",
-            }}
-          >
-            $
-          </span>
-          <span
-            className="text-sm font-medium"
-            style={{ color: "var(--text-secondary)" }}
-          >
-            USDC
-          </span>
-        </div>
-        <div className="flex items-center gap-3">
-          <UsdcFaucetButton onSuccess={onRefetch} />
-          <span
-            className="font-mono text-sm font-medium tabular-nums"
-            style={{ color: "var(--text-primary)" }}
-          >
-            ${usdcBalance.toFixed(2)}
-          </span>
-        </div>
       </div>
     </div>
   );

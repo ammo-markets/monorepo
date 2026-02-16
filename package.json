@@ -12,6 +12,7 @@
     "db:generate": "turbo db:generate",
     "db:migrate": "turbo db:migrate",
     "db:studio": "pnpm --filter @ammo-exchange/db exec prisma studio",
+    "db:reset": "pnpm --filter @ammo-exchange/db db:reset",
     "contracts:build": "pnpm --filter @ammo-exchange/contracts build",
     "contracts:test": "pnpm --filter @ammo-exchange/contracts test",
     "contracts:fuji:check": "make -C packages/contracts fuji_check",

@@ -145,6 +145,17 @@
     color: var(--text-primary);
   }
 
+  /* Restore pointer cursor on interactive elements (Tailwind v4 preflight resets it) */
+  button,
+  [role="button"] {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  [role="button"][aria-disabled="true"] {
+    cursor: default;
+  }
+
   /* Focus-visible for raw interactive elements not using shadcn Button */
   a:focus-visible,
   button:focus-visible,

@@ -85,6 +85,7 @@ export async function handleMintFinalized(
     },
     data: {
       status: "COMPLETED",
+      tokenAmount: args.tokenAmount.toString(),
     },
   });
 

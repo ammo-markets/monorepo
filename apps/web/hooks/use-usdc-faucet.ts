@@ -15,12 +15,7 @@ export function useUsdcFaucet(onSuccess?: () => void): {
   isConfirming: boolean;
   isConfirmed: boolean;
 } {
-  const {
-    data: hash,
-    error,
-    isPending,
-    writeContract,
-  } = useWriteContract();
+  const { data: hash, error, isPending, writeContract } = useWriteContract();
 
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
     useWaitForTransactionReceipt({ hash });

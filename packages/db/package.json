@@ -11,6 +11,7 @@
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
     "db:seed-stats": "tsx src/seed-stats.ts",
+    "db:reset": "prisma migrate reset",
     "check": "tsc --noEmit"
   },
   "dependencies": {

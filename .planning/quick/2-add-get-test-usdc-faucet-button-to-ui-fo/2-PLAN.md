@@ -81,14 +81,15 @@ Output: A faucet button integrated into the dashboard USDC balance row that mint
 4. Verify that `packages/contracts/src/abis/index.ts` now includes `export { MockUSDCAbi } from "./MockUSDC.js";`.
 
 The MockUSDC ABI only needs the `faucet(uint256)` function but the full ABI will be exported (balanceOf, approve, transfer, etc.) which is fine.
-  </action>
-  <verify>
+</action>
+<verify>
+
 - File `packages/contracts/src/abis/MockUSDC.ts` exists and contains `MockUSDCAbi`
 - `packages/contracts/src/abis/index.ts` exports `MockUSDCAbi`
 - `pnpm --filter @ammo-exchange/contracts check` passes (typecheck)
   </verify>
   <done>MockUSDC ABI is exported from @ammo-exchange/contracts/abis and importable by web app</done>
-</task>
+  </task>
 
 <task type="auto">
   <name>Task 2: Create faucet hook and button component, integrate into dashboard</name>
@@ -97,6 +98,7 @@ The MockUSDC ABI only needs the `faucet(uint256)` function but the full ABI will
 **Hook: `apps/web/hooks/use-usdc-faucet.ts`**
 
 Create a hook following the exact pattern in `use-mint-transaction.ts`:
+
 - `"use client"` directive
 - Import `useWriteContract`, `useWaitForTransactionReceipt` from wagmi
 - Import `MockUSDCAbi` from `@ammo-exchange/contracts/abis`
@@ -113,6 +115,7 @@ Create a hook following the exact pattern in `use-mint-transaction.ts`:
 **Component: `apps/web/features/dashboard/usdc-faucet-button.tsx`**
 
 Create a client component:
+
 - `"use client"` directive
 - Import `useUsdcFaucet` from `@/hooks/use-usdc-faucet`
 - Import `useChainId` from wagmi (to check if on Fuji, chainId 43113)
@@ -127,6 +130,7 @@ Create a client component:
 **Integration: `apps/web/features/dashboard/balance-cards.tsx`**
 
 In the USDC Balance Row section (the `mt-3 flex items-center justify-between` div at the bottom):
+
 - Import `UsdcFaucetButton` from `./usdc-faucet-button`
 - The component already receives no `refetch` prop, so we need to add it. Add `onRefetch?: () => void` to `BalanceCardsProps`.
 - Place `<UsdcFaucetButton onSuccess={onRefetch} />` between the USDC label and the balance amount. Adjust the layout: wrap the right side (faucet button + balance) in a `flex items-center gap-3` div.
@@ -134,6 +138,7 @@ In the USDC Balance Row section (the `mt-3 flex items-center justify-between` di
 **Dashboard page: `apps/web/app/(app)/dashboard/page.tsx`**
 
 Pass `refetch` from `useTokenBalances()` to `BalanceCards` as `onRefetch={refetch}`:
+
 ```tsx
 <BalanceCards
   balances={tokens}
@@ -147,8 +152,9 @@ Pass `refetch` from `useTokenBalances()` to `BalanceCards` as `onRefetch={refetc
 **Barrel export: `apps/web/features/dashboard/index.ts`**
 
 Add: `export { UsdcFaucetButton } from "./usdc-faucet-button";`
-  </action>
-  <verify>
+</action>
+<verify>
+
 - `pnpm --filter @ammo-exchange/web check` passes (typecheck)
 - Run `pnpm dev` and visit dashboard while connected to Fuji testnet
 - "Get Test USDC" button visible next to USDC balance
@@ -161,7 +167,7 @@ Add: `export { UsdcFaucetButton } from "./usdc-faucet-button";`
 - USDC balance refreshes after successful mint
 - Button hidden when not on Fuji testnet
   </done>
-</task>
+  </task>
 
 </tasks>
 
@@ -175,12 +181,13 @@ Add: `export { UsdcFaucetButton } from "./usdc-faucet-button";`
 </verification>
 
 <success_criteria>
+
 - MockUSDC ABI exported and importable from @ammo-exchange/contracts/abis
 - "Get Test USDC" button visible on dashboard when wallet connected to Fuji testnet
 - Button calls MockUSDC.faucet(10_000e6) on click
 - USDC balance refreshes after successful faucet transaction
 - Both packages typecheck cleanly
-</success_criteria>
+  </success_criteria>
 
 <output>
 After completion, create `.planning/quick/2-add-get-test-usdc-faucet-button-to-ui-fo/2-SUMMARY.md`

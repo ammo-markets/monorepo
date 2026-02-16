@@ -62,7 +62,7 @@ None - plan executed exactly as written.
 
 | Task | Commit  | Description                                    |
 | ---- | ------- | ---------------------------------------------- |
-| 1    | d81757b | Export MockUSDC ABI from contracts package      |
+| 1    | d81757b | Export MockUSDC ABI from contracts package     |
 | 2    | 91292a6 | Add faucet hook, button, dashboard integration |
 
 ## Self-Check: PASSED

@@ -12,7 +12,7 @@ interface ProtocolStatRow {
 
 interface ProtocolStatsResponse {
   stats: ProtocolStatRow[];
-  totalVolumeRounds: number;
+  totalVolumeUsd: number;
   registeredUsers: number;
   roundsTokenized: number;
 }

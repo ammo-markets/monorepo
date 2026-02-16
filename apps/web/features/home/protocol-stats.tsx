@@ -97,7 +97,7 @@ export function ProtocolStats() {
   const { data: protocolStats } = useProtocolStats();
 
   const volume = protocolStats
-    ? formatCompact(protocolStats.totalVolumeRounds)
+    ? formatCompact(protocolStats.totalVolumeUsd)
     : "--";
   const users = protocolStats
     ? formatCount(protocolStats.registeredUsers)

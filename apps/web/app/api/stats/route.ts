@@ -4,11 +4,11 @@ import type { Caliber } from "@ammo-exchange/shared";
 
 export async function GET() {
   try {
-    const [rows, registeredUsers, completedOrders] = await Promise.all([
+    const [rows, registeredUsers, mintOrders] = await Promise.all([
       prisma.protocolStats.findMany(),
       prisma.user.count(),
       prisma.order.findMany({
-        where: { status: "COMPLETED" },
+        where: { type: "MINT", status: "COMPLETED" },
         select: { amount: true },
       }),
     ]);
@@ -22,22 +22,22 @@ export async function GET() {
       computedAt: row.computedAt.toISOString(),
     }));
 
-    // Sum totalMinted across all calibers for rounds tokenized
-    const roundsTokenized = rows.reduce(
-      (sum, row) => sum + Number(row.totalMinted),
+    // Trading volume: sum USDC-wei from completed MINT orders, convert to USD (6 decimals)
+    const totalVolumeUsd = mintOrders.reduce(
+      (sum, order) => sum + Number(BigInt(order.amount)) / 1e6,
       0,
     );
 
-    // Sum completed order amounts as total volume (in rounds traded)
-    const totalVolumeRounds = completedOrders.reduce(
-      (sum, order) => sum + Number(order.amount),
+    // Rounds tokenized: sum totalMinted across calibers (now in token-wei), convert to human count (18 decimals)
+    const roundsTokenized = rows.reduce(
+      (sum, row) => sum + Number(BigInt(row.totalMinted)) / 1e18,
       0,
     );
 
     return Response.json(
       {
         stats,
-        totalVolumeRounds,
+        totalVolumeUsd,
         registeredUsers,
         roundsTokenized,
       },

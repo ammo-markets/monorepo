@@ -47,6 +47,7 @@ export async function handleRedeemRequested(
       status: "PENDING",
       caliber: prismaCaliber,
       amount: args.tokenAmount.toString(),
+      tokenAmount: args.tokenAmount.toString(),
       onChainOrderId: args.orderId.toString(),
       walletAddress: userAddress,
       txHash: meta.transactionHash,

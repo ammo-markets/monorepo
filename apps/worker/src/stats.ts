@@ -71,7 +71,12 @@ export async function computeStats(): Promise<void> {
     for (const caliber of CALIBERS) {
       const completedOrders = await prisma.order.findMany({
         where: { caliber, status: "COMPLETED" },
-        select: { type: true, amount: true, walletAddress: true },
+        select: {
+          type: true,
+          amount: true,
+          tokenAmount: true,
+          walletAddress: true,
+        },
       });
 
       let totalMinted = 0n;
@@ -79,11 +84,13 @@ export async function computeStats(): Promise<void> {
       const uniqueWallets = new Set<string>();
 
       for (const order of completedOrders) {
-        const amount = BigInt(order.amount);
+        // Use tokenAmount (18-dec token-wei) for consistent units.
+        // Orders created before the migration won't have tokenAmount — skip them (contribute 0).
+        const tokenWei = order.tokenAmount ? BigInt(order.tokenAmount) : 0n;
         if (order.type === "MINT") {
-          totalMinted += amount;
+          totalMinted += tokenWei;
         } else {
-          totalRedeemed += amount;
+          totalRedeemed += tokenWei;
         }
         if (order.walletAddress) {
           uniqueWallets.add(order.walletAddress);
