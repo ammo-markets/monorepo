@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useMemo } from "react";
-import { useMarketData } from "@/hooks/use-market-data";
+import { useEffect, useRef, useState } from "react";
 import { useProtocolStats } from "@/hooks/use-protocol-stats";
 
 function useCountUp(target: string, duration = 1200) {
@@ -87,51 +86,38 @@ function formatCompact(n: number): string {
   return `$${n.toFixed(0)}`;
 }
 
+function formatCount(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M+`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K+`;
+  if (n > 0) return `${n}+`;
+  return "0";
+}
+
 export function ProtocolStats() {
-  const { data: calibers = [] } = useMarketData();
   const { data: protocolStats } = useProtocolStats();
 
-  const stats = useMemo(() => {
-    // TVL and rounds from market data (real-time from chain)
-    const totalRounds = calibers.reduce((sum, c) => sum + c.totalSupply, 0);
-    const tvl = calibers.reduce(
-      (sum, c) => sum + c.totalSupply * c.pricePerRound,
-      0,
-    );
-
-    // Unique holders from /api/stats
-    const holders =
-      protocolStats?.stats?.reduce((sum, s) => sum + s.userCount, 0) ?? 0;
-
-    // Total volume from /api/stats (totalMinted across all calibers)
-    const totalMinted =
-      protocolStats?.stats?.reduce(
-        (sum, s) => sum + Number(s.totalMinted),
-        0,
-      ) ?? 0;
-
-    return {
-      tvl: calibers.length > 0 ? formatCompact(tvl) : "--",
-      roundsTokenized:
-        calibers.length > 0 ? totalRounds.toLocaleString("en-US") : "--",
-      uniqueHolders: holders > 0 ? holders.toLocaleString("en-US") : "--",
-      totalVolume: totalMinted > 0 ? totalMinted.toLocaleString("en-US") : "--",
-    };
-  }, [calibers, protocolStats]);
+  const volume = protocolStats
+    ? formatCompact(protocolStats.totalVolumeRounds)
+    : "--";
+  const users = protocolStats
+    ? formatCount(protocolStats.registeredUsers)
+    : "--";
+  const rounds = protocolStats
+    ? formatCount(protocolStats.roundsTokenized)
+    : "--";
 
   return (
     <section
-      className="py-12 px-4 lg:py-16"
+      className="px-4 py-12 lg:py-16"
       style={{
         backgroundColor: "var(--bg-tertiary)",
         borderTop: "1px solid var(--brass-border)",
       }}
     >
-      <div className="mx-auto grid max-w-5xl grid-cols-2 gap-6 md:grid-cols-4 md:gap-8">
-        <StatItem value={stats.tvl} label="Total Value Locked" />
-        <StatItem value={stats.roundsTokenized} label="Rounds Tokenized" />
-        <StatItem value={stats.uniqueHolders} label="Unique Holders" />
-        <StatItem value={stats.totalVolume} label="Total Volume" />
+      <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 sm:grid-cols-3 md:gap-8">
+        <StatItem value={volume} label="Trading Volume" />
+        <StatItem value={users} label="Registered Users" />
+        <StatItem value={rounds} label="Rounds Tokenized" />
       </div>
     </section>
   );
