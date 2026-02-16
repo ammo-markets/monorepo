@@ -73,6 +73,8 @@ All decisions logged in PROJECT.md Key Decisions table.
 - [22-01] Pending stat cards use Link component for client-side navigation to order tables
 - [22-02] Added status/updatedAt to order type interfaces for all-status display
 - [22-02] Actions column only shows buttons for PENDING orders; empty for other statuses
+- [23-01] Used totalVolumeRounds instead of totalVolumeUsdc (Order model lacks usdcAmount field)
+- [23-01] formatCount helper with + suffix for social proof stats (1.2K+, 10K+)
 - [23-02] Pure structural refactor of swap-widget -- no behavior/style/logic changes
 
 ### Pending Todos
