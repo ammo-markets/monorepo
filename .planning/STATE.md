@@ -90,9 +90,10 @@ None.
 | #   | Description                                                             | Date       | Commit  | Directory                                                                                         |
 | --- | ----------------------------------------------------------------------- | ---------- | ------- | ------------------------------------------------------------------------------------------------- |
 | 1   | Refactor manual fetch mutations to use TanStack Query useMutation hooks | 2026-02-15 | 94bf174 | [1-refactor-manual-fetch-mutations-to-use-t](./quick/1-refactor-manual-fetch-mutations-to-use-t/) |
+| 2   | Add Get Test USDC faucet button to dashboard for Fuji testnet          | 2026-02-16 | 91292a6 | [2-add-get-test-usdc-faucet-button-to-ui-fo](./quick/2-add-get-test-usdc-faucet-button-to-ui-fo/) |
 
 ## Session Continuity
 
 Last session: 2026-02-16
-Stopped at: Completed 23-02-PLAN.md
+Stopped at: Completed quick task 2 (USDC faucet button)
 Resume file: None
