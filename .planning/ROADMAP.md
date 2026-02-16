@@ -112,11 +112,11 @@ Plans:
   3. Market page is reachable from the main navigation sidebar and mobile bottom tabs
   4. Admin section has a responsive mobile navigation (hamburger menu or bottom tabs) that works on small screens
   5. Keeper wallets see an Admin link in the mobile bottom navigation
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 20-01: Wallet dropdown menu with confirmation
-- [ ] 20-02: Navigation additions (market link, admin mobile nav, keeper admin link)
+- [ ] 20-01-PLAN.md -- Wallet dropdown menu with copy address, explorer link, and disconnect confirmation dialog
+- [ ] 20-02-PLAN.md -- Market nav link, admin responsive mobile navigation, keeper admin link in bottom tabs
 
 ### Phase 21: User Flow Improvements
 **Goal**: Users encounter clear disclosures before committing to actions and can complete KYC from profile
