@@ -82,53 +82,55 @@ Deferred from UI/UX critique. Tracked but not in current roadmap.
 
 ## Out of Scope
 
-| Feature | Reason |
-|---------|--------|
-| Light mode / theme toggle | Brand is dark-only, no user demand |
-| Batch admin operations | Single order finalization sufficient for testnet volume |
+| Feature                                     | Reason                                                        |
+| ------------------------------------------- | ------------------------------------------------------------- |
+| Light mode / theme toggle                   | Brand is dark-only, no user demand                            |
+| Batch admin operations                      | Single order finalization sufficient for testnet volume       |
 | Admin charts (mint/redeem volume over time) | Requires time-series data infrastructure, defer to production |
-| Real-time order status push notifications | WebSocket infrastructure not justified for testnet |
+| Real-time order status push notifications   | WebSocket infrastructure not justified for testnet            |
 
 ## Traceability
 
 Which phases cover which requirements. Updated during roadmap creation.
 
-| Requirement | Phase | Status |
-|-------------|-------|--------|
-| THEME-01 | Phase 18 | Pending |
-| THEME-02 | Phase 18 | Pending |
-| THEME-03 | Phase 18 | Pending |
-| THEME-04 | Phase 18 | Pending |
-| A11Y-04 | Phase 18 | Pending |
-| A11Y-01 | Phase 19 | Pending |
-| A11Y-02 | Phase 19 | Pending |
-| A11Y-03 | Phase 19 | Pending |
-| WALL-01 | Phase 20 | Pending |
-| WALL-02 | Phase 20 | Pending |
-| NAV-01 | Phase 20 | Pending |
-| NAV-02 | Phase 20 | Pending |
-| NAV-03 | Phase 20 | Pending |
-| MINT-01 | Phase 21 | Pending |
-| MINT-02 | Phase 21 | Pending |
-| REDM-01 | Phase 21 | Pending |
-| REDM-02 | Phase 21 | Pending |
-| PROF-01 | Phase 21 | Pending |
-| TRAD-01 | Phase 21 | Pending |
-| ADMN-01 | Phase 22 | Pending |
-| ADMN-02 | Phase 22 | Pending |
-| ADMN-03 | Phase 22 | Pending |
-| ADMN-04 | Phase 22 | Pending |
-| ADMN-05 | Phase 22 | Pending |
-| ADMN-06 | Phase 22 | Pending |
-| LAND-01 | Phase 23 | Pending |
-| LAND-02 | Phase 23 | Pending |
-| TRAD-02 | Phase 23 | Pending |
+| Requirement | Phase    | Status  |
+| ----------- | -------- | ------- |
+| THEME-01    | Phase 18 | Pending |
+| THEME-02    | Phase 18 | Pending |
+| THEME-03    | Phase 18 | Pending |
+| THEME-04    | Phase 18 | Pending |
+| A11Y-04     | Phase 18 | Pending |
+| A11Y-01     | Phase 19 | Pending |
+| A11Y-02     | Phase 19 | Pending |
+| A11Y-03     | Phase 19 | Pending |
+| WALL-01     | Phase 20 | Pending |
+| WALL-02     | Phase 20 | Pending |
+| NAV-01      | Phase 20 | Pending |
+| NAV-02      | Phase 20 | Pending |
+| NAV-03      | Phase 20 | Pending |
+| MINT-01     | Phase 21 | Pending |
+| MINT-02     | Phase 21 | Pending |
+| REDM-01     | Phase 21 | Pending |
+| REDM-02     | Phase 21 | Pending |
+| PROF-01     | Phase 21 | Pending |
+| TRAD-01     | Phase 21 | Pending |
+| ADMN-01     | Phase 22 | Pending |
+| ADMN-02     | Phase 22 | Pending |
+| ADMN-03     | Phase 22 | Pending |
+| ADMN-04     | Phase 22 | Pending |
+| ADMN-05     | Phase 22 | Pending |
+| ADMN-06     | Phase 22 | Pending |
+| LAND-01     | Phase 23 | Pending |
+| LAND-02     | Phase 23 | Pending |
+| TRAD-02     | Phase 23 | Pending |
 
 **Coverage:**
+
 - v1.4 requirements: 28 total
 - Mapped to phases: 28
 - Unmapped: 0
 
 ---
-*Requirements defined: 2026-02-16*
-*Last updated: 2026-02-16 after roadmap creation*
+
+_Requirements defined: 2026-02-16_
+_Last updated: 2026-02-16 after roadmap creation_
