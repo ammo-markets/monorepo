@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-15)
 
 **Core value:** Anyone worldwide can get price exposure to U.S. ammunition by minting ammo tokens with USDC, while only verified U.S. residents in allowed states can redeem for physical delivery.
-**Current focus:** Phase 13 - App Shell Restructure (IN PROGRESS)
+**Current focus:** Phase 13 - App Shell Restructure (COMPLETE)
 
 ## Current Position
 
 Phase: 13 (2 of 5 in v1.3)
-Plan: 01 of 02 complete
-Status: Executing
-Last activity: 2026-02-16 -- Completed 13-01 (route group split with wallet gate)
+Plan: 02 of 02 complete
+Status: Phase Complete
+Last activity: 2026-02-16 -- Completed 13-02 (responsive 4-tab navigation)
 
-Progress: [███░░░░░░░] 30% (v1.3)
+Progress: [████░░░░░░] 40% (v1.3)
 
 ## Performance Metrics
 
@@ -40,6 +40,7 @@ Progress: [███░░░░░░░] 30% (v1.3)
 | 12 | 01 | 3min | 2 | 4 |
 | 12 | 02 | 3min | 4 | 8 |
 | 13 | 01 | 2min | 1 | 19 |
+| 13 | 02 | 2min | 2 | 3 |
 
 ## Accumulated Context
 
@@ -56,6 +57,9 @@ All decisions logged in PROJECT.md Key Decisions table.
 - 13-01: Reconnection grace period in (app) layout to prevent flash-redirect on page refresh
 - 13-01: Landing layout wraps children in main.flex-1; page renders content only
 - 13-01: App layout returns null synchronously when disconnected; redirect in useEffect
+- 13-02: Single AppNav component renders both sidebar and bottom tabs (CSS-driven responsiveness)
+- 13-02: Active link detection uses startsWith for nested route support
+- 13-02: Sidebar width 240px (w-60) with matching ml-60 offset on main content
 
 ### Pending Todos
 
@@ -74,5 +78,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-16
-Stopped at: Completed 13-01-PLAN.md -- Route group split done, ready for 13-02
+Stopped at: Completed 13-02-PLAN.md -- Phase 13 complete, ready for Phase 14
 Resume file: None
