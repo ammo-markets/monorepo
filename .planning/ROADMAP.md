@@ -96,11 +96,11 @@ Plans:
   1. Tabbing through any page shows a visible focus ring on every interactive element (buttons, links, inputs, tabs)
   2. No JavaScript onMouseEnter/onMouseLeave handlers remain -- all hover effects use Tailwind hover: classes
   3. Every icon-only button has an aria-label that describes its action (screen reader announces purpose)
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 19-01: Focus-visible states and hover class migration
-- [ ] 19-02: ARIA labels audit and fix
+- [ ] 19-01-PLAN.md -- Focus-visible states, Tailwind color mappings, and hover class migration (21 files)
+- [ ] 19-02-PLAN.md -- ARIA labels audit and fix for icon-only buttons, nav states, and tab roles
 
 ### Phase 20: Navigation & Wallet
 **Goal**: Users can navigate all sections from any device and manage their wallet connection
@@ -189,7 +189,7 @@ Phases execute in numeric order: 18 -> 19 -> 20 -> 21 -> 22 -> 23
 | 16. Landing Page | v1.3 | 1/1 | Complete | 2026-02-16 |
 | 17. Trade UX Fix & Stats Wiring | v1.3 | 1/1 | Complete | 2026-02-16 |
 | 18. Theme & Accessibility Foundation | v1.4 | 2/2 | Complete | 2026-02-16 |
-| 19. Interactive States & ARIA | v1.4 | 0/2 | Not started | - |
+| 19. Interactive States & ARIA | v1.4 | 0/2 | Planned | - |
 | 20. Navigation & Wallet | v1.4 | 0/2 | Not started | - |
 | 21. User Flow Improvements | v1.4 | 0/2 | Not started | - |
 | 22. Admin Enhancements | v1.4 | 0/2 | Not started | - |
