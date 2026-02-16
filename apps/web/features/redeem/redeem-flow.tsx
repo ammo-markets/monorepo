@@ -287,6 +287,7 @@ function StepSelectCaliberAmount({
   onSelectCaliber,
   setRoundsAmount,
   onNext,
+  isEmbedded,
 }: {
   selectedCaliber: Caliber | null;
   roundsAmount: string;
@@ -295,6 +296,7 @@ function StepSelectCaliberAmount({
   onSelectCaliber: (id: Caliber) => void;
   setRoundsAmount: (v: string) => void;
   onNext: () => void;
+  isEmbedded?: boolean;
 }) {
   const caliber =
     selectedCaliber && caliberDetailsMap
@@ -323,106 +325,131 @@ function StepSelectCaliberAmount({
 
   return (
     <div>
-      <h2
-        className="mb-1 text-xl font-bold"
-        style={{ color: "var(--text-primary)" }}
-      >
-        Select Caliber & Amount
-      </h2>
-      <p className="mb-6 text-sm" style={{ color: "var(--text-secondary)" }}>
-        Choose the token to redeem for physical ammunition delivery.
-      </p>
+      {!isEmbedded && (
+        <>
+          <h2
+            className="mb-1 text-xl font-bold"
+            style={{ color: "var(--text-primary)" }}
+          >
+            Select Caliber & Amount
+          </h2>
+          <p
+            className="mb-6 text-sm"
+            style={{ color: "var(--text-secondary)" }}
+          >
+            Choose the token to redeem for physical ammunition delivery.
+          </p>
 
-      {/* Caliber card selector */}
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        {allCalibers.map((cal) => {
-          const isSelected = selectedCaliber === cal.id;
-          const Icon = caliberIcons[cal.id];
-          const calBalance = tokenBalances[cal.id];
-          const displayBalance =
-            calBalance !== undefined
-              ? Math.floor(Number(formatUnits(calBalance, 18))).toLocaleString(
-                  "en-US",
-                )
-              : "...";
-          return (
-            <button
-              key={cal.id}
-              type="button"
-              onClick={() => onSelectCaliber(cal.id)}
-              className="group relative flex flex-col gap-3 rounded-xl p-4 text-left transition-all duration-150"
-              style={{
-                backgroundColor: isSelected
-                  ? "var(--brass-muted)"
-                  : "var(--bg-secondary)",
-                border: isSelected
-                  ? "1.5px solid var(--brass)"
-                  : "1.5px solid var(--border-default)",
-              }}
-              onMouseEnter={(e) => {
-                if (!isSelected)
-                  e.currentTarget.style.borderColor = "var(--border-hover)";
-              }}
-              onMouseLeave={(e) => {
-                if (!isSelected)
-                  e.currentTarget.style.borderColor = isSelected
-                    ? "var(--brass)"
-                    : "var(--border-default)";
-              }}
-            >
-              {isSelected && (
-                <span
-                  className="absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded-full"
-                  style={{ backgroundColor: "var(--brass)" }}
+          {/* Caliber card selector */}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {allCalibers.map((cal) => {
+              const isSelected = selectedCaliber === cal.id;
+              const Icon = caliberIcons[cal.id];
+              const calBalance = tokenBalances[cal.id];
+              const displayBalance =
+                calBalance !== undefined
+                  ? Math.floor(
+                      Number(formatUnits(calBalance, 18)),
+                    ).toLocaleString("en-US")
+                  : "...";
+              return (
+                <button
+                  key={cal.id}
+                  type="button"
+                  onClick={() => onSelectCaliber(cal.id)}
+                  className="group relative flex flex-col gap-3 rounded-xl p-4 text-left transition-all duration-150"
+                  style={{
+                    backgroundColor: isSelected
+                      ? "var(--brass-muted)"
+                      : "var(--bg-secondary)",
+                    border: isSelected
+                      ? "1.5px solid var(--brass)"
+                      : "1.5px solid var(--border-default)",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isSelected)
+                      e.currentTarget.style.borderColor =
+                        "var(--border-hover)";
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isSelected)
+                      e.currentTarget.style.borderColor = isSelected
+                        ? "var(--brass)"
+                        : "var(--border-default)";
+                  }}
                 >
-                  <Check
-                    size={12}
-                    strokeWidth={3}
-                    style={{ color: "var(--bg-primary)" }}
-                  />
-                </span>
-              )}
-              <div className="flex items-center gap-3">
-                <Icon size={40} />
-                <div>
-                  <div
-                    className="text-sm font-bold"
-                    style={{ color: "var(--text-primary)" }}
-                  >
-                    {cal.symbol}
+                  {isSelected && (
+                    <span
+                      className="absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded-full"
+                      style={{ backgroundColor: "var(--brass)" }}
+                    >
+                      <Check
+                        size={12}
+                        strokeWidth={3}
+                        style={{ color: "var(--bg-primary)" }}
+                      />
+                    </span>
+                  )}
+                  <div className="flex items-center gap-3">
+                    <Icon size={40} />
+                    <div>
+                      <div
+                        className="text-sm font-bold"
+                        style={{ color: "var(--text-primary)" }}
+                      >
+                        {cal.symbol}
+                      </div>
+                      <div
+                        className="text-xs"
+                        style={{ color: "var(--text-secondary)" }}
+                      >
+                        {cal.name}
+                      </div>
+                    </div>
                   </div>
-                  <div
-                    className="text-xs"
-                    style={{ color: "var(--text-secondary)" }}
-                  >
-                    {cal.name}
+                  <div className="flex items-center justify-between">
+                    <span
+                      className="text-xs"
+                      style={{ color: "var(--text-muted)" }}
+                    >
+                      Balance:{" "}
+                      <span
+                        className="font-mono font-medium"
+                        style={{ color: "var(--text-secondary)" }}
+                      >
+                        {displayBalance}
+                      </span>
+                    </span>
+                    <span
+                      className="text-[11px]"
+                      style={{ color: "var(--text-muted)" }}
+                    >
+                      Min: {cal.minMint} rds
+                    </span>
                   </div>
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <span
-                  className="text-xs"
-                  style={{ color: "var(--text-muted)" }}
-                >
-                  Balance:{" "}
-                  <span
-                    className="font-mono font-medium"
-                    style={{ color: "var(--text-secondary)" }}
-                  >
-                    {displayBalance}
-                  </span>
-                </span>
-                <span
-                  className="text-[11px]"
-                  style={{ color: "var(--text-muted)" }}
-                >
-                  Min: {cal.minMint} rds
-                </span>
-              </div>
-            </button>
-          );
-        })}
-      </div>
+                </button>
+              );
+            })}
+          </div>
+        </>
+      )}
+
+      {isEmbedded && (
+        <>
+          <h2
+            className="mb-1 text-xl font-bold"
+            style={{ color: "var(--text-primary)" }}
+          >
+            Enter Amount
+          </h2>
+          <p
+            className="mb-6 text-sm"
+            style={{ color: "var(--text-secondary)" }}
+          >
+            Enter the number of rounds to redeem.
+          </p>
+        </>
+      )}
 
       {/* Amount input -- only shows when caliber selected */}
       {caliber && (
@@ -1635,6 +1662,7 @@ export function RedeemFlow() {
   const preselected = searchParams
     .get("caliber")
     ?.toUpperCase() as Caliber | null;
+  const isEmbedded = preselected !== null;
 
   const { data: marketCalibers = [] } = useMarketData();
 
@@ -1758,7 +1786,11 @@ export function RedeemFlow() {
   const handleRedeemMore = useCallback(() => {
     redeemTx.reset();
     setStep(0);
-    setSelectedCaliber(null);
+    if (isEmbedded) {
+      setSelectedCaliber(preselected);
+    } else {
+      setSelectedCaliber(null);
+    }
     setRoundsAmount("");
     setAddress({
       fullName: "",
@@ -1770,7 +1802,7 @@ export function RedeemFlow() {
     });
     setAgeVerified(false);
     kycAutoSkipRef.current = false;
-  }, [redeemTx]);
+  }, [redeemTx, isEmbedded, preselected]);
 
   return (
     <div className="mx-auto w-full max-w-[560px] px-4 py-8 md:py-12">
@@ -1785,6 +1817,7 @@ export function RedeemFlow() {
           onSelectCaliber={setSelectedCaliber}
           setRoundsAmount={setRoundsAmount}
           onNext={() => setStep(1)}
+          isEmbedded={isEmbedded}
         />
       )}
 

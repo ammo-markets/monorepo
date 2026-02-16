@@ -285,6 +285,7 @@ function StepEnterAmount({
   usdcBalance,
   onNext,
   onBack,
+  hideBack,
 }: {
   caliber: CaliberDetailData;
   usdcAmount: string;
@@ -292,6 +293,7 @@ function StepEnterAmount({
   usdcBalance: number;
   onNext: () => void;
   onBack: () => void;
+  hideBack?: boolean;
 }) {
   const Icon = caliberIcons[caliber.id];
   const quickAmounts = [50, 100, 250, 500];
@@ -308,21 +310,23 @@ function StepEnterAmount({
   return (
     <div>
       {/* Back */}
-      <button
-        type="button"
-        onClick={onBack}
-        className="mb-5 flex items-center gap-1.5 text-sm font-medium transition-colors duration-150"
-        style={{ color: "var(--text-secondary)" }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.color = "var(--text-primary)";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.color = "var(--text-secondary)";
-        }}
-      >
-        <ArrowLeft size={16} />
-        Back
-      </button>
+      {!hideBack && (
+        <button
+          type="button"
+          onClick={onBack}
+          className="mb-5 flex items-center gap-1.5 text-sm font-medium transition-colors duration-150"
+          style={{ color: "var(--text-secondary)" }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = "var(--text-primary)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = "var(--text-secondary)";
+          }}
+        >
+          <ArrowLeft size={16} />
+          Back
+        </button>
+      )}
 
       {/* Selected caliber compact card */}
       <div
@@ -1101,6 +1105,7 @@ export function MintFlow() {
   const preselected = searchParams
     .get("caliber")
     ?.toUpperCase() as Caliber | null;
+  const isEmbedded = preselected !== null;
 
   const { data: marketCalibers = [] } = useMarketData();
 
@@ -1195,8 +1200,13 @@ export function MintFlow() {
 
   function handleMintMore() {
     mintTx.reset();
-    setStep(0);
-    setSelectedCaliber(null);
+    if (isEmbedded) {
+      setStep(1);
+      setSelectedCaliber(preselected);
+    } else {
+      setStep(0);
+      setSelectedCaliber(null);
+    }
     setUsdcAmount("");
   }
 
@@ -1204,7 +1214,7 @@ export function MintFlow() {
     <div className="mx-auto w-full max-w-[560px] px-4 py-8 md:py-12">
       <MintProgress currentStep={step} />
 
-      {step === 0 && (
+      {step === 0 && !isEmbedded && (
         <StepSelectCaliber
           selected={selectedCaliber}
           allCalibers={
@@ -1223,6 +1233,7 @@ export function MintFlow() {
           usdcBalance={usdcBalance}
           onNext={() => setStep(2)}
           onBack={() => setStep(0)}
+          hideBack={isEmbedded}
         />
       )}
 
