@@ -302,6 +302,28 @@ function StepEnterAmount({
         </button>
       )}
 
+      {/* Processing time disclosure */}
+      <div
+        className="mb-5 flex items-start gap-3 rounded-lg px-4 py-3"
+        style={{
+          backgroundColor: "rgba(243, 156, 18, 0.08)",
+          borderLeft: "3px solid var(--amber)",
+        }}
+      >
+        <Clock
+          size={16}
+          className="mt-0.5 flex-shrink-0"
+          style={{ color: "var(--amber)" }}
+        />
+        <p
+          className="text-xs leading-relaxed"
+          style={{ color: "var(--text-secondary)" }}
+        >
+          Minting takes 24-48 hours. Your USDC is held in the smart contract
+          until an admin verifies and finalizes your order.
+        </p>
+      </div>
+
       {/* Selected caliber compact card */}
       <div
         className="mb-6 flex items-center gap-3 rounded-lg px-4 py-3"
@@ -704,6 +726,31 @@ function StepReview({
           storage. This typically takes 24-48 hours. {"You'll"} be able to track
           your order in your portfolio.
         </p>
+      </div>
+
+      {/* Price disclaimer */}
+      <div
+        className="mt-3 rounded-lg px-4 py-3.5"
+        style={{
+          backgroundColor: "var(--bg-tertiary)",
+          borderLeft: "3px solid var(--text-muted)",
+        }}
+      >
+        <div className="flex items-start gap-2.5">
+          <Info
+            size={14}
+            className="mt-0.5 flex-shrink-0"
+            style={{ color: "var(--text-muted)" }}
+          />
+          <p
+            className="text-xs leading-relaxed"
+            style={{ color: "var(--text-secondary)" }}
+          >
+            The final token amount is determined by the admin at fulfillment
+            based on the current market price. The estimate shown above may
+            differ from the actual tokens received.
+          </p>
+        </div>
       </div>
 
       {/* CTA based on TxStatus */}
