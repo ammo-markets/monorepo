@@ -46,7 +46,7 @@ export function TradeTabs({
   return (
     <div>
       {/* Tab buttons */}
-      <div className="mb-6 flex items-center justify-center gap-2">
+      <div className="mb-6 flex items-center justify-center gap-2" role="tablist" aria-label="Trade options">
         {TABS.map((tab) => {
           const isActive = activeTab === tab.id;
           const Icon = tab.icon;
@@ -54,29 +54,14 @@ export function TradeTabs({
             <button
               key={tab.id}
               type="button"
+              role="tab"
+              aria-selected={isActive}
               onClick={() => onTabChange(tab.id)}
-              className="flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-150"
-              style={{
-                backgroundColor: isActive
-                  ? "var(--brass-muted)"
-                  : "transparent",
-                color: isActive ? "var(--brass)" : "var(--text-muted)",
-                border: isActive
-                  ? "1px solid var(--brass-border)"
-                  : "1px solid transparent",
-              }}
-              onMouseEnter={(e) => {
-                if (!isActive) {
-                  e.currentTarget.style.color = "var(--text-secondary)";
-                  e.currentTarget.style.backgroundColor = "var(--bg-tertiary)";
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!isActive) {
-                  e.currentTarget.style.color = "var(--text-muted)";
-                  e.currentTarget.style.backgroundColor = "transparent";
-                }
-              }}
+              className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-150 ${
+                isActive
+                  ? "bg-brass-muted text-brass border border-brass-border"
+                  : "bg-transparent text-text-muted border border-transparent hover:bg-ax-tertiary hover:text-text-secondary"
+              }`}
             >
               <Icon size={15} />
               {tab.label}

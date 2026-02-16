@@ -117,6 +117,7 @@ export function FinalizeMintDialog({
           <button
             type="button"
             onClick={() => onOpenChange(false)}
+            aria-label="Close dialog"
             className="transition-colors hover:text-[var(--text-primary)]"
             style={{ color: "var(--text-muted)" }}
           >

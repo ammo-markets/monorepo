@@ -69,26 +69,14 @@ export function CaliberInfoPanel({
             <button
               key={cal}
               type="button"
+              aria-label={`Select ${cal} - ${spec.name}`}
+              aria-pressed={isSelected}
               onClick={() => onSelectCaliber(cal)}
-              className="group flex flex-col gap-2 rounded-xl p-3 text-left transition-all duration-150"
-              style={{
-                backgroundColor: isSelected
-                  ? "var(--brass-muted)"
-                  : "var(--bg-secondary)",
-                border: isSelected
-                  ? "1.5px solid var(--brass)"
-                  : "1.5px solid var(--border-default)",
-              }}
-              onMouseEnter={(e) => {
-                if (!isSelected) {
-                  e.currentTarget.style.borderColor = "var(--border-hover)";
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!isSelected) {
-                  e.currentTarget.style.borderColor = "var(--border-default)";
-                }
-              }}
+              className={`group flex flex-col gap-2 rounded-xl p-3 text-left transition-all duration-150 ${
+                isSelected
+                  ? "bg-brass-muted border-[1.5px] border-brass"
+                  : "bg-ax-secondary border-[1.5px] border-border-default hover:border-border-hover"
+              }`}
             >
               {/* Icon + Symbol */}
               <div className="flex items-center gap-2">

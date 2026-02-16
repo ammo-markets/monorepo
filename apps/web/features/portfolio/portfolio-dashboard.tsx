@@ -1143,11 +1143,15 @@ export function PortfolioDashboard() {
           <div
             className="flex items-center gap-1 rounded-lg p-1"
             style={{ backgroundColor: "var(--bg-secondary)" }}
+            role="tablist"
+            aria-label="Order filters"
           >
             {orderFilterTabs.map((tab) => (
               <button
                 key={tab}
                 type="button"
+                role="tab"
+                aria-selected={orderFilter === tab}
                 className="rounded-md px-3 py-1.5 text-xs font-medium transition-all duration-150"
                 style={{
                   backgroundColor:

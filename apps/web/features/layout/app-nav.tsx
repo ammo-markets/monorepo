@@ -58,6 +58,7 @@ export function AppNav() {
               <Link
                 key={item.href}
                 href={item.href}
+                aria-current={active ? "page" : undefined}
                 className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors duration-150"
                 style={{
                   color: active ? "var(--accent)" : "var(--text-secondary)",
@@ -91,6 +92,7 @@ export function AppNav() {
           {isKeeper && (
             <Link
               href="/admin"
+              aria-current={isActiveLink(pathname, "/admin") ? "page" : undefined}
               className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors duration-150"
               style={{
                 color: isActiveLink(pathname, "/admin")
@@ -139,6 +141,7 @@ export function AppNav() {
               <Link
                 key={item.href}
                 href={item.href}
+                aria-current={active ? "page" : undefined}
                 className="flex flex-col items-center justify-center gap-1 text-xs font-medium transition-colors duration-150"
                 style={{
                   color: active ? "var(--accent)" : "var(--text-muted)",

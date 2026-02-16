@@ -36,22 +36,10 @@ export function WalletButton() {
     return (
       <button
         type="button"
-        className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-150"
-        style={{
-          backgroundColor: "transparent",
-          border: "1px solid var(--border-hover)",
-          color: "var(--text-primary)",
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = "var(--bg-tertiary)";
-          e.currentTarget.style.borderColor = "var(--brass-border)";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = "transparent";
-          e.currentTarget.style.borderColor = "var(--border-hover)";
-        }}
+        className="flex items-center gap-2 rounded-lg border border-border-hover bg-transparent px-4 py-2 text-sm font-medium text-text-primary transition-all duration-150 hover:border-brass-border hover:bg-ax-tertiary"
         onClick={connect}
         disabled={isConnecting}
+        aria-label={isConnecting ? "Connecting wallet" : "Connect wallet"}
       >
         <Wallet size={16} />
         <span className="hidden sm:inline">
@@ -66,20 +54,10 @@ export function WalletButton() {
     return (
       <button
         type="button"
-        className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-150"
-        style={{
-          backgroundColor: "transparent",
-          border: "1px solid var(--amber)",
-          color: "var(--amber)",
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = "rgba(245, 158, 11, 0.1)";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = "transparent";
-        }}
+        className="flex items-center gap-2 rounded-lg border border-ammo-amber bg-transparent px-4 py-2 text-sm font-medium text-ammo-amber transition-all duration-150 hover:bg-ammo-amber/10"
         onClick={switchToFuji}
         disabled={isSwitching}
+        aria-label={isSwitching ? "Switching network" : "Switch to Fuji network"}
       >
         <Wallet size={16} />
         <span className="hidden sm:inline">
@@ -94,20 +72,10 @@ export function WalletButton() {
     return (
       <button
         type="button"
-        className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-150"
-        style={{
-          backgroundColor: "transparent",
-          border: "1px solid var(--brass-border)",
-          color: "var(--brass)",
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = "rgba(var(--brass-rgb), 0.1)";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = "transparent";
-        }}
+        className="flex items-center gap-2 rounded-lg border border-brass-border bg-transparent px-4 py-2 text-sm font-medium text-brass transition-all duration-150 hover:bg-brass-muted"
         onClick={signIn}
         disabled={isSigningIn}
+        aria-label={isSigningIn ? "Signing in" : "Sign in with wallet"}
       >
         <Wallet size={16} />
         <span className="hidden sm:inline">
@@ -131,6 +99,7 @@ export function WalletButton() {
         signOut();
         disconnect();
       }}
+      aria-label="Disconnect wallet"
     >
       {/* Identicon placeholder */}
       <span

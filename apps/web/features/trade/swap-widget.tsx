@@ -189,6 +189,7 @@ function TokenSelector({
       <button
         type="button"
         onClick={() => setOpen(!open)}
+        aria-label={`Select token, currently ${token.symbol}`}
         className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors duration-150"
         style={{
           backgroundColor: "var(--bg-tertiary)",
@@ -319,6 +320,7 @@ function SwapTab({ tokens }: { tokens: Token[] }) {
               const v = e.target.value;
               if (/^[0-9]*\.?[0-9]*$/.test(v)) setPayAmount(v);
             }}
+            aria-label="Amount to pay"
             className="w-full bg-transparent text-right font-mono text-2xl font-semibold outline-none"
             style={{ color: "var(--text-primary)" }}
           />
@@ -441,6 +443,8 @@ function SwapTab({ tokens }: { tokens: Token[] }) {
             className="flex w-full items-center justify-between px-4 py-3 text-xs transition-colors duration-100"
             style={{ color: "var(--text-secondary)" }}
             onClick={() => setDetailsOpen(!detailsOpen)}
+            aria-expanded={detailsOpen}
+            aria-label="Toggle exchange details"
           >
             <span>
               1 {payData.symbol} = {rate.toFixed(rate > 1 ? 2 : 4)}{" "}
@@ -698,7 +702,7 @@ function SwapWidgetContent({ onClose }: { onClose: () => void }) {
       </div>
 
       {/* Tabs */}
-      <div className="flex px-5 pt-4 gap-1">
+      <div className="flex px-5 pt-4 gap-1" role="tablist" aria-label="Trade type">
         {(["swap", "lend"] as const).map((t) => {
           const isActive = tab === t;
           const label = t === "swap" ? "Swap" : "Lend & Borrow";
@@ -706,6 +710,8 @@ function SwapWidgetContent({ onClose }: { onClose: () => void }) {
             <button
               key={t}
               type="button"
+              role="tab"
+              aria-selected={isActive}
               onClick={() => setTab(t)}
               className="rounded-lg px-4 py-2 text-sm font-medium transition-all duration-150"
               style={{

@@ -19,7 +19,7 @@ export function TimeRangeSelector({
         backgroundColor: "var(--bg-secondary)",
         border: "1px solid var(--border-default)",
       }}
-      role="group"
+      role="tablist"
       aria-label="Time range"
     >
       {ranges.map((range) => {
@@ -28,25 +28,14 @@ export function TimeRangeSelector({
           <button
             key={range}
             type="button"
+            role="tab"
+            aria-selected={isActive}
             onClick={() => onSelect(range)}
-            className="rounded-md px-3 py-1.5 text-xs font-medium transition-all duration-150"
-            style={{
-              backgroundColor: isActive ? "var(--brass)" : "transparent",
-              color: isActive ? "var(--bg-primary)" : "var(--text-secondary)",
-            }}
-            onMouseEnter={(e) => {
-              if (!isActive) {
-                e.currentTarget.style.color = "var(--text-primary)";
-                e.currentTarget.style.backgroundColor = "var(--bg-tertiary)";
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!isActive) {
-                e.currentTarget.style.color = "var(--text-secondary)";
-                e.currentTarget.style.backgroundColor = "transparent";
-              }
-            }}
-            aria-pressed={isActive}
+            className={`rounded-md px-3 py-1.5 text-xs font-medium transition-all duration-150 ${
+              isActive
+                ? "bg-brass text-ax-primary"
+                : "bg-transparent text-text-secondary hover:bg-ax-tertiary hover:text-text-primary"
+            }`}
           >
             {range}
           </button>
