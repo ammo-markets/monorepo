@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useMarketData } from "@/hooks/use-market-data";
 import { useTokenBalances } from "@/hooks/use-token-balances";
+import { useAuth } from "@/contexts/auth-context";
 import { TradeTabs } from "@/features/trade";
 import type { Caliber } from "@ammo-exchange/shared";
 
@@ -12,6 +13,7 @@ type TradeTab = "mint" | "redeem" | "swap";
 export function TradePageClient() {
   const { data: marketData = [] } = useMarketData();
   const tokenBalances = useTokenBalances();
+  const { isConnected } = useAuth();
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -19,7 +21,11 @@ export function TradePageClient() {
     const param = searchParams.get("caliber")?.toUpperCase() as Caliber | null;
     return param ?? null;
   });
-  const [activeTab, setActiveTab] = useState<TradeTab>("mint");
+  const [activeTab, setActiveTab] = useState<TradeTab>(() => {
+    const tab = searchParams.get("tab") as TradeTab | null;
+    if (tab === "mint" || tab === "redeem" || tab === "swap") return tab;
+    return "mint";
+  });
 
   function handleSelectCaliber(cal: Caliber) {
     setSelectedCaliber(cal);
@@ -31,12 +37,12 @@ export function TradePageClient() {
 
   function handleTabChange(tab: TradeTab) {
     setActiveTab(tab);
-    // Sync caliber to URL when switching tabs so flows can pre-select
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("tab", tab);
     if (selectedCaliber) {
-      const params = new URLSearchParams(searchParams.toString());
       params.set("caliber", selectedCaliber.toLowerCase());
-      router.replace(`/trade?${params.toString()}`);
     }
+    router.replace(`/trade?${params.toString()}`);
   }
 
   return (
@@ -60,6 +66,7 @@ export function TradePageClient() {
         marketData={marketData}
         onSelectCaliber={handleSelectCaliber}
         tokenBalances={tokenBalances}
+        isConnected={isConnected}
       />
     </div>
   );

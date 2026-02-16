@@ -241,7 +241,7 @@ function PanelContent({ data, walletConnected = false }: ActionPanelProps) {
 
           {/* CTA */}
           <a
-            href={`/mint?caliber=${data.id}`}
+            href={`/trade?tab=mint&caliber=${data.id.toLowerCase()}`}
             className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold transition-all duration-150 no-underline"
             style={{
               backgroundColor: walletConnected ? "var(--brass)" : "transparent",
@@ -410,7 +410,7 @@ function PanelContent({ data, walletConnected = false }: ActionPanelProps) {
 
           {/* CTA */}
           <a
-            href={`/redeem?caliber=${data.id}`}
+            href={`/trade?tab=redeem&caliber=${data.id.toLowerCase()}`}
             className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold transition-all duration-150 no-underline"
             style={{
               backgroundColor: walletConnected ? "var(--brass)" : "transparent",

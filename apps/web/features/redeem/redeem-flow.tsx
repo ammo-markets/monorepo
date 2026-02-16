@@ -288,6 +288,8 @@ function StepSelectCaliberAmount({
   setRoundsAmount,
   onNext,
   isEmbedded,
+  isConnected,
+  onConnect,
 }: {
   selectedCaliber: Caliber | null;
   roundsAmount: string;
@@ -297,6 +299,8 @@ function StepSelectCaliberAmount({
   setRoundsAmount: (v: string) => void;
   onNext: () => void;
   isEmbedded?: boolean;
+  isConnected: boolean;
+  onConnect: () => void;
 }) {
   const caliber =
     selectedCaliber && caliberDetailsMap
@@ -346,8 +350,9 @@ function StepSelectCaliberAmount({
               const isSelected = selectedCaliber === cal.id;
               const Icon = caliberIcons[cal.id];
               const calBalance = tokenBalances[cal.id];
-              const displayBalance =
-                calBalance !== undefined
+              const displayBalance = !isConnected
+                ? "—"
+                : calBalance !== undefined
                   ? Math.floor(
                       Number(formatUnits(calBalance, 18)),
                     ).toLocaleString("en-US")
@@ -599,9 +604,30 @@ function StepSelectCaliberAmount({
         </>
       )}
 
-      <PrimaryButton disabled={!isValid} onClick={onNext}>
-        Next
-      </PrimaryButton>
+      {!isConnected ? (
+        <button
+          type="button"
+          onClick={onConnect}
+          className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold transition-colors duration-150"
+          style={{
+            backgroundColor: "var(--brass)",
+            color: "var(--bg-primary)",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = "var(--brass-hover)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = "var(--brass)";
+          }}
+        >
+          <Wallet size={16} />
+          Connect Wallet to Continue
+        </button>
+      ) : (
+        <PrimaryButton disabled={!isValid} onClick={onNext}>
+          Next
+        </PrimaryButton>
+      )}
     </div>
   );
 }
@@ -1667,7 +1693,8 @@ export function RedeemFlow({
     (searchParams.get("caliber")?.toUpperCase() as Caliber | null);
   const isEmbedded = preselected !== null;
 
-  const { data: marketCalibers = [] } = useMarketData();
+  const { data: marketCalibers = [], isLoading: marketLoading } =
+    useMarketData();
 
   const caliberDetailsMap = useMemo(() => {
     if (marketCalibers.length === 0) return null;
@@ -1811,7 +1838,20 @@ export function RedeemFlow({
     <div className="mx-auto w-full max-w-[560px] px-4 py-8 md:py-12">
       <RedeemProgress currentStep={step} />
 
-      {step === 0 && (
+      {/* Loading skeleton while market data fetches */}
+      {marketLoading && (
+        <div className="mt-6">
+          <div className="mb-6 h-6 w-52 rounded shimmer" />
+          <div className="h-4 w-72 rounded shimmer mb-6" />
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {[0, 1, 2, 3].map((i) => (
+              <div key={i} className="h-28 rounded-xl shimmer" />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {step === 0 && !marketLoading && (
         <StepSelectCaliberAmount
           selectedCaliber={selectedCaliber}
           roundsAmount={roundsAmount}
@@ -1821,6 +1861,8 @@ export function RedeemFlow({
           setRoundsAmount={setRoundsAmount}
           onNext={() => setStep(1)}
           isEmbedded={isEmbedded}
+          isConnected={wallet.isConnected}
+          onConnect={wallet.connect}
         />
       )}
 

@@ -1,7 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { useWallet } from "@/hooks/use-wallet";
 import { AppNav, AppHeader } from "@/features/layout";
 
@@ -10,16 +8,9 @@ export default function AppLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { isConnected, isReconnecting } = useWallet();
-  const router = useRouter();
+  const { isReconnecting } = useWallet();
 
-  useEffect(() => {
-    if (!isConnected && !isReconnecting) {
-      router.replace("/");
-    }
-  }, [isConnected, isReconnecting, router]);
-
-  // While reconnecting, show loading state
+  // While reconnecting, show loading state to prevent layout flash
   if (isReconnecting) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -32,11 +23,6 @@ export default function AppLayout({
         />
       </div>
     );
-  }
-
-  // Not connected and not reconnecting — will redirect via useEffect
-  if (!isConnected) {
-    return null;
   }
 
   return (

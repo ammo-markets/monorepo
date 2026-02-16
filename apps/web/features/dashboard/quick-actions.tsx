@@ -13,7 +13,7 @@ export function QuickActions() {
       }}
     >
       <Link
-        href="/mint"
+        href="/trade?tab=mint"
         className="flex flex-1 items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold transition-colors duration-150"
         style={{
           backgroundColor: "var(--brass)",
@@ -30,7 +30,7 @@ export function QuickActions() {
         Mint Tokens
       </Link>
       <Link
-        href="/redeem"
+        href="/trade?tab=redeem"
         className="flex flex-1 items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold transition-colors duration-150"
         style={{
           backgroundColor: "transparent",

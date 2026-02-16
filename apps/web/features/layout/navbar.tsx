@@ -10,8 +10,8 @@ import { useSiwe } from "@/hooks/use-siwe";
 
 const navLinks = [
   { label: "Market", href: "/market" },
-  { label: "Mint", href: "/mint" },
-  { label: "Redeem", href: "/redeem" },
+  { label: "Mint", href: "/trade?tab=mint" },
+  { label: "Redeem", href: "/trade?tab=redeem" },
   { label: "Portfolio", href: "/portfolio" },
 ];
 

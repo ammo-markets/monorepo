@@ -24,6 +24,7 @@ interface TradeTabsProps {
   marketData: MarketCaliberFromAPI[];
   onSelectCaliber: (cal: Caliber) => void;
   tokenBalances: TokenBalances;
+  isConnected: boolean;
 }
 
 const TABS: { id: TradeTab; label: string; icon: typeof Plus }[] = [
@@ -39,6 +40,7 @@ export function TradeTabs({
   marketData,
   onSelectCaliber,
   tokenBalances,
+  isConnected,
 }: TradeTabsProps) {
   const showCaliberPanel = activeTab === "mint" || activeTab === "redeem";
   return (
@@ -92,6 +94,7 @@ export function TradeTabs({
             marketData={marketData}
             balances={tokenBalances}
             mode={activeTab as "mint" | "redeem"}
+            isConnected={isConnected}
           />
         </div>
       )}

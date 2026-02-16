@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useMarketData } from "@/hooks/use-market-data";
+import { useAuth } from "@/contexts/auth-context";
 import {
   X,
   ChevronDown,
@@ -259,6 +260,7 @@ function TokenSelector({
 /* ── Swap Tab Content ── */
 
 function SwapTab({ tokens }: { tokens: Token[] }) {
+  const { isConnected, connect } = useAuth();
   const [payToken, setPayToken] = useState<TokenId>("USDC");
   const [receiveToken, setReceiveToken] = useState<TokenId>("9MM");
   const [payAmount, setPayAmount] = useState("");
@@ -503,37 +505,57 @@ function SwapTab({ tokens }: { tokens: Token[] }) {
       )}
 
       {/* Swap CTA */}
-      <button
-        type="button"
-        disabled={payNum <= 0 || payNum > payData.balance}
-        className="w-full rounded-xl py-3.5 text-sm font-semibold transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-40"
-        style={{
-          backgroundColor:
-            payNum > 0 && payNum <= payData.balance
-              ? "var(--brass)"
-              : "var(--bg-tertiary)",
-          color:
-            payNum > 0 && payNum <= payData.balance
-              ? "var(--bg-primary)"
-              : "var(--text-muted)",
-        }}
-        onMouseEnter={(e) => {
-          if (payNum > 0 && payNum <= payData.balance) {
+      {!isConnected ? (
+        <button
+          type="button"
+          className="flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-semibold transition-colors duration-150"
+          style={{
+            backgroundColor: "var(--brass)",
+            color: "var(--bg-primary)",
+          }}
+          onClick={connect}
+          onMouseEnter={(e) => {
             e.currentTarget.style.backgroundColor = "var(--brass-hover)";
-          }
-        }}
-        onMouseLeave={(e) => {
-          if (payNum > 0 && payNum <= payData.balance) {
+          }}
+          onMouseLeave={(e) => {
             e.currentTarget.style.backgroundColor = "var(--brass)";
-          }
-        }}
-      >
-        {payNum <= 0
-          ? "Enter an amount"
-          : payNum > payData.balance
-            ? `Insufficient ${payData.symbol} balance`
-            : "Swap"}
-      </button>
+          }}
+        >
+          Connect Wallet to Swap
+        </button>
+      ) : (
+        <button
+          type="button"
+          disabled={payNum <= 0 || payNum > payData.balance}
+          className="w-full rounded-xl py-3.5 text-sm font-semibold transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-40"
+          style={{
+            backgroundColor:
+              payNum > 0 && payNum <= payData.balance
+                ? "var(--brass)"
+                : "var(--bg-tertiary)",
+            color:
+              payNum > 0 && payNum <= payData.balance
+                ? "var(--bg-primary)"
+                : "var(--text-muted)",
+          }}
+          onMouseEnter={(e) => {
+            if (payNum > 0 && payNum <= payData.balance) {
+              e.currentTarget.style.backgroundColor = "var(--brass-hover)";
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (payNum > 0 && payNum <= payData.balance) {
+              e.currentTarget.style.backgroundColor = "var(--brass)";
+            }
+          }}
+        >
+          {payNum <= 0
+            ? "Enter an amount"
+            : payNum > payData.balance
+              ? `Insufficient ${payData.symbol} balance`
+              : "Swap"}
+        </button>
+      )}
 
       {/* Powered by Uniswap */}
       <div className="flex items-center justify-center gap-1.5 pt-1">

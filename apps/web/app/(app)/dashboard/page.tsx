@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { useWallet } from "@/hooks/use-wallet";
+import { useAuth } from "@/contexts/auth-context";
 import { useTokenBalances } from "@/hooks/use-token-balances";
 import { useMarketData } from "@/hooks/use-market-data";
 import { useOrders } from "@/hooks/use-orders";
@@ -11,9 +11,10 @@ import {
   QuickActions,
   PendingBanner,
 } from "@/features/dashboard";
+import { ConnectWalletCTA } from "@/features/shared/connect-wallet-cta";
 
 export default function DashboardPage() {
-  const { address } = useWallet();
+  const { address, isConnected } = useAuth();
   const { tokens, usdc, isLoading: balancesLoading } = useTokenBalances();
   const { data: marketData = [], isLoading: marketLoading } = useMarketData();
   const { data: orders = [], isLoading: ordersLoading } = useOrders(address);
@@ -53,7 +54,14 @@ export default function DashboardPage() {
           >
             Recent Orders
           </h2>
-          <RecentOrders orders={orders} isLoading={ordersLoading} />
+          {isConnected ? (
+            <RecentOrders orders={orders} isLoading={ordersLoading} />
+          ) : (
+            <ConnectWalletCTA
+              title="Connect your wallet to see your dashboard"
+              description="Link your wallet to view recent orders, track balances, and manage your ammo tokens."
+            />
+          )}
         </section>
       </div>
     </div>

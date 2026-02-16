@@ -20,6 +20,7 @@ interface CaliberInfoPanelProps {
   marketData: MarketCaliberFromAPI[];
   balances?: TokenBalances;
   mode?: "mint" | "redeem";
+  isConnected?: boolean;
 }
 
 function formatBalance(
@@ -44,6 +45,7 @@ export function CaliberInfoPanel({
   marketData,
   balances,
   mode,
+  isConnected,
 }: CaliberInfoPanelProps) {
   return (
     <div>
@@ -122,8 +124,8 @@ export function CaliberInfoPanel({
                 </span>
               </div>
 
-              {/* Balance */}
-              {balances && mode && (
+              {/* Balance — only show when wallet is connected */}
+              {balances && mode && isConnected && (
                 <div
                   className="text-[11px] font-medium"
                   style={{ color: "var(--text-secondary)" }}

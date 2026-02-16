@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
 import {
   Copy,
   Check,
@@ -12,8 +11,9 @@ import {
   Pencil,
   Wallet,
 } from "lucide-react";
-import { useSiwe } from "@/hooks/use-siwe";
+import { useAuth } from "@/contexts/auth-context";
 import { useSaveProfile } from "@/hooks/use-save-profile";
+import { ConnectWalletCTA } from "@/features/shared/connect-wallet-cta";
 
 /* ── Types ── */
 
@@ -149,8 +149,7 @@ function profileToForm(profile: ProfileData): AddressForm {
 /* ── Page Component ── */
 
 export default function ProfilePage() {
-  const router = useRouter();
-  const { isSignedIn, isSessionLoading } = useSiwe();
+  const { isSignedIn, isSessionLoading } = useAuth();
   const {
     mutateAsync: saveProfile,
     isPending: saving,
@@ -162,13 +161,6 @@ export default function ProfilePage() {
   // Address editing
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState<AddressForm>(emptyForm);
-
-  // Auth guard: wait for session check, then redirect if not signed in
-  useEffect(() => {
-    if (!isSessionLoading && !isSignedIn) {
-      router.push("/");
-    }
-  }, [isSessionLoading, isSignedIn, router]);
 
   // Fetch profile data via TanStack Query
   const { data: profile = null, isLoading: loading } =
@@ -229,7 +221,16 @@ export default function ProfilePage() {
     );
   }
 
-  if (!isSignedIn || !profile) {
+  if (!isSignedIn) {
+    return (
+      <ConnectWalletCTA
+        title="Connect your wallet to view your profile"
+        description="Sign in with your wallet to manage your account settings, shipping address, and verification status."
+      />
+    );
+  }
+
+  if (!profile) {
     return null;
   }
 
@@ -327,7 +328,7 @@ export default function ProfilePage() {
             </span>
             {profile.kycStatus !== "APPROVED" && (
               <a
-                href="/redeem"
+                href="/trade?tab=redeem"
                 className="text-xs font-medium transition-opacity duration-150 hover:opacity-80"
                 style={{ color: "var(--brass)" }}
               >

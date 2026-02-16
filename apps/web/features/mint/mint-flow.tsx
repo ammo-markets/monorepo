@@ -286,6 +286,8 @@ function StepEnterAmount({
   onNext,
   onBack,
   hideBack,
+  isConnected,
+  onConnect,
 }: {
   caliber: CaliberDetailData;
   usdcAmount: string;
@@ -294,6 +296,8 @@ function StepEnterAmount({
   onNext: () => void;
   onBack: () => void;
   hideBack?: boolean;
+  isConnected: boolean;
+  onConnect: () => void;
 }) {
   const Icon = caliberIcons[caliber.id];
   const quickAmounts = [50, 100, 250, 500];
@@ -421,19 +425,32 @@ function StepEnterAmount({
           )}
         </div>
         <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-          Balance:{" "}
-          {usdcBalance.toLocaleString("en-US", {
-            minimumFractionDigits: 2,
-          })}{" "}
-          USDC{" "}
-          <button
-            type="button"
-            onClick={() => setUsdcAmount(usdcBalance.toFixed(2))}
-            className="ml-1 font-semibold uppercase transition-colors duration-150"
-            style={{ color: "var(--brass)" }}
-          >
-            MAX
-          </button>
+          {isConnected ? (
+            <>
+              Balance:{" "}
+              {usdcBalance.toLocaleString("en-US", {
+                minimumFractionDigits: 2,
+              })}{" "}
+              USDC{" "}
+              <button
+                type="button"
+                onClick={() => setUsdcAmount(usdcBalance.toFixed(2))}
+                className="ml-1 font-semibold uppercase transition-colors duration-150"
+                style={{ color: "var(--brass)" }}
+              >
+                MAX
+              </button>
+            </>
+          ) : (
+            <button
+              type="button"
+              onClick={onConnect}
+              className="font-semibold transition-colors duration-150"
+              style={{ color: "var(--brass)" }}
+            >
+              Connect wallet to see balance
+            </button>
+          )}
         </p>
       </div>
 
@@ -548,28 +565,50 @@ function StepEnterAmount({
         </div>
       )}
 
-      {/* Next */}
-      <button
-        type="button"
-        disabled={!isValid}
-        onClick={onNext}
-        className="mt-6 flex w-full items-center justify-center rounded-xl py-3.5 text-sm font-bold transition-all duration-150"
-        style={{
-          backgroundColor: isValid ? "var(--brass)" : "var(--bg-tertiary)",
-          color: isValid ? "var(--bg-primary)" : "var(--text-muted)",
-          cursor: isValid ? "pointer" : "not-allowed",
-          opacity: isValid ? 1 : 0.5,
-        }}
-        onMouseEnter={(e) => {
-          if (isValid)
+      {/* CTA */}
+      {!isConnected ? (
+        <button
+          type="button"
+          onClick={onConnect}
+          className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold transition-colors duration-150"
+          style={{
+            backgroundColor: "var(--brass)",
+            color: "var(--bg-primary)",
+          }}
+          onMouseEnter={(e) => {
             e.currentTarget.style.backgroundColor = "var(--brass-hover)";
-        }}
-        onMouseLeave={(e) => {
-          if (isValid) e.currentTarget.style.backgroundColor = "var(--brass)";
-        }}
-      >
-        Next
-      </button>
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = "var(--brass)";
+          }}
+        >
+          <Wallet size={16} />
+          Connect Wallet to Continue
+        </button>
+      ) : (
+        <button
+          type="button"
+          disabled={!isValid}
+          onClick={onNext}
+          className="mt-6 flex w-full items-center justify-center rounded-xl py-3.5 text-sm font-bold transition-all duration-150"
+          style={{
+            backgroundColor: isValid ? "var(--brass)" : "var(--bg-tertiary)",
+            color: isValid ? "var(--bg-primary)" : "var(--text-muted)",
+            cursor: isValid ? "pointer" : "not-allowed",
+            opacity: isValid ? 1 : 0.5,
+          }}
+          onMouseEnter={(e) => {
+            if (isValid)
+              e.currentTarget.style.backgroundColor = "var(--brass-hover)";
+          }}
+          onMouseLeave={(e) => {
+            if (isValid)
+              e.currentTarget.style.backgroundColor = "var(--brass)";
+          }}
+        >
+          Next
+        </button>
+      )}
     </div>
   );
 }
@@ -1111,7 +1150,8 @@ export function MintFlow({
     (searchParams.get("caliber")?.toUpperCase() as Caliber | null);
   const isEmbedded = preselected !== null;
 
-  const { data: marketCalibers = [] } = useMarketData();
+  const { data: marketCalibers = [], isLoading: marketLoading } =
+    useMarketData();
 
   const caliberDetailsMap = useMemo(() => {
     if (marketCalibers.length === 0) return null;
@@ -1218,7 +1258,19 @@ export function MintFlow({
     <div className="mx-auto w-full max-w-[560px] px-4 py-8 md:py-12">
       <MintProgress currentStep={step} />
 
-      {step === 0 && !isEmbedded && (
+      {/* Loading skeleton while market data fetches */}
+      {marketLoading && (
+        <div className="mt-6">
+          <div className="mb-6 h-6 w-48 rounded shimmer" />
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {[0, 1, 2, 3].map((i) => (
+              <div key={i} className="h-28 rounded-xl shimmer" />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {step === 0 && !isEmbedded && !marketLoading && (
         <StepSelectCaliber
           selected={selectedCaliber}
           allCalibers={
@@ -1238,6 +1290,8 @@ export function MintFlow({
           onNext={() => setStep(2)}
           onBack={() => setStep(0)}
           hideBack={isEmbedded}
+          isConnected={wallet.isConnected}
+          onConnect={wallet.connect}
         />
       )}
 

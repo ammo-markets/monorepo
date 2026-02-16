@@ -4,15 +4,14 @@ import { useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { formatUnits } from "viem";
 import {
-  Lock,
-  Wallet,
   Copy,
   ExternalLink,
   Check,
   Info,
   ArrowRight,
 } from "lucide-react";
-import { useWallet } from "@/hooks/use-wallet";
+import { useAuth } from "@/contexts/auth-context";
+import { ConnectWalletCTA } from "@/features/shared/connect-wallet-cta";
 import { useTokenBalances } from "@/hooks/use-token-balances";
 import { useMarketData } from "@/hooks/use-market-data";
 import { useOrders } from "@/hooks/use-orders";
@@ -287,7 +286,7 @@ function EmptyHoldings() {
         Start minting to build your position.
       </p>
       <a
-        href="/mint"
+        href="/trade?tab=mint"
         className="inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold transition-colors duration-150"
         style={{
           backgroundColor: "var(--brass)",
@@ -326,7 +325,7 @@ function EmptyOrders() {
         Mint your first tokens to get started.
       </p>
       <a
-        href="/mint"
+        href="/trade?tab=mint"
         className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-colors duration-150"
         style={{
           backgroundColor: "var(--brass)",
@@ -341,57 +340,6 @@ function EmptyOrders() {
       >
         Start Minting
       </a>
-    </div>
-  );
-}
-
-/* ────────────── Disconnected State ────────────── */
-
-function DisconnectedState({ onConnect }: { onConnect: () => void }) {
-  return (
-    <div className="flex min-h-[60vh] items-center justify-center px-4">
-      <div
-        className="flex max-w-md flex-col items-center rounded-2xl px-8 py-16 text-center"
-        style={{
-          backgroundColor: "var(--bg-secondary)",
-          border: "1px solid var(--border-default)",
-        }}
-      >
-        <div
-          className="mb-6 flex h-16 w-16 items-center justify-center rounded-full"
-          style={{ backgroundColor: "var(--bg-tertiary)" }}
-        >
-          <Lock size={28} style={{ color: "var(--text-muted)" }} />
-        </div>
-        <h2
-          className="mb-2 text-lg font-semibold"
-          style={{ color: "var(--text-primary)" }}
-        >
-          Connect your wallet to view your portfolio
-        </h2>
-        <p className="mb-8 text-sm" style={{ color: "var(--text-secondary)" }}>
-          Link your wallet to see your holdings, track orders, and manage your
-          ammo tokens.
-        </p>
-        <button
-          type="button"
-          className="inline-flex items-center gap-2.5 rounded-lg px-6 py-3 text-sm font-semibold transition-colors duration-150"
-          style={{
-            backgroundColor: "var(--brass)",
-            color: "var(--bg-primary)",
-          }}
-          onClick={onConnect}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = "var(--brass-hover)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "var(--brass)";
-          }}
-        >
-          <Wallet size={18} />
-          Connect Wallet
-        </button>
-      </div>
     </div>
   );
 }
@@ -453,7 +401,7 @@ function HoldingsDesktopRow({
       <td className="px-6 py-4 text-right">
         <div className="flex items-center justify-end gap-2">
           <a
-            href={`/mint?caliber=${holding.caliber}`}
+            href={`/trade?tab=mint&caliber=${holding.caliber.toLowerCase()}`}
             className="rounded-md px-3 py-1.5 text-xs font-semibold transition-colors duration-150"
             style={{
               backgroundColor: "var(--brass)",
@@ -469,7 +417,7 @@ function HoldingsDesktopRow({
             Mint More
           </a>
           <a
-            href={`/redeem?caliber=${holding.caliber}`}
+            href={`/trade?tab=redeem&caliber=${holding.caliber.toLowerCase()}`}
             className="rounded-md px-3 py-1.5 text-xs font-medium transition-colors duration-150"
             style={{
               backgroundColor: "transparent",
@@ -586,7 +534,7 @@ function HoldingsMobileCard({ holding }: { holding: HoldingRow }) {
       {/* Actions */}
       <div className="mt-4 flex items-center gap-2">
         <a
-          href={`/mint?caliber=${holding.caliber}`}
+          href={`/trade?tab=mint&caliber=${holding.caliber.toLowerCase()}`}
           className="flex-1 rounded-lg px-3 py-2 text-center text-xs font-semibold transition-colors duration-150"
           style={{
             backgroundColor: "var(--brass)",
@@ -596,7 +544,7 @@ function HoldingsMobileCard({ holding }: { holding: HoldingRow }) {
           Mint More
         </a>
         <a
-          href={`/redeem?caliber=${holding.caliber}`}
+          href={`/trade?tab=redeem&caliber=${holding.caliber.toLowerCase()}`}
           className="flex-1 rounded-lg px-3 py-2 text-center text-xs font-medium transition-colors duration-150"
           style={{
             backgroundColor: "transparent",
@@ -875,7 +823,7 @@ function PrimersSection({ primers }: { primers: number }) {
 /* ────────────── Main Dashboard ────────────── */
 
 export function PortfolioDashboard() {
-  const { address, isConnected, isReconnecting, connect } = useWallet();
+  const { address, isConnected, isReconnecting } = useAuth();
   const { tokens, usdc, isLoading: balancesLoading } = useTokenBalances();
 
   const [copiedAddress, setCopiedAddress] = useState(false);
@@ -968,7 +916,12 @@ export function PortfolioDashboard() {
   }
 
   if (!isConnected) {
-    return <DisconnectedState onConnect={connect} />;
+    return (
+      <ConnectWalletCTA
+        title="Connect your wallet to view your portfolio"
+        description="Link your wallet to see your holdings, track orders, and manage your ammo tokens."
+      />
+    );
   }
 
   const dataLoading = balancesLoading || marketLoading;

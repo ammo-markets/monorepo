@@ -133,7 +133,7 @@ function EmptyOrders() {
         Start by minting some tokens.
       </p>
       <Link
-        href="/mint"
+        href="/trade?tab=mint"
         className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-colors duration-150"
         style={{
           backgroundColor: "var(--brass)",
