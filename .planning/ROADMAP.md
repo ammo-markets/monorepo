@@ -124,11 +124,10 @@ Plans:
   2. Visitor sees how-it-works section explaining mint/trade/redeem in 3-4 visual steps
   3. Visitor sees caliber showcase displaying all 4 calibers with specs and current prices
   4. Visitor sees FAQ section answering common questions about the protocol
-**Plans**: TBD
+**Plans:** 1 plan
 
 Plans:
-- [ ] 16-01: TBD
-- [ ] 16-02: TBD
+- [ ] 16-01-PLAN.md -- Update hero CTA, enhance caliber showcase with specs, add FAQ section
 
 ## Progress
 
