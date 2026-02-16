@@ -5,7 +5,7 @@
 - ✅ **v1.0 Fuji Testnet Integration** -- Phases 1-6 (shipped 2026-02-11)
 - ✅ **v1.1 End-to-End Flow Fix** -- Phase 7 (shipped 2026-02-15)
 - ✅ **v1.2 Production Hardening** -- Phases 9-11 + 9.1 (shipped 2026-02-15)
-- **v1.3 UX Restructure & Data Enrichment** -- Phases 12-16 (shipped 2026-02-16)
+- **v1.3 UX Restructure & Data Enrichment** -- Phases 12-17 (in progress)
 
 ## Phases
 
@@ -53,6 +53,7 @@ Full details: `.planning/milestones/v1.2-ROADMAP.md`
 - [x] **Phase 14: Dashboard** - Personal dashboard with balances, orders, and quick actions
 - [x] **Phase 15: Unified Trade Page** - Combined mint/redeem/swap with inline caliber info
 - [x] **Phase 16: Landing Page** - Public marketing page with hero, how-it-works, caliber showcase, FAQ
+- [ ] **Phase 17: Trade UX Fix & Stats Wiring** - Eliminate duplicate caliber selection, wire orphaned stats endpoint
 
 ## Phase Details
 
@@ -144,10 +145,28 @@ Plans:
 
 - [x] 16-01-PLAN.md -- Update hero CTA, enhance caliber showcase with specs, add FAQ section
 
+### Phase 17: Trade UX Fix & Stats Wiring
+
+**Goal**: Trade page has single caliber selection flow (no duplicates) and landing page displays real protocol stats from worker-computed data
+**Depends on**: Phase 15 (trade page), Phase 12 (stats endpoint), Phase 16 (landing page)
+**Requirements**: None (gap closure — fixes integration and UX issues from audit)
+**Gap Closure**: Closes gaps from v1.3-MILESTONE-AUDIT.md
+**Success Criteria** (what must be TRUE):
+
+1. User selects caliber ONCE on Trade page — CaliberInfoPanel selection skips MintFlow/RedeemFlow step 0
+2. MintFlow and RedeemFlow read `?caliber=` URL param and start at amount step when caliber is pre-selected
+3. Landing page ProtocolStats component fetches from `/api/stats` and displays real unique holder count
+4. No hardcoded "--" values remain in ProtocolStats display
+   **Plans:** 1 plan
+
+Plans:
+
+- [ ] 17-01-PLAN.md -- Fix duplicate caliber selection + wire ProtocolStats to /api/stats
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 12 -> 13 -> 14 -> 15 -> 16
+Phases execute in numeric order: 12 -> 13 -> 14 -> 15 -> 16 -> 17
 
 | Phase                                    | Milestone | Plans Complete | Status   | Completed  |
 | ---------------------------------------- | --------- | -------------- | -------- | ---------- |
@@ -167,8 +186,9 @@ Phases execute in numeric order: 12 -> 13 -> 14 -> 15 -> 16
 | 14. Dashboard                            | v1.3      | 1/1            | Complete | 2026-02-16 |
 | 15. Unified Trade Page                   | v1.3      | 1/1            | Complete | 2026-02-16 |
 | 16. Landing Page                         | v1.3      | 1/1            | Complete | 2026-02-16 |
+| 17. Trade UX Fix & Stats Wiring          | v1.3      | 0/1            | Planned  | -          |
 
 ---
 
 _Roadmap created: 2026-02-10_
-_Last updated: 2026-02-16 (Phase 16 complete — v1.3 milestone complete)_
+_Last updated: 2026-02-16 (Phase 17 added — gap closure from audit)_
