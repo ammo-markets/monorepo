@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-15)
 
 **Core value:** Anyone worldwide can get price exposure to U.S. ammunition by minting ammo tokens with USDC, while only verified U.S. residents in allowed states can redeem for physical delivery.
-**Current focus:** Phase 15 - Unified Trade Page
+**Current focus:** Phase 16 - Landing Page (final phase of v1.3)
 
 ## Current Position
 
-Phase: 15 (4 of 5 in v1.3)
+Phase: 16 (5 of 5 in v1.3)
 Plan: 01 of 01 complete
 Status: Phase Complete
-Last activity: 2026-02-16 -- Completed 15-01 (unified trade page components)
+Last activity: 2026-02-16 -- Completed 16-01 (landing page with FAQ and caliber specs)
 
-Progress: [████████░░] 80% (v1.3)
+Progress: [██████████] 100% (v1.3)
 
 ## Performance Metrics
 
@@ -43,6 +43,7 @@ Progress: [████████░░] 80% (v1.3)
 | 13 | 02 | 2min | 2 | 3 |
 | 14 | 01 | 2min | 2 | 6 |
 | 15 | 01 | 3min | 2 | 6 |
+| 16 | 01 | 2min | 2 | 5 |
 
 ## Accumulated Context
 
@@ -68,6 +69,8 @@ All decisions logged in PROJECT.md Key Decisions table.
 - 15-01: MintFlow/RedeemFlow rendered as-is in tabs (they have built-in caliber selectors)
 - 15-01: Caliber selection synced to URL search params for cross-flow pre-selection
 - 15-01: Trade page uses (app) layout group (AppNav shell provided automatically)
+- 16-01: Simple useState accordion for FAQ (no external library dependency)
+- 16-01: Middot separators between caliber spec items (grain, case type, min order)
 
 ### Pending Todos
 
@@ -86,5 +89,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-16
-Stopped at: Completed 15-01-PLAN.md -- Phase 15 complete
+Stopped at: Completed 16-01-PLAN.md -- Phase 16 complete, v1.3 milestone complete
 Resume file: None
