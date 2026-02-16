@@ -110,7 +110,10 @@ export function TradeTabs({
                 </div>
               }
             >
-              <MintFlow key={selectedCaliber} selectedCaliber={selectedCaliber!} />
+              <MintFlow
+                key={selectedCaliber}
+                selectedCaliber={selectedCaliber!}
+              />
             </Suspense>
           ) : (
             <div
@@ -133,7 +136,10 @@ export function TradeTabs({
                 </div>
               }
             >
-              <RedeemFlow key={selectedCaliber} selectedCaliber={selectedCaliber!} />
+              <RedeemFlow
+                key={selectedCaliber}
+                selectedCaliber={selectedCaliber!}
+              />
             </Suspense>
           ) : (
             <div

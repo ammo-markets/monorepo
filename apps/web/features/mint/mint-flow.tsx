@@ -1100,11 +1100,15 @@ function StepConfirmation({
 /* =====================================================================
    MAIN ORCHESTRATOR
    ===================================================================== */
-export function MintFlow({ selectedCaliber: caliberFromProp }: { selectedCaliber?: Caliber }) {
+export function MintFlow({
+  selectedCaliber: caliberFromProp,
+}: {
+  selectedCaliber?: Caliber;
+}) {
   const searchParams = useSearchParams();
-  const preselected = caliberFromProp ?? (searchParams
-    .get("caliber")
-    ?.toUpperCase() as Caliber | null);
+  const preselected =
+    caliberFromProp ??
+    (searchParams.get("caliber")?.toUpperCase() as Caliber | null);
   const isEmbedded = preselected !== null;
 
   const { data: marketCalibers = [] } = useMarketData();

@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useWallet } from "@/hooks/use-wallet";
-import { AppNav } from "@/features/layout";
+import { AppNav, AppHeader } from "@/features/layout";
 
 export default function AppLayout({
   children,
@@ -42,7 +42,10 @@ export default function AppLayout({
   return (
     <div className="flex min-h-screen">
       <AppNav />
-      <main className="flex-1 lg:ml-60 pb-16 lg:pb-0">{children}</main>
+      <div className="flex-1 lg:ml-60 pb-16 lg:pb-0">
+        <AppHeader />
+        <main className="pt-14">{children}</main>
+      </div>
     </div>
   );
 }

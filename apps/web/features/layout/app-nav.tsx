@@ -11,10 +11,7 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { AmmoLogo } from "./logo";
-import { WalletButton } from "./wallet-button";
-import { useWallet } from "@/hooks/use-wallet";
 import { useKeeperCheck } from "@/hooks/use-keeper-check";
-import { useSiwe } from "@/hooks/use-siwe";
 
 interface NavItem {
   label: string;
@@ -36,15 +33,7 @@ function isActiveLink(pathname: string, href: string): boolean {
 
 export function AppNav() {
   const pathname = usePathname();
-  const { isConnected, isWrongNetwork, isReconnecting } = useWallet();
   const { isKeeper } = useKeeperCheck();
-  const { isSignedIn } = useSiwe();
-
-  const networkLabel = "Avalanche Fuji";
-  const dotColor =
-    isConnected && !isReconnecting && isWrongNetwork
-      ? "var(--amber)"
-      : "var(--green)";
 
   return (
     <>
@@ -132,47 +121,6 @@ export function AppNav() {
             </Link>
           )}
         </nav>
-
-        {/* Bottom section: network badge + wallet */}
-        <div
-          className="flex flex-col gap-3 p-4"
-          style={{ borderTop: "1px solid var(--border-default)" }}
-        >
-          {/* Network badge */}
-          <div
-            className="flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium"
-            style={{
-              backgroundColor: "var(--bg-primary)",
-              border: "1px solid var(--border-default)",
-              color: "var(--text-secondary)",
-            }}
-          >
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 14 14"
-              fill="none"
-              aria-hidden="true"
-            >
-              <path d="M7 1L13 12H1L7 1Z" fill="#E84142" />
-            </svg>
-            <span>{networkLabel}</span>
-            <span
-              className="h-1.5 w-1.5 rounded-full"
-              style={{ backgroundColor: dotColor }}
-            />
-          </div>
-
-          {/* Wallet button */}
-          <WalletButton />
-
-          {/* Signed-in indicator */}
-          {isSignedIn && (
-            <div className="text-xs" style={{ color: "var(--text-muted)" }}>
-              Signed in via SIWE
-            </div>
-          )}
-        </div>
       </aside>
 
       {/* Mobile Bottom Tabs */}

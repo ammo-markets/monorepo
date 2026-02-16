@@ -1,4 +1,5 @@
 export { AmmoLogo } from "./logo";
+export { AppHeader } from "./app-header";
 export { AppNav } from "./app-nav";
 export { LandingNavbar } from "./landing-navbar";
 export { Navbar } from "./navbar";

@@ -7,6 +7,7 @@ import {
   LayoutDashboard,
   ArrowUpCircle,
   ArrowDownCircle,
+  ArrowLeft,
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -54,6 +55,17 @@ export function AdminSidebar() {
           );
         })}
       </nav>
+
+      {/* Back to App */}
+      <div className="mt-auto border-t border-zinc-800 p-3">
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-zinc-200"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to App
+        </Link>
+      </div>
     </aside>
   );
 }
