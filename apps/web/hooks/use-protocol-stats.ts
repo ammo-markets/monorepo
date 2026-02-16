@@ -12,6 +12,9 @@ interface ProtocolStatRow {
 
 interface ProtocolStatsResponse {
   stats: ProtocolStatRow[];
+  totalVolumeRounds: number;
+  registeredUsers: number;
+  roundsTokenized: number;
 }
 
 export function useProtocolStats() {
