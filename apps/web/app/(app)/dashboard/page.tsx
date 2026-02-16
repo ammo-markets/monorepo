@@ -15,7 +15,12 @@ import { ConnectWalletCTA } from "@/features/shared/connect-wallet-cta";
 
 export default function DashboardPage() {
   const { address, isConnected } = useAuth();
-  const { tokens, usdc, isLoading: balancesLoading } = useTokenBalances();
+  const {
+    tokens,
+    usdc,
+    isLoading: balancesLoading,
+    refetch,
+  } = useTokenBalances();
   const { data: marketData = [], isLoading: marketLoading } = useMarketData();
   const { data: orders = [], isLoading: ordersLoading } = useOrders(address);
 
@@ -60,6 +65,7 @@ export default function DashboardPage() {
           usdc={usdc}
           marketData={marketData}
           isLoading={balancesLoading || marketLoading}
+          onRefetch={refetch}
         />
 
         <QuickActions />

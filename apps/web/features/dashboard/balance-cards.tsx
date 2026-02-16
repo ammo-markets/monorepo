@@ -5,6 +5,7 @@ import type { Caliber } from "@ammo-exchange/shared";
 import { CALIBER_SPECS } from "@ammo-exchange/shared";
 import type { MarketCaliberFromAPI } from "@/lib/types";
 import { caliberIcons } from "@/features/shared/caliber-icons";
+import { UsdcFaucetButton } from "./usdc-faucet-button";
 
 /* ────────────── Constants ────────────── */
 
@@ -17,6 +18,7 @@ interface BalanceCardsProps {
   usdc: bigint | undefined;
   marketData: MarketCaliberFromAPI[];
   isLoading: boolean;
+  onRefetch?: () => void;
 }
 
 /* ────────────── Helpers ────────────── */
@@ -95,6 +97,7 @@ export function BalanceCards({
   usdc,
   marketData,
   isLoading,
+  onRefetch,
 }: BalanceCardsProps) {
   if (isLoading) return <BalanceCardsSkeleton />;
 
@@ -193,12 +196,15 @@ export function BalanceCards({
             USDC
           </span>
         </div>
-        <span
-          className="font-mono text-sm font-medium tabular-nums"
-          style={{ color: "var(--text-primary)" }}
-        >
-          ${usdcBalance.toFixed(2)}
-        </span>
+        <div className="flex items-center gap-3">
+          <UsdcFaucetButton onSuccess={onRefetch} />
+          <span
+            className="font-mono text-sm font-medium tabular-nums"
+            style={{ color: "var(--text-primary)" }}
+          >
+            ${usdcBalance.toFixed(2)}
+          </span>
+        </div>
       </div>
     </div>
   );
