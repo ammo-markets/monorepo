@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   ArrowLeftRight,
+  BarChart3,
   Wallet,
   User,
   Shield,
@@ -22,6 +23,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Trade", href: "/trade", icon: ArrowLeftRight },
+  { label: "Market", href: "/market", icon: BarChart3 },
   { label: "Portfolio", href: "/portfolio", icon: Wallet },
   { label: "Profile", href: "/profile", icon: User },
 ];
@@ -97,7 +99,9 @@ export function AppNav() {
           paddingBottom: "env(safe-area-inset-bottom)",
         }}
       >
-        <div className="grid h-16 w-full grid-cols-4">
+        <div
+          className={`grid h-16 w-full ${isKeeper ? "grid-cols-6" : "grid-cols-5"}`}
+        >
           {navItems.map((item) => {
             const active = isActiveLink(pathname, item.href);
             return (
@@ -115,6 +119,23 @@ export function AppNav() {
               </Link>
             );
           })}
+          {isKeeper && (
+            <Link
+              href="/admin"
+              aria-current={
+                isActiveLink(pathname, "/admin") ? "page" : undefined
+              }
+              className="flex flex-col items-center justify-center gap-1 text-xs font-medium transition-colors duration-150"
+              style={{
+                color: isActiveLink(pathname, "/admin")
+                  ? "var(--accent)"
+                  : "var(--text-muted)",
+              }}
+            >
+              <Shield size={20} />
+              <span>Admin</span>
+            </Link>
+          )}
         </div>
       </nav>
     </>
