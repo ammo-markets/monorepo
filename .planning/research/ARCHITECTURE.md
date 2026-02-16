@@ -50,6 +50,7 @@ The integration layer consists of six distinct components, each with a clear res
 ### Component Boundaries
 
 **1. Smart Contracts (packages/contracts/src/)**
+
 - Boundary: On-chain state and settlement logic ONLY
 - Owns: Order state machine (MintStatus, RedeemStatus), token minting/burning, fee distribution, access control
 - Does NOT: Store off-chain data, make API calls, know about the database
@@ -57,6 +58,7 @@ The integration layer consists of six distinct components, each with a clear res
 - Interface in: Transaction calls (startMint, startRedeem, finalizeMint, finalizeRedeem, refundMint, cancelRedeem)
 
 **2. Event Indexer Worker (apps/worker/)**
+
 - Boundary: Chain-to-database bridge ONLY
 - Owns: Event watching, log parsing, database writes for chain events
 - Does NOT: Serve API requests, render UI, call finalization functions, make admin decisions
@@ -64,12 +66,14 @@ The integration layer consists of six distinct components, each with a clear res
 - Interface out: Prisma writes to PostgreSQL
 
 **3. Database (packages/db/)**
+
 - Boundary: Persistent off-chain state
 - Owns: User records, order history (enriched beyond on-chain data), shipping addresses, inventory tracking, audit trail
 - Does NOT: Contain business logic, make chain calls
 - Interface: Prisma client consumed by worker and API routes
 
 **4. Next.js API Routes (apps/web/app/api/)**
+
 - Boundary: Data access layer for frontend + admin action relay
 - Owns: Query logic, response shaping, admin wallet-gate middleware
 - Does NOT: Watch chain events, own business rules about settlement
@@ -77,6 +81,7 @@ The integration layer consists of six distinct components, each with a clear res
 - Interface out: Prisma reads, JSON responses
 
 **5. Frontend UI (apps/web/features/)**
+
 - Boundary: User interaction and transaction submission
 - Owns: Wallet state, form validation, transaction construction, display logic
 - Does NOT: Access database directly, watch chain events, finalize orders
@@ -84,6 +89,7 @@ The integration layer consists of six distinct components, each with a clear res
 - Interface in: API route JSON responses, on-chain read results via wagmi `useReadContract`
 
 **6. Admin Dashboard (apps/web/app/admin/)**
+
 - Boundary: Keeper operations UI within the same Next.js app
 - Owns: Order queue display, finalization trigger, refund/cancel actions
 - Does NOT: Auto-finalize, bypass on-chain access control
@@ -207,11 +213,13 @@ On-chain reads (direct, no API):
 ```
 
 **What the deploy script must produce:**
+
 - All contract addresses (AmmoManager, AmmoFactory, each CaliberMarket, each AmmoToken)
 - These addresses must be written back to `packages/shared/src/config/index.ts` (CONTRACT_ADDRESSES.fuji)
 - The deploy script should also verify contracts on Snowtrace (testnet explorer)
 
 **Fuji-specific considerations:**
+
 - Need a mock USDC (ERC20 with public mint) or use an existing Fuji test USDC
 - Need a mock PriceOracle that returns a configurable price (for testing)
 - Deployer wallet needs test AVAX (from Avalanche Fuji faucet)
@@ -235,14 +243,14 @@ For each CaliberMarket address:
 
 **Events to watch and their DB effects:**
 
-| Event | DB Action | Order Status |
-|-------|-----------|-------------|
-| MintStarted | Create Order (MINT, PENDING) + upsert User | PENDING |
-| MintFinalized | Update Order status | COMPLETED |
-| MintRefunded | Update Order status | CANCELLED |
-| RedeemRequested | Create Order (REDEEM, PENDING) + upsert User | PENDING |
-| RedeemFinalized | Update Order status | COMPLETED |
-| RedeemCanceled | Update Order status | CANCELLED |
+| Event           | DB Action                                    | Order Status |
+| --------------- | -------------------------------------------- | ------------ |
+| MintStarted     | Create Order (MINT, PENDING) + upsert User   | PENDING      |
+| MintFinalized   | Update Order status                          | COMPLETED    |
+| MintRefunded    | Update Order status                          | CANCELLED    |
+| RedeemRequested | Create Order (REDEEM, PENDING) + upsert User | PENDING      |
+| RedeemFinalized | Update Order status                          | COMPLETED    |
+| RedeemCanceled  | Update Order status                          | CANCELLED    |
 
 **Recovery pattern:** On startup, the worker should query missed events between the last processed block (stored in DB or env) and the current block using `publicClient.getContractEvents()` before starting the live watcher. This handles worker restarts and missed events.
 
@@ -287,6 +295,7 @@ apps/web/app/api/
 Two layers of protection:
 
 **Layer 1 — Client-side route guard (UX only, not security):**
+
 ```
 apps/web/app/admin/layout.tsx  (server component wrapping a client boundary)
   -> AdminGuard client component checks useAccount() wallet
@@ -294,7 +303,8 @@ apps/web/app/admin/layout.tsx  (server component wrapping a client boundary)
   -> ADMIN_WALLETS sourced from shared config or env var
 ```
 
-**Layer 2 — API route middleware for /api/admin/* endpoints:**
+**Layer 2 — API route middleware for /api/admin/\* endpoints:**
+
 ```
 apps/web/middleware.ts
   -> For /api/admin/* routes: verify wallet signature or session
@@ -303,6 +313,7 @@ apps/web/middleware.ts
 ```
 
 **Layer 3 — On-chain access control (actual security):**
+
 ```
 CaliberMarket.finalizeMint() -> onlyKeeper modifier -> AmmoManager.isKeeper(msg.sender)
   -> Reverts with NotKeeper() if caller is not an authorized keeper
@@ -338,12 +349,14 @@ The current flat structure (ammoToken9MM, ammoToken556, etc.) should be refactor
 The current Prisma schema needs additions for the integration:
 
 **New fields on Order:**
+
 - `onChainOrderId` (Int) — the orderId from CaliberMarket (nextOrderId counter)
 - `marketAddress` (String) — which CaliberMarket contract this order belongs to
 - `finalizedTxHash` (String?) — tx hash of the finalization/refund/cancel transaction
 - `reasonCode` (Int?) — for refunds/cancellations
 
 **New model — BlockCheckpoint:**
+
 - `id` (String)
 - `chainId` (Int)
 - `lastBlock` (BigInt)
@@ -351,6 +364,7 @@ The current Prisma schema needs additions for the integration:
 - Purpose: Worker recovery after restarts
 
 **Inventory model enhancement:**
+
 - Currently tracks rounds per caliber. After integration, the worker should update this from on-chain token totalSupply reads.
 
 ---
@@ -517,5 +531,5 @@ The critical link between the database and the blockchain is the `onChainOrderId
 
 ---
 
-*Architecture research: 2026-02-10*
-*Informs: Phase structure in project roadmap*
+_Architecture research: 2026-02-10_
+_Informs: Phase structure in project roadmap_

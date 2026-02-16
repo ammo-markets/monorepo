@@ -17,7 +17,11 @@ affects: [10-worker-hardening]
 # Tech tracking
 tech-stack:
   added: []
-  patterns: ["log-only handlers for informational events (no DB write)", "updateMany for status transitions on non-unique order IDs"]
+  patterns:
+    [
+      "log-only handlers for informational events (no DB write)",
+      "updateMany for status transitions on non-unique order IDs",
+    ]
 
 key-files:
   created:
@@ -51,6 +55,7 @@ completed: 2026-02-15
 - **Files modified:** 3
 
 ## Accomplishments
+
 - MintRefunded events now update PENDING MINT orders to FAILED status
 - RedeemCanceled events now update PENDING REDEEM orders to CANCELLED status
 - Paused, Unpaused, MintFeeUpdated, RedeemFeeUpdated, MinMintUpdated events logged for observability
@@ -64,11 +69,13 @@ Each task was committed atomically:
 2. **Task 2: Create lifecycle event handlers and wire all new events into the indexer** - `bf6e9f3` (feat)
 
 ## Files Created/Modified
+
 - `apps/worker/src/handlers/refund.ts` - MintRefunded and RedeemCanceled handlers with DB status updates
 - `apps/worker/src/handlers/lifecycle.ts` - Log-only handlers for Paused, Unpaused, and fee update events
 - `apps/worker/src/indexer.ts` - Updated to fetch and process all 9 event types
 
 ## Decisions Made
+
 - Lifecycle events are log-only (no DB writes) -- sufficient for testnet observability
 - RedeemCanceled sets status to CANCELLED, MintRefunded sets to FAILED (matching existing Prisma enum values)
 
@@ -77,12 +84,15 @@ Each task was committed atomically:
 None - plan executed exactly as written.
 
 ## Issues Encountered
+
 None
 
 ## User Setup Required
+
 None - no external service configuration required.
 
 ## Next Phase Readiness
+
 - All 9 CaliberMarket events now handled by the worker
 - Ready for remaining worker hardening plans (reconnection, health checks, etc.)
 
@@ -93,5 +103,6 @@ None - no external service configuration required.
 - Commit `bf6e9f3` verified in git log
 
 ---
-*Phase: 10-worker-hardening*
-*Completed: 2026-02-15*
+
+_Phase: 10-worker-hardening_
+_Completed: 2026-02-15_

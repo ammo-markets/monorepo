@@ -15,7 +15,8 @@ provides:
   - "Public /api/activity endpoint reading from ActivityLog"
   - "Authenticated /api/user/preferences endpoint for favorite calibers"
   - "Ongoing ActivityLog population from mint/redeem handlers"
-affects: [13-api-endpoints, 14-dashboard-ui, 15-activity-feed, 16-user-preferences]
+affects:
+  [13-api-endpoints, 14-dashboard-ui, 15-activity-feed, 16-user-preferences]
 
 tech-stack:
   added: []
@@ -63,6 +64,7 @@ completed: 2026-02-15
 - **Files modified:** 8
 
 ## Accomplishments
+
 - Created stats.ts with `backfillActivityLog` (one-time startup) and `computeStats` (periodic) functions
 - Wired backfill and stats into worker startup with 15-minute cron interval
 - Created public /api/stats endpoint returning per-caliber minted/redeemed/netSupply/userCount
@@ -80,6 +82,7 @@ Each task was committed atomically:
 4. **Task 4: Update worker event handlers to write ActivityLog rows** - `7c34ffb` (feat)
 
 ## Files Created/Modified
+
 - `apps/worker/src/stats.ts` - Stats computation and ActivityLog backfill logic
 - `apps/worker/src/index.ts` - Wired backfill, computeStats, and stats interval
 - `apps/worker/src/lib/constants.ts` - Added STATS_INTERVAL_MS (15 minutes)
@@ -90,6 +93,7 @@ Each task was committed atomically:
 - `apps/web/app/api/user/preferences/route.ts` - Authenticated favorites CRUD
 
 ## Decisions Made
+
 - Stats computed from DB only (no on-chain reads) -- aggregate from already-indexed orders
 - ActivityLog writes in handlers use the transaction client (tx) not top-level prisma, keeping them atomic with order updates
 - Activity endpoint default limit 5, max 50, no status field in response
@@ -99,6 +103,7 @@ Each task was committed atomically:
 None - plan executed exactly as written.
 
 ## Next Phase Readiness
+
 - Stats worker is ready to run alongside the event indexer
 - All 3 API endpoints are ready for frontend consumption
 - /api/stats serves Phase 16 landing page
@@ -121,5 +126,6 @@ None - plan executed exactly as written.
 - FOUND: commit 7c34ffb (Task 4)
 
 ---
-*Phase: 12-database-schema-and-stats-worker*
-*Completed: 2026-02-15*
+
+_Phase: 12-database-schema-and-stats-worker_
+_Completed: 2026-02-15_

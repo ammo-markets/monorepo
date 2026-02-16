@@ -13,12 +13,10 @@ export function TradePageClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const [selectedCaliber, setSelectedCaliber] = useState<Caliber | null>(
-    () => {
-      const param = searchParams.get("caliber")?.toUpperCase() as Caliber | null;
-      return param ?? null;
-    },
-  );
+  const [selectedCaliber, setSelectedCaliber] = useState<Caliber | null>(() => {
+    const param = searchParams.get("caliber")?.toUpperCase() as Caliber | null;
+    return param ?? null;
+  });
   const [activeTab, setActiveTab] = useState<TradeTab>("mint");
 
   function handleSelectCaliber(cal: Caliber) {
@@ -48,10 +46,7 @@ export function TradePageClient() {
         >
           Trade
         </h1>
-        <p
-          className="mt-2 text-sm"
-          style={{ color: "var(--text-secondary)" }}
-        >
+        <p className="mt-2 text-sm" style={{ color: "var(--text-secondary)" }}>
           Select a caliber and choose your action below
         </p>
       </div>

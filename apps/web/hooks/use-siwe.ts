@@ -108,7 +108,12 @@ export function useSiwe() {
     } catch {
       // Ignore errors — clear client state regardless
     }
-    setState({ isSignedIn: false, isSigningIn: false, isSessionLoading: false, address: null });
+    setState({
+      isSignedIn: false,
+      isSigningIn: false,
+      isSessionLoading: false,
+      address: null,
+    });
   }, []);
 
   // Restore session from cookie on mount

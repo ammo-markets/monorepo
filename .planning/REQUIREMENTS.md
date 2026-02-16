@@ -61,47 +61,49 @@ Deferred to future release. Tracked but not in current roadmap.
 
 Explicitly excluded. Documented to prevent scope creep.
 
-| Feature | Reason |
-|---------|--------|
-| Price history charts | Requires oracle price feed infrastructure -- defer to future milestone |
-| Real-time WebSocket updates | Polling sufficient for testnet, real-time premature |
-| Dark mode / theming | Nice to have but not core to UX restructure |
-| Social features | Not relevant to DeFi protocol UX |
-| Mobile app | Web-first, responsive design covers mobile browsers |
-| Separate landing site deployment | Same Next.js app with route groups is simpler |
+| Feature                          | Reason                                                                 |
+| -------------------------------- | ---------------------------------------------------------------------- |
+| Price history charts             | Requires oracle price feed infrastructure -- defer to future milestone |
+| Real-time WebSocket updates      | Polling sufficient for testnet, real-time premature                    |
+| Dark mode / theming              | Nice to have but not core to UX restructure                            |
+| Social features                  | Not relevant to DeFi protocol UX                                       |
+| Mobile app                       | Web-first, responsive design covers mobile browsers                    |
+| Separate landing site deployment | Same Next.js app with route groups is simpler                          |
 
 ## Traceability
 
 Which phases cover which requirements. Updated during roadmap creation.
 
-| Requirement | Phase | Status |
-|-------------|-------|--------|
-| LAND-01 | Phase 16 | Complete |
-| LAND-02 | Phase 16 | Complete |
-| LAND-03 | Phase 16 | Complete |
-| LAND-04 | Phase 16 | Complete |
-| SHELL-01 | Phase 13 | Complete |
-| SHELL-02 | Phase 13 | Complete |
-| SHELL-03 | Phase 13 | Complete |
-| SHELL-04 | Phase 13 | Complete |
-| DASH-01 | Phase 14 | Complete |
-| DASH-02 | Phase 14 | Complete |
-| DASH-03 | Phase 14 | Complete |
-| DASH-04 | Phase 14 | Complete |
-| TRADE-01 | Phase 15 | Complete |
-| TRADE-02 | Phase 15 | Complete |
-| TRADE-03 | Phase 15 | Complete |
-| TRADE-04 | Phase 15 | Complete |
-| DB-01 | Phase 12 | Complete |
-| DB-02 | Phase 12 | Complete |
-| DB-03 | Phase 12 | Complete |
-| DB-04 | Phase 12 | Complete |
+| Requirement | Phase    | Status   |
+| ----------- | -------- | -------- |
+| LAND-01     | Phase 16 | Complete |
+| LAND-02     | Phase 16 | Complete |
+| LAND-03     | Phase 16 | Complete |
+| LAND-04     | Phase 16 | Complete |
+| SHELL-01    | Phase 13 | Complete |
+| SHELL-02    | Phase 13 | Complete |
+| SHELL-03    | Phase 13 | Complete |
+| SHELL-04    | Phase 13 | Complete |
+| DASH-01     | Phase 14 | Complete |
+| DASH-02     | Phase 14 | Complete |
+| DASH-03     | Phase 14 | Complete |
+| DASH-04     | Phase 14 | Complete |
+| TRADE-01    | Phase 15 | Complete |
+| TRADE-02    | Phase 15 | Complete |
+| TRADE-03    | Phase 15 | Complete |
+| TRADE-04    | Phase 15 | Complete |
+| DB-01       | Phase 12 | Complete |
+| DB-02       | Phase 12 | Complete |
+| DB-03       | Phase 12 | Complete |
+| DB-04       | Phase 12 | Complete |
 
 **Coverage:**
+
 - v1.3 requirements: 20 total
 - Mapped to phases: 20
 - Unmapped: 0
 
 ---
-*Requirements defined: 2026-02-15*
-*Last updated: 2026-02-16 — all v1.3 requirements complete*
+
+_Requirements defined: 2026-02-15_
+_Last updated: 2026-02-16 — all v1.3 requirements complete_

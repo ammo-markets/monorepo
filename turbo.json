@@ -1,7 +1,13 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
-  "globalEnv": ["DATABASE_URL", "AVALANCHE_RPC_URL", "FUJI_RPC_URL", "SESSION_SECRET", "ALLOWED_ORIGINS"],
+  "globalEnv": [
+    "DATABASE_URL",
+    "AVALANCHE_RPC_URL",
+    "FUJI_RPC_URL",
+    "SESSION_SECRET",
+    "ALLOWED_ORIGINS"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build", "^db:generate"],

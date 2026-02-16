@@ -62,6 +62,7 @@ completed: 2026-02-11
 - **Files modified:** 3
 
 ## Accomplishments
+
 - Extracted 5 reusable frontend types (CaliberDetailData, OrderFromAPI, StepStatus, OrderStep, MarketCaliberFromAPI) to lib/types.ts matching real API shapes
 - Portfolio dashboard displays real on-chain token balances, computed portfolio value from oracle prices, and DB-backed order history
 - Order detail page fetches from /api/orders/[id] with a simplified 3-step stepper and working Snowtrace links from real txHash
@@ -76,11 +77,13 @@ Each task was committed atomically:
 3. **Task 3: Rewire order-detail.tsx with real API data and simplified stepper** - `e4c8c36` (feat)
 
 ## Files Created/Modified
+
 - `apps/web/lib/types.ts` - Shared frontend types for API response shapes (CaliberDetailData, OrderFromAPI, StepStatus, OrderStep, MarketCaliberFromAPI)
 - `apps/web/features/portfolio/portfolio-dashboard.tsx` - Portfolio dashboard wired to useWallet, useTokenBalances, /api/orders, /api/market
 - `apps/web/features/portfolio/order-detail.tsx` - Order detail page fetching from /api/orders/[id] with 3-step stepper
 
 ## Decisions Made
+
 - Dropped P&L columns (avgCost, pnl, pnlPercent) from holdings table since no historical price data is available
 - Simplified stepper from 5-6 mock steps to 3 real steps: matches what the DB actually tracks (order placed, tx confirmed, completed)
 - Display order IDs as first 8 chars of Prisma UUID instead of mock AMX-format strings
@@ -93,19 +96,23 @@ Each task was committed atomically:
 None - plan executed exactly as written.
 
 ## Issues Encountered
+
 None
 
 ## User Setup Required
+
 None - no external service configuration required.
 
 ## Next Phase Readiness
+
 - Portfolio pages are fully data-driven, ready for integration testing with live testnet
 - lib/types.ts provides reusable types for any future page that consumes /api/orders or /api/market
 - Plan 05-02 (market pages and remaining data wiring) can proceed immediately
 
 ---
-*Phase: 05-portfolio-and-data-integration*
-*Completed: 2026-02-11*
+
+_Phase: 05-portfolio-and-data-integration_
+_Completed: 2026-02-11_
 
 ## Self-Check: PASSED
 

@@ -59,6 +59,7 @@ completed: 2026-02-16
 - **Files modified:** 6
 
 ## Accomplishments
+
 - CaliberInfoPanel shows all 4 calibers with grain weight, case type, min order, and live price per round
 - TradeTabs provides pill-style Mint/Redeem/Swap tab switcher rendering the correct flow for each
 - Unified trade page replaces old TradeDemo with full-featured trading interface
@@ -72,6 +73,7 @@ Each task was committed atomically:
 2. **Task 2: Wire unified trade page and remove old demo** - `4acd9e7` (feat)
 
 ## Files Created/Modified
+
 - `apps/web/features/trade/caliber-info-panel.tsx` - Caliber card grid with specs, price, and selection state
 - `apps/web/features/trade/trade-tabs.tsx` - Tab switcher rendering MintFlow/RedeemFlow/SwapWidget
 - `apps/web/features/trade/index.ts` - Updated barrel exports
@@ -80,6 +82,7 @@ Each task was committed atomically:
 - `apps/web/app/(app)/trade/trade-demo.tsx` - Deleted (replaced by unified page)
 
 ## Decisions Made
+
 - MintFlow and RedeemFlow rendered as-is since they have built-in caliber selectors; CaliberInfoPanel provides quick reference/context at the top
 - Caliber selection synced to URL search params so embedded flows can pre-select via their existing useSearchParams logic
 - Trade page uses (app) layout group so AppNav shell is provided automatically
@@ -89,16 +92,20 @@ Each task was committed atomically:
 None - plan executed exactly as written.
 
 ## Issues Encountered
+
 None
 
 ## User Setup Required
+
 None - no external service configuration required.
 
 ## Next Phase Readiness
+
 - Unified trade page is fully functional at /trade
 - Existing /mint and /redeem standalone routes remain operational
 - Ready for any future trade-related enhancements
 
 ---
-*Phase: 15-unified-trade-page*
-*Completed: 2026-02-16*
+
+_Phase: 15-unified-trade-page_
+_Completed: 2026-02-16_

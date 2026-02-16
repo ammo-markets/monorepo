@@ -15,6 +15,7 @@
 **Impact:** HIGH - Core protocol flow broken. User funds would be inaccessible. Tests: `testFinalizeMintForwardsNetUsdcToTreasury`, `testFinalizeMintRevertsWhenTreasuryNotSet` now verify correct behavior.
 
 **Fix applied:**
+
 - Line 212: Added `address treasury = manager.treasury()` lookup with `TreasuryNotSet` revert
 - Line 228: Added `_safeTransfer(usdc, treasury, netUsdc)` to forward net proceeds
 - Treasury must be set before processing mints
@@ -28,12 +29,14 @@
 **Issue:** Fee percentages (`mintFeeBps`, `redeemFeeBps`) and minimum mint rounds (`minMintRounds`) were retrieved from contract state at finalization time, not at order creation. If admin changed fees after a user initiated an order, the new fees would apply retroactively to that user's order.
 
 **Files:**
+
 - `packages/contracts/src/CaliberMarket.sol` (lines 154, 169, 192, 214–217, 251–252)
 - Tests: `testFinalizeMintUsesSnapshotFee`, `testFinalizeRedeemUsesSnapshotFee`
 
 **Impact:** MEDIUM - Users could have fees increased unexpectedly, or minimum mint requirements raised after they started an order. Breaks user trust and could be used as griefing vector.
 
 **Fix applied:**
+
 - Fees now snapshot at order creation: `feeBps: mintFeeBps` (line 168) and `feeBps: redeemFeeBps` (line 192)
 - Min mint rounds snapshot at mint start: `minMintAtStart: minMintRounds` (line 169)
 - Finalization reads from order struct, not live contract state
@@ -51,6 +54,7 @@
 **Impact:** MEDIUM - Emergency pause would not fully halt the market. Inconsistent protection between user operations and keeper operations.
 
 **Fix applied:**
+
 - Added `whenNotPaused` to `finalizeMint()` (line 204)
 - Added `whenNotPaused` to `finalizeRedeem()` (line 246)
 - `refundMint()` and `cancelRedeem()` intentionally remain unpaused to allow recovery
@@ -66,6 +70,7 @@
 **Files:** `apps/worker/src/index.ts` (lines 18–29)
 
 **Impact:** MEDIUM - Without event listeners, the backend cannot:
+
 - Detect when users initiate `startMint()` or `startRedeem()` orders
 - Trigger off-chain fulfillment workflows (purchase ammo, verify KYC, ship orders)
 - Update database state based on on-chain events
@@ -73,6 +78,7 @@
 The system currently depends on manual keeper action. Automation is blocked.
 
 **What's needed:**
+
 ```typescript
 // TODO: Implement watchContractEvent for all caliber markets
 // Listen to CaliberMarket.MintStarted → trigger procurement workflow
@@ -91,12 +97,14 @@ The system currently depends on manual keeper action. Automation is blocked.
 **Files:** `apps/web/app/`, `apps/web/features/` (all untested)
 
 **Impact:** MEDIUM - High risk for regressions in user-facing flows:
+
 - Mint/redeem UX flows (connect wallet → approve USDC → submit order)
 - Order status tracking and deadline UI
 - Market data display (prices, 24h changes)
 - Error handling and user feedback
 
 **Components at risk:**
+
 - `apps/web/features/mint/mint-flow.tsx` — No tests for USDC approval, order submission
 - `apps/web/features/trade/swap-widget.tsx` — No tests for DEX integration
 - `apps/web/app/portfolio/orders/[id]/page.tsx` — No tests for order polling and status display
@@ -110,12 +118,14 @@ The system currently depends on manual keeper action. Automation is blocked.
 **Issue:** The database schema defines `KycStatus` (enum with PENDING, APPROVED, REJECTED) but the redemption flow does not enforce it.
 
 **Files:**
+
 - `packages/db/prisma/schema.prisma` (lines 12–17)
 - `apps/web/app/redeem/page.tsx` (basic UI, no KYC integration)
 
 **Impact:** MEDIUM - Federal law requires age verification (21+ for handgun ammo, 18+ for rifle/shotgun) before redemption and shipping. Current system has no checks.
 
 **What's missing:**
+
 - No KYC provider integration (Veriff, Jumio, Persona, etc.)
 - No enforcement of `KycStatus.APPROVED` in `finalizeRedeem()` caller
 - No shipment address validation before keeper calls `finalizeRedeem()`
@@ -129,27 +139,32 @@ The system currently depends on manual keeper action. Automation is blocked.
 **Issue:** The `IPriceOracle` interface is minimal, and the price feed mechanism is not specified.
 
 **Files:**
+
 - `packages/contracts/src/IPriceOracle.sol` (10 lines, no implementation)
 - `packages/contracts/src/CaliberMarket.sol` (lines 151, 205)
 
 **Impact:** MEDIUM-HIGH - Price feeds are critical to token valuation:
+
 - `startMint()` queries oracle for slippage baseline (line 151)
 - `finalizeMint()` accepts keeper-provided price with no oracle cross-check (line 205)
 - If oracle is manipulated, mints could occur at unfavorable prices
 - If oracle is down, mints are blocked entirely
 
 **Current behavior:**
+
 - `startMint()` reads oracle price and stores as snapshot (good)
 - `finalizeMint()` accepts keeper-supplied `actualPriceX18` without oracle verification
   - Keeper could mint at inflated prices if not monitored
   - No bounds checking: keeper could claim absurd prices (1e27 wei/round)
 
 **Gaps:**
+
 1. No oracle implementation provided (MockPriceOracle is test-only)
 2. No price bounds in `finalizeMint()` (e.g., max deviation from `requestPrice`)
 3. Keeper has sole discretion over final price — single point of trust
 
 **Priority:** HIGH - Before mainnet deployment:
+
 - Integrate real oracle (Chainlink, Pyth, custom feed)
 - Add `finalizeMint()` bounds check: revert if `actualPriceX18` deviates >X% from `requestPrice`
 - Consider multi-sig keeper approval for large deviations
@@ -161,6 +176,7 @@ The system currently depends on manual keeper action. Automation is blocked.
 **Issue:** The whitepaper (section 4.3) promises monthly attestations and transparent proof of reserves, but no mechanism exists on-chain or in the database to track inventory.
 
 **Files:**
+
 - `packages/db/prisma/schema.prisma` (lines 86–91) — `Inventory` model defined but unused
 - `apps/worker/src/index.ts` — No inventory sync logic
 - No smart contract function to query total rounds per caliber vs. circulating supply
@@ -168,6 +184,7 @@ The system currently depends on manual keeper action. Automation is blocked.
 **Impact:** MEDIUM - Users cannot verify the protocol is actually backed 1:1 by physical ammo. This breaks a core promise.
 
 **What's missing:**
+
 - Off-chain warehouse audit ingestion (how does attestation data get into the system?)
 - On-chain way to query: "Are there more tokens minted than rounds in storage?" (Transparency fails)
 - No automated audit trail (when was inventory last verified?)
@@ -181,15 +198,18 @@ The system currently depends on manual keeper action. Automation is blocked.
 **Issue:** `startMint()` and `startRedeem()` have no rate limiting. A user can submit unlimited orders in a single block or transaction.
 
 **Files:**
+
 - `packages/contracts/src/CaliberMarket.sol` (lines 142–177, 179–200)
 
 **Impact:** LOW-MEDIUM - Denial of service / order spam:
+
 - User could submit 1000 pending orders
 - Keeper would have to manually refund each one
 - Order ID counter (`nextOrderId`) could overflow (though uint256 is astronomically large)
 - No economic disincentive
 
 **Possible mitigations:**
+
 - Enforce minimum order size (already exists: `minMintRounds`)
 - Add per-user pending order limit
 - Require order fee deposit (front-end or contract-level)
@@ -203,10 +223,12 @@ The system currently depends on manual keeper action. Automation is blocked.
 **Issue:** Guardian is defined in `AmmoManager` and can call `pause()`, but has no other special powers.
 
 **Files:**
+
 - `packages/contracts/src/AmmoManager.sol` (line 10)
 - `packages/contracts/src/CaliberMarket.sol` (line 300)
 
 **Current behavior:**
+
 ```solidity
 function pause() external {
     if (!manager.isOwner(msg.sender) && msg.sender != manager.guardian()) revert NotOwner();
@@ -225,10 +247,12 @@ function pause() external {
 **Issue:** Supported calibers and specs are hardcoded in the whitepaper and database enum, not on-chain.
 
 **Files:**
+
 - `packages/db/prisma/schema.prisma` (lines 32–37) — `enum Caliber` has 4 hardcoded values
 - `packages/contracts/src/AmmoFactory.sol` — No registry of caliber specs
 
 **Impact:** MEDIUM - Adding new calibers requires:
+
 1. Database migration
 2. Smart contract redeployment (caliber specs not stored on-chain)
 3. Warehouse coordination (new SKU specs, inventory tracking)
@@ -332,4 +356,4 @@ function pause() external {
 
 ---
 
-*Concerns audit: 2026-02-10*
+_Concerns audit: 2026-02-10_

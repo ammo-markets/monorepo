@@ -17,7 +17,12 @@ affects: [14-dashboard remaining plans, portfolio enhancements]
 
 tech-stack:
   added: []
-  patterns: [feature component with props-driven data, shimmer skeleton loading, conditional banner rendering]
+  patterns:
+    [
+      feature component with props-driven data,
+      shimmer skeleton loading,
+      conditional banner rendering,
+    ]
 
 key-files:
   created:
@@ -55,6 +60,7 @@ completed: 2026-02-16
 - **Files modified:** 6
 
 ## Accomplishments
+
 - Built 4 dashboard feature components with loading skeletons and empty states
 - Wired dashboard page to existing hooks (useTokenBalances, useMarketData, useOrders, useWallet)
 - Balance cards show all 4 calibers with USD values computed from on-chain balances x market prices
@@ -68,6 +74,7 @@ Each task was committed atomically:
 2. **Task 2: Wire dashboard page with hooks and components** - `e8ee519` (feat)
 
 ## Files Created/Modified
+
 - `apps/web/features/dashboard/balance-cards.tsx` - 4-caliber balance grid with portfolio value, USDC row, shimmer skeletons
 - `apps/web/features/dashboard/recent-orders.tsx` - Last 5 orders with status/type badges, time-ago, desktop table + mobile cards
 - `apps/web/features/dashboard/quick-actions.tsx` - Mint and Redeem navigation buttons
@@ -76,6 +83,7 @@ Each task was committed atomically:
 - `apps/web/app/(app)/dashboard/page.tsx` - Dashboard page wiring all components with hooks
 
 ## Decisions Made
+
 - Dashboard components receive data via props rather than calling hooks internally, following separation of concerns and matching portfolio-dashboard.tsx patterns
 - Portfolio value total includes USDC balance for a complete picture
 - Recent orders capped at 5 entries with "View All Orders" link to /portfolio
@@ -85,16 +93,20 @@ Each task was committed atomically:
 None - plan executed exactly as written.
 
 ## Issues Encountered
+
 None
 
 ## User Setup Required
+
 None - no external service configuration required.
 
 ## Next Phase Readiness
+
 - Dashboard page fully functional at /dashboard
 - All components follow existing CSS variable patterns (--bg-secondary, --text-primary, --brass, etc.)
 - Ready for additional dashboard enhancements or Phase 14 remaining plans
 
 ---
-*Phase: 14-dashboard*
-*Completed: 2026-02-16*
+
+_Phase: 14-dashboard_
+_Completed: 2026-02-16_

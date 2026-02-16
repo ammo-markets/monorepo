@@ -63,6 +63,7 @@ Anyone worldwide can get price exposure to U.S. ammunition by minting ammo token
 **Goal:** Split the app into a public landing site and a wallet-connected app with clean 4-tab navigation, enriched database for protocol stats/activity/preferences, and unified trade experience.
 
 **Target features:**
+
 - Public landing page (hero, how-it-works, caliber showcase, FAQ, Launch App CTA)
 - App shell with 4-tab nav: Dashboard, Trade, Portfolio, Profile
 - Personal dashboard with token balances and recent orders
@@ -88,6 +89,7 @@ Anyone worldwide can get price exposure to U.S. ammunition by minting ammo token
 **Codebase:** ~22,597 LOC TypeScript across apps/web, apps/worker, packages/shared, packages/db, packages/contracts
 
 The full DeFi protocol is functional on Avalanche Fuji testnet with production-grade security and reliability:
+
 - 13 contracts deployed and verified (AmmoManager, AmmoFactory, 4 CaliberMarkets, 4 AmmoTokens, MockUSDC, 4 MockPriceOracles)
 - SIWE wallet authentication on all API routes with iron-session cookies
 - Server-side admin protection (non-keepers see 404, requireKeeper on API routes)
@@ -100,6 +102,7 @@ The full DeFi protocol is functional on Avalanche Fuji testnet with production-g
 ## Context
 
 **Protocol Design:**
+
 - 4 supported calibers: 9MM (115gr FMJ), 556 (55gr FMJ), 22LR (40gr), 308 (147gr FMJ)
 - 1 token = 1 round of ammunition, 18 decimals
 - Fees: 1.5% mint, 1.5% redeem (150 BPS, max 500 BPS hard cap)
@@ -108,11 +111,12 @@ The full DeFi protocol is functional on Avalanche Fuji testnet with production-g
 - Supplier: Ammo Squared -- admin purchases ammo off-chain after mint orders
 
 **Architecture (validated through v1.2):**
+
 - 2-step settlement: user initiates -> admin (keeper) finalizes. Human-in-the-loop for off-chain procurement.
 - Worker role: event indexer only. Writes chain events to DB. Does NOT auto-finalize. Handles all 11 CaliberMarket events.
 - Admin finalization: admin reviews order in dashboard, purchases from Ammo Squared, clicks Finalize. Contract call made from admin's keeper wallet via browser (wagmi).
 - API layer: Next.js API routes (not separate worker API). TanStack Query on client hits route handlers. All routes SIWE-authenticated.
-- Admin UI: wallet-gated /admin/* routes in same Next.js app. Server-side layout protection + requireKeeper on API routes.
+- Admin UI: wallet-gated /admin/\* routes in same Next.js app. Server-side layout protection + requireKeeper on API routes.
 - Auth: SIWE (Sign-In with Ethereum) -> iron-session cookie -> requireSession/requireKeeper helpers.
 
 ## Constraints
@@ -124,21 +128,22 @@ The full DeFi protocol is functional on Avalanche Fuji testnet with production-g
 
 ## Key Decisions
 
-| Decision | Rationale | Outcome |
-|----------|-----------|---------|
-| Fuji testnet first | Validate full flow before mainnet costs/risks | ✓ Good -- full stack validated on Fuji |
-| Next.js API routes over separate API server | Single deployment, shared DB access, simpler stack | ✓ Good -- 15 routes, clean separation |
-| Admin in same app (/admin/*) | Shares wagmi setup, Prisma, UI components. 1-2 admin wallets don't justify separate app | ✓ Good -- code reuse worked well |
-| Worker as indexer, not keeper | Admin must review and trigger finalization. Human-in-the-loop for off-chain procurement | ✓ Good -- clean separation of concerns |
-| SIWE + iron-session for auth | Wallet-native auth, no passwords, server-side session verification | ✓ Good -- cookies() pattern, no request param |
-| Server-side admin protection | notFound() in async layout, no content flash for non-keepers | ✓ Good -- defense in depth |
-| TanStack Query for frontend data | Centralized caching, automatic retries, cache invalidation on mutations | ✓ Good -- 15 components migrated, zero raw fetch |
-| viem built-in retry transport | Native exponential backoff for RPC, no custom wrapper needed | ✓ Good -- handles 429/5xx/timeouts |
-| 5-block reorg confirmation window | Avalanche ~10s margin, idempotent handlers make re-processing safe | ✓ Good -- conservative but cheap |
-| In-memory rate limiter | Sufficient for testnet, Redis upgrade documented for production | ✓ Good -- simple and effective |
-| Polling-based indexer over WebSocket | getContractEvents more reliable than watchContractEvent for batch processing | ✓ Good -- crash recovery via BlockCursor |
-| Bidirectional caliber mapping | Bridge Prisma naming constraints (NINE_MM) to shared types (9MM) | ✓ Good -- zero type mismatches |
-| Explicit return types on hooks | Prevent TS2742 non-portable type inference errors | ✓ Good -- all hooks compile across packages |
+| Decision                                    | Rationale                                                                               | Outcome                                          |
+| ------------------------------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| Fuji testnet first                          | Validate full flow before mainnet costs/risks                                           | ✓ Good -- full stack validated on Fuji           |
+| Next.js API routes over separate API server | Single deployment, shared DB access, simpler stack                                      | ✓ Good -- 15 routes, clean separation            |
+| Admin in same app (/admin/\*)               | Shares wagmi setup, Prisma, UI components. 1-2 admin wallets don't justify separate app | ✓ Good -- code reuse worked well                 |
+| Worker as indexer, not keeper               | Admin must review and trigger finalization. Human-in-the-loop for off-chain procurement | ✓ Good -- clean separation of concerns           |
+| SIWE + iron-session for auth                | Wallet-native auth, no passwords, server-side session verification                      | ✓ Good -- cookies() pattern, no request param    |
+| Server-side admin protection                | notFound() in async layout, no content flash for non-keepers                            | ✓ Good -- defense in depth                       |
+| TanStack Query for frontend data            | Centralized caching, automatic retries, cache invalidation on mutations                 | ✓ Good -- 15 components migrated, zero raw fetch |
+| viem built-in retry transport               | Native exponential backoff for RPC, no custom wrapper needed                            | ✓ Good -- handles 429/5xx/timeouts               |
+| 5-block reorg confirmation window           | Avalanche ~10s margin, idempotent handlers make re-processing safe                      | ✓ Good -- conservative but cheap                 |
+| In-memory rate limiter                      | Sufficient for testnet, Redis upgrade documented for production                         | ✓ Good -- simple and effective                   |
+| Polling-based indexer over WebSocket        | getContractEvents more reliable than watchContractEvent for batch processing            | ✓ Good -- crash recovery via BlockCursor         |
+| Bidirectional caliber mapping               | Bridge Prisma naming constraints (NINE_MM) to shared types (9MM)                        | ✓ Good -- zero type mismatches                   |
+| Explicit return types on hooks              | Prevent TS2742 non-portable type inference errors                                       | ✓ Good -- all hooks compile across packages      |
 
 ---
-*Last updated: 2026-02-15 after v1.3 milestone started*
+
+_Last updated: 2026-02-15 after v1.3 milestone started_

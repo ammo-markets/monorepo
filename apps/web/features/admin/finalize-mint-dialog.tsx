@@ -40,8 +40,15 @@ export function FinalizeMintDialog({
   const [price, setPrice] = useState("");
   const [priceError, setPriceError] = useState("");
 
-  const { finalizeMint, hash, error, isPending, isConfirming, isConfirmed, reset } =
-    useFinalizeMint(order.caliber as Caliber);
+  const {
+    finalizeMint,
+    hash,
+    error,
+    isPending,
+    isConfirming,
+    isConfirmed,
+    reset,
+  } = useFinalizeMint(order.caliber as Caliber);
 
   // React to confirmation
   useEffect(() => {
@@ -158,9 +165,7 @@ export function FinalizeMintDialog({
         </div>
 
         {hash && (
-          <p className="mt-3 break-all text-xs text-zinc-500">
-            Tx: {hash}
-          </p>
+          <p className="mt-3 break-all text-xs text-zinc-500">Tx: {hash}</p>
         )}
 
         {/* Actions */}

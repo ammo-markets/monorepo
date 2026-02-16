@@ -47,8 +47,15 @@ export function FinalizeRedeemDialog({
   onFinalized,
 }: FinalizeRedeemDialogProps) {
   const queryClient = useQueryClient();
-  const { finalizeRedeem, hash, error, isPending, isConfirming, isConfirmed, reset } =
-    useFinalizeRedeem(order.caliber as Caliber);
+  const {
+    finalizeRedeem,
+    hash,
+    error,
+    isPending,
+    isConfirming,
+    isConfirmed,
+    reset,
+  } = useFinalizeRedeem(order.caliber as Caliber);
 
   // React to confirmation
   useEffect(() => {
@@ -143,9 +150,7 @@ export function FinalizeRedeemDialog({
         </div>
 
         {hash && (
-          <p className="mt-3 break-all text-xs text-zinc-500">
-            Tx: {hash}
-          </p>
+          <p className="mt-3 break-all text-xs text-zinc-500">Tx: {hash}</p>
         )}
 
         {/* Actions */}

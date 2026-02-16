@@ -25,9 +25,7 @@ function computeHoldings(
   balances: Record<Caliber, bigint | undefined>,
   marketData: MarketCaliberFromAPI[],
 ) {
-  const priceMap = new Map(
-    marketData.map((m) => [m.caliber, m.pricePerRound]),
-  );
+  const priceMap = new Map(marketData.map((m) => [m.caliber, m.pricePerRound]));
 
   return CALIBERS.map((caliber) => {
     const raw = balances[caliber] ?? BigInt(0);
@@ -181,7 +179,8 @@ export function BalanceCards({
           <span
             className="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold"
             style={{
-              backgroundColor: "color-mix(in srgb, var(--blue) 15%, transparent)",
+              backgroundColor:
+                "color-mix(in srgb, var(--blue) 15%, transparent)",
               color: "var(--blue)",
             }}
           >

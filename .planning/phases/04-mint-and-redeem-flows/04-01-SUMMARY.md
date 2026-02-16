@@ -2,7 +2,8 @@
 phase: 04-mint-and-redeem-flows
 plan: 01
 subsystem: ui
-tags: [wagmi, viem, erc20, useWriteContract, useReadContract, mint, usdc, allowance]
+tags:
+  [wagmi, viem, erc20, useWriteContract, useReadContract, mint, usdc, allowance]
 
 # Dependency graph
 requires:
@@ -21,7 +22,12 @@ affects: [04-02-redeem-flow, 05-frontend-views]
 # Tech tracking
 tech-stack:
   added: []
-  patterns: [two-step-approve-then-execute, txstatus-state-machine, explicit-return-types-for-wagmi-hooks]
+  patterns:
+    [
+      two-step-approve-then-execute,
+      txstatus-state-machine,
+      explicit-return-types-for-wagmi-hooks,
+    ]
 
 key-files:
   created:
@@ -61,6 +67,7 @@ completed: 2026-02-11
 - **Files modified:** 5
 
 ## Accomplishments
+
 - Contract error mapping covering all 13 CaliberMarket custom errors plus ERC20 errors with user-friendly messages
 - Two-step approve+startMint hook using separate useWriteContract instances to prevent state collision
 - Mint flow UI fully wired to real hooks: useWallet for connection, useTokenBalances for USDC balance, useAllowance for skip-approve detection, useMintTransaction for tx execution
@@ -75,6 +82,7 @@ Each task was committed atomically:
 2. **Task 2: Create useMintTransaction hook and rewire mint-flow.tsx** - `e092c13` (feat)
 
 ## Files Created/Modified
+
 - `apps/web/lib/errors.ts` - CONTRACT_ERROR_MESSAGES record + parseContractError function
 - `apps/web/lib/tx-utils.ts` - getDeadline, DEFAULT_SLIPPAGE_BPS, parseUsdc/formatUsdc, parseTokenAmount/formatTokenAmount
 - `apps/web/hooks/use-allowance.ts` - ERC20 allowance read hook with hasEnoughAllowance helper
@@ -82,6 +90,7 @@ Each task was committed atomically:
 - `apps/web/features/mint/mint-flow.tsx` - Complete rewrite replacing mock state with real wagmi hooks
 
 ## Decisions Made
+
 - **Explicit return type on useMintTransaction:** TypeScript inferred a non-portable type referencing internal `@wagmi/core` module paths. Added explicit return type annotation to fix TS2742 error.
 - **TxStatus derived via useMemo:** Instead of manual setState for wallet status, the tx status is computed from hook boolean states with priority ordering (confirmed > pending > approved > error > idle).
 - **InvalidStatus error added:** The CaliberMarket ABI contains an `InvalidStatus` custom error not listed in the original plan. Added it to the error mapping for completeness.
@@ -92,6 +101,7 @@ Each task was committed atomically:
 ### Auto-fixed Issues
 
 **1. [Rule 3 - Blocking] Added explicit return type to useMintTransaction**
+
 - **Found during:** Task 2 (useMintTransaction hook)
 - **Issue:** TypeScript error TS2742 -- inferred return type references non-portable `@wagmi/core` internal path
 - **Fix:** Added explicit return type annotation with all 13 fields typed
@@ -105,12 +115,15 @@ Each task was committed atomically:
 **Impact on plan:** Type annotation fix necessary for TypeScript compilation. No scope creep.
 
 ## Issues Encountered
+
 None beyond the type inference fix documented above.
 
 ## User Setup Required
+
 None - no external service configuration required.
 
 ## Next Phase Readiness
+
 - Mint flow fully functional with real contract calls
 - errors.ts, tx-utils.ts, and use-allowance.ts are shared utilities ready for Plan 02 (redeem flow)
 - useMintTransaction pattern (two separate useWriteContract instances) establishes the template for useRedeemTransaction
@@ -120,5 +133,6 @@ None - no external service configuration required.
 All 5 files verified on disk. Both commit hashes (b65bd0b, e092c13) found in git log.
 
 ---
-*Phase: 04-mint-and-redeem-flows*
-*Completed: 2026-02-11*
+
+_Phase: 04-mint-and-redeem-flows_
+_Completed: 2026-02-11_

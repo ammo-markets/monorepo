@@ -265,68 +265,57 @@ These features are not expected by every DeFi user on day one, but they build tr
 ## 6. Recommended Build Order
 
 **Phase A -- Plumbing (must complete first, unlocks everything):**
+
 1. 1.1 Wallet Connection
 2. 1.2 Token Balances + 1.7 Oracle Price + 1.9 Fees (batch these -- all are contract reads)
 3. 1.8 Worker Event Indexing
 
-**Phase B -- Core Flows (the product):**
-4. 1.3 Mint Flow on-chain
-5. 1.4 Redeem Flow on-chain
-6. 1.5 Order Status Tracking + 1.6 Tx Hash Links
+**Phase B -- Core Flows (the product):** 4. 1.3 Mint Flow on-chain 5. 1.4 Redeem Flow on-chain 6. 1.5 Order Status Tracking + 1.6 Tx Hash Links
 
-**Phase C -- Admin (operations):**
-7. 2.1 Admin Wallet Gate
-8. 2.2 Pending Order Queue
-9. 2.3 Finalize/Refund Mint + 2.4 Finalize/Cancel Redeem
+**Phase C -- Admin (operations):** 7. 2.1 Admin Wallet Gate 8. 2.2 Pending Order Queue 9. 2.3 Finalize/Refund Mint + 2.4 Finalize/Cancel Redeem
 
-**Phase D -- Differentiators (trust + polish):**
-10. 3.1 Proof of Reserves (dynamic)
-11. 3.5 Activity Feed
-12. 3.3 Price Charts
-13. 2.5 Protocol Stats + 3.7 Audit Trail
-14. 3.4 KYC Integration
-15. 3.6 Swap Widget DEX Integration
+**Phase D -- Differentiators (trust + polish):** 10. 3.1 Proof of Reserves (dynamic) 11. 3.5 Activity Feed 12. 3.3 Price Charts 13. 2.5 Protocol Stats + 3.7 Audit Trail 14. 3.4 KYC Integration 15. 3.6 Swap Widget DEX Integration
 
 ---
 
 ## 7. Complexity Summary
 
-| Feature | Complexity | New Code | Existing UI to Wire |
-|---------|-----------|----------|-------------------|
-| 1.1 Wallet Connection | Low | wagmi hooks | navbar, all flows |
-| 1.2 Token Balances | Low | multicall reads | portfolio, mint, redeem, swap |
-| 1.3 Mint Flow | Medium | tx execution + receipts | mint-flow.tsx step 3 |
-| 1.4 Redeem Flow | Medium | tx execution + receipts | redeem-flow.tsx step 4 |
-| 1.5 Order Status | Medium | API routes + DB queries | portfolio-dashboard.tsx, order-detail.tsx |
-| 1.6 Tx Hash Links | Low | URL construction | order-detail.tsx |
-| 1.7 Oracle Price | Low-Med | contract read + scaling | market page, mint form |
-| 1.8 Worker Indexing | Med-High | event watching + DB writes | worker/index.ts |
-| 1.9 Fee Transparency | Low | contract reads | mint-flow, redeem-flow |
-| 2.1 Admin Gate | Medium | wallet check + routing | new /admin layout |
-| 2.2 Order Queue | Medium | API + table UI | new admin page |
-| 2.3 Finalize Mint | Med-High | form + tx + audit | new admin component |
-| 2.4 Finalize Redeem | Medium | tx + audit | new admin component |
-| 2.5 Protocol Stats | Medium | mixed reads + aggregates | new admin component |
-| 3.1 Proof of Reserves | Med-High | on-chain + off-chain feed | proof-of-reserves.tsx |
-| 3.2 Notifications | Med-High | worker + DB + polling | new system |
-| 3.3 Price Charts | Med-High | indexing + chart library | price-chart.tsx shell |
-| 3.4 KYC Integration | High | third-party API + webhooks | redeem-flow.tsx step 2 |
-| 3.5 Activity Feed | Medium | DB query + UI | activity-feed.tsx |
-| 3.6 DEX Integration | High | Uniswap SDK + router | swap-widget.tsx |
-| 3.7 Audit Trail | Low-Med | DB writes + admin UI | AuditLog model exists |
+| Feature               | Complexity | New Code                   | Existing UI to Wire                       |
+| --------------------- | ---------- | -------------------------- | ----------------------------------------- |
+| 1.1 Wallet Connection | Low        | wagmi hooks                | navbar, all flows                         |
+| 1.2 Token Balances    | Low        | multicall reads            | portfolio, mint, redeem, swap             |
+| 1.3 Mint Flow         | Medium     | tx execution + receipts    | mint-flow.tsx step 3                      |
+| 1.4 Redeem Flow       | Medium     | tx execution + receipts    | redeem-flow.tsx step 4                    |
+| 1.5 Order Status      | Medium     | API routes + DB queries    | portfolio-dashboard.tsx, order-detail.tsx |
+| 1.6 Tx Hash Links     | Low        | URL construction           | order-detail.tsx                          |
+| 1.7 Oracle Price      | Low-Med    | contract read + scaling    | market page, mint form                    |
+| 1.8 Worker Indexing   | Med-High   | event watching + DB writes | worker/index.ts                           |
+| 1.9 Fee Transparency  | Low        | contract reads             | mint-flow, redeem-flow                    |
+| 2.1 Admin Gate        | Medium     | wallet check + routing     | new /admin layout                         |
+| 2.2 Order Queue       | Medium     | API + table UI             | new admin page                            |
+| 2.3 Finalize Mint     | Med-High   | form + tx + audit          | new admin component                       |
+| 2.4 Finalize Redeem   | Medium     | tx + audit                 | new admin component                       |
+| 2.5 Protocol Stats    | Medium     | mixed reads + aggregates   | new admin component                       |
+| 3.1 Proof of Reserves | Med-High   | on-chain + off-chain feed  | proof-of-reserves.tsx                     |
+| 3.2 Notifications     | Med-High   | worker + DB + polling      | new system                                |
+| 3.3 Price Charts      | Med-High   | indexing + chart library   | price-chart.tsx shell                     |
+| 3.4 KYC Integration   | High       | third-party API + webhooks | redeem-flow.tsx step 2                    |
+| 3.5 Activity Feed     | Medium     | DB query + UI              | activity-feed.tsx                         |
+| 3.6 DEX Integration   | High       | Uniswap SDK + router       | swap-widget.tsx                           |
+| 3.7 Audit Trail       | Low-Med    | DB writes + admin UI       | AuditLog model exists                     |
 
 ---
 
 ## 8. Reference Protocols
 
-| Protocol | Relevant Feature | Lesson for Ammo Exchange |
-|----------|-----------------|------------------------|
-| **PAXG (Paxos Gold)** | Wallet-address-to-gold-serial lookup; transparency reports | Build a similarly compelling proof-of-reserves experience. Users should be able to verify their backing. |
-| **XAUT (Tether Gold)** | Quarterly attestations with specific tonnage | Regular, published attestations build institutional trust. |
-| **Maker/Sky** | Keeper-triggered liquidations; operational dashboard | Keeper operations need monitoring UI; silent failures are catastrophic. |
-| **Chainlink Automation** | Keeper bot patterns; uptime monitoring | Worker reliability is critical. Build heartbeat checks and alerting. |
-| **LayerZero/Wormhole** | Transaction status tracking across async operations | Their "scan" pages (tracking cross-chain messages) are the pattern for async order tracking. |
-| **DeFi Saver** | Multi-protocol management dashboard | Clean admin UX for complex operations -- inspiration for the keeper dashboard. |
+| Protocol                 | Relevant Feature                                           | Lesson for Ammo Exchange                                                                                 |
+| ------------------------ | ---------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| **PAXG (Paxos Gold)**    | Wallet-address-to-gold-serial lookup; transparency reports | Build a similarly compelling proof-of-reserves experience. Users should be able to verify their backing. |
+| **XAUT (Tether Gold)**   | Quarterly attestations with specific tonnage               | Regular, published attestations build institutional trust.                                               |
+| **Maker/Sky**            | Keeper-triggered liquidations; operational dashboard       | Keeper operations need monitoring UI; silent failures are catastrophic.                                  |
+| **Chainlink Automation** | Keeper bot patterns; uptime monitoring                     | Worker reliability is critical. Build heartbeat checks and alerting.                                     |
+| **LayerZero/Wormhole**   | Transaction status tracking across async operations        | Their "scan" pages (tracking cross-chain messages) are the pattern for async order tracking.             |
+| **DeFi Saver**           | Multi-protocol management dashboard                        | Clean admin UX for complex operations -- inspiration for the keeper dashboard.                           |
 
 ---
 

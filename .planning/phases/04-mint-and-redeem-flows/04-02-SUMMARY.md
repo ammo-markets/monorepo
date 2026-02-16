@@ -2,7 +2,18 @@
 phase: 04-mint-and-redeem-flows
 plan: 02
 subsystem: ui
-tags: [wagmi, viem, ammo-token, useWriteContract, redeem, startRedeem, kyc, allowance, approve]
+tags:
+  [
+    wagmi,
+    viem,
+    ammo-token,
+    useWriteContract,
+    redeem,
+    startRedeem,
+    kyc,
+    allowance,
+    approve,
+  ]
 
 # Dependency graph
 requires:
@@ -22,7 +33,12 @@ affects: [05-frontend-views]
 # Tech tracking
 tech-stack:
   added: []
-  patterns: [two-step-approve-then-redeem, kyc-auto-approve-testnet, txstatus-state-machine-for-redeem]
+  patterns:
+    [
+      two-step-approve-then-redeem,
+      kyc-auto-approve-testnet,
+      txstatus-state-machine-for-redeem,
+    ]
 
 key-files:
   created:
@@ -60,6 +76,7 @@ completed: 2026-02-11
 - **Files modified:** 3
 
 ## Accomplishments
+
 - Two-step AmmoToken approve + CaliberMarket.startRedeem hook using separate useWriteContract instances with 18-decimal parseUnits
 - KYC API route with GET (check status) and POST (auto-approve) endpoints using prisma.user.upsert
 - Redeem flow UI fully wired to real hooks: useWallet for connection, useTokenBalances for on-chain balances, useAllowance for skip-approve detection, useRedeemTransaction for tx execution
@@ -74,11 +91,13 @@ Each task was committed atomically:
 2. **Task 2: Rewire redeem-flow.tsx with real hooks and API integration** - `7afee46` (feat)
 
 ## Files Created/Modified
+
 - `apps/web/hooks/use-redeem-transaction.ts` - Two useWriteContract instances (AmmoToken approve + CaliberMarket startRedeem) with explicit return type
 - `apps/web/app/api/users/kyc/route.ts` - GET/POST KYC status with zod wallet validation and auto-approve via prisma.user.upsert
 - `apps/web/features/redeem/redeem-flow.tsx` - Complete rewrite replacing mock state with real wagmi hooks, API calls, and TxStatus state machine
 
 ## Decisions Made
+
 - **Explicit return type on useRedeemTransaction:** Same pattern as useMintTransaction to avoid non-portable @wagmi/core type inference (TS2742).
 - **Shipping address stored locally, not via API:** The existing shipping API route requires an orderId which only exists after on-chain indexing. The address is kept in component state and will be associated post-indexing by the worker.
 - **KYC status uses Prisma enum values directly:** Frontend state uses "NONE"/"PENDING"/"APPROVED"/"REJECTED" matching the database enum, avoiding a mapping layer.
@@ -89,6 +108,7 @@ Each task was committed atomically:
 ### Auto-fixed Issues
 
 **1. [Rule 3 - Blocking] Shipping address saved locally instead of via API**
+
 - **Found during:** Task 2 (StepShipping wiring)
 - **Issue:** Plan specified POST to `/api/redeem/shipping` but the existing route requires an orderId which doesn't exist until after on-chain tx is indexed by the worker
 - **Fix:** Shipping address kept in component state and advanced to KYC step directly. The worker will associate the address post-indexing.
@@ -102,12 +122,15 @@ Each task was committed atomically:
 **Impact on plan:** Shipping address storage deferred due to API dependency on orderId. No functional impact -- address data flows through the UI correctly.
 
 ## Issues Encountered
+
 None beyond the shipping API dependency documented above.
 
 ## User Setup Required
+
 None - no external service configuration required.
 
 ## Next Phase Readiness
+
 - Both mint and redeem flows fully functional with real contract calls
 - All Phase 4 objectives (MINT-01 through MINT-05, REDEEM-01 through REDEEM-05) satisfied
 - Ready for Phase 5 (frontend views / polish)
@@ -117,5 +140,6 @@ None - no external service configuration required.
 All 3 files verified on disk. Both commit hashes (96cf223, 7afee46) found in git log.
 
 ---
-*Phase: 04-mint-and-redeem-flows*
-*Completed: 2026-02-11*
+
+_Phase: 04-mint-and-redeem-flows_
+_Completed: 2026-02-11_

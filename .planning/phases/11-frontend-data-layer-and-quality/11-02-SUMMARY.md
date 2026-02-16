@@ -15,7 +15,11 @@ affects: []
 
 tech-stack:
   added: []
-  patterns: [Next.js error.tsx convention for per-route error boundaries, typed contract error cause interface]
+  patterns:
+    [
+      Next.js error.tsx convention for per-route error boundaries,
+      typed contract error cause interface,
+    ]
 
 key-files:
   created:
@@ -64,6 +68,7 @@ completed: 2026-02-15
 - **Files modified:** 17
 
 ## Accomplishments
+
 - Created error.tsx for root, admin, market, portfolio, mint, redeem, and profile routes
 - Eliminated all `as any` casts (2 instances) with proper TypeScript typing
 - Removed all unused `import React from "react"` (7 files) using named type imports
@@ -77,6 +82,7 @@ Each task was committed atomically:
 2. **Task 2: Remove as-any casts and unused React imports** - `c55cd4e` (fix)
 
 ## Files Created/Modified
+
 - `apps/web/app/error.tsx` - Root error boundary with styled fallback UI
 - `apps/web/app/admin/error.tsx` - Admin section error boundary
 - `apps/web/app/market/error.tsx` - Market section error boundary
@@ -96,6 +102,7 @@ Each task was committed atomically:
 - `apps/web/features/portfolio/portfolio-dashboard.tsx` - Removed unused React import
 
 ## Decisions Made
+
 - Used typed `BalanceOfContract` interface with `Abi` cast for wagmi's `useReadContracts` (avoids `as any` while satisfying wagmi's complex generic types)
 - Used `ContractErrorCause` interface with `"cause" in error` type guard instead of `as any` for viem error cause access
 - Used `import type { ReactNode }` for type-only usage instead of full React default import
@@ -113,10 +120,12 @@ None.
 None - no external service configuration required.
 
 ## Next Phase Readiness
+
 - All quality issues (ERR-01, QUAL-01, QUAL-04) resolved
 - QUAL-02 (transaction hook flags) and QUAL-03 (fee constants) confirmed already correct during research phase
 - Frontend data layer and quality phase fully complete
 
 ---
-*Phase: 11-frontend-data-layer-and-quality*
-*Completed: 2026-02-15*
+
+_Phase: 11-frontend-data-layer-and-quality_
+_Completed: 2026-02-15_

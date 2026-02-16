@@ -19,10 +19,7 @@ const ALLOWED_ORIGINS: string[] = process.env.ALLOWED_ORIGINS
 const RATE_LIMIT_WINDOW_MS = 60_000; // 60 seconds
 const RATE_LIMIT_MAX = 100; // max requests per window per IP
 
-const rateLimitMap = new Map<
-  string,
-  { count: number; resetAt: number }
->();
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
 
 let requestCounter = 0;
 
@@ -82,13 +79,10 @@ export function middleware(request: NextRequest) {
   //    Requests with no Origin header (server-to-server, curl) are allowed through.
   if (origin) {
     if (!ALLOWED_ORIGINS.includes(origin)) {
-      return new NextResponse(
-        JSON.stringify({ error: "Origin not allowed" }),
-        {
-          status: 403,
-          headers: { "Content-Type": "application/json" },
-        },
-      );
+      return new NextResponse(JSON.stringify({ error: "Origin not allowed" }), {
+        status: 403,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     // Handle OPTIONS preflight
@@ -105,16 +99,13 @@ export function middleware(request: NextRequest) {
   const { allowed, retryAfter } = checkRateLimit(rateLimitKey);
 
   if (!allowed) {
-    return new NextResponse(
-      JSON.stringify({ error: "Too Many Requests" }),
-      {
-        status: 429,
-        headers: {
-          "Content-Type": "application/json",
-          "Retry-After": String(retryAfter),
-        },
+    return new NextResponse(JSON.stringify({ error: "Too Many Requests" }), {
+      status: 429,
+      headers: {
+        "Content-Type": "application/json",
+        "Retry-After": String(retryAfter),
       },
-    );
+    });
   }
 
   // 3. Continue with CORS headers attached

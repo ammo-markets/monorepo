@@ -17,45 +17,45 @@ re_verification: false
 
 ### Observable Truths
 
-| #   | Truth                                                                          | Status     | Evidence                                                                      |
-| --- | ------------------------------------------------------------------------------ | ---------- | ----------------------------------------------------------------------------- |
-| 1   | User sees token balances for all 4 calibers with USD value on dashboard       | ✓ VERIFIED | BalanceCards renders 4-caliber grid, computes USD via balance × pricePerRound |
-| 2   | User sees last 5 orders with status, amount, and timestamp on dashboard       | ✓ VERIFIED | RecentOrders slices to 5, displays status badges and time-ago                 |
+| #   | Truth                                                                              | Status     | Evidence                                                                      |
+| --- | ---------------------------------------------------------------------------------- | ---------- | ----------------------------------------------------------------------------- |
+| 1   | User sees token balances for all 4 calibers with USD value on dashboard            | ✓ VERIFIED | BalanceCards renders 4-caliber grid, computes USD via balance × pricePerRound |
+| 2   | User sees last 5 orders with status, amount, and timestamp on dashboard            | ✓ VERIFIED | RecentOrders slices to 5, displays status badges and time-ago                 |
 | 3   | User can click Mint or Redeem quick action buttons to navigate to /mint or /redeem | ✓ VERIFIED | QuickActions renders Link components to /mint and /redeem                     |
-| 4   | User sees a warning banner when they have PENDING or PROCESSING orders        | ✓ VERIFIED | PendingBanner filters by PENDING/PROCESSING status, returns null when count=0 |
-| 5   | Dashboard shows loading skeletons while data loads                             | ✓ VERIFIED | Both BalanceCards and RecentOrders render shimmer skeletons when isLoading    |
-| 6   | Dashboard shows empty states when user has no balances or orders               | ✓ VERIFIED | RecentOrders renders EmptyOrders with "Start Minting" CTA when length === 0   |
+| 4   | User sees a warning banner when they have PENDING or PROCESSING orders             | ✓ VERIFIED | PendingBanner filters by PENDING/PROCESSING status, returns null when count=0 |
+| 5   | Dashboard shows loading skeletons while data loads                                 | ✓ VERIFIED | Both BalanceCards and RecentOrders render shimmer skeletons when isLoading    |
+| 6   | Dashboard shows empty states when user has no balances or orders                   | ✓ VERIFIED | RecentOrders renders EmptyOrders with "Start Minting" CTA when length === 0   |
 
 **Score:** 6/6 truths verified
 
 ### Required Artifacts
 
-| Artifact                                                | Expected                                 | Status     | Details                                                                 |
-| ------------------------------------------------------- | ---------------------------------------- | ---------- | ----------------------------------------------------------------------- |
-| `apps/web/features/dashboard/balance-cards.tsx`         | 4-caliber balance grid with USD values   | ✓ VERIFIED | 206 lines, renders CALIBERS array, computes holdings with price lookup  |
-| `apps/web/features/dashboard/recent-orders.tsx`         | Last 5 orders table with status badges   | ✓ VERIFIED | 275 lines, slices to 5, StatusBadge + TypeBadge + timeAgo helper        |
-| `apps/web/features/dashboard/quick-actions.tsx`         | Mint and Redeem action buttons           | ✓ VERIFIED | 54 lines, Link components to /mint and /redeem with icons               |
-| `apps/web/features/dashboard/pending-banner.tsx`        | Alert banner for pending orders          | ✓ VERIFIED | 35 lines, conditional render (null when count=0), amber AlertTriangle   |
-| `apps/web/features/dashboard/index.ts`                  | Barrel exports for dashboard features    | ✓ VERIFIED | 4 exports: BalanceCards, RecentOrders, QuickActions, PendingBanner      |
-| `apps/web/app/(app)/dashboard/page.tsx`                 | Dashboard page wiring all components     | ✓ VERIFIED | 62 lines, wires 4 hooks, computes pendingCount, renders all 4 components |
+| Artifact                                         | Expected                               | Status     | Details                                                                  |
+| ------------------------------------------------ | -------------------------------------- | ---------- | ------------------------------------------------------------------------ |
+| `apps/web/features/dashboard/balance-cards.tsx`  | 4-caliber balance grid with USD values | ✓ VERIFIED | 206 lines, renders CALIBERS array, computes holdings with price lookup   |
+| `apps/web/features/dashboard/recent-orders.tsx`  | Last 5 orders table with status badges | ✓ VERIFIED | 275 lines, slices to 5, StatusBadge + TypeBadge + timeAgo helper         |
+| `apps/web/features/dashboard/quick-actions.tsx`  | Mint and Redeem action buttons         | ✓ VERIFIED | 54 lines, Link components to /mint and /redeem with icons                |
+| `apps/web/features/dashboard/pending-banner.tsx` | Alert banner for pending orders        | ✓ VERIFIED | 35 lines, conditional render (null when count=0), amber AlertTriangle    |
+| `apps/web/features/dashboard/index.ts`           | Barrel exports for dashboard features  | ✓ VERIFIED | 4 exports: BalanceCards, RecentOrders, QuickActions, PendingBanner       |
+| `apps/web/app/(app)/dashboard/page.tsx`          | Dashboard page wiring all components   | ✓ VERIFIED | 62 lines, wires 4 hooks, computes pendingCount, renders all 4 components |
 
 ### Key Link Verification
 
-| From                                            | To                             | Via                                                | Status     | Details                                                      |
-| ----------------------------------------------- | ------------------------------ | -------------------------------------------------- | ---------- | ------------------------------------------------------------ |
-| `apps/web/app/(app)/dashboard/page.tsx`         | `features/dashboard/`          | imports BalanceCards, RecentOrders, QuickActions, PendingBanner | ✓ WIRED    | Barrel import from @/features/dashboard verified at lines 8-13 |
-| `apps/web/app/(app)/dashboard/page.tsx`         | `hooks/use-token-balances`     | useTokenBalances hook for on-chain balances       | ✓ WIRED    | Line 5 import, line 17 destructure tokens/usdc/isLoading     |
-| `apps/web/app/(app)/dashboard/page.tsx`         | `hooks/use-market-data`        | useMarketData hook for price data                 | ✓ WIRED    | Line 6 import, line 18 destructure data/isLoading            |
-| `apps/web/app/(app)/dashboard/page.tsx`         | `hooks/use-orders`             | useOrders hook for order history                  | ✓ WIRED    | Line 7 import, line 19 called with address param            |
-| `apps/web/features/dashboard/balance-cards.tsx` | Market data                    | Props receive marketData, compute priceMap        | ✓ WIRED    | Lines 28-29 map marketData to priceMap, line 36 compute value |
-| `apps/web/features/dashboard/recent-orders.tsx` | Orders data                    | Props receive orders, slice to 5                  | ✓ WIRED    | Line 238 slice(0, 5), render OrderRow/OrderCard              |
-| `apps/web/features/dashboard/quick-actions.tsx` | /mint and /redeem routes       | Link components navigate to mint/redeem pages     | ✓ WIRED    | Lines 16 and 33 href="/mint" and href="/redeem"              |
-| `apps/web/features/dashboard/pending-banner.tsx`| /portfolio route               | Link navigates to portfolio for order details     | ✓ WIRED    | Line 27 href="/portfolio"                                    |
+| From                                             | To                         | Via                                                             | Status  | Details                                                        |
+| ------------------------------------------------ | -------------------------- | --------------------------------------------------------------- | ------- | -------------------------------------------------------------- |
+| `apps/web/app/(app)/dashboard/page.tsx`          | `features/dashboard/`      | imports BalanceCards, RecentOrders, QuickActions, PendingBanner | ✓ WIRED | Barrel import from @/features/dashboard verified at lines 8-13 |
+| `apps/web/app/(app)/dashboard/page.tsx`          | `hooks/use-token-balances` | useTokenBalances hook for on-chain balances                     | ✓ WIRED | Line 5 import, line 17 destructure tokens/usdc/isLoading       |
+| `apps/web/app/(app)/dashboard/page.tsx`          | `hooks/use-market-data`    | useMarketData hook for price data                               | ✓ WIRED | Line 6 import, line 18 destructure data/isLoading              |
+| `apps/web/app/(app)/dashboard/page.tsx`          | `hooks/use-orders`         | useOrders hook for order history                                | ✓ WIRED | Line 7 import, line 19 called with address param               |
+| `apps/web/features/dashboard/balance-cards.tsx`  | Market data                | Props receive marketData, compute priceMap                      | ✓ WIRED | Lines 28-29 map marketData to priceMap, line 36 compute value  |
+| `apps/web/features/dashboard/recent-orders.tsx`  | Orders data                | Props receive orders, slice to 5                                | ✓ WIRED | Line 238 slice(0, 5), render OrderRow/OrderCard                |
+| `apps/web/features/dashboard/quick-actions.tsx`  | /mint and /redeem routes   | Link components navigate to mint/redeem pages                   | ✓ WIRED | Lines 16 and 33 href="/mint" and href="/redeem"                |
+| `apps/web/features/dashboard/pending-banner.tsx` | /portfolio route           | Link navigates to portfolio for order details                   | ✓ WIRED | Line 27 href="/portfolio"                                      |
 
 ### Requirements Coverage
 
-| Requirement | Status      | Blocking Issue |
-| ----------- | ----------- | -------------- |
+| Requirement                                    | Status      | Blocking Issue |
+| ---------------------------------------------- | ----------- | -------------- |
 | DASH-01: Token balance display with USD values | ✓ SATISFIED | None           |
 | DASH-02: Recent order history (5 latest)       | ✓ SATISFIED | None           |
 | DASH-03: Quick actions for Mint/Redeem         | ✓ SATISFIED | None           |
@@ -64,6 +64,7 @@ re_verification: false
 ### Anti-Patterns Found
 
 None. Clean implementation:
+
 - No TODO/FIXME/placeholder comments
 - No empty return values (except conditional PendingBanner which correctly returns null)
 - No console.log-only implementations
@@ -75,7 +76,8 @@ While all automated checks pass, the following items need human testing:
 
 #### 1. Visual Layout and Responsiveness
 
-**Test:** 
+**Test:**
+
 1. Open /dashboard on desktop (1440px+ width)
 2. Verify 4 caliber cards display in a single row
 3. Resize to tablet (768px)
@@ -84,7 +86,8 @@ While all automated checks pass, the following items need human testing:
 6. Verify caliber cards show 2×1 grid
 7. Verify quick action buttons stack vertically on mobile, horizontal on tablet+
 
-**Expected:** 
+**Expected:**
+
 - Responsive grid transitions smoothly
 - All text remains readable at all breakpoints
 - Buttons are easily tappable on mobile (min 44px height)
@@ -94,11 +97,13 @@ While all automated checks pass, the following items need human testing:
 #### 2. Portfolio Value Calculation Accuracy
 
 **Test:**
+
 1. Connect wallet with known token balances (e.g., 1000 rounds of 9MM at $0.30/rd, 500 rounds 556 at $0.50/rd)
 2. Verify portfolio value header shows correct sum: (1000 × 0.30) + (500 × 0.50) + USDC balance
 3. Verify individual card USD values match balance × price
 
 **Expected:**
+
 - Portfolio value = sum of (all caliber values) + USDC
 - Each caliber card shows: balance in rounds, USD value, price per round
 - Math is accurate to 2 decimal places
@@ -108,6 +113,7 @@ While all automated checks pass, the following items need human testing:
 #### 3. Pending Order Banner Behavior
 
 **Test:**
+
 1. Start with 0 pending orders → banner should not appear
 2. Create a mint order that shows PENDING status
 3. Verify amber banner appears with "You have 1 pending order awaiting processing"
@@ -117,6 +123,7 @@ While all automated checks pass, the following items need human testing:
 7. Verify banner disappears when pendingCount = 0
 
 **Expected:**
+
 - Banner only appears when pendingCount > 0
 - Link navigates to /portfolio
 - Pluralization correct (order vs orders)
@@ -126,6 +133,7 @@ While all automated checks pass, the following items need human testing:
 #### 4. Recent Orders Time-Ago Display
 
 **Test:**
+
 1. Create orders at different times (use DB to backdate if needed)
 2. Verify time-ago shows:
    - "just now" for orders < 1 min old
@@ -135,6 +143,7 @@ While all automated checks pass, the following items need human testing:
    - "2mo ago" for 2-month-old orders
 
 **Expected:**
+
 - Time-ago helper accurately converts timestamps
 - Display updates on page reload (not real-time, but shows current relative time)
 
@@ -143,12 +152,14 @@ While all automated checks pass, the following items need human testing:
 #### 5. Empty State Call-to-Action
 
 **Test:**
+
 1. Connect fresh wallet with 0 orders
 2. Verify "No orders yet. Start by minting some tokens." message appears
 3. Click "Start Minting" button
 4. Verify navigation to /mint page
 
 **Expected:**
+
 - Empty state shows helpful message
 - CTA button is visually prominent
 - Link navigates correctly
@@ -158,12 +169,14 @@ While all automated checks pass, the following items need human testing:
 #### 6. Loading State Shimmer Animation
 
 **Test:**
+
 1. Throttle network to Slow 3G in DevTools
 2. Reload /dashboard
 3. Observe shimmer skeleton animations while data loads
 4. Verify layout doesn't shift when data replaces skeletons
 
 **Expected:**
+
 - Shimmer skeletons match final layout dimensions
 - No cumulative layout shift (CLS)
 - Smooth transition from skeleton to real data

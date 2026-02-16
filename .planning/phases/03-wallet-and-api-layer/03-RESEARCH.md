@@ -17,29 +17,32 @@ The wallet flow uses four wagmi hooks: `useAccount` for connection state (addres
 ## Standard Stack
 
 ### Core
-| Library | Version | Purpose | Why Standard |
-|---------|---------|---------|--------------|
-| wagmi | 2.19.5 | React hooks for wallet connect/disconnect/chain/reads | Already installed, wraps viem with React Query caching |
-| viem | 2.23.2 | On-chain reads in API routes (server-side public client) | Already installed, provides `erc20Abi`, typed contract reads |
-| @tanstack/react-query | 5.66.0 | Caching layer for wagmi hooks and API fetches | Already installed as wagmi peer dependency |
-| Prisma Client | 7.3.0 | Database queries in Route Handlers | Already configured with Neon adapter |
-| zod | 4.3.6 | Request validation in API routes | Already installed in web app |
-| Next.js | 15.1.6 | Route Handlers (app/api/), server-side execution | Already installed |
+
+| Library               | Version | Purpose                                                  | Why Standard                                                 |
+| --------------------- | ------- | -------------------------------------------------------- | ------------------------------------------------------------ |
+| wagmi                 | 2.19.5  | React hooks for wallet connect/disconnect/chain/reads    | Already installed, wraps viem with React Query caching       |
+| viem                  | 2.23.2  | On-chain reads in API routes (server-side public client) | Already installed, provides `erc20Abi`, typed contract reads |
+| @tanstack/react-query | 5.66.0  | Caching layer for wagmi hooks and API fetches            | Already installed as wagmi peer dependency                   |
+| Prisma Client         | 7.3.0   | Database queries in Route Handlers                       | Already configured with Neon adapter                         |
+| zod                   | 4.3.6   | Request validation in API routes                         | Already installed in web app                                 |
+| Next.js               | 15.1.6  | Route Handlers (app/api/), server-side execution         | Already installed                                            |
 
 ### Supporting
-| Library | Version | Purpose | When to Use |
-|---------|---------|---------|-------------|
-| viem `erc20Abi` | (bundled) | Standard ERC20 ABI for balanceOf reads | USDC balance queries on client and server |
-| @ammo-exchange/contracts | workspace:* | AmmoTokenAbi, CaliberMarketAbi | Token balance reads (client), oracle price reads (server) |
-| @ammo-exchange/shared | workspace:* | CONTRACT_ADDRESSES, CALIBER_SPECS, PRISMA_TO_CALIBER | Address lookups, caliber metadata |
-| @ammo-exchange/db | workspace:* | prisma singleton, Prisma types | All database queries in Route Handlers |
+
+| Library                  | Version      | Purpose                                              | When to Use                                               |
+| ------------------------ | ------------ | ---------------------------------------------------- | --------------------------------------------------------- |
+| viem `erc20Abi`          | (bundled)    | Standard ERC20 ABI for balanceOf reads               | USDC balance queries on client and server                 |
+| @ammo-exchange/contracts | workspace:\* | AmmoTokenAbi, CaliberMarketAbi                       | Token balance reads (client), oracle price reads (server) |
+| @ammo-exchange/shared    | workspace:\* | CONTRACT_ADDRESSES, CALIBER_SPECS, PRISMA_TO_CALIBER | Address lookups, caliber metadata                         |
+| @ammo-exchange/db        | workspace:\* | prisma singleton, Prisma types                       | All database queries in Route Handlers                    |
 
 ### Alternatives Considered
-| Instead of | Could Use | Tradeoff |
-|------------|-----------|----------|
-| wagmi hooks for balances | Server-side viem in API route | wagmi provides automatic caching, refetching, loading states via React Query; server-side requires manual fetch cycle |
-| Next.js Route Handlers | Server Actions | Route Handlers are better for REST-like endpoints consumed by fetch(); Server Actions are for form submissions and mutations tied to UI |
-| zod for validation | Manual validation | zod provides type-safe parsing with `.safeParse()`, auto-generates TypeScript types with `z.infer<>` |
+
+| Instead of               | Could Use                     | Tradeoff                                                                                                                                |
+| ------------------------ | ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| wagmi hooks for balances | Server-side viem in API route | wagmi provides automatic caching, refetching, loading states via React Query; server-side requires manual fetch cycle                   |
+| Next.js Route Handlers   | Server Actions                | Route Handlers are better for REST-like endpoints consumed by fetch(); Server Actions are for form submissions and mutations tied to UI |
+| zod for validation       | Manual validation             | zod provides type-safe parsing with `.safeParse()`, auto-generates TypeScript types with `z.infer<>`                                    |
 
 **Installation:**
 No new packages needed. All dependencies are already installed.
@@ -86,6 +89,7 @@ apps/web/
 **When to use:** Any component that needs to know if a wallet is connected, what address it has, or what chain it is on.
 
 **Example:**
+
 ```typescript
 // Source: wagmi docs (https://wagmi.sh/react/guides/connect-wallet)
 "use client";
@@ -134,6 +138,7 @@ export function WalletButton() {
 **When to use:** Any component that displays token balances for the connected user.
 
 **Example:**
+
 ```typescript
 // Source: wagmi docs (https://wagmi.sh/react/api/hooks/useReadContracts)
 "use client";
@@ -178,7 +183,7 @@ export function useTokenBalances() {
       CALIBERS.map((caliber, i) => [
         caliber,
         data?.[i + 1]?.result as bigint | undefined,
-      ])
+      ]),
     ) as Record<Caliber, bigint | undefined>,
     isLoading,
     refetch,
@@ -193,6 +198,7 @@ export function useTokenBalances() {
 **When to use:** Any endpoint that reads from the database (orders, shipping).
 
 **Example:**
+
 ```typescript
 // Source: Next.js docs (https://nextjs.org/docs/app/getting-started/route-handlers)
 // apps/web/app/api/orders/route.ts
@@ -212,10 +218,7 @@ export async function GET(request: NextRequest) {
   });
 
   if (!parsed.success) {
-    return Response.json(
-      { error: "Invalid wallet address" },
-      { status: 400 }
-    );
+    return Response.json({ error: "Invalid wallet address" }, { status: 400 });
   }
 
   const orders = await prisma.order.findMany({
@@ -235,6 +238,7 @@ export async function GET(request: NextRequest) {
 **When to use:** API routes that need to read on-chain state (balances, prices).
 
 **Example:**
+
 ```typescript
 // Source: viem docs (https://viem.sh/docs/contract/readContract.html)
 // apps/web/lib/viem.ts
@@ -269,7 +273,12 @@ export async function GET(request: NextRequest) {
   // Multicall: read USDC + 4 AmmoToken balances in one RPC call
   const results = await publicClient.multicall({
     contracts: [
-      { address: fuji.usdc, abi: erc20Abi, functionName: "balanceOf", args: [address] },
+      {
+        address: fuji.usdc,
+        abi: erc20Abi,
+        functionName: "balanceOf",
+        args: [address],
+      },
       ...Object.values(fuji.calibers).map((c) => ({
         address: c.token as `0x${string}`,
         abi: AmmoTokenAbi,
@@ -298,6 +307,7 @@ export async function GET(request: NextRequest) {
 **When to use:** Market overview page that needs current prices and volume data.
 
 **Example:**
+
 ```typescript
 // apps/web/app/api/market/route.ts
 
@@ -368,14 +378,14 @@ export async function GET() {
 
 ## Don't Hand-Roll
 
-| Problem | Don't Build | Use Instead | Why |
-|---------|-------------|-------------|-----|
-| Wallet connection state | Custom React context + state | wagmi `useAccount` / `useConnect` / `useDisconnect` | wagmi manages connection lifecycle, persistence, reconnection, multi-wallet support |
-| Network switching | Manual `wallet_switchEthereumChain` RPC call | wagmi `useSwitchChain` | Handles provider differences, error states, pending states automatically |
-| ERC20 multicall reads | 5 separate `useReadContract` hooks | Single `useReadContracts` with contracts array | Batches into one Multicall3 RPC call, one loading state, one error state |
-| Server-side multicall | 5 separate `readContract` calls | viem `publicClient.multicall()` | Single RPC call for all 5 balance reads |
-| Request validation | Manual if/else checks | zod `.safeParse()` | Type-safe, composable, returns structured errors |
-| API response formatting | Manual try/catch + Response construction | Consistent pattern with early returns | Prevents forgetting status codes or error format |
+| Problem                 | Don't Build                                  | Use Instead                                         | Why                                                                                 |
+| ----------------------- | -------------------------------------------- | --------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| Wallet connection state | Custom React context + state                 | wagmi `useAccount` / `useConnect` / `useDisconnect` | wagmi manages connection lifecycle, persistence, reconnection, multi-wallet support |
+| Network switching       | Manual `wallet_switchEthereumChain` RPC call | wagmi `useSwitchChain`                              | Handles provider differences, error states, pending states automatically            |
+| ERC20 multicall reads   | 5 separate `useReadContract` hooks           | Single `useReadContracts` with contracts array      | Batches into one Multicall3 RPC call, one loading state, one error state            |
+| Server-side multicall   | 5 separate `readContract` calls              | viem `publicClient.multicall()`                     | Single RPC call for all 5 balance reads                                             |
+| Request validation      | Manual if/else checks                        | zod `.safeParse()`                                  | Type-safe, composable, returns structured errors                                    |
+| API response formatting | Manual try/catch + Response construction     | Consistent pattern with early returns               | Prevents forgetting status codes or error format                                    |
 
 **Key insight:** wagmi v2 provides every hook needed for wallet interaction. The only custom code needed is composing wagmi hooks into application-specific hooks (`useTokenBalances`) and wiring them to UI components.
 
@@ -435,6 +445,7 @@ export async function GET() {
 Verified patterns from official sources:
 
 ### Wallet Connection Hook Composition
+
 ```typescript
 // apps/web/hooks/use-wallet.ts
 // Source: wagmi docs (https://wagmi.sh/react/guides/connect-wallet)
@@ -450,7 +461,8 @@ export function useWallet() {
   const { disconnect } = useDisconnect();
   const { switchChain, isPending: isSwitching } = useSwitchChain();
 
-  const isWrongNetwork = account.isConnected && account.chainId !== avalancheFuji.id;
+  const isWrongNetwork =
+    account.isConnected && account.chainId !== avalancheFuji.id;
 
   return {
     // State
@@ -473,6 +485,7 @@ export function useWallet() {
 ```
 
 ### Route Handler with Dynamic Segment
+
 ```typescript
 // apps/web/app/api/orders/[id]/route.ts
 // Source: Next.js docs (https://nextjs.org/docs/app/getting-started/route-handlers)
@@ -483,7 +496,7 @@ import { PRISMA_TO_CALIBER } from "@ammo-exchange/shared";
 
 export async function GET(
   _request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
 
@@ -510,6 +523,7 @@ export async function GET(
 ```
 
 ### POST Route Handler with Zod Validation
+
 ```typescript
 // apps/web/app/api/redeem/shipping/route.ts
 // Source: zod docs + Next.js Route Handlers
@@ -525,10 +539,14 @@ const shippingSchema = z.object({
   line1: z.string().min(1).max(200),
   line2: z.string().max(200).optional(),
   city: z.string().min(1).max(100),
-  state: z.string().length(2).refine(
-    (s) => !RESTRICTED_STATES.includes(s as (typeof RESTRICTED_STATES)[number]),
-    { message: "Shipping to this state is restricted" }
-  ),
+  state: z
+    .string()
+    .length(2)
+    .refine(
+      (s) =>
+        !RESTRICTED_STATES.includes(s as (typeof RESTRICTED_STATES)[number]),
+      { message: "Shipping to this state is restricted" },
+    ),
   zip: z.string().regex(/^\d{5}(-\d{4})?$/),
 });
 
@@ -542,7 +560,7 @@ export async function POST(request: NextRequest) {
   if (!parsed.success) {
     return Response.json(
       { error: "Validation failed", details: parsed.error.flatten() },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -565,6 +583,7 @@ export async function POST(request: NextRequest) {
 ```
 
 ### Address Truncation Utility
+
 ```typescript
 // apps/web/lib/utils.ts (add to existing file)
 
@@ -582,6 +601,7 @@ export function snowtraceAddressUrl(address: string): string {
 ```
 
 ### BigInt-Safe JSON Serialization Helper
+
 ```typescript
 // apps/web/lib/serialize.ts
 
@@ -592,24 +612,25 @@ export function snowtraceAddressUrl(address: string): string {
 export function serializeBigInts<T>(obj: T): T {
   return JSON.parse(
     JSON.stringify(obj, (_, value) =>
-      typeof value === "bigint" ? value.toString() : value
-    )
+      typeof value === "bigint" ? value.toString() : value,
+    ),
   );
 }
 ```
 
 ## State of the Art
 
-| Old Approach | Current Approach | When Changed | Impact |
-|--------------|------------------|--------------|--------|
-| `useBalance({ token })` for ERC20 | `useReadContracts` with `erc20Abi` | wagmi v2 (2024) | Must use multicall pattern for token balances |
-| `useNetwork` for chain detection | `useAccount().chainId` | wagmi v2 (2024) | `useNetwork` removed; chain info is part of account state |
-| `useSwitchNetwork` | `useSwitchChain` | wagmi v2 (2024) | Renamed for clarity; API is similar |
-| `useAccount` | `useConnection` | wagmi v3 (2025) | NOT relevant -- this project uses wagmi 2.19.5, so `useAccount` is correct |
-| Pages Router API routes (`pages/api/`) | App Router Route Handlers (`app/api/*/route.ts`) | Next.js 13+ (stable) | Exports named functions (GET, POST) instead of default handler |
-| GET Route Handlers cached by default | Uncached by default | Next.js 15 (2024) | No action needed -- dynamic routes with Prisma are inherently uncached |
+| Old Approach                           | Current Approach                                 | When Changed         | Impact                                                                     |
+| -------------------------------------- | ------------------------------------------------ | -------------------- | -------------------------------------------------------------------------- |
+| `useBalance({ token })` for ERC20      | `useReadContracts` with `erc20Abi`               | wagmi v2 (2024)      | Must use multicall pattern for token balances                              |
+| `useNetwork` for chain detection       | `useAccount().chainId`                           | wagmi v2 (2024)      | `useNetwork` removed; chain info is part of account state                  |
+| `useSwitchNetwork`                     | `useSwitchChain`                                 | wagmi v2 (2024)      | Renamed for clarity; API is similar                                        |
+| `useAccount`                           | `useConnection`                                  | wagmi v3 (2025)      | NOT relevant -- this project uses wagmi 2.19.5, so `useAccount` is correct |
+| Pages Router API routes (`pages/api/`) | App Router Route Handlers (`app/api/*/route.ts`) | Next.js 13+ (stable) | Exports named functions (GET, POST) instead of default handler             |
+| GET Route Handlers cached by default   | Uncached by default                              | Next.js 15 (2024)    | No action needed -- dynamic routes with Prisma are inherently uncached     |
 
 **Deprecated/outdated:**
+
 - wagmi `useBalance` with `token` parameter: Removed in v2. Use `useReadContracts` instead.
 - wagmi `useNetwork`: Removed in v2. Use `useAccount().chainId` and `useAccount().chain`.
 - wagmi `useSwitchNetwork`: Renamed to `useSwitchChain` in v2.
@@ -640,6 +661,7 @@ export function serializeBigInts<T>(obj: T): T {
 ## Sources
 
 ### Primary (HIGH confidence)
+
 - wagmi v2 `useConnect` docs: https://wagmi.sh/react/api/hooks/useConnect -- parameters, return type, connector mutation
 - wagmi v2 `useDisconnect` docs: https://wagmi.sh/react/api/hooks/useDisconnect -- disconnect mutation API
 - wagmi v2 `useSwitchChain` docs: https://wagmi.sh/react/api/hooks/useSwitchChain -- chain switching with chainId parameter
@@ -658,17 +680,20 @@ export function serializeBigInts<T>(obj: T): T {
 - Installed versions: wagmi 2.19.5, viem 2.23.2 (verified via pnpm)
 
 ### Secondary (MEDIUM confidence)
+
 - Multicall3 on Avalanche Fuji: deployed at `0xcA11bde05977b3631167028862bE2a173976CA11` -- standard address across all EVM chains, referenced in viem chain definitions
 - wagmi v2 to v3 migration: https://wagmi.sh/react/guides/migrate-from-v2-to-v3 -- `useAccount` renamed to `useConnection` (NOT applicable to this project, wagmi 2.19.5)
 - wagmi injected connector: https://wagmi.sh/react/api/connectors/injected -- EIP-6963 auto-discovery via `multiInjectedProviderDiscovery`
 - Next.js Prisma best practices: https://www.prisma.io/docs/orm/more/help-and-troubleshooting/nextjs-help -- singleton pattern, server-only usage
 
 ### Tertiary (LOW confidence)
+
 - None -- all findings verified with official documentation.
 
 ## Metadata
 
 **Confidence breakdown:**
+
 - Standard stack: HIGH -- all libraries already installed, versions verified from package.json
 - Architecture (wallet): HIGH -- wagmi v2 hook APIs verified from official docs, existing providers.tsx already set up correctly
 - Architecture (API routes): HIGH -- Next.js 15 Route Handler convention verified, Prisma integration pattern standard

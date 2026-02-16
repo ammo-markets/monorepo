@@ -24,7 +24,11 @@ affects: [future keeper management features, protocol monitoring]
 # Tech tracking
 tech-stack:
   added: []
-  patterns: [finalize dialog pattern with price conversion, protocol stats API combining chain reads and DB queries]
+  patterns:
+    [
+      finalize dialog pattern with price conversion,
+      protocol stats API combining chain reads and DB queries,
+    ]
 
 key-files:
   created:
@@ -70,6 +74,7 @@ completed: 2026-02-11
 - **Files modified:** 11
 
 ## Accomplishments
+
 - useFinalizeMint and useFinalizeRedeem hooks with explicit return types (TS2742 prevention)
 - FinalizeMintDialog accepts human-readable USD price (e.g., 0.35) and converts to X18 via parseUnits
 - FinalizeRedeemDialog provides one-click confirmation with order details display
@@ -86,6 +91,7 @@ Each task was committed atomically:
 2. **Task 2: Protocol stats API and admin dashboard page** - `aa1909e` (feat)
 
 ## Files Created/Modified
+
 - `apps/web/hooks/use-finalize-mint.ts` - useWriteContract hook for CaliberMarket.finalizeMint
 - `apps/web/hooks/use-finalize-redeem.ts` - useWriteContract hook for CaliberMarket.finalizeRedeem
 - `apps/web/features/admin/finalize-mint-dialog.tsx` - Confirmation dialog with price input for finalizeMint
@@ -99,6 +105,7 @@ Each task was committed atomically:
 - `apps/web/app/layout.tsx` - Added Sonner Toaster for toast notifications
 
 ## Decisions Made
+
 - Sonner Toaster added directly to root layout with `theme="dark"` since the app is dark-only (no ThemeProvider setup needed)
 - Finalize buttons disabled when `onChainOrderId` is null since orders without on-chain IDs cannot be finalized on-chain
 - Price input uses `parseUnits(price, 18)` from viem for accurate X18 conversion (e.g., "0.35" -> 350000000000000000n)
@@ -110,6 +117,7 @@ Each task was committed atomically:
 ### Auto-fixed Issues
 
 **1. [Rule 3 - Blocking] Added Sonner Toaster to root layout**
+
 - **Found during:** Task 1 (Finalize dialogs)
 - **Issue:** Toast notifications (toast.success, toast.error) would not render without the Toaster component mounted in the React tree
 - **Fix:** Added `<Toaster theme="dark" />` to root layout.tsx, imported directly from sonner
@@ -123,12 +131,15 @@ Each task was committed atomically:
 **Impact on plan:** Essential for toast notifications to work. No scope creep.
 
 ## Issues Encountered
+
 None
 
 ## User Setup Required
+
 None - no external service configuration required.
 
 ## Next Phase Readiness
+
 - Admin dashboard is fully operational with finalization flows and protocol stats
 - Phase 6 (Admin Dashboard) is complete -- all plans executed
 - The entire v1.0 milestone roadmap is complete

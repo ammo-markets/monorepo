@@ -72,13 +72,18 @@ export function AppNav() {
                 className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors duration-150"
                 style={{
                   color: active ? "var(--accent)" : "var(--text-secondary)",
-                  backgroundColor: active ? "var(--bg-tertiary)" : "transparent",
-                  borderLeft: active ? "3px solid var(--accent)" : "3px solid transparent",
+                  backgroundColor: active
+                    ? "var(--bg-tertiary)"
+                    : "transparent",
+                  borderLeft: active
+                    ? "3px solid var(--accent)"
+                    : "3px solid transparent",
                 }}
                 onMouseEnter={(e) => {
                   if (!active) {
                     e.currentTarget.style.color = "var(--text-primary)";
-                    e.currentTarget.style.backgroundColor = "var(--bg-tertiary)";
+                    e.currentTarget.style.backgroundColor =
+                      "var(--bg-tertiary)";
                   }
                 }}
                 onMouseLeave={(e) => {
@@ -163,10 +168,7 @@ export function AppNav() {
 
           {/* Signed-in indicator */}
           {isSignedIn && (
-            <div
-              className="text-xs"
-              style={{ color: "var(--text-muted)" }}
-            >
+            <div className="text-xs" style={{ color: "var(--text-muted)" }}>
               Signed in via SIWE
             </div>
           )}

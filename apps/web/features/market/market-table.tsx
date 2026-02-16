@@ -3,12 +3,7 @@
 import type { ReactNode } from "react";
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import {
-  ArrowUp,
-  ArrowDown,
-  ArrowUpDown,
-  ExternalLink,
-} from "lucide-react";
+import { ArrowUp, ArrowDown, ArrowUpDown, ExternalLink } from "lucide-react";
 import { caliberIcons } from "@/features/shared/caliber-icons";
 import { useMarketData } from "@/hooks/use-market-data";
 import type { MarketCaliberFromAPI } from "@/lib/types";
@@ -507,7 +502,11 @@ export function MarketTable() {
       {/* Mobile cards */}
       <div className="flex flex-col gap-3 md:hidden">
         {sorted.map((caliber, index) => (
-          <MobileCaliberCard key={caliber.caliber} caliber={caliber} index={index} />
+          <MobileCaliberCard
+            key={caliber.caliber}
+            caliber={caliber}
+            index={index}
+          />
         ))}
       </div>
     </>

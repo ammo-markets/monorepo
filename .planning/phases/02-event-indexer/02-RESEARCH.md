@@ -17,25 +17,28 @@ Key design decisions: (1) Use `getContractEvents` with `fromBlock`/`toBlock` for
 ## Standard Stack
 
 ### Core
-| Library | Version | Purpose | Why Standard |
-|---------|---------|---------|--------------|
-| viem | ^2.23.2 | `getContractEvents` for polling, `createPublicClient` for RPC | Already installed in worker, provides typed event decoding from ABI |
-| Prisma Client | 7.3.0 | Interactive transactions for atomic writes | Already installed via @ammo-exchange/db, supports `$transaction` with upsert |
-| Bun | latest | Runtime for long-running worker process | Already configured as worker runtime, supports `setInterval` natively |
-| @ammo-exchange/contracts | workspace:* | CaliberMarketAbi for typed event decoding | Already installed, exports `as const` ABIs for viem type inference |
-| @ammo-exchange/shared | workspace:* | CONTRACT_ADDRESSES, CALIBER_TO_PRISMA mappings | Already installed, has Fuji addresses and caliber mappings |
-| @ammo-exchange/db | workspace:* | Prisma client singleton, generated types | Already installed, exports `prisma` and all Prisma types |
+
+| Library                  | Version      | Purpose                                                       | Why Standard                                                                 |
+| ------------------------ | ------------ | ------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| viem                     | ^2.23.2      | `getContractEvents` for polling, `createPublicClient` for RPC | Already installed in worker, provides typed event decoding from ABI          |
+| Prisma Client            | 7.3.0        | Interactive transactions for atomic writes                    | Already installed via @ammo-exchange/db, supports `$transaction` with upsert |
+| Bun                      | latest       | Runtime for long-running worker process                       | Already configured as worker runtime, supports `setInterval` natively        |
+| @ammo-exchange/contracts | workspace:\* | CaliberMarketAbi for typed event decoding                     | Already installed, exports `as const` ABIs for viem type inference           |
+| @ammo-exchange/shared    | workspace:\* | CONTRACT_ADDRESSES, CALIBER_TO_PRISMA mappings                | Already installed, has Fuji addresses and caliber mappings                   |
+| @ammo-exchange/db        | workspace:\* | Prisma client singleton, generated types                      | Already installed, exports `prisma` and all Prisma types                     |
 
 ### Supporting
-| Library | Version | Purpose | When to Use |
-|---------|---------|---------|-------------|
+
+| Library     | Version             | Purpose                          | When to Use                                                  |
+| ----------- | ------------------- | -------------------------------- | ------------------------------------------------------------ |
 | viem/chains | (bundled with viem) | `avalancheFuji` chain definition | Worker client must target Fuji (chain ID 43113), not mainnet |
 
 ### Alternatives Considered
-| Instead of | Could Use | Tradeoff |
-|------------|-----------|----------|
-| Manual polling loop | viem `watchContractEvent` | watchContractEvent uses WebSocket or falls back to polling internally; manual loop gives explicit control over block ranges, batch sizes, and cursor management |
-| Per-contract cursors | Single global cursor | Per-contract cursors allow independent progress per market, but adds complexity. Since all 4 contracts are queried together, a single cursor tracking the lowest processed block is simpler and sufficient |
+
+| Instead of           | Could Use                 | Tradeoff                                                                                                                                                                                                   |
+| -------------------- | ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Manual polling loop  | viem `watchContractEvent` | watchContractEvent uses WebSocket or falls back to polling internally; manual loop gives explicit control over block ranges, batch sizes, and cursor management                                            |
+| Per-contract cursors | Single global cursor      | Per-contract cursors allow independent progress per market, but adds complexity. Since all 4 contracts are queried together, a single cursor tracking the lowest processed block is simpler and sufficient |
 
 **Installation:**
 No new packages needed. All dependencies are already installed in `apps/worker/package.json`.
@@ -64,6 +67,7 @@ apps/worker/src/
 **When to use:** Any polling-based blockchain event indexer that must survive restarts without missing or duplicating events.
 
 **Example:**
+
 ```typescript
 // Source: viem docs (https://v1.viem.sh/docs/contract/getContractEvents.html)
 // + Prisma interactive transactions (https://www.prisma.io/docs/orm/prisma-client/queries/transactions)
@@ -75,7 +79,7 @@ import { prisma } from "@ammo-exchange/db";
 import { CONTRACT_ADDRESSES } from "@ammo-exchange/shared";
 
 const POLL_INTERVAL_MS = 4_000; // ~2 Avalanche blocks per tick
-const BATCH_SIZE = 2_000n;      // Max blocks per getContractEvents call
+const BATCH_SIZE = 2_000n; // Max blocks per getContractEvents call
 
 const client = createPublicClient({
   chain: avalancheFuji,
@@ -83,8 +87,9 @@ const client = createPublicClient({
 });
 
 // All 4 CaliberMarket addresses as an array for multi-address query
-const MARKET_ADDRESSES = Object.values(CONTRACT_ADDRESSES.fuji.calibers)
-  .map((c) => c.market);
+const MARKET_ADDRESSES = Object.values(CONTRACT_ADDRESSES.fuji.calibers).map(
+  (c) => c.market,
+);
 
 async function pollEvents() {
   const currentBlock = await client.getBlockNumber();
@@ -98,9 +103,10 @@ async function pollEvents() {
   // Process in batches to respect RPC limits
   let batchStart = fromBlock;
   while (batchStart <= currentBlock) {
-    const batchEnd = batchStart + BATCH_SIZE - 1n > currentBlock
-      ? currentBlock
-      : batchStart + BATCH_SIZE - 1n;
+    const batchEnd =
+      batchStart + BATCH_SIZE - 1n > currentBlock
+        ? currentBlock
+        : batchStart + BATCH_SIZE - 1n;
 
     // Fetch all event types in parallel for this block range
     const [mintStarted, mintFinalized, redeemRequested, redeemFinalized] =
@@ -137,8 +143,13 @@ async function pollEvents() {
 
     // Process events and update cursor atomically
     await processAndCommit(
-      [...mintStarted, ...mintFinalized, ...redeemRequested, ...redeemFinalized],
-      batchEnd
+      [
+        ...mintStarted,
+        ...mintFinalized,
+        ...redeemRequested,
+        ...redeemFinalized,
+      ],
+      batchEnd,
     );
 
     batchStart = batchEnd + 1n;
@@ -153,6 +164,7 @@ async function pollEvents() {
 **When to use:** Any event indexer that must guarantee exactly-once processing semantics.
 
 **Example:**
+
 ```typescript
 // Source: Prisma docs (https://www.prisma.io/docs/orm/prisma-client/queries/transactions)
 
@@ -190,11 +202,13 @@ async function processAndCommit(events: EventLog[], lastBlock: bigint) {
 **When to use:** Event-driven workers that discover users from on-chain events rather than explicit registration.
 
 **Example:**
+
 ```typescript
 // Source: Prisma docs (https://www.prisma.io/docs/orm/prisma-client/queries/relation-queries)
 
 async function handleMintStarted(tx: PrismaTransaction, event: MintStartedLog) {
-  const { orderId, user, usdcAmount, requestPrice, minTokensOut, deadline } = event.args;
+  const { orderId, user, usdcAmount, requestPrice, minTokensOut, deadline } =
+    event.args;
   const caliber = addressToCaliber(event.address);
 
   await tx.order.upsert({
@@ -231,6 +245,7 @@ async function handleMintStarted(tx: PrismaTransaction, event: MintStartedLog) {
 **When to use:** When processing events from multiple contracts that share the same ABI.
 
 **Example:**
+
 ```typescript
 // Source: Existing CONTRACT_ADDRESSES config
 
@@ -239,7 +254,9 @@ import type { Caliber } from "@ammo-exchange/shared";
 
 // Build reverse lookup: address -> caliber
 const ADDRESS_TO_CALIBER: Record<string, Caliber> = {};
-for (const [caliber, addrs] of Object.entries(CONTRACT_ADDRESSES.fuji.calibers)) {
+for (const [caliber, addrs] of Object.entries(
+  CONTRACT_ADDRESSES.fuji.calibers,
+)) {
   ADDRESS_TO_CALIBER[addrs.market.toLowerCase()] = caliber as Caliber;
 }
 
@@ -260,13 +277,13 @@ function addressToCaliber(address: string): Caliber {
 
 ## Don't Hand-Roll
 
-| Problem | Don't Build | Use Instead | Why |
-|---------|-------------|-------------|-----|
-| Event decoding | Manual topic/data parsing | viem `getContractEvents` with ABI | ABI-driven type inference, handles indexed vs. non-indexed args automatically |
-| Atomic cursor + writes | Two separate DB calls | Prisma `$transaction` (interactive) | Prevents partial processing on crash -- cursor only advances if all writes succeed |
-| User auto-creation | Check-then-create pattern | Prisma `connectOrCreate` | Race-condition-free, single operation, handles concurrent event processing |
-| Block range pagination | Custom retry/pagination logic | Simple while loop with `BATCH_SIZE` constant | Avalanche public RPC limit is 2,048 blocks; a 2,000-block batch is safe and simple |
-| Caliber address mapping | Hardcoded switch statement | Computed reverse lookup from `CONTRACT_ADDRESSES` | Stays in sync when addresses change, single source of truth |
+| Problem                 | Don't Build                   | Use Instead                                       | Why                                                                                |
+| ----------------------- | ----------------------------- | ------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| Event decoding          | Manual topic/data parsing     | viem `getContractEvents` with ABI                 | ABI-driven type inference, handles indexed vs. non-indexed args automatically      |
+| Atomic cursor + writes  | Two separate DB calls         | Prisma `$transaction` (interactive)               | Prevents partial processing on crash -- cursor only advances if all writes succeed |
+| User auto-creation      | Check-then-create pattern     | Prisma `connectOrCreate`                          | Race-condition-free, single operation, handles concurrent event processing         |
+| Block range pagination  | Custom retry/pagination logic | Simple while loop with `BATCH_SIZE` constant      | Avalanche public RPC limit is 2,048 blocks; a 2,000-block batch is safe and simple |
+| Caliber address mapping | Hardcoded switch statement    | Computed reverse lookup from `CONTRACT_ADDRESSES` | Stays in sync when addresses change, single source of truth                        |
 
 **Key insight:** viem's `getContractEvents` + Prisma interactive transactions handle 90% of the complexity. The indexer logic itself is glue code: fetch events, map to database records, commit atomically.
 
@@ -326,6 +343,7 @@ function addressToCaliber(address: string): Caliber {
 Verified patterns from official sources:
 
 ### getContractEvents with Multiple Addresses and Block Range
+
 ```typescript
 // Source: viem docs (https://v1.viem.sh/docs/contract/getContractEvents.html)
 
@@ -355,16 +373,17 @@ const logs = await client.getContractEvents({
 
 // Each log has typed args based on the ABI
 for (const log of logs) {
-  console.log(log.args.orderId);       // bigint
-  console.log(log.args.user);          // `0x${string}`
-  console.log(log.args.usdcAmount);    // bigint
-  console.log(log.blockNumber);        // bigint
-  console.log(log.transactionHash);    // `0x${string}`
-  console.log(log.address);            // which contract emitted the event
+  console.log(log.args.orderId); // bigint
+  console.log(log.args.user); // `0x${string}`
+  console.log(log.args.usdcAmount); // bigint
+  console.log(log.blockNumber); // bigint
+  console.log(log.transactionHash); // `0x${string}`
+  console.log(log.address); // which contract emitted the event
 }
 ```
 
 ### Prisma Interactive Transaction for Atomic Writes
+
 ```typescript
 // Source: Prisma docs (https://www.prisma.io/docs/orm/prisma-client/queries/transactions)
 
@@ -406,12 +425,13 @@ async function processAndCommit(events: ParsedEvent[], lastBlock: bigint) {
     },
     {
       timeout: 30_000, // 30s timeout for large batches
-    }
+    },
   );
 }
 ```
 
 ### Event Handler with connectOrCreate for User
+
 ```typescript
 // Source: Prisma relation queries (https://www.prisma.io/docs/orm/prisma-client/queries/relation-queries)
 // + viem Log type (https://github.com/wevm/viem/blob/main/src/types/log.ts)
@@ -468,6 +488,7 @@ async function handleMintFinalized(tx: PrismaTx, event: MintFinalizedEvent) {
 ```
 
 ### Graceful Polling Loop with Error Handling
+
 ```typescript
 // Source: Bun docs (https://bun.com/docs/runtime/workers) + standard patterns
 
@@ -505,14 +526,15 @@ function startPolling() {
 
 ## State of the Art
 
-| Old Approach | Current Approach | When Changed | Impact |
-|--------------|------------------|--------------|--------|
-| `watchContractEvent` (WebSocket) | `getContractEvents` (polling) | Project decision | Explicit block ranges, no missed events on reconnect, deterministic behavior |
-| Per-contract event filters | Multi-address `getContractEvents` | viem 1.x+ | Single RPC call for all 4 markets instead of 4 separate calls |
-| Sequential Prisma writes + separate cursor update | Interactive `$transaction` with atomic cursor | Prisma 4.7+ (stable since 2023) | Crash-safe: cursor only advances if all writes succeed |
-| Custom ERC20 event parsing | ABI-typed `getContractEvents` with `strict: true` | viem 1.x+ | TypeScript infers exact arg types from ABI, no manual decoding |
+| Old Approach                                      | Current Approach                                  | When Changed                    | Impact                                                                       |
+| ------------------------------------------------- | ------------------------------------------------- | ------------------------------- | ---------------------------------------------------------------------------- |
+| `watchContractEvent` (WebSocket)                  | `getContractEvents` (polling)                     | Project decision                | Explicit block ranges, no missed events on reconnect, deterministic behavior |
+| Per-contract event filters                        | Multi-address `getContractEvents`                 | viem 1.x+                       | Single RPC call for all 4 markets instead of 4 separate calls                |
+| Sequential Prisma writes + separate cursor update | Interactive `$transaction` with atomic cursor     | Prisma 4.7+ (stable since 2023) | Crash-safe: cursor only advances if all writes succeed                       |
+| Custom ERC20 event parsing                        | ABI-typed `getContractEvents` with `strict: true` | viem 1.x+                       | TypeScript infers exact arg types from ABI, no manual decoding               |
 
 **Deprecated/outdated:**
+
 - `createContractEventFilter` + `getFilterLogs`: Older viem pattern; `getContractEvents` is the direct replacement that combines both steps
 - `process.on('unhandledRejection')` for crash handling: Still works, but wrapping polling in try/catch is more explicit and Bun-compatible
 
@@ -541,6 +563,7 @@ function startPolling() {
 ## Sources
 
 ### Primary (HIGH confidence)
+
 - viem `getContractEvents` docs: https://v1.viem.sh/docs/contract/getContractEvents.html -- parameters, return type, address array support, block range
 - viem Log type source: https://github.com/wevm/viem/blob/main/src/types/log.ts -- exact TypeScript type definition
 - Prisma interactive transactions: https://www.prisma.io/docs/orm/prisma-client/queries/transactions -- `$transaction` with async function, timeout config, isolation levels
@@ -552,17 +575,20 @@ function startPolling() {
 - Avalanche reorg FAQ: https://support.avax.network/en/articles/7329750-are-there-reorgs-on-avalanche -- finality in ~1s, no practical reorg risk
 
 ### Secondary (MEDIUM confidence)
+
 - Avalanche eth_getLogs block range limit: https://docs.chainstack.com/docs/understanding-eth-getlogs-limitations -- 100,000 blocks per Chainstack docs, but public RPC may be 2,048 blocks per AvalancheGo default `api-max-blocks-per-request`
 - AvalancheGo C-Chain RPC docs: https://build.avax.network/docs/rpcs/c-chain -- confirms `api-max-blocks-per-request` default of 2,048
 - viem `avalancheFuji` chain: https://viem.sh/docs/chains/introduction -- chain definition import path
 - Avalanche block time: https://chainspect.app/chain/avalanche -- approximately 1.1-2 seconds
 
 ### Tertiary (LOW confidence)
+
 - Bun setInterval behavior in long-running processes: https://github.com/oven-sh/bun/issues/17725 -- potential slowdown with long-running setInterval, needs validation with actual worker
 
 ## Metadata
 
 **Confidence breakdown:**
+
 - Standard stack: HIGH -- all libraries already installed and used in Phase 1, versions verified from package.json
 - Architecture: HIGH -- patterns verified against official viem and Prisma documentation, cross-referenced with existing codebase structure
 - Pitfalls: HIGH -- derived from actual ABI inspection (per-contract order IDs), schema analysis (userId required), and Avalanche RPC limits documentation

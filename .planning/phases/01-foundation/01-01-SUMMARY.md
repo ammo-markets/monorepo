@@ -17,7 +17,12 @@ affects: [01-02, shared-config, worker, web]
 # Tech tracking
 tech-stack:
   added: [forge-script, makefile]
-  patterns: [single-script-deployment, mock-contracts-for-testnet, deployer-as-all-roles]
+  patterns:
+    [
+      single-script-deployment,
+      mock-contracts-for-testnet,
+      deployer-as-all-roles,
+    ]
 
 key-files:
   created:
@@ -67,23 +72,23 @@ completed: 2026-02-11
 
 ## Deployed Addresses (Fuji Testnet)
 
-| Contract | Address |
-|----------|---------|
-| MockUSDC | `0x270D06E53f943C6Dd69a2e51FEB07c420B3Ab146` |
+| Contract    | Address                                      |
+| ----------- | -------------------------------------------- |
+| MockUSDC    | `0x270D06E53f943C6Dd69a2e51FEB07c420B3Ab146` |
 | AmmoManager | `0x5dB292eade6BEa9D710C54C5504d8400639dec25` |
 | AmmoFactory | `0xA802FE22E85461131Ca94C8bB85C1a36815aDe8D` |
-| 9MM Oracle | `0xFC234277eb25fd5dBc95Ab188D8E11E965075Bcd` |
-| 9MM Market | `0x5aFFA4CfF4920627C2061D211C44B1100E3a8Fe1` |
-| 9MM Token | `0x6a9753ffDbF5036991294Ce439a042dF834aCa62` |
-| 556 Oracle | `0x19Bcf3176fb3472B0A222D57eaF8C6004D840b62` |
-| 556 Market | `0xe082bDd7139eF03E8db1B9155f53aB60E5EF7e03` |
-| 556 Token | `0x46951A49a4d73C70ba9A12bF82f4c4686a8b60E8` |
+| 9MM Oracle  | `0xFC234277eb25fd5dBc95Ab188D8E11E965075Bcd` |
+| 9MM Market  | `0x5aFFA4CfF4920627C2061D211C44B1100E3a8Fe1` |
+| 9MM Token   | `0x6a9753ffDbF5036991294Ce439a042dF834aCa62` |
+| 556 Oracle  | `0x19Bcf3176fb3472B0A222D57eaF8C6004D840b62` |
+| 556 Market  | `0xe082bDd7139eF03E8db1B9155f53aB60E5EF7e03` |
+| 556 Token   | `0x46951A49a4d73C70ba9A12bF82f4c4686a8b60E8` |
 | 22LR Oracle | `0x425241B556E02aAfFA253451831791CCe4Bd0f1D` |
 | 22LR Market | `0xF1B4a75C77b8a9bFB52F9B800C3f26547eDD442b` |
-| 22LR Token | `0xFE10A09895Ab1AF20E5613c2e0715Aac56837ff5` |
-| 308 Oracle | `0x757cA58216b4048C51e13dc0266831A6E85D068c` |
-| 308 Market | `0x326b5AAc6C97918716264E307923c6D2c95cA440` |
-| 308 Token | `0xa8685b36384b13d823bDeF75B96Ee83B6BF647A7` |
+| 22LR Token  | `0xFE10A09895Ab1AF20E5613c2e0715Aac56837ff5` |
+| 308 Oracle  | `0x757cA58216b4048C51e13dc0266831A6E85D068c` |
+| 308 Market  | `0x326b5AAc6C97918716264E307923c6D2c95cA440` |
+| 308 Token   | `0xa8685b36384b13d823bDeF75B96Ee83B6BF647A7` |
 
 ## Task Commits
 
@@ -113,6 +118,7 @@ Each task was committed atomically:
 ### Auto-fixed Issues
 
 **1. [Rule 3 - Blocking] Fixed stack-too-deep error in DeployFuji.s.sol**
+
 - **Found during:** Task 2 (DeployFuji.s.sol creation)
 - **Issue:** The deployment script had too many local variables in a single function scope, causing Solidity's "stack too deep" compilation error
 - **Fix:** Restructured the script to use helper functions or scoped blocks to reduce stack depth
@@ -132,6 +138,7 @@ Each task was committed atomically:
 ## User Setup Required
 
 The user manually deployed contracts to Fuji testnet using:
+
 1. `.env` file with PRIVATE_KEY, SNOWTRACE_API_KEY, and FUJI_RPC_URL
 2. `make fuji_deploy` from packages/contracts/
 
@@ -150,5 +157,6 @@ All deployed addresses are captured in the table above and ready for plan 01-02 
 - SUMMARY.md created at `.planning/phases/01-foundation/01-01-SUMMARY.md`
 
 ---
-*Phase: 01-foundation*
-*Completed: 2026-02-11*
+
+_Phase: 01-foundation_
+_Completed: 2026-02-11_

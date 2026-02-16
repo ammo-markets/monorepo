@@ -1,11 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  transpilePackages: [
-    "@ammo-exchange/shared",
-    "@ammo-exchange/contracts",
+  transpilePackages: ["@ammo-exchange/shared", "@ammo-exchange/contracts"],
+  serverExternalPackages: [
+    "@ammo-exchange/db",
+    "@prisma/client",
+    "@prisma/adapter-pg",
   ],
-  serverExternalPackages: ["@ammo-exchange/db", "@prisma/client", "@prisma/adapter-pg"],
   webpack: (config, { isServer }) => {
     // Resolve .js extension imports to .ts files in workspace packages
     // (ESM TypeScript uses .js extensions in imports but actual files are .ts)

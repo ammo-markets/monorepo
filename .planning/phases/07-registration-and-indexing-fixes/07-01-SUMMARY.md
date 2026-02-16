@@ -16,7 +16,12 @@ affects: [07-02-indexing-fixes, worker-event-handlers]
 # Tech tracking
 tech-stack:
   added: []
-  patterns: [fire-and-forget registration, upsert for idempotency, silent-fail best-effort]
+  patterns:
+    [
+      fire-and-forget registration,
+      upsert for idempotency,
+      silent-fail best-effort,
+    ]
 
 key-files:
   created:
@@ -49,6 +54,7 @@ completed: 2026-02-11
 - **Files modified:** 2
 
 ## Accomplishments
+
 - POST /api/users/register endpoint that upserts User by wallet address with zod validation
 - useWallet hook fires registration call on wallet connect and account switch, fire-and-forget
 - Fully idempotent: duplicate calls for the same wallet are no-ops (upsert with empty update)
@@ -61,10 +67,12 @@ Each task was committed atomically:
 2. **Task 2: Wire useWallet hook to auto-register on connect** - `cc5c62a` (feat)
 
 ## Files Created/Modified
+
 - `apps/web/app/api/users/register/route.ts` - POST endpoint that upserts User by wallet address, returns walletAddress and kycStatus
 - `apps/web/hooks/use-wallet.ts` - Added useEffect to fire POST /api/users/register when account.address changes
 
 ## Decisions Made
+
 - Fire-and-forget pattern: registration call is not awaited and errors are silently caught. The worker's connectOrCreate in event handlers serves as a fallback, so the UI is never blocked by registration.
 - Upsert with empty update: calling register for an already-registered wallet is a safe no-op. No duplicate records possible.
 - No new state variables in useWallet: the hook's return type is unchanged, so no breaking changes for consumers.
@@ -82,6 +90,7 @@ None.
 None - no external service configuration required.
 
 ## Next Phase Readiness
+
 - User records are now auto-created on wallet connect, fixing REG-01 and REG-02
 - API calls (orders, KYC status) will succeed for first-time users immediately after connect
 - Worker event handlers still serve as fallback for edge cases
@@ -95,5 +104,6 @@ None - no external service configuration required.
 - FOUND: commit cc5c62a (Task 2)
 
 ---
-*Phase: 07-registration-and-indexing-fixes*
-*Completed: 2026-02-11*
+
+_Phase: 07-registration-and-indexing-fixes_
+_Completed: 2026-02-11_

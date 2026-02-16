@@ -112,9 +112,7 @@ export async function handleMintFinalized(
             createdAt: new Date(),
           },
         });
-        console.log(
-          `[mint] Created ActivityLog entry for mint ${order.id}`,
-        );
+        console.log(`[mint] Created ActivityLog entry for mint ${order.id}`);
       }
     } catch (error) {
       console.error("[mint] Failed to create ActivityLog entry:", error);

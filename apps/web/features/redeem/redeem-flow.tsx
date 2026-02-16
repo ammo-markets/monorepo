@@ -319,9 +319,7 @@ function StepSelectCaliberAmount({
   const isValid = rounds >= minRedeem && !exceedsBalance;
   const hasError = belowMin || exceedsBalance;
 
-  const allCalibers = caliberDetailsMap
-    ? Object.values(caliberDetailsMap)
-    : [];
+  const allCalibers = caliberDetailsMap ? Object.values(caliberDetailsMap) : [];
 
   return (
     <div>
@@ -1646,12 +1644,10 @@ export function RedeemFlow() {
   }, [marketCalibers]);
 
   const [step, setStep] = useState(0);
-  const [selectedCaliber, setSelectedCaliber] = useState<Caliber | null>(
-    () => {
-      if (preselected) return preselected;
-      return null;
-    },
-  );
+  const [selectedCaliber, setSelectedCaliber] = useState<Caliber | null>(() => {
+    if (preselected) return preselected;
+    return null;
+  });
   const [roundsAmount, setRoundsAmount] = useState("");
   const [address, setAddress] = useState<ShippingAddress>({
     fullName: "",

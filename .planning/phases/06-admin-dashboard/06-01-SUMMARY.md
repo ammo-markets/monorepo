@@ -24,7 +24,12 @@ affects: [06-admin-dashboard plan 02, future keeper management features]
 # Tech tracking
 tech-stack:
   added: []
-  patterns: [admin layout gate pattern, TanStack Query for admin data fetching, KYC badge component]
+  patterns:
+    [
+      admin layout gate pattern,
+      TanStack Query for admin data fetching,
+      KYC badge component,
+    ]
 
 key-files:
   created:
@@ -71,6 +76,7 @@ completed: 2026-02-11
 - **Files modified:** 11
 
 ## Accomplishments
+
 - useKeeperCheck hook reads isKeeper from AmmoManager contract for client-side role verification
 - AdminLayoutGate blocks non-keepers with three clear states: loading spinner, connect wallet prompt, access denied message
 - Admin sidebar with amber-highlighted active navigation between dashboard, mint orders, and redeem orders
@@ -87,19 +93,21 @@ Each task was committed atomically:
 2. **Task 2: Mint orders and redeem orders queue pages** - `1987148` (feat)
 
 ## Files Created/Modified
+
 - `apps/web/hooks/use-keeper-check.ts` - Client-side isKeeper on-chain check via useReadContract
 - `apps/web/features/admin/admin-layout-gate.tsx` - Three-state gate: loading, not-connected, not-keeper, children
 - `apps/web/features/admin/admin-sidebar.tsx` - Sidebar navigation with active state highlighting
 - `apps/web/features/admin/mint-orders-table.tsx` - Table rendering pending mint orders with USDC amounts
 - `apps/web/features/admin/redeem-orders-table.tsx` - Table rendering pending redeem orders with KYC/shipping
 - `apps/web/features/admin/index.ts` - Barrel exports for all admin feature components
-- `apps/web/app/admin/layout.tsx` - Admin layout wrapping /admin/* with keeper gate and sidebar
+- `apps/web/app/admin/layout.tsx` - Admin layout wrapping /admin/\* with keeper gate and sidebar
 - `apps/web/app/admin/page.tsx` - Placeholder dashboard page
 - `apps/web/app/admin/mint-orders/page.tsx` - Mint orders queue page
 - `apps/web/app/admin/redeem-orders/page.tsx` - Redeem orders queue page
 - `apps/web/app/api/admin/orders/route.ts` - GET endpoint for pending orders with type filter
 
 ## Decisions Made
+
 - Used TanStack Query useQuery instead of useEffect+useState since QueryClientProvider is already available via wagmi setup
 - Set 30-second auto-refresh interval for order tables to keep admin view current without excessive polling
 - No server-side auth on /api/admin/orders -- testnet app where UI gate is sufficient and contract enforces real security
@@ -111,12 +119,15 @@ Each task was committed atomically:
 None - plan executed exactly as written.
 
 ## Issues Encountered
+
 None
 
 ## User Setup Required
+
 None - no external service configuration required.
 
 ## Next Phase Readiness
+
 - Admin area shell complete with keeper gate, sidebar, and read-only order views
 - Plan 06-02 will wire Finalize buttons to on-chain finalization hooks and add protocol stats dashboard
 - All admin feature components exported via barrel file for easy import
@@ -126,5 +137,6 @@ None - no external service configuration required.
 All 11 files verified present. Both task commits (3dce4e0, 1987148) verified in git log.
 
 ---
-*Phase: 06-admin-dashboard*
-*Completed: 2026-02-11*
+
+_Phase: 06-admin-dashboard_
+_Completed: 2026-02-11_

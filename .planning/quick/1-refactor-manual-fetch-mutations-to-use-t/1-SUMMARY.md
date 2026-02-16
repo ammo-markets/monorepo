@@ -50,6 +50,7 @@ completed: 2026-02-15
 - **Files modified:** 4
 
 ## Accomplishments
+
 - Created `useKycStatus` query hook and `useKycSubmit` mutation hook replacing manual fetch + useState in RedeemFlow
 - Created `useSaveProfile` generic mutation hook replacing manual PATCH + error handling in ProfilePage
 - Eliminated all manual `saving`, `kycLoading`, `saveError`, `kycStatus`, `kycPrefill` useState in both consumers
@@ -63,12 +64,14 @@ Each task was committed atomically:
 2. **Task 2: Create profile save mutation hook and refactor both consumers** - `1409471` (refactor)
 
 ## Files Created/Modified
+
 - `apps/web/hooks/use-kyc.ts` - useKycStatus (useQuery) and useKycSubmit (useMutation) hooks
 - `apps/web/hooks/use-save-profile.ts` - Generic useSaveProfile (useMutation) hook with error extraction
 - `apps/web/features/redeem/redeem-flow.tsx` - Removed manual KYC fetch/state, uses new hooks
 - `apps/web/app/profile/page.tsx` - Removed manual save/error state and useQueryClient, uses useSaveProfile
 
 ## Decisions Made
+
 - Made `useSaveProfile` generic (`<T extends object>`) so it accepts any form interface without index signature issues
 - KYC query is enabled whenever wallet address exists (not gated to step 2), improving UX by pre-fetching
 
@@ -77,6 +80,7 @@ Each task was committed atomically:
 ### Auto-fixed Issues
 
 **1. [Rule 1 - Bug] Fixed TypeScript strict mode issues with `noUncheckedIndexedAccess`**
+
 - **Found during:** Task 1 (use-kyc.ts creation)
 - **Issue:** `String.split("T")[0]` returns `string | undefined` with `noUncheckedIndexedAccess`, and `any` ternary didn't narrow properly
 - **Fix:** Used explicit `let` assignment with `?? null` fallback for dateOfBirth parsing
@@ -85,6 +89,7 @@ Each task was committed atomically:
 - **Committed in:** 6afb843 (Task 1 commit)
 
 **2. [Rule 1 - Bug] Fixed interface not assignable to Record index signature**
+
 - **Found during:** Task 2 (profile page refactor)
 - **Issue:** TypeScript interfaces don't have implicit index signatures, so `AddressForm` couldn't be passed to `Record<string, unknown>` parameter
 - **Fix:** Made `useSaveProfile` generic with `<T extends object>` type parameter
@@ -98,15 +103,19 @@ Each task was committed atomically:
 **Impact on plan:** Both fixes were TypeScript strict mode compatibility issues. No scope creep.
 
 ## Issues Encountered
+
 None beyond the type fixes documented above.
 
 ## User Setup Required
+
 None - no external service configuration required.
 
 ## Next Phase Readiness
+
 - All mutation patterns now use TanStack Query consistently
 - Pattern established for future mutation hooks
 
 ---
-*Quick Task: 01*
-*Completed: 2026-02-15*
+
+_Quick Task: 01_
+_Completed: 2026-02-15_

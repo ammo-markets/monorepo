@@ -2,10 +2,7 @@ import type { NextRequest } from "next/server";
 import { z } from "zod";
 import { prisma } from "@ammo-exchange/db";
 import { requireSession } from "@/lib/auth";
-import {
-  PRISMA_TO_CALIBER,
-  CALIBER_TO_PRISMA,
-} from "@ammo-exchange/shared";
+import { PRISMA_TO_CALIBER, CALIBER_TO_PRISMA } from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
 
 const favoritesSchema = z.object({

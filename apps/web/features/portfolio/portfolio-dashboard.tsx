@@ -43,9 +43,7 @@ interface HoldingRow {
 
 /* ────────────── Helpers ────────────── */
 
-function mapOrderStatus(
-  status: OrderFromAPI["status"],
-): DisplayStatus {
+function mapOrderStatus(status: OrderFromAPI["status"]): DisplayStatus {
   switch (status) {
     case "PENDING":
     case "PROCESSING":

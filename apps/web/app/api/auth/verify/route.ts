@@ -11,7 +11,11 @@ import { prisma } from "@ammo-exchange/db";
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
 
-  if (!body || typeof body.message !== "string" || typeof body.signature !== "string") {
+  if (
+    !body ||
+    typeof body.message !== "string" ||
+    typeof body.signature !== "string"
+  ) {
     return Response.json(
       { error: "Invalid request body: message and signature required" },
       { status: 400 },

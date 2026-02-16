@@ -20,40 +20,40 @@ re_verification: false
 
 ### Observable Truths
 
-| #   | Truth                                                                                                           | Status     | Evidence                                                                                             |
-| --- | --------------------------------------------------------------------------------------------------------------- | ---------- | ---------------------------------------------------------------------------------------------------- |
-| 1   | Visitor sees hero with protocol tagline and a prominent Launch App CTA button                                  | ✓ VERIFIED | Hero.tsx line 118: "Launch App" button, href="/dashboard" (line 100), styled with brass glow        |
-| 2   | Visitor sees how-it-works section with 3 visual steps (mint, trade, redeem)                                    | ✓ VERIFIED | HowItWorks component exists and is wired in page.tsx line 9 (pre-existing from phase 11)            |
+| #   | Truth                                                                                                          | Status     | Evidence                                                                                             |
+| --- | -------------------------------------------------------------------------------------------------------------- | ---------- | ---------------------------------------------------------------------------------------------------- |
+| 1   | Visitor sees hero with protocol tagline and a prominent Launch App CTA button                                  | ✓ VERIFIED | Hero.tsx line 118: "Launch App" button, href="/dashboard" (line 100), styled with brass glow         |
+| 2   | Visitor sees how-it-works section with 3 visual steps (mint, trade, redeem)                                    | ✓ VERIFIED | HowItWorks component exists and is wired in page.tsx line 9 (pre-existing from phase 11)             |
 | 3   | Visitor sees caliber showcase displaying all 4 calibers with specs (grain, type, min order) and current prices | ✓ VERIFIED | MarketCards.tsx lines 93-109: specs row with grainWeight, caseType, minMintRounds from CALIBER_SPECS |
-| 4   | Visitor sees FAQ section with common protocol questions and expandable answers                                 | ✓ VERIFIED | Faq.tsx with 8 expandable items (lines 30-71), useState accordion (lines 73-104), wired in page.tsx |
+| 4   | Visitor sees FAQ section with common protocol questions and expandable answers                                 | ✓ VERIFIED | Faq.tsx with 8 expandable items (lines 30-71), useState accordion (lines 73-104), wired in page.tsx  |
 
 **Score:** 4/4 truths verified
 
 ### Required Artifacts
 
-| Artifact                                   | Expected                                      | Status     | Details                                                                                                  |
-| ------------------------------------------ | --------------------------------------------- | ---------- | -------------------------------------------------------------------------------------------------------- |
-| `apps/web/features/home/hero.tsx`          | Hero section with Launch App CTA              | ✓ VERIFIED | 180 lines, contains "Launch App" (line 118) and href="/dashboard" (line 100)                            |
-| `apps/web/features/home/faq.tsx`           | FAQ accordion component                       | ✓ VERIFIED | 125 lines, exports Faq function, 8 FAQ items with useState accordion, ChevronDown icon rotation         |
-| `apps/web/features/home/index.ts`          | Barrel export including Faq                   | ✓ VERIFIED | Line 1: `export { Faq } from "./faq"`                                                                    |
+| Artifact                                    | Expected                                          | Status     | Details                                                                                               |
+| ------------------------------------------- | ------------------------------------------------- | ---------- | ----------------------------------------------------------------------------------------------------- |
+| `apps/web/features/home/hero.tsx`           | Hero section with Launch App CTA                  | ✓ VERIFIED | 180 lines, contains "Launch App" (line 118) and href="/dashboard" (line 100)                          |
+| `apps/web/features/home/faq.tsx`            | FAQ accordion component                           | ✓ VERIFIED | 125 lines, exports Faq function, 8 FAQ items with useState accordion, ChevronDown icon rotation       |
+| `apps/web/features/home/index.ts`           | Barrel export including Faq                       | ✓ VERIFIED | Line 1: `export { Faq } from "./faq"`                                                                 |
 | `apps/web/features/market/market-cards.tsx` | Caliber cards with specs (grain, type, min order) | ✓ VERIFIED | 192 lines, imports CALIBER_SPECS (line 8), displays grainWeight/caseType/minMintRounds (lines 93-109) |
-| `apps/web/app/(landing)/page.tsx`          | Landing page with all sections including FAQ  | ✓ VERIFIED | 16 lines, imports Faq (line 1), renders 6 sections including Faq (line 11)                              |
+| `apps/web/app/(landing)/page.tsx`           | Landing page with all sections including FAQ      | ✓ VERIFIED | 16 lines, imports Faq (line 1), renders 6 sections including Faq (line 11)                            |
 
 ### Key Link Verification
 
-| From                              | To                             | Via                                    | Status   | Details                                                                                  |
-| --------------------------------- | ------------------------------ | -------------------------------------- | -------- | ---------------------------------------------------------------------------------------- |
-| `apps/web/app/(landing)/page.tsx` | `apps/web/features/home/faq.tsx` | import from @/features/home            | ✓ WIRED  | Line 1: `import { Faq, Hero, HowItWorks, ProtocolStats } from "@/features/home"`        |
-| `apps/web/features/market/market-cards.tsx` | `@ammo-exchange/shared`      | CALIBER_SPECS import for grain/type data | ✓ WIRED  | Line 8: `import { CALIBER_SPECS } from "@ammo-exchange/shared"`, used on lines 98-107   |
+| From                                        | To                               | Via                                      | Status  | Details                                                                               |
+| ------------------------------------------- | -------------------------------- | ---------------------------------------- | ------- | ------------------------------------------------------------------------------------- |
+| `apps/web/app/(landing)/page.tsx`           | `apps/web/features/home/faq.tsx` | import from @/features/home              | ✓ WIRED | Line 1: `import { Faq, Hero, HowItWorks, ProtocolStats } from "@/features/home"`      |
+| `apps/web/features/market/market-cards.tsx` | `@ammo-exchange/shared`          | CALIBER_SPECS import for grain/type data | ✓ WIRED | Line 8: `import { CALIBER_SPECS } from "@ammo-exchange/shared"`, used on lines 98-107 |
 
 ### Requirements Coverage
 
-| Requirement | Description                                                                             | Status      | Blocking Issue |
-| ----------- | --------------------------------------------------------------------------------------- | ----------- | -------------- |
-| LAND-01     | Visitor sees hero section with protocol tagline and "Launch App" CTA                    | ✓ SATISFIED | None           |
-| LAND-02     | Visitor sees how-it-works section explaining mint/trade/redeem in 3-4 visual steps      | ✓ SATISFIED | None           |
-| LAND-03     | Visitor sees caliber showcase displaying all 4 calibers with specs and current prices   | ✓ SATISFIED | None           |
-| LAND-04     | Visitor sees FAQ section answering common questions about the protocol                  | ✓ SATISFIED | None           |
+| Requirement | Description                                                                           | Status      | Blocking Issue |
+| ----------- | ------------------------------------------------------------------------------------- | ----------- | -------------- |
+| LAND-01     | Visitor sees hero section with protocol tagline and "Launch App" CTA                  | ✓ SATISFIED | None           |
+| LAND-02     | Visitor sees how-it-works section explaining mint/trade/redeem in 3-4 visual steps    | ✓ SATISFIED | None           |
+| LAND-03     | Visitor sees caliber showcase displaying all 4 calibers with specs and current prices | ✓ SATISFIED | None           |
+| LAND-04     | Visitor sees FAQ section answering common questions about the protocol                | ✓ SATISFIED | None           |
 
 ### Anti-Patterns Found
 
@@ -62,6 +62,7 @@ No anti-patterns detected. All files scanned for TODO/FIXME/PLACEHOLDER/stubs �
 ### Implementation Quality
 
 **Hero Component (hero.tsx):**
+
 - Substantive implementation with SVG background pattern (concentric circles + crosshair)
 - Radial gradient overlay for depth
 - Two CTAs: "Launch App" (primary, brass styled with glow) and "View Market" (secondary, outline)
@@ -70,6 +71,7 @@ No anti-patterns detected. All files scanned for TODO/FIXME/PLACEHOLDER/stubs �
 - Inline hover effects with proper cleanup
 
 **FAQ Component (faq.tsx):**
+
 - 8 comprehensive questions covering protocol fundamentals
 - Topics: protocol overview, backing, mint/trade access, redemption restrictions, fees, calibers, settlement, testnet status
 - Clean useState accordion implementation (no external dependency)
@@ -78,6 +80,7 @@ No anti-patterns detected. All files scanned for TODO/FIXME/PLACEHOLDER/stubs �
 - Matches design system (SectionTitle pattern, CSS custom properties)
 
 **Market Cards Enhancement (market-cards.tsx):**
+
 - CALIBER_SPECS imported from shared package
 - Specs row displays grain weight, case type (capitalized), and minimum order
 - Proper type casting: `caliber.caliber as Caliber`
@@ -85,6 +88,7 @@ No anti-patterns detected. All files scanned for TODO/FIXME/PLACEHOLDER/stubs �
 - Consistent styling with existing supply line (text-xs, text-muted)
 
 **Landing Page Composition (page.tsx):**
+
 - Logical section order: Hero → MarketTicker → HowItWorks → MarketCards → Faq → ProtocolStats
 - All components properly imported and wired
 - Clean component composition
@@ -92,6 +96,7 @@ No anti-patterns detected. All files scanned for TODO/FIXME/PLACEHOLDER/stubs �
 ### Commits Verified
 
 Both commit hashes from SUMMARY.md exist in git log:
+
 - `e7a11da` - feat(16-01): update hero CTA and add caliber specs to market cards
 - `0e81988` - feat(16-01): add FAQ section and wire into landing page
 
@@ -102,6 +107,7 @@ Both commit hashes from SUMMARY.md exist in git log:
 **Test:** Load landing page at `/` in browser. Scroll through all sections.
 
 **Expected:**
+
 - Hero CTA "Launch App" button glows brass on hover
 - Caliber cards show specs row below supply (grain · case type · min order)
 - FAQ items expand/collapse smoothly with chevron rotation
@@ -114,6 +120,7 @@ Both commit hashes from SUMMARY.md exist in git log:
 **Test:** Click each FAQ question to expand/collapse.
 
 **Expected:**
+
 - Questions toggle open/closed
 - Only one or multiple items can be open simultaneously
 - Chevron rotates 180deg when open
@@ -126,6 +133,7 @@ Both commit hashes from SUMMARY.md exist in git log:
 **Test:** Click "Launch App" button in hero.
 
 **Expected:**
+
 - Navigates to `/dashboard`
 - Dashboard page loads (wallet connection may be required)
 
@@ -136,6 +144,7 @@ Both commit hashes from SUMMARY.md exist in git log:
 **Test:** View landing page on mobile (375px), tablet (768px), and desktop (1440px).
 
 **Expected:**
+
 - Hero CTAs stack vertically on mobile, side-by-side on desktop
 - Caliber cards: 1 column mobile, 2 columns tablet, 4 columns desktop
 - FAQ questions remain readable and tappable on small screens

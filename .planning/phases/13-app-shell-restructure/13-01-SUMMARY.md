@@ -61,6 +61,7 @@ completed: 2026-02-16
 - **Files modified:** 19
 
 ## Accomplishments
+
 - Split app into (landing) and (app) route groups with distinct layouts
 - Landing layout provides Navbar + Footer chrome, page only contains content sections
 - App layout gates on wallet connection with reconnection grace period (no flash-redirect)
@@ -75,6 +76,7 @@ Each task was committed atomically:
 1. **Task 1: Create route groups and move existing routes** - `29b6ee4` (feat)
 
 ## Files Created/Modified
+
 - `apps/web/app/(landing)/layout.tsx` - Public layout with Navbar + Footer wrapper
 - `apps/web/app/(landing)/page.tsx` - Landing page (Hero, HowItWorks, MarketTicker, MarketCards, ProtocolStats)
 - `apps/web/app/(app)/layout.tsx` - Wallet-gated layout with reconnection handling
@@ -87,6 +89,7 @@ Each task was committed atomically:
 - `apps/web/app/(app)/redeem/` - Moved from app/redeem/
 
 ## Decisions Made
+
 - Reconnection grace period: show loading spinner during `isReconnecting` to prevent flash-redirect on page refresh when wagmi re-establishes connection
 - Landing layout wraps children in `<main className="flex-1">` so page components render clean content without wrapper divs
 - App layout returns `null` synchronously when not connected (not reconnecting); redirect fires in `useEffect` to avoid SSR issues
@@ -96,6 +99,7 @@ Each task was committed atomically:
 ### Auto-fixed Issues
 
 **1. [Rule 3 - Blocking] Cleared stale .next/types cache**
+
 - **Found during:** Task 1 verification (TypeScript check)
 - **Issue:** `.next/types/` had cached type references to old file paths (app/page.tsx, app/trade/, etc.)
 - **Fix:** Deleted `.next/` directory before re-running TypeScript check
@@ -109,16 +113,20 @@ Each task was committed atomically:
 **Impact on plan:** Cache clearing is standard after route restructuring. No scope creep.
 
 ## Issues Encountered
+
 None beyond the stale cache fix documented above.
 
 ## User Setup Required
+
 None - no external service configuration required.
 
 ## Next Phase Readiness
+
 - Route groups in place, ready for plan 02 to add 4-tab bottom navigation in (app) layout
 - Dashboard page exists as placeholder for Phase 14 content
 - All existing functionality preserved in new locations
 
 ---
-*Phase: 13-app-shell-restructure*
-*Completed: 2026-02-16*
+
+_Phase: 13-app-shell-restructure_
+_Completed: 2026-02-16_

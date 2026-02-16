@@ -8,13 +8,7 @@ import type { MarketCaliberFromAPI } from "@/lib/types";
 import { CALIBER_SPECS } from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
 
-function SectionTitle({
-  children,
-  id,
-}: {
-  children: ReactNode;
-  id?: string;
-}) {
+function SectionTitle({ children, id }: { children: ReactNode; id?: string }) {
   return (
     <div className="mb-12 text-center lg:mb-16" id={id}>
       <h2
@@ -94,12 +88,12 @@ function CaliberCard({ caliber }: { caliber: MarketCaliberFromAPI }) {
         className="mt-2 flex gap-3 text-xs"
         style={{ color: "var(--text-muted)" }}
       >
-        <span>
-          {CALIBER_SPECS[caliber.caliber as Caliber].grainWeight}gr
-        </span>
+        <span>{CALIBER_SPECS[caliber.caliber as Caliber].grainWeight}gr</span>
         <span aria-hidden="true">&middot;</span>
         <span>
-          {CALIBER_SPECS[caliber.caliber as Caliber].caseType.charAt(0).toUpperCase() +
+          {CALIBER_SPECS[caliber.caliber as Caliber].caseType
+            .charAt(0)
+            .toUpperCase() +
             CALIBER_SPECS[caliber.caliber as Caliber].caseType.slice(1)}
         </span>
         <span aria-hidden="true">&middot;</span>

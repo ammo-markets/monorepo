@@ -21,7 +21,8 @@ affects: [09-02-route-protection, api-middleware, admin-dashboard]
 # Tech tracking
 tech-stack:
   added: [siwe@3.0.0, iron-session@8.0.4]
-  patterns: [cookie-based-session-auth, siwe-wallet-auth, no-request-param-session]
+  patterns:
+    [cookie-based-session-auth, siwe-wallet-auth, no-request-param-session]
 
 key-files:
   created:
@@ -64,6 +65,7 @@ completed: 2026-02-15
 - **Files modified:** 10
 
 ## Accomplishments
+
 - Built complete SIWE authentication flow: nonce generation, message signing, signature verification, and cookie-based sessions
 - Created auth helper library (getSession, requireSession, requireKeeper) using Next.js 15 cookies() pattern -- no request parameter needed
 - Created useSiwe React hook with signIn/signOut/checkSession and automatic session invalidation on wallet switch
@@ -78,6 +80,7 @@ Each task was committed atomically:
 2. **Task 2: Create useSiwe hook and fix registration race condition** - `5327277` (feat)
 
 ## Files Created/Modified
+
 - `apps/web/lib/auth.ts` - Auth helper library: sessionOptions, getSession, requireSession, requireKeeper
 - `apps/web/app/api/auth/nonce/route.ts` - GET endpoint generating random SIWE nonce
 - `apps/web/app/api/auth/verify/route.ts` - POST endpoint verifying SIWE signature and creating session + user
@@ -89,6 +92,7 @@ Each task was committed atomically:
 - `CLAUDE.md` - Documented SESSION_SECRET and ALLOWED_ORIGINS env vars
 
 ## Decisions Made
+
 - Used iron-session v8 with cookies() from next/headers (modern App Router pattern, no request parameter)
 - Combined auth + registration into /api/auth/verify for atomic single-step onboarding
 - Kept legacy /api/users/register endpoint for worker backward compatibility but wrapped in serializable transaction
@@ -105,13 +109,16 @@ None.
 ## User Setup Required
 
 Environment variable required before auth will work:
+
 - `SESSION_SECRET` - 32+ character secret for iron-session cookie encryption (add to `.env`)
 
 ## Next Phase Readiness
+
 - Auth helpers (requireSession, requireKeeper) ready for route protection in Plan 02
 - All 4 auth endpoints operational, useSiwe hook ready for UI integration
 - No blockers for Plan 02 (route protection and middleware)
 
 ---
-*Phase: 09-authentication-and-api-hardening*
-*Completed: 2026-02-15*
+
+_Phase: 09-authentication-and-api-hardening_
+_Completed: 2026-02-15_

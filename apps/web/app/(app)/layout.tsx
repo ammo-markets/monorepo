@@ -25,7 +25,10 @@ export default function AppLayout({
       <div className="flex min-h-screen items-center justify-center">
         <div
           className="h-8 w-8 animate-spin rounded-full border-2 border-t-transparent"
-          style={{ borderColor: "var(--border-default)", borderTopColor: "transparent" }}
+          style={{
+            borderColor: "var(--border-default)",
+            borderTopColor: "transparent",
+          }}
         />
       </div>
     );
@@ -39,9 +42,7 @@ export default function AppLayout({
   return (
     <div className="flex min-h-screen">
       <AppNav />
-      <main className="flex-1 lg:ml-60 pb-16 lg:pb-0">
-        {children}
-      </main>
+      <main className="flex-1 lg:ml-60 pb-16 lg:pb-0">{children}</main>
     </div>
   );
 }

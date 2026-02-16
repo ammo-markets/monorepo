@@ -18,7 +18,12 @@ affects: [11-frontend-data-layer-and-quality]
 
 tech-stack:
   added: []
-  patterns: [TanStack Query hooks for all API data, cache invalidation on mutations, useMemo for derived data]
+  patterns:
+    [
+      TanStack Query hooks for all API data,
+      cache invalidation on mutations,
+      useMemo for derived data,
+    ]
 
 key-files:
   created:
@@ -73,6 +78,7 @@ completed: 2026-02-15
 - **Files modified:** 20
 
 ## Accomplishments
+
 - Created 4 shared query hooks (useMarketData, useOrders/useOrderDetail, useAdminStats, useActivity)
 - Migrated 15 components from manual useEffect+fetch to query hooks
 - Configured QueryClient with staleTime: 30s, retry: 2, refetchOnWindowFocus
@@ -88,6 +94,7 @@ Each task was committed atomically:
 2. **Task 2: Migrate all components from useEffect+fetch to query hooks** - `375eb4d` (feat)
 
 ## Files Created/Modified
+
 - `apps/web/hooks/use-market-data.ts` - Shared hook for /api/market data
 - `apps/web/hooks/use-orders.ts` - useOrders(address) and useOrderDetail(orderId) hooks
 - `apps/web/hooks/use-admin-stats.ts` - Hook for /api/admin/stats with StatsData type
@@ -110,6 +117,7 @@ Each task was committed atomically:
 - `apps/web/features/admin/finalize-redeem-dialog.tsx` - Invalidates ["admin"] on success
 
 ## Decisions Made
+
 - Kept module-level QueryClient creation (works with Next.js 15 App Router SSR)
 - useMarketData gets 60s staleTime since market prices change less frequently
 - Admin finalize dialogs invalidate all ["admin"] queries broadly to catch stats and orders
@@ -129,9 +137,11 @@ None.
 None - no external service configuration required.
 
 ## Next Phase Readiness
+
 - All data fetching now goes through TanStack Query with automatic retries and error handling
 - Ready for Phase 11 Plan 02 (if applicable)
 
 ---
-*Phase: 11-frontend-data-layer-and-quality*
-*Completed: 2026-02-15*
+
+_Phase: 11-frontend-data-layer-and-quality_
+_Completed: 2026-02-15_

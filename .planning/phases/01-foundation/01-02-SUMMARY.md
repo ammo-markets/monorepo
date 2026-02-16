@@ -2,7 +2,17 @@
 phase: 01-foundation
 plan: 02
 subsystem: database, shared
-tags: [prisma, neon, postgresql, avalanche, fuji, caliber-mapping, block-cursor, viem]
+tags:
+  [
+    prisma,
+    neon,
+    postgresql,
+    avalanche,
+    fuji,
+    caliber-mapping,
+    block-cursor,
+    viem,
+  ]
 
 # Dependency graph
 requires:
@@ -20,7 +30,12 @@ affects: [02-worker, 03-api, 04-frontend, web, worker]
 # Tech tracking
 tech-stack:
   added: []
-  patterns: [per-caliber-address-config, bidirectional-enum-mapping, block-cursor-pattern]
+  patterns:
+    [
+      per-caliber-address-config,
+      bidirectional-enum-mapping,
+      block-cursor-pattern,
+    ]
 
 key-files:
   created:
@@ -99,6 +114,7 @@ None.
 ## User Setup Required
 
 The user manually ran the Prisma migration against Neon PostgreSQL:
+
 1. `DATABASE_URL` configured in `.env` pointing to Neon connection string
 2. `pnpm db:migrate` applied the migration creating Order columns and BlockCursor table
 3. Migration verified via Prisma Studio
@@ -117,5 +133,6 @@ The user manually ran the Prisma migration against Neon PostgreSQL:
 - SUMMARY.md created at `.planning/phases/01-foundation/01-02-SUMMARY.md`
 
 ---
-*Phase: 01-foundation*
-*Completed: 2026-02-11*
+
+_Phase: 01-foundation_
+_Completed: 2026-02-11_

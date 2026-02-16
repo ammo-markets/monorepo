@@ -72,6 +72,7 @@ completed: 2026-02-11
 - **Files modified:** 17 (14 modified, 1 created, 1 deleted, 1 type update)
 
 ## Accomplishments
+
 - Created /api/activity route querying 10 most recent COMPLETED orders from Prisma with caliber mapping
 - Updated /api/market to include on-chain totalSupply per caliber (reads AmmoToken.totalSupply)
 - Rewired all 13 market/home/trade components to fetch from /api/market instead of mock-data
@@ -87,6 +88,7 @@ Each task was committed atomically:
 2. **Task 2: Remove residual mock-data imports from mint/redeem flows and delete mock-data.ts** - `0874974` (feat)
 
 ## Files Created/Modified
+
 - `apps/web/app/api/activity/route.ts` - New endpoint: queries recent COMPLETED orders from Prisma
 - `apps/web/app/api/market/route.ts` - Added totalSupply per caliber from on-chain AmmoToken reads
 - `apps/web/lib/types.ts` - Added totalSupply to MarketCaliberFromAPI interface
@@ -106,6 +108,7 @@ Each task was committed atomically:
 - `apps/web/lib/mock-data.ts` - DELETED (751 lines of mock types and data)
 
 ## Decisions Made
+
 - Simplified all components to only display data available from real sources. Fields like change24h, volume24h, sparklineData, warehouseInventory, high24h, low24h were dropped since no real data source exists
 - Price chart shows "Historical price data coming soon" with current oracle price instead of fabricated chart data
 - Protocol stats show "--" for unique holders and 24h volume since no real tracking exists yet
@@ -117,12 +120,15 @@ Each task was committed atomically:
 None - plan executed exactly as written.
 
 ## Issues Encountered
+
 None
 
 ## User Setup Required
+
 None - no external service configuration required.
 
 ## Next Phase Readiness
+
 - All mock data eliminated from the codebase
 - Every frontend component reads from real API routes or on-chain data
 - Phase 5 objective (portfolio and data integration) is complete
@@ -136,5 +142,6 @@ None - no external service configuration required.
 - Zero mock-data imports confirmed via grep
 
 ---
-*Phase: 05-portfolio-and-data-integration*
-*Completed: 2026-02-11*
+
+_Phase: 05-portfolio-and-data-integration_
+_Completed: 2026-02-11_

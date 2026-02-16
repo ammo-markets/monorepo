@@ -54,8 +54,7 @@ export function parseContractError(error: Error | null): string {
   }
   const cause: ContractErrorCause | undefined =
     "cause" in error ? (error.cause as ContractErrorCause) : undefined;
-  const errorName: string | undefined =
-    cause?.data?.errorName ?? cause?.reason;
+  const errorName: string | undefined = cause?.data?.errorName ?? cause?.reason;
   if (errorName && CONTRACT_ERROR_MESSAGES[errorName]) {
     return CONTRACT_ERROR_MESSAGES[errorName];
   }

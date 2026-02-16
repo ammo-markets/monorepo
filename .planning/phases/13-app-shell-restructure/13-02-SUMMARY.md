@@ -19,7 +19,12 @@ affects: [14-dashboard, app-layout-customization]
 # Tech tracking
 tech-stack:
   added: []
-  patterns: [responsive-nav-dual-render, pathname-active-detection, safe-area-bottom-padding]
+  patterns:
+    [
+      responsive-nav-dual-render,
+      pathname-active-detection,
+      safe-area-bottom-padding,
+    ]
 
 key-files:
   created:
@@ -55,6 +60,7 @@ completed: 2026-02-16
 - **Files modified:** 3
 
 ## Accomplishments
+
 - Built AppNav component with desktop sidebar (lg+) and mobile bottom tabs (<lg) in single component
 - 4 navigation tabs: Dashboard, Trade, Portfolio, Profile with lucide-react icons
 - Active state detection via usePathname with nested route support
@@ -69,11 +75,13 @@ Each task was committed atomically:
 2. **Task 2: Wire AppNav into (app) layout** - `e8b4ebc` (feat)
 
 ## Files Created/Modified
+
 - `apps/web/features/layout/app-nav.tsx` - Responsive navigation with sidebar (desktop) and bottom tabs (mobile)
 - `apps/web/features/layout/index.ts` - Added AppNav export to barrel
 - `apps/web/app/(app)/layout.tsx` - Integrated AppNav with content area offsets
 
 ## Decisions Made
+
 - Single AppNav component renders both layouts (sidebar + bottom tabs) for simplicity -- one import, CSS handles responsiveness
 - Active link detection uses `pathname === href || pathname.startsWith(href + "/")` to support nested routes
 - Sidebar is 240px wide (Tailwind w-60) with matching lg:ml-60 offset on main content area
@@ -84,17 +92,21 @@ Each task was committed atomically:
 None - plan executed exactly as written.
 
 ## Issues Encountered
+
 None.
 
 ## User Setup Required
+
 None - no external service configuration required.
 
 ## Next Phase Readiness
+
 - Full responsive navigation in place for all (app) routes
 - Dashboard, Trade, Portfolio, Profile tabs functional with client-side navigation
 - Ready for Phase 14 dashboard content implementation
 - Admin link conditionally visible for keeper addresses
 
 ---
-*Phase: 13-app-shell-restructure*
-*Completed: 2026-02-16*
+
+_Phase: 13-app-shell-restructure_
+_Completed: 2026-02-16_

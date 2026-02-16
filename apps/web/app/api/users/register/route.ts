@@ -56,15 +56,9 @@ export async function POST(request: NextRequest) {
     console.error("register: prisma upsert failed", { code, err });
 
     if (code === "ECONNREFUSED") {
-      return Response.json(
-        { error: "Database unavailable" },
-        { status: 503 },
-      );
+      return Response.json({ error: "Database unavailable" }, { status: 503 });
     }
 
-    return Response.json(
-      { error: "Registration failed" },
-      { status: 500 },
-    );
+    return Response.json({ error: "Registration failed" }, { status: 500 });
   }
 }

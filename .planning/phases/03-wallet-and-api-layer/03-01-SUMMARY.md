@@ -67,6 +67,7 @@ completed: 2026-02-11
 - **Files modified:** 6
 
 ## Accomplishments
+
 - Replaced `useState(false)` wallet mock with real wagmi v2 hooks (useAccount, useConnect, useDisconnect, useSwitchChain)
 - Created useTokenBalances hook reading USDC + 4 AmmoToken balances in single multicall RPC request
 - Built WalletButton component with 3 visual states: disconnected, wrong network, connected with address + USDC balance
@@ -82,6 +83,7 @@ Each task was committed atomically:
 2. **Task 2: Create WalletButton component and rewire Navbar** - `6ecd594` (feat)
 
 ## Files Created/Modified
+
 - `apps/web/hooks/use-wallet.ts` - Composed wagmi hook: address, isConnected, isWrongNetwork, connect, disconnect, switchToFuji
 - `apps/web/hooks/use-token-balances.ts` - useReadContracts multicall for 5 balances (1 USDC + 4 AmmoTokens)
 - `apps/web/lib/utils.ts` - Added truncateAddress, snowtraceUrl, snowtraceAddressUrl utilities
@@ -90,6 +92,7 @@ Each task was committed atomically:
 - `apps/web/features/layout/index.ts` - Added WalletButton export
 
 ## Decisions Made
+
 - Used `as any` for useReadContracts dynamic contracts array (wagmi tuple inference limitation with .map())
 - WalletButton shows disconnected state during isReconnecting to match SSR initial render
 - USDC balance shown inline; ammo token balances read but deferred to portfolio page (Phase 5)
@@ -101,6 +104,7 @@ Each task was committed atomically:
 ### Auto-fixed Issues
 
 **1. [Rule 3 - Blocking] Fixed pre-existing type errors in API route handlers**
+
 - **Found during:** Task 2 (build verification)
 - **Issue:** `app/api/balances/route.ts` line 47 and `app/api/market/route.ts` line 53 had possibly-undefined errors from `noUncheckedIndexedAccess` in tsconfig
 - **Fix:** Used non-null assertion (`!`) since array index is guaranteed by CALIBERS.map() bounds
@@ -109,6 +113,7 @@ Each task was committed atomically:
 - **Committed in:** 6ecd594 (Task 2 commit)
 
 **2. [Rule 3 - Blocking] Fixed Prisma webpack bundling in next.config.ts**
+
 - **Found during:** Task 2 (build verification)
 - **Issue:** Next.js build failed because webpack tried to bundle Prisma's wasm query compiler modules from workspace package `@ammo-exchange/db`
 - **Fix:** Added `@prisma/client` to webpack externals for server builds in next.config.ts
@@ -122,6 +127,7 @@ Each task was committed atomically:
 **Impact on plan:** Both auto-fixes necessary for build to pass. No scope creep.
 
 ## Issues Encountered
+
 - wagmi's `useReadContracts` strict tuple type inference cannot handle dynamically-mapped contracts arrays -- resolved with `as any` cast (well-known wagmi limitation)
 - Parallel plan 03-02 committed files concurrently, causing `use-token-balances.ts` to appear in both plans' scope -- handled cleanly since git tracked the file from the first commit
 
@@ -130,11 +136,13 @@ Each task was committed atomically:
 None - no external service configuration required.
 
 ## Next Phase Readiness
+
 - Wallet hooks are ready for use by any component (portfolio, mint, redeem)
 - useTokenBalances provides all balance data needed for portfolio dashboard
 - WalletButton is exported from layout barrel for potential reuse
 - Next.js build succeeds, TypeScript clean
 
 ---
-*Phase: 03-wallet-and-api-layer*
-*Completed: 2026-02-11*
+
+_Phase: 03-wallet-and-api-layer_
+_Completed: 2026-02-11_

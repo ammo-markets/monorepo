@@ -20,46 +20,47 @@ re_verification: false
 
 ### Observable Truths
 
-| # | Truth | Status | Evidence |
-|---|-------|--------|----------|
-| 1 | MintRefunded, RedeemCanceled, Paused, Unpaused, and fee update events are indexed and reflected in the database | ✓ VERIFIED | All 11 event types fetched in parallel (lines 43-144 in indexer.ts), MintRefunded/RedeemCanceled handlers update DB status (refund.ts:40-50, 72-82), lifecycle handlers log events (lifecycle.ts:6-49), all wired in switch statement (indexer.ts:206-263) |
-| 2 | Worker retries RPC calls on transient failures with exponential backoff instead of crashing | ✓ VERIFIED | Viem client configured with retryCount=5, retryDelay=1000ms, timeout=30s (client.ts:14-17), built-in exponential backoff handles 429/5xx/timeouts |
-| 3 | Worker re-processes events within confirmation window so shallow reorgs do not cause missed or phantom events | ✓ VERIFIED | CONFIRMATION_BLOCKS=5n constant defined (constants.ts:14), cursor rolled back by 5 blocks on each poll (indexer.ts:296-298), idempotent txHash-based handlers make re-processing safe |
-| 4 | Worker refuses to start if required environment variables are missing | ✓ VERIFIED | env.ts requireEnv function exits with FATAL message on missing vars (env.ts:8-16), imported first in index.ts before any work (index.ts:2), validates FUJI_RPC_URL and DATABASE_URL |
-| 5 | Worker drains in-flight polling cycle on SIGTERM before exiting | ✓ VERIFIED | Shutdown handler awaits currentPoll promise (index.ts:59-66), isShuttingDown flag prevents new polls (index.ts:34), SIGTERM/SIGINT handlers attached (index.ts:72-73) |
+| #   | Truth                                                                                                           | Status     | Evidence                                                                                                                                                                                                                                                   |
+| --- | --------------------------------------------------------------------------------------------------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | MintRefunded, RedeemCanceled, Paused, Unpaused, and fee update events are indexed and reflected in the database | ✓ VERIFIED | All 11 event types fetched in parallel (lines 43-144 in indexer.ts), MintRefunded/RedeemCanceled handlers update DB status (refund.ts:40-50, 72-82), lifecycle handlers log events (lifecycle.ts:6-49), all wired in switch statement (indexer.ts:206-263) |
+| 2   | Worker retries RPC calls on transient failures with exponential backoff instead of crashing                     | ✓ VERIFIED | Viem client configured with retryCount=5, retryDelay=1000ms, timeout=30s (client.ts:14-17), built-in exponential backoff handles 429/5xx/timeouts                                                                                                          |
+| 3   | Worker re-processes events within confirmation window so shallow reorgs do not cause missed or phantom events   | ✓ VERIFIED | CONFIRMATION_BLOCKS=5n constant defined (constants.ts:14), cursor rolled back by 5 blocks on each poll (indexer.ts:296-298), idempotent txHash-based handlers make re-processing safe                                                                      |
+| 4   | Worker refuses to start if required environment variables are missing                                           | ✓ VERIFIED | env.ts requireEnv function exits with FATAL message on missing vars (env.ts:8-16), imported first in index.ts before any work (index.ts:2), validates FUJI_RPC_URL and DATABASE_URL                                                                        |
+| 5   | Worker drains in-flight polling cycle on SIGTERM before exiting                                                 | ✓ VERIFIED | Shutdown handler awaits currentPoll promise (index.ts:59-66), isShuttingDown flag prevents new polls (index.ts:34), SIGTERM/SIGINT handlers attached (index.ts:72-73)                                                                                      |
 
 **Score:** 5/5 truths verified
 
 ### Required Artifacts
 
-| Artifact | Expected | Status | Details |
-|----------|----------|--------|---------|
-| `apps/worker/src/handlers/refund.ts` | MintRefunded and RedeemCanceled event handlers | ✓ VERIFIED | 87 lines, exports handleMintRefunded/handleRedeemCanceled + typed args, updates PENDING orders to FAILED/CANCELLED status via tx.order.updateMany |
+| Artifact                                | Expected                                        | Status     | Details                                                                                                                                                                     |
+| --------------------------------------- | ----------------------------------------------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `apps/worker/src/handlers/refund.ts`    | MintRefunded and RedeemCanceled event handlers  | ✓ VERIFIED | 87 lines, exports handleMintRefunded/handleRedeemCanceled + typed args, updates PENDING orders to FAILED/CANCELLED status via tx.order.updateMany                           |
 | `apps/worker/src/handlers/lifecycle.ts` | Paused, Unpaused, and fee update event handlers | ✓ VERIFIED | 49 lines, exports 5 log-only handlers (handlePaused, handleUnpaused, handleMintFeeUpdated, handleRedeemFeeUpdated, handleMinMintUpdated), no DB writes (informational only) |
-| `apps/worker/src/lib/env.ts` | Startup environment validation | ✓ VERIFIED | 22 lines, requireEnv helper exits on missing vars, validates FUJI_RPC_URL and DATABASE_URL, exports typed env object |
-| `apps/worker/src/lib/client.ts` | Viem client with retry transport | ✓ VERIFIED | 19 lines, imports env for validated URL, configures http transport with retryCount=5, retryDelay=1000, timeout=30000 |
-| `apps/worker/src/lib/constants.ts` | CONFIRMATION_BLOCKS constant | ✓ VERIFIED | Updated to include CONFIRMATION_BLOCKS=5n with comment explaining Avalanche reorg window (~10s safety margin) |
-| `apps/worker/src/indexer.ts` | Updated fetchEvents and processAndCommit | ✓ VERIFIED | fetchEvents fetches 11 events in parallel (up from 4), processAndCommit handles all 11 via switch statement, reorg rollback logic subtracts CONFIRMATION_BLOCKS from cursor |
-| `apps/worker/src/index.ts` | Graceful shutdown logic | ✓ VERIFIED | env imported first (line 2), shutdown handler drains in-flight poll (lines 52-70), isShuttingDown flag coordination, SIGTERM/SIGINT registered |
+| `apps/worker/src/lib/env.ts`            | Startup environment validation                  | ✓ VERIFIED | 22 lines, requireEnv helper exits on missing vars, validates FUJI_RPC_URL and DATABASE_URL, exports typed env object                                                        |
+| `apps/worker/src/lib/client.ts`         | Viem client with retry transport                | ✓ VERIFIED | 19 lines, imports env for validated URL, configures http transport with retryCount=5, retryDelay=1000, timeout=30000                                                        |
+| `apps/worker/src/lib/constants.ts`      | CONFIRMATION_BLOCKS constant                    | ✓ VERIFIED | Updated to include CONFIRMATION_BLOCKS=5n with comment explaining Avalanche reorg window (~10s safety margin)                                                               |
+| `apps/worker/src/indexer.ts`            | Updated fetchEvents and processAndCommit        | ✓ VERIFIED | fetchEvents fetches 11 events in parallel (up from 4), processAndCommit handles all 11 via switch statement, reorg rollback logic subtracts CONFIRMATION_BLOCKS from cursor |
+| `apps/worker/src/index.ts`              | Graceful shutdown logic                         | ✓ VERIFIED | env imported first (line 2), shutdown handler drains in-flight poll (lines 52-70), isShuttingDown flag coordination, SIGTERM/SIGINT registered                              |
 
 ### Key Link Verification
 
-| From | To | Via | Status | Details |
-|------|----|----|--------|---------|
-| `indexer.ts` | `handlers/refund.ts` | import and switch case | ✓ WIRED | Import on line 21, handleMintRefunded called at line 236, handleRedeemCanceled called at line 243 |
-| `indexer.ts` | `handlers/lifecycle.ts` | import and switch case | ✓ WIRED | Import on lines 27-31, handlePaused called at line 250, handleUnpaused at 253, fee handlers at 256-262 |
-| `index.ts` | `lib/env.ts` | import at top-level | ✓ WIRED | Imported first on line 2 as side-effect import (triggers validation before any work), comment confirms fail-fast intent |
-| `lib/client.ts` | viem retry transport | http transport config | ✓ WIRED | retryCount, retryDelay, timeout configured on lines 15-17, env.FUJI_RPC_URL passed to http() |
-| `indexer.ts` | `lib/constants.ts` | CONFIRMATION_BLOCKS | ✓ WIRED | Imported on line 4, used in reorg rollback calculation on line 298 |
-| `index.ts` | `indexer.ts` | shutdown drain via currentPoll | ✓ WIRED | pollOnce() assigned to currentPoll on line 37, awaited in shutdown handler on line 61, flag prevents new polls |
+| From            | To                      | Via                            | Status  | Details                                                                                                                 |
+| --------------- | ----------------------- | ------------------------------ | ------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `indexer.ts`    | `handlers/refund.ts`    | import and switch case         | ✓ WIRED | Import on line 21, handleMintRefunded called at line 236, handleRedeemCanceled called at line 243                       |
+| `indexer.ts`    | `handlers/lifecycle.ts` | import and switch case         | ✓ WIRED | Import on lines 27-31, handlePaused called at line 250, handleUnpaused at 253, fee handlers at 256-262                  |
+| `index.ts`      | `lib/env.ts`            | import at top-level            | ✓ WIRED | Imported first on line 2 as side-effect import (triggers validation before any work), comment confirms fail-fast intent |
+| `lib/client.ts` | viem retry transport    | http transport config          | ✓ WIRED | retryCount, retryDelay, timeout configured on lines 15-17, env.FUJI_RPC_URL passed to http()                            |
+| `indexer.ts`    | `lib/constants.ts`      | CONFIRMATION_BLOCKS            | ✓ WIRED | Imported on line 4, used in reorg rollback calculation on line 298                                                      |
+| `index.ts`      | `indexer.ts`            | shutdown drain via currentPoll | ✓ WIRED | pollOnce() assigned to currentPoll on line 37, awaited in shutdown handler on line 61, flag prevents new polls          |
 
 ### Anti-Patterns Found
 
 | File | Line | Pattern | Severity | Impact |
-|------|------|---------|----------|--------|
-| None | - | - | - | - |
+| ---- | ---- | ------- | -------- | ------ |
+| None | -    | -       | -        | -      |
 
 No anti-patterns detected:
+
 - No TODO/FIXME/PLACEHOLDER comments
 - No empty return statements (return null/{}[])
 - No console.log-only handlers (lifecycle handlers are intentionally log-only per design, refund handlers have DB writes)

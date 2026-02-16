@@ -20,6 +20,7 @@ The dominant risk is the event indexer silently dying without anyone noticing, l
 The existing stack is production-ready for this milestone. No major dependency changes are needed. The only addition is `@wagmi/connectors` for wallet connection setup. Every other package stays at its current version range.
 
 **Core technologies:**
+
 - **Foundry (forge):** Contract deployment to Fuji -- already configured, use `--slow` flag for Avalanche's fast finality
 - **wagmi 2.x + viem 2.x:** Frontend contract interaction -- stay on v2; ecosystem (RainbowKit, ConnectKit) has inconsistent v3 support
 - **Next.js 15 App Router:** Dashboard + API routes -- Server Components for data display, Client Components for wallet interaction
@@ -33,6 +34,7 @@ The existing stack is production-ready for this milestone. No major dependency c
 ### Expected Features
 
 **Must have (table stakes) -- user-facing:**
+
 - Wallet connection with chain switching to Fuji
 - Real ERC20 token balances (multicall `balanceOf` for all calibers + USDC)
 - Mint flow with real USDC approval + `startMint()` contract calls
@@ -43,6 +45,7 @@ The existing stack is production-ready for this milestone. No major dependency c
 - Fee transparency (read `mintFeeBps`/`redeemFeeBps` from contract)
 
 **Must have (table stakes) -- admin:**
+
 - Wallet-gated admin access (`isKeeper` check)
 - Pending order queue (filterable by status/type)
 - Finalize/refund mint actions with price input
@@ -50,11 +53,13 @@ The existing stack is production-ready for this milestone. No major dependency c
 - Protocol stats overview (total minted, fees collected, treasury balance)
 
 **Should have (differentiators) -- build after core works:**
+
 - Proof of reserves dashboard (on-chain supply vs. off-chain inventory)
 - Activity feed (recent protocol activity for social proof)
 - Admin audit trail (every keeper action logged with tx hash)
 
 **Defer to v2+:**
+
 - KYC provider integration (Persona/Jumio) -- auto-approve for testnet
 - Push notifications for order status changes
 - Price charts with historical data
@@ -66,6 +71,7 @@ The existing stack is production-ready for this milestone. No major dependency c
 The system is a six-component integration: smart contracts emit events, the worker indexes events to the database, API routes serve database data to the frontend, the frontend reads on-chain state directly via wagmi and off-chain state via API routes, and the admin dashboard triggers keeper contract calls from the browser. The worker is strictly an indexer -- it never calls finalization functions. The admin human reviews orders, procures ammunition off-chain, and triggers finalization from the browser using their keeper wallet. The database is a read-optimized cache of enriched off-chain data; the chain is the source of truth for settlement state.
 
 **Major components:**
+
 1. **Smart Contracts (Fuji)** -- settlement logic, token minting/burning, fee distribution, access control
 2. **Event Indexer Worker (Railway)** -- chain-to-database bridge; watches 6 event types across 4 CaliberMarket contracts
 3. **PostgreSQL via Prisma (Neon)** -- off-chain state: users, orders, shipping, audit logs, inventory
@@ -140,22 +146,24 @@ Based on research, suggested phase structure:
 ### Research Flags
 
 Phases likely needing deeper research during planning:
+
 - **Phase 1 (Foundation):** The deployment script is the highest-risk deliverable. Must handle mock USDC, mock oracle, correct constructor params, role setup, and address export atomically. Research the existing `MockERC20.sol` and Foundry broadcast artifact format.
 - **Phase 2 (Worker):** viem's event watching reliability on Avalanche public endpoints is the project's biggest technical risk. Need to validate the polling pattern with actual Fuji RPC behavior, test crash recovery, and measure block lag.
 - **Phase 5 (Admin):** The `actualPriceX18` calculation for `finalizeMint` is easy to get wrong. Need to research the exact formula: how does the contract compute token amounts from USDC and price, and how should the admin UI reverse-engineer the expected output to validate the input.
 
 Phases with standard patterns (skip additional research):
+
 - **Phase 3 (API Routes):** Standard Next.js route handlers + Prisma queries. Well-documented, established patterns.
 - **Phase 4 (Frontend Wiring):** wagmi hooks (`useWriteContract`, `useReadContract`, `useWaitForTransactionReceipt`) are well-documented. The existing mock UI provides the component structure -- just swap data sources.
 
 ## Confidence Assessment
 
-| Area | Confidence | Notes |
-|------|------------|-------|
-| Stack | HIGH | Existing stack is correct. Research confirms no changes needed except adding `@wagmi/connectors`. All version decisions are well-justified with specific rationale for staying vs. upgrading. |
-| Features | HIGH | Clear separation of table stakes vs. differentiators. Feature dependency graph is well-mapped. Existing mock UI provides exact scope for what needs wiring. |
-| Architecture | HIGH | Six-component architecture with clear boundaries matches the existing codebase structure. Data flows are fully documented for both mint and redeem paths. Worker-as-indexer and admin-as-keeper pattern is explicitly defined in PROJECT.md. |
-| Pitfalls | HIGH | 15 pitfalls identified with specific warning signs and prevention strategies. The most critical ones (silent watcher death, USDC decimals, state divergence) have actionable mitigations. References to actual viem GitHub issues add credibility. |
+| Area         | Confidence | Notes                                                                                                                                                                                                                                              |
+| ------------ | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Stack        | HIGH       | Existing stack is correct. Research confirms no changes needed except adding `@wagmi/connectors`. All version decisions are well-justified with specific rationale for staying vs. upgrading.                                                      |
+| Features     | HIGH       | Clear separation of table stakes vs. differentiators. Feature dependency graph is well-mapped. Existing mock UI provides exact scope for what needs wiring.                                                                                        |
+| Architecture | HIGH       | Six-component architecture with clear boundaries matches the existing codebase structure. Data flows are fully documented for both mint and redeem paths. Worker-as-indexer and admin-as-keeper pattern is explicitly defined in PROJECT.md.       |
+| Pitfalls     | HIGH       | 15 pitfalls identified with specific warning signs and prevention strategies. The most critical ones (silent watcher death, USDC decimals, state divergence) have actionable mitigations. References to actual viem GitHub issues add credibility. |
 
 **Overall confidence:** HIGH
 
@@ -170,6 +178,7 @@ Phases with standard patterns (skip additional research):
 ## Sources
 
 ### Primary (HIGH confidence)
+
 - Existing codebase analysis -- contract source, mock UI, Prisma schema, worker skeleton, shared config
 - PROJECT.md -- architecture decisions, scope definition, constraints
 - viem documentation -- `watchContractEvent`, `getContractEvents`, transport options
@@ -177,15 +186,18 @@ Phases with standard patterns (skip additional research):
 - Foundry documentation -- `forge script`, deployment, verification
 
 ### Secondary (MEDIUM confidence)
+
 - viem GitHub issues (#534, #1084, #1063) -- `watchContractEvent` reliability problems
 - wagmi GitHub issues (#4423, #4187) -- ERC20 approval and WalletConnect edge cases
 - Prisma + Neon documentation -- connection pooling, serverless adapter patterns
 - Neon documentation -- connection latency, idle timeout behavior
 
 ### Tertiary (LOW confidence)
+
 - Avalanche Fuji public RPC rate limits -- exact limits not officially documented, based on community reports
 - RainbowKit/ConnectKit wagmi v3 support -- "inconsistent" based on community discussion, not officially confirmed
 
 ---
-*Research completed: 2026-02-10*
-*Ready for roadmap: yes*
+
+_Research completed: 2026-02-10_
+_Ready for roadmap: yes_

@@ -67,13 +67,13 @@ Create `apps/web/hooks/use-kyc.ts` with two hooks:
    - Return the mutation object so consumers get `mutate`, `isPending`, `isError`, `error`, `data`
 
 Use `import type` for type-only imports per project conventions. Import `useMutation`, `useQuery`, `useQueryClient` from `@tanstack/react-query`.
-  </action>
-  <verify>
+</action>
+<verify>
 Run `pnpm --filter @ammo-exchange/web check` -- no type errors in the new file.
-  </verify>
-  <done>
+</verify>
+<done>
 `use-kyc.ts` exports both hooks, types check clean.
-  </done>
+</done>
 </task>
 
 <task type="auto">
@@ -83,6 +83,7 @@ Run `pnpm --filter @ammo-exchange/web check` -- no type errors in the new file.
 **A) Create `apps/web/hooks/use-save-profile.ts`:**
 
 `useSaveProfile()` -- uses `useMutation`:
+
 - mutationFn: PATCHes `/api/users/profile` with JSON body. If `!res.ok`, parse error body and throw `new Error(data?.error ?? "Failed to save address")` so TanStack catches it.
 - On success: invalidate `["profile"]` queries.
 - Return the mutation object.
@@ -90,6 +91,7 @@ Run `pnpm --filter @ammo-exchange/web check` -- no type errors in the new file.
 **B) Refactor `apps/web/features/redeem/redeem-flow.tsx` (RedeemFlow orchestrator):**
 
 In the `RedeemFlow` component (line 1634+):
+
 - Remove state: `kycStatus`, `kycLoading`, `kycPrefill` (lines 1666-1677)
 - Remove the KYC fetch useEffect (lines 1738-1761)
 - Remove `handleKycSubmit` useCallback (lines 1775-1794)
@@ -123,13 +125,13 @@ In the `RedeemFlow` component (line 1634+):
 - Remove `setSaving(true)`, `setSaving(false)`, `setSaveError(null)`, `setSaveError(...)` calls.
   </action>
   <verify>
-Run `pnpm --filter @ammo-exchange/web check` -- no type errors across all modified files.
-Run `pnpm --filter @ammo-exchange/web build` -- build succeeds with no errors.
+  Run `pnpm --filter @ammo-exchange/web check` -- no type errors across all modified files.
+  Run `pnpm --filter @ammo-exchange/web build` -- build succeeds with no errors.
   </verify>
   <done>
-All three manual fetch mutation patterns replaced with useMutation hooks. No manual loading/error useState for mutations remains. Profile page no longer imports useQueryClient directly. KYC status is fetched via useQuery. All type checks pass and build succeeds.
+  All three manual fetch mutation patterns replaced with useMutation hooks. No manual loading/error useState for mutations remains. Profile page no longer imports useQueryClient directly. KYC status is fetched via useQuery. All type checks pass and build succeeds.
   </done>
-</task>
+  </task>
 
 </tasks>
 
@@ -141,8 +143,9 @@ All three manual fetch mutation patterns replaced with useMutation hooks. No man
 </verification>
 
 <success_criteria>
+
 - Zero manual fetch + useState mutation patterns remain in redeem-flow.tsx and profile/page.tsx
 - Two new hooks created following existing project hook conventions
 - All loading, error, and success behaviors preserved (loading spinners, error messages, cache invalidation, navigation on success)
 - TypeScript strict mode passes, build succeeds
-</success_criteria>
+  </success_criteria>

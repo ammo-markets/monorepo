@@ -100,7 +100,8 @@ export function CaliberInfoPanel({
                 className="text-[10px] leading-tight"
                 style={{ color: "var(--text-muted)" }}
               >
-                {spec.grainWeight}gr | {spec.caseType === "standard" ? "Std" : "Brass"} | Min{" "}
+                {spec.grainWeight}gr |{" "}
+                {spec.caseType === "standard" ? "Std" : "Brass"} | Min{" "}
                 {spec.minMintRounds} rds
               </div>
             </button>

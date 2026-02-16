@@ -17,12 +17,14 @@ viem's `watchContractEvent` uses polling-based filter watching under the hood. W
 The current worker skeleton (`apps/worker/src/index.ts`) uses `http()` transport with no error handling, no reconnection logic, and no heartbeat. On Fuji, public RPC endpoints are rate-limited and occasionally return stale data.
 
 **Warning Signs:**
+
 - Worker logs stop printing new events but process stays alive (no crash = no Railway restart)
 - Database `Order` table has no new rows despite on-chain `MintStarted` events
 - Users report "stuck" orders in the admin queue with no matching DB entry
 - `publicClient.getBlockNumber()` returns the same value across multiple calls (stale connection)
 
 **Prevention Strategy:**
+
 1. Do NOT rely solely on `watchContractEvent` for production event ingestion. Implement a polling loop with `publicClient.getContractEvents()` (getLogs) that tracks the last processed block number in the database. This is the pattern recommended by viem maintainers for reliability.
 2. Store `lastProcessedBlock` in a persistent table (e.g., `IndexerState` in Prisma). On restart, resume from that block, not from "latest".
 3. Add a heartbeat check: every 30 seconds, call `getBlockNumber()` and compare to the last known block. If stale for >2 minutes, recreate the public client.
@@ -30,6 +32,7 @@ The current worker skeleton (`apps/worker/src/index.ts`) uses `http()` transport
 5. Log every processed event with block number and tx hash. This audit trail is essential for debugging missed events.
 
 **References:**
+
 - [viem Discussion #534: watchEvents skipping events](https://github.com/wevm/viem/discussions/534)
 - [viem Issue #1084: watchEvent dies after 30s on Bun](https://github.com/wevm/viem/issues/1084)
 - [viem Issue #1063: watchContractEvent not working properly](https://github.com/wevm/viem/issues/1063)
@@ -51,12 +54,14 @@ The mint flow requires two sequential wallet transactions: (1) ERC20 `approve(ca
 - **User closes wallet popup:** If the user rejects or closes the approval transaction, the frontend state machine must reset cleanly. The current `WalletState` type does not have an "approval-rejected" state.
 
 **Warning Signs:**
+
 - Users report "Transaction Failed" after clicking "Confirm Mint" even though they approved
 - `useWriteContract` returns `isPending: true` indefinitely (wagmi issue #4187 with WalletConnect)
 - Approval transaction succeeds on-chain but frontend still shows "Approving..."
 - Different behavior between MetaMask and WalletConnect during approval
 
 **Prevention Strategy:**
+
 1. Before calling `startMint`, always check current allowance with `useReadContract` calling `usdc.allowance(userAddress, caliberMarketAddress)`. Only prompt approval if `allowance < usdcAmount`.
 2. Use the exact CaliberMarket address for the selected caliber, not a hardcoded address. Pull from `AmmoFactory.calibers(caliberId).market` or from the shared config after deployment.
 3. Add explicit error parsing for CaliberMarket custom errors (InvalidAmount, InvalidBps, MarketPaused) using viem's `decodeErrorResult`. Show human-readable messages instead of raw hex.
@@ -65,6 +70,7 @@ The mint flow requires two sequential wallet transactions: (1) ERC20 `approve(ca
 6. Implement `useWaitForTransactionReceipt` after approval to confirm it landed before enabling the mint button.
 
 **References:**
+
 - [wagmi Issue #4423: USDT non-standard ERC20 approval](https://github.com/wevm/wagmi/issues/4423)
 - [wagmi Issue #4187: useWriteContract hash not returning with WalletConnect](https://github.com/wevm/wagmi/issues/4187)
 
@@ -84,12 +90,14 @@ The shared config (`packages/shared/src/config/index.ts`) has placeholder `0x000
 - **Foundry deploy scripts must set AmmoManager.treasury():** If treasury is not set before the first `finalizeMint()`, the transaction will revert with `TreasuryNotSet` (CaliberMarket line 212). This is easy to forget in deployment scripts.
 
 **Warning Signs:**
+
 - `finalizeMint` reverts with `TreasuryNotSet` on the first order
 - Minted token amounts are astronomically large or near-zero (decimal mismatch)
 - Frontend shows "0 balance" despite successful mint (reading wrong contract address)
 - Worker indexes events from wrong contract address
 
 **Prevention Strategy:**
+
 1. Create a comprehensive Foundry deployment script (`script/Deploy.s.sol`) that deploys in order: (a) Mock USDC with 6 decimals, (b) AmmoManager with feeRecipient, (c) AmmoFactory with manager + USDC addresses, (d) createCaliber for each of the 4 calibers, (e) setTreasury on AmmoManager, (f) setKeeper for the keeper wallet.
 2. After deployment, run `export-abis.ts` AND a new `export-addresses.ts` script that reads deployment artifacts and updates `packages/shared/src/config/index.ts` with real Fuji addresses.
 3. Add a sanity-check script that reads `usdcDecimals` from each deployed CaliberMarket and verifies it matches the mock USDC's `decimals()` return value.
@@ -112,12 +120,14 @@ The architecture decision is that admin (keeper) triggers `finalizeMint()` and `
 - **Keeper wallet exposure:** The keeper wallet address has elevated permissions (can mint tokens, refund USDC, cancel redeems). If the browser extension is compromised, the attacker can drain the protocol.
 
 **Warning Signs:**
+
 - Finalization transactions revert with no clear error ("execution reverted" with no custom error decoded)
 - Admin sees "pending" transactions that never confirm (nonce gap)
 - Token amounts minted are clearly wrong (e.g., 1e30 tokens for a $100 mint)
 - Admin's AVAX balance hits zero mid-session
 
 **Prevention Strategy:**
+
 1. Add explicit gas limit override in the admin UI's `useWriteContract` calls. Set gas to 500,000 for finalize operations (typical usage is 150k-300k, but leave headroom). Do not rely on estimation.
 2. Display the admin wallet's AVAX balance prominently on the admin dashboard. Add a warning banner when balance drops below 0.5 AVAX.
 3. Build a price calculation helper in the admin UI: given the USDC amount and intended token output, compute `actualPriceX18 = (netUsdc * scale * 1e18) / expectedTokens`. Show the admin the expected token output BEFORE they submit.
@@ -140,12 +150,14 @@ Additionally, the worker on Railway is a long-running process that holds a singl
 The `globalForPrisma` pattern (client.ts lines 18-26) helps in development but does NOT help in production Vercel because each serverless function is a separate process with its own global scope.
 
 **Warning Signs:**
+
 - API routes intermittently return 500 errors with "Connection terminated unexpectedly"
 - Worker crashes with "Connection refused" after idle periods
 - Prisma queries take 2-5 seconds on first call after cold start (Neon compute waking up)
 - Database shows connection count near limit in Neon dashboard
 
 **Prevention Strategy:**
+
 1. Use Neon's pooled connection string (with `-pooler` suffix) for the Vercel deployment. This routes through PgBouncer.
 2. For the worker on Railway, add connection retry logic: wrap Prisma operations in a try/catch that reconnects on connection errors. Alternatively, use `$disconnect()` and `$connect()` to reset the connection.
 3. Set `connection_limit=1` in the DATABASE_URL for serverless deployments: `?connection_limit=1&pool_timeout=10`.
@@ -153,6 +165,7 @@ The `globalForPrisma` pattern (client.ts lines 18-26) helps in development but d
 5. Consider using Prisma Accelerate or Neon's serverless driver (`@neondatabase/serverless`) for the Vercel edge runtime to avoid connection pooling issues entirely.
 
 **References:**
+
 - [Prisma + Neon documentation](https://www.prisma.io/docs/orm/overview/databases/neon)
 - [Neon connection latency docs](https://neon.com/docs/connect/connection-latency)
 
@@ -174,12 +187,14 @@ The system has two sources of truth for order state: the CaliberMarket contract 
 The frontend currently plans to read order state from the API (which queries DB), but users may also check the block explorer. Discrepancies erode trust.
 
 **Warning Signs:**
+
 - Portfolio page shows an order as "Pending" but block explorer shows it as finalized
 - Admin dashboard shows a different order count than on-chain `nextOrderId`
 - User sees "Order not found" in the API but can verify on-chain that their `startMint` succeeded
 - DB has orders with `status: COMPLETED` but no corresponding `MintFinalized` event on-chain
 
 **Prevention Strategy:**
+
 1. Treat on-chain state as the canonical source of truth. The DB is a read-optimized cache.
 2. Add a reconciliation job (cron or manual admin button) that reads all orders from each CaliberMarket contract (iterating `mintOrders(1..nextOrderId)` and `redeemOrders(1..nextOrderId)`) and compares against DB state. Flag and auto-fix discrepancies.
 3. When the worker indexes a `MintFinalized` or `RedeemFinalized` event, upsert the order (create if missing, update if exists). Do not assume the `MintStarted` event was processed first.
@@ -201,12 +216,14 @@ The current mint/redeem flow components are marked `"use client"`, which helps, 
 Additionally, the `QueryClient` is created as a module-level singleton (providers.tsx line 8). In Next.js 15, this can leak state between server-side renders of different requests if the app is deployed on a shared server (not a concern on Vercel's serverless, but relevant for development).
 
 **Warning Signs:**
+
 - Console warnings: "Text content does not match server-rendered HTML"
 - Wallet connection state flickers on page load (shows disconnected then connected)
 - Balance reads show "0" briefly before populating
 - React Query cache shows stale data from a previous user's session
 
 **Prevention Strategy:**
+
 1. Never read wallet-dependent data in server components. Use `"use client"` boundary for any component that calls `useAccount`, `useBalance`, `useReadContract`, etc.
 2. Create the `QueryClient` inside the Providers component (not at module level) or use a factory pattern with `useState`:
    ```tsx
@@ -230,12 +247,14 @@ Furthermore, the config structure conflates AmmoToken addresses with CaliberMark
 If a new caliber is added post-deployment, or if contracts are redeployed on Fuji for bug fixes, every consumer must be updated. Manual address management is the #1 source of integration bugs in DeFi projects.
 
 **Warning Signs:**
+
 - Frontend calls `startMint` on the wrong address (gets "execution reverted" with no helpful error)
 - Worker watches the AmmoToken address instead of the CaliberMarket address for events
 - After redeployment, some parts of the system use old addresses while others use new ones
 - New caliber added via `createCaliber` but not reflected in frontend
 
 **Prevention Strategy:**
+
 1. Restructure the config to store: `AmmoManager`, `AmmoFactory`, and per-caliber entries with both `market` and `token` addresses:
    ```ts
    export const CONTRACTS = {
@@ -270,11 +289,13 @@ CaliberMarket's `startMint` and `startRedeem` accept a `uint64 deadline` paramet
 - **Fuji block timestamps:** Fuji's block times are ~2 seconds, but timestamps can drift from wall clock time.
 
 **Warning Signs:**
+
 - Admin clicks "Finalize" and gets `DeadlineExpired` revert on orders that were submitted recently
 - All orders have `deadline: 0` (no protection for users) or `deadline: Date.now()` (already expired)
 - Deadline values in the database look like millisecond timestamps (13 digits) instead of seconds (10 digits)
 
 **Prevention Strategy:**
+
 1. For the MVP with human-in-the-loop finalization, set deadline to `Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60)` (7 days from now). This gives the admin ample time while still protecting users.
 2. Display the deadline as a human-readable date in both the user's portfolio and the admin order queue.
 3. Add a unit test that verifies the frontend's deadline computation produces a valid `uint64` in seconds.
@@ -298,12 +319,14 @@ The entire frontend currently runs on mock data (`apps/web/lib/mock-data.ts` imp
 The mint flow (line 1057: `Math.random() > 0.2` for success) and redeem flow (line 1501: `Math.random() > 0.15`) simulate random failures. These MUST be fully removed.
 
 **Warning Signs:**
+
 - Users see non-zero balances without ever connecting a wallet
 - Prices on the market page do not match on-chain oracle prices
 - Transaction confirmations appear faster than block time (setTimeout artifacts)
 - "Order submitted" UI appears before the transaction is actually mined
 
 **Prevention Strategy:**
+
 1. Create a `lib/mock-data.ts` barrel that exports ONLY when `process.env.NEXT_PUBLIC_USE_MOCKS === "true"`. Default to real data paths.
 2. Add a lint rule or grep check in CI that flags imports of `mock-data` in non-test files.
 3. Replace mock data incrementally per feature: first balances (useReadContract), then prices (API route from DB), then order state (API route), then transaction flows (useWriteContract).
@@ -325,11 +348,13 @@ Additionally, Railway free tier restarts containers periodically. The worker has
 The combination of this pitfall with P1 (silent watcher death) means there are two independent failure modes that both result in missed events.
 
 **Warning Signs:**
+
 - Railway dashboard shows the worker restarted but the DB has a gap in order timestamps
 - Worker logs show "Starting Ammo Exchange event listener..." repeatedly (restart loop) with no events in between
 - Orders appear on-chain that have no corresponding DB entry
 
 **Prevention Strategy:**
+
 1. Store `lastProcessedBlock` per CaliberMarket in the database. On startup, query this value and start indexing from `lastProcessedBlock + 1` using `getContractEvents` (getLogs), not `watchContractEvent`.
 2. Process events in a transaction: read events, write to DB, update `lastProcessedBlock` -- all in one Prisma `$transaction`. If the write fails, the block number is not advanced and events will be reprocessed on next iteration.
 3. Add a `process.on("SIGTERM")` handler that logs the current block number and cleanly disconnects from the database.
@@ -351,11 +376,13 @@ The architecture decision states: "Admin auth = wallet address check. Contract a
 - Multiple admins could see the same pending order and both try to finalize it. The second transaction reverts with `InvalidStatus` (order already finalized).
 
 **Warning Signs:**
+
 - Admin sees orders but every finalization attempt reverts
 - Two admins finalize the same order; one gets a confusing "InvalidStatus" error
 - Admin changes their wallet in MetaMask without realizing the new wallet is not a keeper
 
 **Prevention Strategy:**
+
 1. On admin page load, call `ammoManager.isKeeper(connectedAddress)` and display a clear error banner if false. Do not show the order queue to non-keepers.
 2. On the order detail page, check `mintOrders(orderId).status` on-chain before showing the "Finalize" button. If status is not `Started`, gray out the button and show "Already processed."
 3. Consider adding optimistic locking: when an admin clicks "Finalize", immediately update the DB order status to `PROCESSING`. Other admins see this and know the order is being handled. If the transaction fails, revert the DB status.
@@ -376,12 +403,14 @@ viem's type inference from `as const` ABIs means the TypeScript compiler will NO
 The `export-abis.ts` script (line 23) silently skips contracts whose artifacts are not found, printing only a `console.warn`. This means if the `out/` directory is stale or missing, the ABIs remain unchanged and no error is thrown.
 
 **Warning Signs:**
+
 - New event added to CaliberMarket but worker never receives it (ABI filter does not include the new event)
 - Function call reverts on-chain but works in Foundry tests (ABI signature mismatch)
 - `export-abis.ts` prints warnings that are buried in CI output
 - Frontend type-checks pass but transactions revert at runtime
 
 **Prevention Strategy:**
+
 1. Add `contracts:build` as a dependency of `dev` and `build` in turbo.json. This already exists (`^build` in dependsOn), but verify it triggers `forge build` AND `export-abis.ts` in sequence.
 2. Make `export-abis.ts` exit with code 1 if any artifact is missing (change `console.warn` + `continue` to `console.error` + `process.exit(1)`).
 3. Add a CI step that runs `forge build && tsx scripts/export-abis.ts && pnpm check` to verify ABIs and types are in sync.
@@ -398,22 +427,26 @@ The `export-abis.ts` script (line 23) silently skips contracts whose artifacts a
 USDC on Avalanche has 6 decimals. AmmoToken has 18 decimals. CaliberMarket uses a scaling formula: `uint256 scale = 10 ** (18 - usdcDecimals)` (line 156). The price oracle returns prices in 18-decimal fixed-point (`actualPriceX18`).
 
 The frontend must handle three different decimal scales:
+
 1. USDC amounts: 6 decimals (1 USDC = 1_000_000 units)
 2. AmmoToken amounts: 18 decimals (1 token = 1e18 units)
 3. Oracle prices: 18-decimal fixed-point (e.g., $0.30/round = 300000000000000000)
 
 The current mock UI uses floating-point JavaScript numbers (`Number.parseFloat(usdcAmount)`, mint-flow.tsx line 257). When wiring real contract calls, you must convert to BigInt with correct scaling. A common mistake is:
-- Passing `100` (meaning $100 USDC) directly to `startMint` instead of `100_000_000n` (100 * 1e6)
+
+- Passing `100` (meaning $100 USDC) directly to `startMint` instead of `100_000_000n` (100 \* 1e6)
 - Displaying token amounts as raw BigInt without dividing by 1e18
 - Mixing up "price per round in USD" (human-readable) with "price per round in 1e18 wei" (contract format)
 
 **Warning Signs:**
+
 - User enters $100 USDC but the contract receives $0.0001 USDC (or $100 trillion USDC)
 - Token balance shows as "1000000000000000000" instead of "1.0"
 - Price chart shows numbers that are 10^12x too large or too small
 - `parseUnits` / `formatUnits` used with wrong decimal parameter
 
 **Prevention Strategy:**
+
 1. Use viem's `parseUnits(amount, 6)` for USDC and `parseUnits(amount, 18)` for AmmoToken amounts. Never do manual BigInt multiplication.
 2. Use `formatUnits(bigintValue, 6)` for displaying USDC and `formatUnits(bigintValue, 18)` for tokens.
 3. Create shared utility functions in `packages/shared`: `toUsdcUnits(dollarAmount: string)`, `fromUsdcUnits(rawAmount: bigint)`, `toTokenUnits(roundCount: string)`, `fromTokenUnits(rawAmount: bigint)`.
@@ -434,12 +467,14 @@ The worker also uses `http()` without a custom URL. If both the frontend (via Ve
 Additionally, React Query's default `refetchInterval` behavior combined with wagmi's auto-refresh on block changes can create a firehose of RPC requests on a single page.
 
 **Warning Signs:**
+
 - Console shows "429 Too Many Requests" errors from the RPC endpoint
 - Balance reads return undefined intermittently
 - Worker logs show "request failed" errors during high frontend activity
 - Page load takes 5+ seconds due to sequential failed RPC retries
 
 **Prevention Strategy:**
+
 1. Use a dedicated RPC provider for Fuji (QuickNode, Alchemy, or Infura all offer free Avalanche Fuji endpoints). Set the URL via `FUJI_RPC_URL` env var.
 2. Configure separate RPC URLs for frontend and worker to avoid shared rate limits.
 3. Use wagmi's `multicall` batching (enabled by default in wagmi v2) to combine multiple `useReadContract` calls into a single RPC request.
@@ -449,14 +484,14 @@ Additionally, React Query's default `refetchInterval` behavior combined with wag
 
 ## Summary: Pitfall Priority by Phase
 
-| Phase | Pitfalls | Action |
-|-------|----------|--------|
-| **Contract Deployment (Fuji)** | P3 (USDC decimals), P4 (treasury not set), P8 (address config) | Deploy script must handle all setup atomically |
-| **Worker Event Indexer** | P1 (silent death), P6 (state divergence), P11 (crash recovery) | Use getLogs polling with persistent block cursor, not watchContractEvent |
-| **Frontend Wagmi Wiring** | P2 (approval UX), P7 (SSR hydration), P9 (deadline), P10 (mock data), P14 (decimals) | Replace mocks incrementally; use parseUnits/formatUnits everywhere |
-| **Admin Dashboard** | P4 (gas/nonce), P12 (auth UX), P13 (ABI staleness) | Check keeper status on load; add gas overrides; keep ABIs in sync |
-| **Infrastructure** | P5 (Prisma pooling), P15 (RPC rate limits) | Pooled connection string for Vercel; dedicated RPC endpoint |
+| Phase                          | Pitfalls                                                                             | Action                                                                   |
+| ------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
+| **Contract Deployment (Fuji)** | P3 (USDC decimals), P4 (treasury not set), P8 (address config)                       | Deploy script must handle all setup atomically                           |
+| **Worker Event Indexer**       | P1 (silent death), P6 (state divergence), P11 (crash recovery)                       | Use getLogs polling with persistent block cursor, not watchContractEvent |
+| **Frontend Wagmi Wiring**      | P2 (approval UX), P7 (SSR hydration), P9 (deadline), P10 (mock data), P14 (decimals) | Replace mocks incrementally; use parseUnits/formatUnits everywhere       |
+| **Admin Dashboard**            | P4 (gas/nonce), P12 (auth UX), P13 (ABI staleness)                                   | Check keeper status on load; add gas overrides; keep ABIs in sync        |
+| **Infrastructure**             | P5 (Prisma pooling), P15 (RPC rate limits)                                           | Pooled connection string for Vercel; dedicated RPC endpoint              |
 
 ---
 
-*Pitfalls analysis: 2026-02-10*
+_Pitfalls analysis: 2026-02-10_

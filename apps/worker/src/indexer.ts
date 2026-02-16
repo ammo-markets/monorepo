@@ -19,10 +19,7 @@ import type {
   RedeemFinalizedArgs,
 } from "./handlers/redeem";
 import { handleMintRefunded, handleRedeemCanceled } from "./handlers/refund";
-import type {
-  MintRefundedArgs,
-  RedeemCanceledArgs,
-} from "./handlers/refund";
+import type { MintRefundedArgs, RedeemCanceledArgs } from "./handlers/refund";
 import {
   handlePaused,
   handleUnpaused,
@@ -173,17 +170,44 @@ async function processAndCommit(
 ): Promise<void> {
   // Combine all event arrays with a common shape for sorting
   const allEvents = [
-    ...events.mintStarted.map((e) => ({ ...e, eventName: "MintStarted" as const })),
-    ...events.mintFinalized.map((e) => ({ ...e, eventName: "MintFinalized" as const })),
-    ...events.mintRefunded.map((e) => ({ ...e, eventName: "MintRefunded" as const })),
-    ...events.redeemRequested.map((e) => ({ ...e, eventName: "RedeemRequested" as const })),
-    ...events.redeemFinalized.map((e) => ({ ...e, eventName: "RedeemFinalized" as const })),
-    ...events.redeemCanceled.map((e) => ({ ...e, eventName: "RedeemCanceled" as const })),
+    ...events.mintStarted.map((e) => ({
+      ...e,
+      eventName: "MintStarted" as const,
+    })),
+    ...events.mintFinalized.map((e) => ({
+      ...e,
+      eventName: "MintFinalized" as const,
+    })),
+    ...events.mintRefunded.map((e) => ({
+      ...e,
+      eventName: "MintRefunded" as const,
+    })),
+    ...events.redeemRequested.map((e) => ({
+      ...e,
+      eventName: "RedeemRequested" as const,
+    })),
+    ...events.redeemFinalized.map((e) => ({
+      ...e,
+      eventName: "RedeemFinalized" as const,
+    })),
+    ...events.redeemCanceled.map((e) => ({
+      ...e,
+      eventName: "RedeemCanceled" as const,
+    })),
     ...events.paused.map((e) => ({ ...e, eventName: "Paused" as const })),
     ...events.unpaused.map((e) => ({ ...e, eventName: "Unpaused" as const })),
-    ...events.mintFeeUpdated.map((e) => ({ ...e, eventName: "MintFeeUpdated" as const })),
-    ...events.redeemFeeUpdated.map((e) => ({ ...e, eventName: "RedeemFeeUpdated" as const })),
-    ...events.minMintUpdated.map((e) => ({ ...e, eventName: "MinMintUpdated" as const })),
+    ...events.mintFeeUpdated.map((e) => ({
+      ...e,
+      eventName: "MintFeeUpdated" as const,
+    })),
+    ...events.redeemFeeUpdated.map((e) => ({
+      ...e,
+      eventName: "RedeemFeeUpdated" as const,
+    })),
+    ...events.minMintUpdated.map((e) => ({
+      ...e,
+      eventName: "MinMintUpdated" as const,
+    })),
   ];
 
   // Sort by blockNumber ascending, then logIndex ascending
@@ -250,16 +274,28 @@ async function processAndCommit(
             handlePaused(meta, event.args as unknown as { by: `0x${string}` });
             break;
           case "Unpaused":
-            handleUnpaused(meta, event.args as unknown as { by: `0x${string}` });
+            handleUnpaused(
+              meta,
+              event.args as unknown as { by: `0x${string}` },
+            );
             break;
           case "MintFeeUpdated":
-            handleMintFeeUpdated(meta, event.args as unknown as { oldBps: bigint; newBps: bigint });
+            handleMintFeeUpdated(
+              meta,
+              event.args as unknown as { oldBps: bigint; newBps: bigint },
+            );
             break;
           case "RedeemFeeUpdated":
-            handleRedeemFeeUpdated(meta, event.args as unknown as { oldBps: bigint; newBps: bigint });
+            handleRedeemFeeUpdated(
+              meta,
+              event.args as unknown as { oldBps: bigint; newBps: bigint },
+            );
             break;
           case "MinMintUpdated":
-            handleMinMintUpdated(meta, event.args as unknown as { oldMin: bigint; newMin: bigint });
+            handleMinMintUpdated(
+              meta,
+              event.args as unknown as { oldMin: bigint; newMin: bigint },
+            );
             break;
         }
       }
@@ -317,9 +353,10 @@ export async function pollOnce(): Promise<void> {
 
     const totalBlocks = Number(currentBlock - fromBlock + 1n);
     const scannedBlocks = Number(batchStart - fromBlock);
-    const progressPct = totalBlocks > 0 ? Math.floor((scannedBlocks / totalBlocks) * 100) : 100;
+    const progressPct =
+      totalBlocks > 0 ? Math.floor((scannedBlocks / totalBlocks) * 100) : 100;
     console.log(
-      `[indexer] Scanning batch ${batchStart}..${batchEnd} (${progressPct}% complete, ${totalEventsProcessed} events found)`
+      `[indexer] Scanning batch ${batchStart}..${batchEnd} (${progressPct}% complete, ${totalEventsProcessed} events found)`,
     );
 
     const events = await fetchEvents(batchStart, batchEnd);
@@ -358,6 +395,6 @@ export async function pollOnce(): Promise<void> {
 
   const blocksScanned = Number(currentBlock - fromBlock + 1n);
   console.log(
-    `[indexer] Backfill complete: ${blocksScanned.toLocaleString()} blocks scanned (${fromBlock}..${currentBlock}), ${totalEventsProcessed} events found`
+    `[indexer] Backfill complete: ${blocksScanned.toLocaleString()} blocks scanned (${fromBlock}..${currentBlock}), ${totalEventsProcessed} events found`,
   );
 }

@@ -55,6 +55,7 @@ completed: 2026-02-11
 - **Files modified:** 3
 
 ## Accomplishments
+
 - Added `DEPLOYMENT_BLOCKS` export to shared config with Fuji deployment block (51699730)
 - Worker `pollOnce` now uses deployment block as floor -- fresh DB starts at block 51699730 instead of block 0
 - Added per-batch progress logging with percentage, block range, and cumulative event count
@@ -68,11 +69,13 @@ Each task was committed atomically:
 2. **Task 2: Fix worker to use deployment block as floor with progress logging** - `58612a6` (fix)
 
 ## Files Created/Modified
+
 - `packages/shared/src/config/index.ts` - Added DEPLOYMENT_BLOCKS export with fuji: BigInt(51699730), mainnet: BigInt(0)
 - `apps/worker/src/lib/constants.ts` - Added DEPLOYMENT_BLOCK constant imported from shared
 - `apps/worker/src/indexer.ts` - pollOnce uses deployment block floor, per-batch progress logging, enhanced summary log
 
 ## Decisions Made
+
 - Used `BigInt()` constructor instead of BigInt literal (`n` suffix) because the web app's tsconfig targets ES2017 which doesn't support BigInt literals. Since shared package ships raw TypeScript consumed by all apps, it must use the lowest-common-denominator syntax.
 - DEPLOYMENT_BLOCK is a floor, not a cursor override -- if cursor is already past deployment block, it continues from cursor normally. This prevents regression for existing databases.
 - Progress logging happens per batch inside the while loop, giving visibility into long backfill operations.
@@ -82,6 +85,7 @@ Each task was committed atomically:
 ### Auto-fixed Issues
 
 **1. [Rule 3 - Blocking] Changed BigInt literal to BigInt() constructor for ES2017 compat**
+
 - **Found during:** Task 2 (full monorepo build verification)
 - **Issue:** Plan specified `51699730n` BigInt literal syntax, but web app tsconfig targets ES2017 which doesn't support BigInt literals. Since shared package ships raw TypeScript transpiled by consumers, the literal syntax caused a build failure in `@ammo-exchange/web`.
 - **Fix:** Changed `51699730n` to `BigInt(51699730)` and `0n` to `BigInt(0)` in DEPLOYMENT_BLOCKS config
@@ -95,12 +99,15 @@ Each task was committed atomically:
 **Impact on plan:** Essential fix for monorepo build compatibility. No scope creep. Runtime behavior identical (BigInt() produces same value as n-suffix literal).
 
 ## Issues Encountered
+
 None beyond the deviation documented above.
 
 ## User Setup Required
+
 None - no external service configuration required.
 
 ## Next Phase Readiness
+
 - Worker indexer now starts efficiently from deployment block on fresh databases
 - DEPLOYMENT_BLOCKS config ready for mainnet deployment block when available
 - Both Phase 7 plans (01: user registration, 02: indexing fix) address the two blockers identified in STATE.md
@@ -110,5 +117,6 @@ None - no external service configuration required.
 All files exist. All commits verified (685d12b, 58612a6).
 
 ---
-*Phase: 07-registration-and-indexing-fixes*
-*Completed: 2026-02-11*
+
+_Phase: 07-registration-and-indexing-fixes_
+_Completed: 2026-02-11_

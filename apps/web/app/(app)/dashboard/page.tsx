@@ -20,9 +20,8 @@ export default function DashboardPage() {
 
   const pendingCount = useMemo(
     () =>
-      orders.filter(
-        (o) => o.status === "PENDING" || o.status === "PROCESSING",
-      ).length,
+      orders.filter((o) => o.status === "PENDING" || o.status === "PROCESSING")
+        .length,
     [orders],
   );
 

@@ -17,28 +17,31 @@ wagmi v2 provides `useWriteContract` for sending transactions and `useWaitForTra
 ## Standard Stack
 
 ### Core
-| Library | Version | Purpose | Why Standard |
-|---------|---------|---------|--------------|
-| wagmi | 2.19.5 | `useWriteContract`, `useWaitForTransactionReceipt` for tx lifecycle | Already installed, provides React Query-backed mutation hooks |
-| viem | 2.45.1 | ABI encoding, error decoding, type utilities (`parseUnits`, `erc20Abi`) | Already installed, wagmi's underlying engine |
-| @tanstack/react-query | 5.90.20 | Mutation state management for write hooks | Already installed as wagmi peer dependency |
-| @ammo-exchange/contracts | workspace:* | CaliberMarketAbi, AmmoTokenAbi for typed contract calls | Already exports all ABIs with `as const` |
-| @ammo-exchange/shared | workspace:* | CONTRACT_ADDRESSES, CALIBER_SPECS, FEES for address/config lookups | Already exports per-caliber addresses and fee constants |
+
+| Library                  | Version      | Purpose                                                                 | Why Standard                                                  |
+| ------------------------ | ------------ | ----------------------------------------------------------------------- | ------------------------------------------------------------- |
+| wagmi                    | 2.19.5       | `useWriteContract`, `useWaitForTransactionReceipt` for tx lifecycle     | Already installed, provides React Query-backed mutation hooks |
+| viem                     | 2.45.1       | ABI encoding, error decoding, type utilities (`parseUnits`, `erc20Abi`) | Already installed, wagmi's underlying engine                  |
+| @tanstack/react-query    | 5.90.20      | Mutation state management for write hooks                               | Already installed as wagmi peer dependency                    |
+| @ammo-exchange/contracts | workspace:\* | CaliberMarketAbi, AmmoTokenAbi for typed contract calls                 | Already exports all ABIs with `as const`                      |
+| @ammo-exchange/shared    | workspace:\* | CONTRACT_ADDRESSES, CALIBER_SPECS, FEES for address/config lookups      | Already exports per-caliber addresses and fee constants       |
 
 ### Supporting
-| Library | Version | Purpose | When to Use |
-|---------|---------|---------|-------------|
-| viem `erc20Abi` | (bundled) | Standard ERC20 ABI for `approve` and `allowance` reads | USDC approval before startMint |
-| viem `parseUnits` | (bundled) | Convert human-readable amounts to wei/token units | Converting USDC input (e.g., "100") to 6-decimal BigInt (100000000n) |
-| viem `formatUnits` | (bundled) | Convert BigInt back to human-readable for display | Displaying token balances |
-| zod | 4.3.6 | Shipping address validation (already used in API route) | POST /api/redeem/shipping client-side pre-validation |
+
+| Library            | Version   | Purpose                                                 | When to Use                                                          |
+| ------------------ | --------- | ------------------------------------------------------- | -------------------------------------------------------------------- |
+| viem `erc20Abi`    | (bundled) | Standard ERC20 ABI for `approve` and `allowance` reads  | USDC approval before startMint                                       |
+| viem `parseUnits`  | (bundled) | Convert human-readable amounts to wei/token units       | Converting USDC input (e.g., "100") to 6-decimal BigInt (100000000n) |
+| viem `formatUnits` | (bundled) | Convert BigInt back to human-readable for display       | Displaying token balances                                            |
+| zod                | 4.3.6     | Shipping address validation (already used in API route) | POST /api/redeem/shipping client-side pre-validation                 |
 
 ### Alternatives Considered
-| Instead of | Could Use | Tradeoff |
-|------------|-----------|----------|
+
+| Instead of                  | Could Use                                  | Tradeoff                                                                                                                                                                                                                                        |
+| --------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `useWriteContract` directly | `useSimulateContract` + `useWriteContract` | Simulation adds a pre-flight check that catches errors before wallet popup. But MetaMask already simulates internally, and simulation queries run on every render (wasted RPC calls). Direct write is simpler and sufficient for this use case. |
-| Custom error parser | `decodeErrorResult` from viem | `decodeErrorResult` is lower-level. wagmi's error object already includes decoded error info when ABI is provided. A simple error.shortMessage check + name-based lookup is enough. |
-| Polling for tx status | `useWaitForTransactionReceipt` | The hook already does the polling internally via React Query. No need to build custom polling. |
+| Custom error parser         | `decodeErrorResult` from viem              | `decodeErrorResult` is lower-level. wagmi's error object already includes decoded error info when ABI is provided. A simple error.shortMessage check + name-based lookup is enough.                                                             |
+| Polling for tx status       | `useWaitForTransactionReceipt`             | The hook already does the polling internally via React Query. No need to build custom polling.                                                                                                                                                  |
 
 **Installation:**
 No new packages needed. All dependencies are already installed.
@@ -85,6 +88,7 @@ apps/web/
 **When to use:** Every on-chain write operation (approve, startMint, startRedeem).
 
 **Example:**
+
 ```typescript
 // Source: wagmi docs (https://wagmi.sh/react/guides/write-to-contract)
 "use client";
@@ -110,7 +114,7 @@ export function useMintTransaction() {
   // Derived state machine
   const status = !hash
     ? isWritePending
-      ? "pending"    // wallet popup open
+      ? "pending" // wallet popup open
       : "idle"
     : isConfirming
       ? "confirming" // tx submitted, waiting for block
@@ -140,6 +144,7 @@ export function useMintTransaction() {
 **When to use:** Mint flow only. The redeem flow needs AmmoToken approval (token.approve to market), which follows the same pattern.
 
 **Example:**
+
 ```typescript
 // Approve USDC spending
 writeContract({
@@ -155,8 +160,8 @@ writeContract({
   abi: CaliberMarketAbi,
   functionName: "startMint",
   args: [
-    usdcAmountBigInt,         // uint256 usdcAmount
-    BigInt(500),               // uint256 maxSlippageBps (5%)
+    usdcAmountBigInt, // uint256 usdcAmount
+    BigInt(500), // uint256 maxSlippageBps (5%)
     BigInt(Math.floor(Date.now() / 1000) + 86400), // uint64 deadline (24h)
   ],
 });
@@ -169,6 +174,7 @@ writeContract({
 **When to use:** Mint step 3 (review), before showing approve/confirm buttons.
 
 **Example:**
+
 ```typescript
 import { useReadContract } from "wagmi";
 import { erc20Abi } from "viem";
@@ -195,16 +201,20 @@ export function useAllowance(
 **When to use:** Error display in both mint and redeem flows.
 
 **Example:**
+
 ```typescript
 // apps/web/lib/errors.ts
 import type { BaseError } from "wagmi";
 
 const CONTRACT_ERROR_MESSAGES: Record<string, string> = {
   InvalidAmount: "Amount must be greater than zero.",
-  MinMintNotMet: "Amount is below the minimum mint requirement for this caliber.",
+  MinMintNotMet:
+    "Amount is below the minimum mint requirement for this caliber.",
   MarketPaused: "This market is currently paused. Please try again later.",
-  DeadlineExpired: "The transaction deadline has passed. Please submit a new order.",
-  Slippage: "Price moved beyond your slippage tolerance. Try again with a higher slippage.",
+  DeadlineExpired:
+    "The transaction deadline has passed. Please submit a new order.",
+  Slippage:
+    "Price moved beyond your slippage tolerance. Try again with a higher slippage.",
   InvalidPrice: "Oracle price is unavailable. Please try again shortly.",
   TreasuryNotSet: "Protocol configuration error. Please contact support.",
   NotKeeper: "Unauthorized: only protocol keepers can execute this.",
@@ -227,7 +237,9 @@ export function parseContractError(error: Error | null): string {
   }
 
   // Contract revert — check for custom error name
-  const cause = baseError.cause as { data?: { errorName?: string } } | undefined;
+  const cause = baseError.cause as
+    | { data?: { errorName?: string } }
+    | undefined;
   const errorName = cause?.data?.errorName;
   if (errorName && CONTRACT_ERROR_MESSAGES[errorName]) {
     return CONTRACT_ERROR_MESSAGES[errorName];
@@ -249,15 +261,16 @@ export function parseContractError(error: Error | null): string {
 **When to use:** Both mint and redeem flow orchestrators.
 
 **Example:**
+
 ```typescript
 type TxStatus =
-  | "idle"         // no transaction in progress
-  | "approving"    // approve tx pending in wallet
-  | "approved"     // approve confirmed, ready for main tx
-  | "pending"      // main tx pending in wallet
-  | "confirming"   // main tx submitted, waiting for block
-  | "confirmed"    // main tx confirmed on-chain
-  | "failed";      // any step failed
+  | "idle" // no transaction in progress
+  | "approving" // approve tx pending in wallet
+  | "approved" // approve confirmed, ready for main tx
+  | "pending" // main tx pending in wallet
+  | "confirming" // main tx submitted, waiting for block
+  | "confirmed" // main tx confirmed on-chain
+  | "failed"; // any step failed
 
 // In UI:
 // idle -> show "Approve USDC" button (or "Confirm Mint" if already approved)
@@ -276,6 +289,7 @@ type TxStatus =
 **When to use:** When constructing startMint and startRedeem arguments.
 
 **Example:**
+
 ```typescript
 // apps/web/lib/tx-utils.ts
 export function getDeadline(hoursFromNow: number = 24): bigint {
@@ -299,15 +313,15 @@ export function getDefaultSlippageBps(): bigint {
 
 ## Don't Hand-Roll
 
-| Problem | Don't Build | Use Instead | Why |
-|---------|-------------|-------------|-----|
-| Transaction lifecycle management | Custom state machine with eth_sendTransaction | wagmi `useWriteContract` + `useWaitForTransactionReceipt` | Handles wallet interaction, nonce management, gas estimation, receipt polling, error typing |
-| ERC20 approve ABI | Hand-written approve ABI | viem `erc20Abi` import | Standard, type-safe, includes all ERC20 functions and events |
-| Amount parsing (human -> BigInt) | `Number(x) * 1e6` | viem `parseUnits(x, 6)` | Avoids floating point precision loss |
-| Amount formatting (BigInt -> human) | `Number(x) / 1e18` | viem `formatUnits(x, 18)` | Handles large numbers correctly |
-| Error message extraction | Manual try/catch with string matching | wagmi `BaseError.shortMessage` + error cause inspection | viem already decodes contract errors when ABI is provided |
-| Receipt polling | `setInterval` + `eth_getTransactionReceipt` | `useWaitForTransactionReceipt` | Handles block reorgs, replacement transactions, configurable confirmations |
-| Snowtrace link generation | Hardcoded URL construction | Existing `snowtraceUrl()` from `lib/utils.ts` | Already implemented in Phase 3 |
+| Problem                             | Don't Build                                   | Use Instead                                               | Why                                                                                         |
+| ----------------------------------- | --------------------------------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| Transaction lifecycle management    | Custom state machine with eth_sendTransaction | wagmi `useWriteContract` + `useWaitForTransactionReceipt` | Handles wallet interaction, nonce management, gas estimation, receipt polling, error typing |
+| ERC20 approve ABI                   | Hand-written approve ABI                      | viem `erc20Abi` import                                    | Standard, type-safe, includes all ERC20 functions and events                                |
+| Amount parsing (human -> BigInt)    | `Number(x) * 1e6`                             | viem `parseUnits(x, 6)`                                   | Avoids floating point precision loss                                                        |
+| Amount formatting (BigInt -> human) | `Number(x) / 1e18`                            | viem `formatUnits(x, 18)`                                 | Handles large numbers correctly                                                             |
+| Error message extraction            | Manual try/catch with string matching         | wagmi `BaseError.shortMessage` + error cause inspection   | viem already decodes contract errors when ABI is provided                                   |
+| Receipt polling                     | `setInterval` + `eth_getTransactionReceipt`   | `useWaitForTransactionReceipt`                            | Handles block reorgs, replacement transactions, configurable confirmations                  |
+| Snowtrace link generation           | Hardcoded URL construction                    | Existing `snowtraceUrl()` from `lib/utils.ts`             | Already implemented in Phase 3                                                              |
 
 **Key insight:** The entire Phase 4 write surface is three contract functions (approve, startMint, startRedeem) composed with two wagmi hooks (useWriteContract, useWaitForTransactionReceipt). The complexity is in the UI state machine, not the blockchain interaction.
 
@@ -374,6 +388,7 @@ export function getDefaultSlippageBps(): bigint {
 Verified patterns from official sources and codebase analysis:
 
 ### Complete Mint Hook
+
 ```typescript
 // apps/web/hooks/use-mint-transaction.ts
 // Source: wagmi docs + codebase CaliberMarketAbi analysis
@@ -399,10 +414,8 @@ export function useMintTransaction(caliber: Caliber) {
     reset: resetApprove,
   } = useWriteContract();
 
-  const {
-    isLoading: isApproveConfirming,
-    isSuccess: isApproveConfirmed,
-  } = useWaitForTransactionReceipt({ hash: approveHash });
+  const { isLoading: isApproveConfirming, isSuccess: isApproveConfirmed } =
+    useWaitForTransactionReceipt({ hash: approveHash });
 
   // Step 2: Call startMint
   const {
@@ -413,10 +426,8 @@ export function useMintTransaction(caliber: Caliber) {
     reset: resetMint,
   } = useWriteContract();
 
-  const {
-    isLoading: isMintConfirming,
-    isSuccess: isMintConfirmed,
-  } = useWaitForTransactionReceipt({ hash: mintHash });
+  const { isLoading: isMintConfirming, isSuccess: isMintConfirmed } =
+    useWaitForTransactionReceipt({ hash: mintHash });
 
   function approve(usdcAmount: string) {
     const amount = parseUnits(usdcAmount, 6); // USDC has 6 decimals
@@ -428,7 +439,11 @@ export function useMintTransaction(caliber: Caliber) {
     });
   }
 
-  function startMint(usdcAmount: string, slippageBps: bigint, deadline: bigint) {
+  function startMint(
+    usdcAmount: string,
+    slippageBps: bigint,
+    deadline: bigint,
+  ) {
     const amount = parseUnits(usdcAmount, 6);
     writeMint({
       address: marketAddress,
@@ -467,6 +482,7 @@ export function useMintTransaction(caliber: Caliber) {
 ```
 
 ### Complete Redeem Hook
+
 ```typescript
 // apps/web/hooks/use-redeem-transaction.ts
 "use client";
@@ -492,10 +508,8 @@ export function useRedeemTransaction(caliber: Caliber) {
     reset: resetApprove,
   } = useWriteContract();
 
-  const {
-    isLoading: isApproveConfirming,
-    isSuccess: isApproveConfirmed,
-  } = useWaitForTransactionReceipt({ hash: approveHash });
+  const { isLoading: isApproveConfirming, isSuccess: isApproveConfirmed } =
+    useWaitForTransactionReceipt({ hash: approveHash });
 
   // Step 2: Call startRedeem
   const {
@@ -506,10 +520,8 @@ export function useRedeemTransaction(caliber: Caliber) {
     reset: resetRedeem,
   } = useWriteContract();
 
-  const {
-    isLoading: isRedeemConfirming,
-    isSuccess: isRedeemConfirmed,
-  } = useWaitForTransactionReceipt({ hash: redeemHash });
+  const { isLoading: isRedeemConfirming, isSuccess: isRedeemConfirmed } =
+    useWaitForTransactionReceipt({ hash: redeemHash });
 
   function approve(tokenAmount: string) {
     const amount = parseUnits(tokenAmount, 18); // AmmoToken has 18 decimals
@@ -555,6 +567,7 @@ export function useRedeemTransaction(caliber: Caliber) {
 ```
 
 ### Allowance Check Hook
+
 ```typescript
 // apps/web/hooks/use-allowance.ts
 "use client";
@@ -585,6 +598,7 @@ export function useAllowance(
 ```
 
 ### KYC API Route (Auto-Approve for Testnet)
+
 ```typescript
 // apps/web/app/api/users/kyc/route.ts
 
@@ -642,6 +656,7 @@ export async function POST(request: NextRequest) {
 ```
 
 ### Transaction Utility Helpers
+
 ```typescript
 // apps/web/lib/tx-utils.ts
 
@@ -678,14 +693,15 @@ export function formatTokenAmount(amount: bigint): string {
 
 ## State of the Art
 
-| Old Approach | Current Approach | When Changed | Impact |
-|--------------|------------------|--------------|--------|
-| `usePrepareContractWrite` + `useContractWrite` (v1) | `useWriteContract` (direct) or `useSimulateContract` + `useWriteContract` (v2) | wagmi v2 (2024) | v1 pattern removed; v2 uses mutation-based API with optional simulation |
-| `useWaitForTransaction` (v1) | `useWaitForTransactionReceipt` (v2) | wagmi v2 (2024) | Renamed; accepts `hash` instead of `data` |
-| Manual `eth_sendTransaction` | wagmi `useWriteContract` | wagmi v1+ | Handles connector abstraction, error typing, mutation state |
-| `ethers.parseUnits` | viem `parseUnits` | viem 1.0+ (2023) | Tree-shakeable, type-safe, no BigNumber class |
+| Old Approach                                        | Current Approach                                                               | When Changed     | Impact                                                                  |
+| --------------------------------------------------- | ------------------------------------------------------------------------------ | ---------------- | ----------------------------------------------------------------------- |
+| `usePrepareContractWrite` + `useContractWrite` (v1) | `useWriteContract` (direct) or `useSimulateContract` + `useWriteContract` (v2) | wagmi v2 (2024)  | v1 pattern removed; v2 uses mutation-based API with optional simulation |
+| `useWaitForTransaction` (v1)                        | `useWaitForTransactionReceipt` (v2)                                            | wagmi v2 (2024)  | Renamed; accepts `hash` instead of `data`                               |
+| Manual `eth_sendTransaction`                        | wagmi `useWriteContract`                                                       | wagmi v1+        | Handles connector abstraction, error typing, mutation state             |
+| `ethers.parseUnits`                                 | viem `parseUnits`                                                              | viem 1.0+ (2023) | Tree-shakeable, type-safe, no BigNumber class                           |
 
 **Deprecated/outdated:**
+
 - wagmi `usePrepareContractWrite`: Removed in v2. Replaced by `useSimulateContract` (optional).
 - wagmi `useContractWrite`: Removed in v2. Replaced by `useWriteContract`.
 - wagmi `useWaitForTransaction`: Removed in v2. Replaced by `useWaitForTransactionReceipt`.
@@ -716,6 +732,7 @@ export function formatTokenAmount(amount: bigint): string {
 ## Sources
 
 ### Primary (HIGH confidence)
+
 - wagmi v2 `useWriteContract` docs: https://wagmi.sh/react/api/hooks/useWriteContract -- mutation API, parameters, return type
 - wagmi v2 `useWaitForTransactionReceipt` docs: https://wagmi.sh/react/api/hooks/useWaitForTransactionReceipt -- hash parameter, confirmation tracking
 - wagmi v2 `useSimulateContract` docs: https://wagmi.sh/react/api/hooks/useSimulateContract -- optional simulation pattern
@@ -731,17 +748,20 @@ export function formatTokenAmount(amount: bigint): string {
 - Installed versions: wagmi 2.19.5, viem 2.45.1, @tanstack/react-query 5.90.20 (verified via pnpm)
 
 ### Secondary (MEDIUM confidence)
+
 - viem ContractFunctionRevertedError behavior: https://github.com/wevm/viem/discussions/1789 -- custom error decoding from ABI
 - viem decodeErrorResult: https://viem.sh/docs/contract/decodeErrorResult -- manual error decoding utility
 - wagmi UserRejectedRequestError: https://github.com/wevm/wagmi/discussions/3428 -- user rejection error code 4001
 - Scaffold-eth-2 wagmi write pattern: https://scaffold-eth-2-docs.vercel.app/recipes/WagmiContractWriteWithFeedback -- practical write+receipt pattern
 
 ### Tertiary (LOW confidence)
+
 - None -- all findings verified with official documentation or codebase inspection.
 
 ## Metadata
 
 **Confidence breakdown:**
+
 - Standard stack: HIGH -- all libraries already installed, versions verified from pnpm output
 - Architecture (write hooks): HIGH -- wagmi v2 write hook APIs verified from official docs, patterns match codebase conventions
 - Architecture (error handling): HIGH -- CaliberMarket custom errors enumerated from ABI, viem error decoding verified

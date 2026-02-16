@@ -33,12 +33,14 @@ export function useTokenBalances(): {
           functionName: "balanceOf",
           args: [address],
         },
-        ...CALIBERS.map((caliber): BalanceOfContract => ({
-          address: fuji.calibers[caliber].token,
-          abi: AmmoTokenAbi as Abi,
-          functionName: "balanceOf",
-          args: [address],
-        })),
+        ...CALIBERS.map(
+          (caliber): BalanceOfContract => ({
+            address: fuji.calibers[caliber].token,
+            abi: AmmoTokenAbi as Abi,
+            functionName: "balanceOf",
+            args: [address],
+          }),
+        ),
       ]
     : [];
 

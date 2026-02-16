@@ -5,6 +5,7 @@
 **Phases completed:** 6 phases, 12 plans, 0 tasks
 
 **Key accomplishments:**
+
 - Deployed all smart contracts to Avalanche Fuji (AmmoManager, AmmoFactory, 4 CaliberMarkets, 4 AmmoTokens, MockUSDC) with shared config
 - Built crash-recoverable event indexer polling 4 event types into database with BlockCursor checkpoint
 - Wired real wallet connection (MetaMask) with network switching, token balances, and 5 API routes
@@ -19,6 +20,7 @@
 **Phases completed:** 1 phase (Phase 7), 2 plans. Phase 8 (E2E Verification) superseded by v1.2.
 
 **Key accomplishments:**
+
 - Auto-create user DB record on wallet connect (fire-and-forget registration with upsert)
 - Deployment block floor in shared config -- worker scans from block 51699730 instead of 0
 - Progress logging during backfill for operational visibility
@@ -27,7 +29,6 @@
 
 ---
 
-
 ## v1.2 Production Hardening (Shipped: 2026-02-15)
 
 **Phases completed:** 4 phases (9, 9.1, 10, 11), 10 plans, 20 tasks
@@ -35,6 +36,7 @@
 **Git range:** `4437533` (feat(09-01)) → `c55cd4e` (fix(11-02))
 
 **Key accomplishments:**
+
 - SIWE wallet authentication with iron-session cookies on all API routes, keeper-gated admin routes, and registration race condition fix
 - Server-side admin protection (non-keepers see 404), KYC identity form with zod validation, and user profile page with shipping address management
 - Worker handles all 11 CaliberMarket events with RPC retry/backoff, 5-block reorg protection, env validation, and graceful shutdown
@@ -45,4 +47,3 @@
 **Delivered:** Production-hardened DeFi protocol -- every API request authenticated, every contract event indexed reliably, every component on TanStack Query with error boundaries.
 
 ---
-

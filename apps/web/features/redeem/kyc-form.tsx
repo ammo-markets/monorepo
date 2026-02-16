@@ -89,7 +89,9 @@ export function KycForm({ onSubmit, isSubmitting, prefill }: KycFormProps) {
   const [state, setState] = useState(prefill?.state ?? "");
   const [govIdType, setGovIdType] = useState(prefill?.govIdType ?? "");
   const [govIdNumber, setGovIdNumber] = useState(prefill?.govIdNumber ?? "");
-  const [errors, setErrors] = useState<Partial<Record<keyof KycFormData, string>>>({});
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof KycFormData, string>>
+  >({});
 
   function validate(): boolean {
     const newErrors: Partial<Record<keyof KycFormData, string>> = {};

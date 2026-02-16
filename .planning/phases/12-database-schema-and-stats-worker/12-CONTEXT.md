@@ -14,6 +14,7 @@ Build the enriched data layer for the protocol: ProtocolStats table with per-cal
 ## Implementation Decisions
 
 ### Protocol stats scope
+
 - Per-caliber totals only (no global aggregates, no time series)
 - Metrics: total minted amount, total redeemed amount, net supply per caliber
 - No USD value tracking — volume only
@@ -21,24 +22,28 @@ Build the enriched data layer for the protocol: ProtocolStats table with per-cal
 - Stats endpoint is public (unauthenticated) — serves the landing page caliber showcase in Phase 16
 
 ### Activity log design
+
 - Transactions only — mint, redeem, and swap events (no status changes, no account events)
 - Structured data only — store type, caliber, amount, txHash as fields; UI builds display strings
 - Final state only — one row per transaction with current status (no status change history)
 - Default API limit: last 5 activities (matches Phase 14 dashboard spec)
 
 ### User preferences model
+
 - Favorite calibers only — no default trade settings, no display preferences
 - Toggle-based favorites — users star/unstar calibers; favorited ones appear first in trade page
 - Created on first use — no preferences row until user explicitly favorites something
 - Standalone API endpoint — GET/PUT /api/user/preferences, separate from user profile
 
 ### Stats freshness & computation
+
 - Recompute every 15 minutes via cron job
 - Runs in the existing apps/worker service (new cron job, not a new service)
 - Data source: database only — aggregate from already-indexed orders and events (no on-chain reads)
 - On failure: serve stale data, log the error, retry next cycle
 
 ### Claude's Discretion
+
 - Exact Prisma schema field types and indexes
 - Worker scheduling mechanism (setInterval, node-cron, etc.)
 - API response shapes and pagination patterns
@@ -62,5 +67,5 @@ None — discussion stayed within phase scope.
 
 ---
 
-*Phase: 12-database-schema-and-stats-worker*
-*Context gathered: 2026-02-15*
+_Phase: 12-database-schema-and-stats-worker_
+_Context gathered: 2026-02-15_

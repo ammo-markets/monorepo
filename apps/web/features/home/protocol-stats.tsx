@@ -97,7 +97,8 @@ export function ProtocolStats() {
     );
     return {
       tvl: calibers.length > 0 ? formatCompact(tvl) : "--",
-      roundsTokenized: calibers.length > 0 ? totalRounds.toLocaleString("en-US") : "--",
+      roundsTokenized:
+        calibers.length > 0 ? totalRounds.toLocaleString("en-US") : "--",
       uniqueHolders: "--",
       volume24h: "--",
     };
@@ -113,10 +114,7 @@ export function ProtocolStats() {
     >
       <div className="mx-auto grid max-w-5xl grid-cols-2 gap-6 md:grid-cols-4 md:gap-8">
         <StatItem value={stats.tvl} label="Total Value Locked" />
-        <StatItem
-          value={stats.roundsTokenized}
-          label="Rounds Tokenized"
-        />
+        <StatItem value={stats.roundsTokenized} label="Rounds Tokenized" />
         <StatItem value={stats.uniqueHolders} label="Unique Holders" />
         <StatItem value={stats.volume24h} label="24h Volume" />
       </div>

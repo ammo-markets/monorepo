@@ -18,33 +18,34 @@ The finalization hooks follow the exact same `useWriteContract` + `useWaitForTra
 
 ### Core
 
-| Library | Version | Purpose | Why Standard |
-|---------|---------|---------|--------------|
-| Next.js App Router | 15.x | Route groups, layouts, middleware | Already in use |
-| wagmi | 2.x | `useReadContract` for isKeeper, `useWriteContract` for finalize actions | Already in use |
-| viem | 2.x | `readContract` for server-side on-chain reads (stats API) | Already in use |
-| @tanstack/react-query | 5.x | Data fetching for admin API routes | Already in use |
-| Prisma | existing | Query pending orders from DB | Already in use |
-| shadcn/ui | existing | Table, Badge, Button, Card, Tabs, Dialog, Select, Input components | Already installed |
-| zod | 4.x | Request validation for admin API routes | Already in use |
+| Library               | Version  | Purpose                                                                 | Why Standard      |
+| --------------------- | -------- | ----------------------------------------------------------------------- | ----------------- |
+| Next.js App Router    | 15.x     | Route groups, layouts, middleware                                       | Already in use    |
+| wagmi                 | 2.x      | `useReadContract` for isKeeper, `useWriteContract` for finalize actions | Already in use    |
+| viem                  | 2.x      | `readContract` for server-side on-chain reads (stats API)               | Already in use    |
+| @tanstack/react-query | 5.x      | Data fetching for admin API routes                                      | Already in use    |
+| Prisma                | existing | Query pending orders from DB                                            | Already in use    |
+| shadcn/ui             | existing | Table, Badge, Button, Card, Tabs, Dialog, Select, Input components      | Already installed |
+| zod                   | 4.x      | Request validation for admin API routes                                 | Already in use    |
 
 ### Supporting
 
-| Library | Version | Purpose | When to Use |
-|---------|---------|---------|-------------|
+| Library      | Version | Purpose                                                       | When to Use       |
+| ------------ | ------- | ------------------------------------------------------------- | ----------------- |
 | lucide-react | 0.563.x | Icons for admin UI (Shield, AlertTriangle, CheckCircle, etc.) | Already installed |
-| sonner | 2.x | Toast notifications for tx success/error | Already installed |
-| date-fns | 4.x | Relative time formatting (e.g., "2 hours ago") | Already installed |
+| sonner       | 2.x     | Toast notifications for tx success/error                      | Already installed |
+| date-fns     | 4.x     | Relative time formatting (e.g., "2 hours ago")                | Already installed |
 
 ### Alternatives Considered
 
-| Instead of | Could Use | Tradeoff |
-|------------|-----------|----------|
-| Client-side isKeeper check | SIWE (Sign-In with Ethereum) full auth | SIWE is heavier -- requires message signing, session management, and a backend session store. Overkill for a testnet admin panel with a known set of keeper addresses. Could be added later for production. |
-| Cookie-based wallet in middleware | Env-var allowlist in middleware | Simpler but brittle -- requires redeployment to change keepers. On-chain check is the source of truth. |
-| Server-side on-chain check in API routes | Client-side only check | Adds latency to admin API calls. Better to gate at the UI layer and trust the on-chain contract for the actual tx access control. |
+| Instead of                               | Could Use                              | Tradeoff                                                                                                                                                                                                    |
+| ---------------------------------------- | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Client-side isKeeper check               | SIWE (Sign-In with Ethereum) full auth | SIWE is heavier -- requires message signing, session management, and a backend session store. Overkill for a testnet admin panel with a known set of keeper addresses. Could be added later for production. |
+| Cookie-based wallet in middleware        | Env-var allowlist in middleware        | Simpler but brittle -- requires redeployment to change keepers. On-chain check is the source of truth.                                                                                                      |
+| Server-side on-chain check in API routes | Client-side only check                 | Adds latency to admin API calls. Better to gate at the UI layer and trust the on-chain contract for the actual tx access control.                                                                           |
 
 **Installation:**
+
 ```bash
 # No new packages needed -- everything is already installed
 ```
@@ -52,6 +53,7 @@ The finalization hooks follow the exact same `useWriteContract` + `useWaitForTra
 ## Architecture Patterns
 
 ### Recommended Project Structure
+
 ```
 apps/web/
 ├── app/
@@ -201,7 +203,15 @@ export function useFinalizeMint(caliber: Caliber): {
     });
   }
 
-  return { finalizeMint, hash, error, isPending, isConfirming, isConfirmed, reset };
+  return {
+    finalizeMint,
+    hash,
+    error,
+    isPending,
+    isConfirming,
+    isConfirmed,
+    reset,
+  };
 }
 ```
 
@@ -276,49 +286,55 @@ import { erc20Abi, formatUnits } from "viem";
 
 ## Don't Hand-Roll
 
-| Problem | Don't Build | Use Instead | Why |
-|---------|-------------|-------------|-----|
-| Data tables with sorting/filtering | Custom table with sort logic | shadcn/ui `<Table>` + React state for sort/filter | Already installed, accessible, consistent with app style |
-| Toast notifications for tx results | Custom notification system | `sonner` (already installed) | Proven, accessible, already in deps |
-| Form validation for actualPriceX18 input | Manual validation logic | `zod` schema + `react-hook-form` | Already in deps, established pattern |
-| Loading skeletons | Custom shimmer components | Existing `shimmer` CSS class + skeleton patterns from portfolio | Consistent loading UX across the app |
-| Error message parsing for contract reverts | Custom error mapper | Existing `parseContractError()` from `lib/errors.ts` | Already handles all CaliberMarket custom errors including NotKeeper |
+| Problem                                    | Don't Build                  | Use Instead                                                     | Why                                                                 |
+| ------------------------------------------ | ---------------------------- | --------------------------------------------------------------- | ------------------------------------------------------------------- |
+| Data tables with sorting/filtering         | Custom table with sort logic | shadcn/ui `<Table>` + React state for sort/filter               | Already installed, accessible, consistent with app style            |
+| Toast notifications for tx results         | Custom notification system   | `sonner` (already installed)                                    | Proven, accessible, already in deps                                 |
+| Form validation for actualPriceX18 input   | Manual validation logic      | `zod` schema + `react-hook-form`                                | Already in deps, established pattern                                |
+| Loading skeletons                          | Custom shimmer components    | Existing `shimmer` CSS class + skeleton patterns from portfolio | Consistent loading UX across the app                                |
+| Error message parsing for contract reverts | Custom error mapper          | Existing `parseContractError()` from `lib/errors.ts`            | Already handles all CaliberMarket custom errors including NotKeeper |
 
 **Key insight:** This phase requires no new libraries. Every building block (wagmi hooks, viem reads, Prisma queries, shadcn components, error handling) already exists in the codebase. The work is composing existing patterns into new admin-specific pages.
 
 ## Common Pitfalls
 
 ### Pitfall 1: Middleware Cannot Read On-Chain State
+
 **What goes wrong:** Attempting to call `readContract` or any viem function inside `middleware.ts`. Edge Runtime lacks Node.js APIs and reliable RPC access.
 **Why it happens:** Natural instinct is to put auth checks in middleware since Next.js docs recommend it for route protection.
 **How to avoid:** Use middleware only for lightweight checks (cookie presence, header values). Put the actual isKeeper on-chain check in the admin layout client component.
 **Warning signs:** Errors about `crypto`, `Buffer`, or `fetch` in middleware; middleware timing out.
 
 ### Pitfall 2: BigInt Serialization in Admin API Responses
+
 **What goes wrong:** `JSON.stringify` throws on BigInt values from Prisma's `amount` field or on-chain reads.
 **Why it happens:** JavaScript's JSON serializer doesn't handle BigInt natively.
 **How to avoid:** Use the existing `serializeBigInts()` from `lib/serialize.ts` on all API responses containing order data or on-chain values.
 **Warning signs:** `TypeError: Do not know how to serialize a BigInt` in API route responses.
 
 ### Pitfall 3: Prisma Caliber Enum Mismatch
+
 **What goes wrong:** Comparing `order.caliber` (Prisma enum like `NINE_MM`) with shared `Caliber` type (`9MM`) directly.
 **Why it happens:** Prisma enums can't start with digits, so the enum values differ from the shared type.
 **How to avoid:** Always use `PRISMA_TO_CALIBER[order.caliber]` when sending data to the frontend, and `CALIBER_TO_PRISMA[caliber]` when querying the DB.
 **Warning signs:** Empty query results, caliber displayed as "NINE_MM" instead of "9MM" in the UI.
 
 ### Pitfall 4: actualPriceX18 Input Precision
+
 **What goes wrong:** Admin enters a price like "0.35" (35 cents per round) but the contract expects an 18-decimal fixed-point value (350000000000000000).
-**Why it happens:** The contract uses X18 notation (price * 1e18) but humans think in dollars.
+**Why it happens:** The contract uses X18 notation (price \* 1e18) but humans think in dollars.
 **How to avoid:** Provide a human-readable price input (e.g., "$0.35 per round") and use `parseUnits(priceStr, 18)` to convert to the X18 format before sending the transaction.
 **Warning signs:** MinMintNotMet or Slippage reverts because the price was passed as raw decimal instead of X18.
 
 ### Pitfall 5: Stale Order State After Finalization
+
 **What goes wrong:** After a finalize transaction confirms on-chain, the order still shows as "PENDING" in the admin table.
 **Why it happens:** The DB update happens asynchronously via the event indexer worker, not synchronously with the admin's transaction.
 **How to avoid:** After tx confirmation, either: (a) optimistically update the local UI state, or (b) refetch the admin orders API after a brief delay (1-2 seconds) to allow the worker to process the event. Show a "confirming..." state in the interim.
 **Warning signs:** Admin sees order still pending after successful finalization, refreshes page, order disappears.
 
 ### Pitfall 6: Explicit Return Types on Transaction Hooks (TS2742)
+
 **What goes wrong:** TypeScript error TS2742 when hook return type is inferred and contains wagmi internal types.
 **Why it happens:** wagmi's internal types aren't re-exportable from the consuming package.
 **How to avoid:** Always provide explicit return type annotations on transaction hooks, as done in `use-mint-transaction.ts` and `use-redeem-transaction.ts`.
@@ -329,6 +345,7 @@ import { erc20Abi, formatUnits } from "viem";
 Verified patterns from the existing codebase:
 
 ### Reading On-Chain isKeeper Status (Client-Side)
+
 ```typescript
 // Source: Existing pattern from hooks/use-token-balances.ts + AmmoManager ABI
 import { useReadContract } from "wagmi";
@@ -345,12 +362,19 @@ const { data: isKeeper, isLoading } = useReadContract({
 ```
 
 ### Writing finalizeMint Transaction
+
 ```typescript
 // Source: Pattern from hooks/use-mint-transaction.ts adapted for keeper actions
 import { useWriteContract, useWaitForTransactionReceipt } from "wagmi";
 import { CaliberMarketAbi } from "@ammo-exchange/contracts/abis";
 
-const { data: hash, writeContract, isPending, error, reset } = useWriteContract();
+const {
+  data: hash,
+  writeContract,
+  isPending,
+  error,
+  reset,
+} = useWriteContract();
 const { isLoading: isConfirming, isSuccess: isConfirmed } =
   useWaitForTransactionReceipt({ hash });
 
@@ -364,6 +388,7 @@ writeContract({
 ```
 
 ### Querying Pending Orders from Prisma
+
 ```typescript
 // Source: Pattern from app/api/orders/route.ts
 const pendingMints = await prisma.order.findMany({
@@ -377,6 +402,7 @@ const pendingMints = await prisma.order.findMany({
 ```
 
 ### Reading Treasury USDC Balance (Server-Side)
+
 ```typescript
 // Source: Pattern from app/api/market/route.ts
 import { publicClient } from "@/lib/viem";
@@ -402,22 +428,26 @@ const usdcFormatted = formatUnits(usdcBalance, 6);
 ```
 
 ### Reading Total Supply Per Caliber
+
 ```typescript
 // Source: Existing pattern in app/api/market/route.ts
 const CALIBERS = ["9MM", "556", "22LR", "308"] as const;
 
 const supplies = await Promise.all(
   CALIBERS.map((caliber) =>
-    publicClient.readContract({
-      address: CONTRACT_ADDRESSES.fuji.calibers[caliber].token,
-      abi: AmmoTokenAbi,
-      functionName: "totalSupply",
-    }).catch(() => BigInt(0)),
+    publicClient
+      .readContract({
+        address: CONTRACT_ADDRESSES.fuji.calibers[caliber].token,
+        abi: AmmoTokenAbi,
+        functionName: "totalSupply",
+      })
+      .catch(() => BigInt(0)),
   ),
 );
 ```
 
 ### Admin Middleware (Optional Pre-Filter)
+
 ```typescript
 // Source: Next.js 15 middleware docs
 // File: apps/web/middleware.ts
@@ -445,14 +475,15 @@ export const config = {
 
 ## State of the Art
 
-| Old Approach | Current Approach | When Changed | Impact |
-|--------------|------------------|--------------|--------|
-| getServerSideProps for auth | Middleware + Layout components | Next.js 13+ (2023) | Auth checks moved to middleware and layout, pages stay clean |
-| wagmi v1 `useContractRead` | wagmi v2 `useReadContract` | wagmi v2 (2024) | API renamed, TanStack Query integration improved |
-| Manual tx status tracking | `useWaitForTransactionReceipt` | wagmi v2 (2024) | Built-in receipt waiting replaces custom polling |
-| Pages Router middleware | App Router middleware (same API) | Next.js 13+ (2023) | Middleware API stable, works identically in App Router |
+| Old Approach                | Current Approach                 | When Changed       | Impact                                                       |
+| --------------------------- | -------------------------------- | ------------------ | ------------------------------------------------------------ |
+| getServerSideProps for auth | Middleware + Layout components   | Next.js 13+ (2023) | Auth checks moved to middleware and layout, pages stay clean |
+| wagmi v1 `useContractRead`  | wagmi v2 `useReadContract`       | wagmi v2 (2024)    | API renamed, TanStack Query integration improved             |
+| Manual tx status tracking   | `useWaitForTransactionReceipt`   | wagmi v2 (2024)    | Built-in receipt waiting replaces custom polling             |
+| Pages Router middleware     | App Router middleware (same API) | Next.js 13+ (2023) | Middleware API stable, works identically in App Router       |
 
 **Deprecated/outdated:**
+
 - `useContractRead` (wagmi v1): replaced by `useReadContract` in v2
 - `useContractWrite` (wagmi v1): replaced by `useWriteContract` in v2
 - `getServerSideProps` auth pattern: replaced by middleware + layout auth
@@ -482,6 +513,7 @@ export const config = {
 ## Sources
 
 ### Primary (HIGH confidence)
+
 - Codebase analysis: `packages/contracts/src/CaliberMarket.sol` - finalizeMint/finalizeRedeem signatures, onlyKeeper modifier
 - Codebase analysis: `packages/contracts/src/AmmoManager.sol` - isKeeper(address) view function
 - Codebase analysis: `apps/web/hooks/use-mint-transaction.ts` - established useWriteContract pattern with explicit return types
@@ -491,15 +523,18 @@ export const config = {
 - Codebase analysis: `apps/web/lib/errors.ts` - existing parseContractError with NotKeeper handling
 
 ### Secondary (MEDIUM confidence)
+
 - [Next.js Middleware docs](https://nextjs.org/docs/15/pages/api-reference/file-conventions/middleware) - middleware.ts matcher config, cookie access API
 - [wagmi docs](https://wagmi.sh/react/guides/viem) - useReadContract, useWriteContract patterns
 
 ### Tertiary (LOW confidence)
+
 - Web search re: Next.js 16 proxy replacing middleware - noted for awareness but not relevant until upgrade
 
 ## Metadata
 
 **Confidence breakdown:**
+
 - Standard stack: HIGH - All libraries already installed and in use. No new dependencies.
 - Architecture: HIGH - All patterns (hook structure, API routes, DB queries, on-chain reads) are directly copied from existing codebase patterns.
 - Pitfalls: HIGH - Identified from direct codebase analysis (BigInt serialization, Prisma enum mapping, TS2742) plus Web3-specific issues (X18 price format, stale state after tx).

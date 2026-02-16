@@ -117,6 +117,7 @@ None - no external service configuration required.
 All 5 created files verified present. Both task commits (6d2fdce, b92a83f) verified in git log. Type check passes with zero errors.
 
 ---
-*Phase: 02-event-indexer*
-*Plan: 01*
-*Completed: 2026-02-11*
+
+_Phase: 02-event-indexer_
+_Plan: 01_
+_Completed: 2026-02-11_

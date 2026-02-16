@@ -26,11 +26,7 @@ import { useMintTransaction } from "@/hooks/use-mint-transaction";
 import { useAllowance } from "@/hooks/use-allowance";
 import { useTokenBalances } from "@/hooks/use-token-balances";
 import { parseContractError } from "@/lib/errors";
-import {
-  getDeadline,
-  DEFAULT_SLIPPAGE_BPS,
-  parseUsdc,
-} from "@/lib/tx-utils";
+import { getDeadline, DEFAULT_SLIPPAGE_BPS, parseUsdc } from "@/lib/tx-utils";
 import { snowtraceUrl, truncateAddress } from "@/lib/utils";
 import { CONTRACT_ADDRESSES } from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
@@ -154,7 +150,6 @@ function StepSelectCaliber({
   onSelect: (id: Caliber) => void;
   onNext: () => void;
 }) {
-
   return (
     <div>
       <h2
@@ -1118,12 +1113,10 @@ export function MintFlow() {
     if (preselected) return 1;
     return 0;
   });
-  const [selectedCaliber, setSelectedCaliber] = useState<Caliber | null>(
-    () => {
-      if (preselected) return preselected;
-      return null;
-    },
-  );
+  const [selectedCaliber, setSelectedCaliber] = useState<Caliber | null>(() => {
+    if (preselected) return preselected;
+    return null;
+  });
   const [usdcAmount, setUsdcAmount] = useState("");
 
   const activeCaliber: Caliber = selectedCaliber ?? "9MM";
@@ -1136,8 +1129,7 @@ export function MintFlow() {
   const wallet = useWallet();
   const { usdc: usdcBalanceRaw } = useTokenBalances();
   const mintTx = useMintTransaction(activeCaliber);
-  const marketAddress =
-    CONTRACT_ADDRESSES.fuji.calibers[activeCaliber].market;
+  const marketAddress = CONTRACT_ADDRESSES.fuji.calibers[activeCaliber].market;
   const allowance = useAllowance(
     CONTRACT_ADDRESSES.fuji.usdc,
     wallet.address,

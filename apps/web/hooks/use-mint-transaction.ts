@@ -19,7 +19,11 @@ export function useMintTransaction(caliber: Caliber): {
   isApprovePending: boolean;
   isApproveConfirming: boolean;
   isApproveConfirmed: boolean;
-  startMint: (usdcAmount: string, slippageBps: bigint, deadline: bigint) => void;
+  startMint: (
+    usdcAmount: string,
+    slippageBps: bigint,
+    deadline: bigint,
+  ) => void;
   mintHash: `0x${string}` | undefined;
   mintError: Error | null;
   isMintPending: boolean;
@@ -38,10 +42,8 @@ export function useMintTransaction(caliber: Caliber): {
     reset: resetApprove,
   } = useWriteContract();
 
-  const {
-    isLoading: isApproveConfirming,
-    isSuccess: isApproveConfirmed,
-  } = useWaitForTransactionReceipt({ hash: approveHash });
+  const { isLoading: isApproveConfirming, isSuccess: isApproveConfirmed } =
+    useWaitForTransactionReceipt({ hash: approveHash });
 
   // ── Mint (targets CaliberMarket contract) ──
   const {
@@ -52,10 +54,8 @@ export function useMintTransaction(caliber: Caliber): {
     reset: resetMint,
   } = useWriteContract();
 
-  const {
-    isLoading: isMintConfirming,
-    isSuccess: isMintConfirmed,
-  } = useWaitForTransactionReceipt({ hash: mintHash });
+  const { isLoading: isMintConfirming, isSuccess: isMintConfirmed } =
+    useWaitForTransactionReceipt({ hash: mintHash });
 
   // ── Actions ──
 

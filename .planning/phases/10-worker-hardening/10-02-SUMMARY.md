@@ -18,7 +18,12 @@ affects: []
 # Tech tracking
 tech-stack:
   added: []
-  patterns: ["fail-fast env validation at import time", "confirmation window rollback for reorg safety", "graceful shutdown with in-flight work drain"]
+  patterns:
+    [
+      "fail-fast env validation at import time",
+      "confirmation window rollback for reorg safety",
+      "graceful shutdown with in-flight work drain",
+    ]
 
 key-files:
   created:
@@ -57,6 +62,7 @@ completed: 2026-02-15
 - **Files modified:** 5
 
 ## Accomplishments
+
 - Worker retries transient RPC failures (429, 502, 503, timeouts) with viem's built-in exponential backoff (5 retries, 1s base)
 - Each poll re-scans last 5 blocks to catch shallow reorgs; idempotent txHash-based upserts make re-processing safe
 - Missing FUJI_RPC_URL or DATABASE_URL causes immediate exit with clear error message before any work begins
@@ -70,6 +76,7 @@ Each task was committed atomically:
 2. **Task 2: Add reorg protection and graceful shutdown** - `5d5272e` (feat)
 
 ## Files Created/Modified
+
 - `apps/worker/src/lib/env.ts` - Fail-fast validation of FUJI_RPC_URL and DATABASE_URL at import time
 - `apps/worker/src/lib/client.ts` - Viem public client with retry transport (5 retries, exponential backoff, 30s timeout)
 - `apps/worker/src/lib/constants.ts` - Added CONFIRMATION_BLOCKS = 5n for reorg window
@@ -77,6 +84,7 @@ Each task was committed atomically:
 - `apps/worker/src/index.ts` - Graceful shutdown draining in-flight poll, env import at top for fail-fast
 
 ## Decisions Made
+
 - 5-block confirmation window for Avalanche (~10s margin) -- conservative but cheap since handlers are idempotent
 - Used viem's built-in retry transport rather than custom wrapper -- handles 429, 5xx, timeouts natively
 - env validation via side-effect import (import at top of entry point triggers requireEnv checks)
@@ -94,9 +102,11 @@ None.
 None - no external service configuration required.
 
 ## Next Phase Readiness
+
 - Worker is now production-hardened: retries transient failures, handles reorgs, validates config, and shuts down cleanly
 - Ready for deployment to Railway with confidence in resilience
 
 ---
-*Phase: 10-worker-hardening*
-*Completed: 2026-02-15*
+
+_Phase: 10-worker-hardening_
+_Completed: 2026-02-15_

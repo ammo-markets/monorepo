@@ -8,9 +8,7 @@ import { backfillActivityLog, computeStats } from "./stats";
 
 async function main() {
   console.log("[worker] Starting Ammo Exchange event indexer...");
-  console.log(
-    `[worker] Chain: ${client.chain?.name} (${client.chain?.id})`,
-  );
+  console.log(`[worker] Chain: ${client.chain?.name} (${client.chain?.id})`);
 
   const blockNumber = await client.getBlockNumber();
   console.log(`[worker] Current block: ${blockNumber}`);

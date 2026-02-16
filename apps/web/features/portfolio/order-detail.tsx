@@ -502,7 +502,11 @@ function DetailRow({
 /* ────────────── Main Component ────────────── */
 
 export function OrderDetailView({ orderId }: { orderId: string }) {
-  const { data: order, isLoading: loading, error: queryError } = useOrderDetail(orderId);
+  const {
+    data: order,
+    isLoading: loading,
+    error: queryError,
+  } = useOrderDetail(orderId);
   const error = queryError ? (queryError as Error).message : null;
 
   if (loading) {
