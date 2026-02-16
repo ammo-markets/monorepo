@@ -368,8 +368,7 @@ function StepSelectCaliberAmount({
                   }}
                   onMouseEnter={(e) => {
                     if (!isSelected)
-                      e.currentTarget.style.borderColor =
-                        "var(--border-hover)";
+                      e.currentTarget.style.borderColor = "var(--border-hover)";
                   }}
                   onMouseLeave={(e) => {
                     if (!isSelected)
