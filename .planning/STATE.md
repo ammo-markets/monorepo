@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-15)
 
 **Core value:** Anyone worldwide can get price exposure to U.S. ammunition by minting ammo tokens with USDC, while only verified U.S. residents in allowed states can redeem for physical delivery.
-**Current focus:** Phase 16 - Landing Page (final phase of v1.3)
+**Current focus:** Phase 17 - Trade UX Fix and Stats Wiring (gap closure)
 
 ## Current Position
 
-Phase: 16 (5 of 5 in v1.3)
+Phase: 17 (1 of 1 gap closure)
 Plan: 01 of 01 complete
 Status: Phase Complete
-Last activity: 2026-02-16 -- Completed 16-01 (landing page with FAQ and caliber specs)
+Last activity: 2026-02-16 -- Completed 17-01 (trade UX fix and stats wiring)
 
-Progress: [██████████] 100% (v1.3)
+Progress: [██████████] 100% (phase 17)
 
 ## Performance Metrics
 
@@ -47,6 +47,7 @@ Progress: [██████████] 100% (v1.3)
 | 14    | 01   | 2min     | 2     | 6     |
 | 15    | 01   | 3min     | 2     | 6     |
 | 16    | 01   | 2min     | 2     | 5     |
+| 17    | 01   | 4min     | 2     | 4     |
 
 ## Accumulated Context
 
@@ -74,6 +75,10 @@ All decisions logged in PROJECT.md Key Decisions table.
 - 15-01: Trade page uses (app) layout group (AppNav shell provided automatically)
 - 16-01: Simple useState accordion for FAQ (no external library dependency)
 - 16-01: Middot separators between caliber spec items (grain, case type, min order)
+- 17-01: isEmbedded detection via searchParams.get('caliber') !== null for embedded vs standalone flow
+- 17-01: Hide Back button in MintFlow step 1 when embedded (CaliberInfoPanel above handles re-selection)
+- 17-01: RedeemFlow hides caliber grid but keeps step 0 structure when embedded
+- 17-01: Renamed "24h Volume" to "Total Volume" (API only provides cumulative data)
 
 ### Pending Todos
 
@@ -92,5 +97,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-16
-Stopped at: Completed 16-01-PLAN.md -- Phase 16 complete, v1.3 milestone complete
+Stopped at: Completed 17-01-PLAN.md -- Phase 17 complete, trade UX fix and stats wiring done
 Resume file: None
