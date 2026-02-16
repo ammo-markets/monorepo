@@ -110,11 +110,10 @@ Plans:
   2. User can switch between Mint and Redeem via tabs on the unified Trade page
   3. User can access the swap widget for token trading on the Trade page
   4. User sees order summary with fees, amounts, and total before confirming any action
-**Plans**: TBD
+**Plans:** 1 plan
 
 Plans:
-- [ ] 15-01: TBD
-- [ ] 15-02: TBD
+- [ ] 15-01-PLAN.md -- Caliber info panel, Mint/Redeem/Swap tabs, unified trade page
 
 ### Phase 16: Landing Page
 **Goal**: Visitors see a polished public landing page that explains the protocol and drives them to connect a wallet
@@ -152,9 +151,9 @@ Phases execute in numeric order: 12 -> 13 -> 14 -> 15 -> 16
 | 12. Database Schema & Stats Worker | v1.3 | 2/2 | Complete | 2026-02-15 |
 | 13. App Shell Restructure | v1.3 | 2/2 | Complete | 2026-02-16 |
 | 14. Dashboard | v1.3 | 1/1 | Complete | 2026-02-16 |
-| 15. Unified Trade Page | v1.3 | 0/TBD | Not started | - |
+| 15. Unified Trade Page | v1.3 | 0/1 | Not started | - |
 | 16. Landing Page | v1.3 | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-02-10*
-*Last updated: 2026-02-16 (Phase 14 complete -- 1/1 plans)*
+*Last updated: 2026-02-16 (Phase 15 planned -- 1 plan)*
