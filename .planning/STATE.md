@@ -5,17 +5,17 @@
 See: .planning/PROJECT.md (updated 2026-02-16)
 
 **Core value:** Anyone worldwide can get price exposure to U.S. ammunition by minting ammo tokens with USDC, while only verified U.S. residents in allowed states can redeem for physical delivery.
-**Current focus:** Phase 22 - Admin Enhancements
+**Current focus:** Phase 23 - Landing Page Cleanup
 
 ## Current Position
 
 Milestone: v1.4 UI/UX Polish & Accessibility
-Phase: 22 of 23 (Admin Enhancements)
-Plan: 2 of 2 in current phase (COMPLETE)
-Status: Phase Complete
-Last activity: 2026-02-16 -- Completed 22-02 (order detail drawer + table controls)
+Phase: 23 of 23 (Landing Page Cleanup)
+Plan: 2 of 2 in current phase
+Status: Executing
+Last activity: 2026-02-16 -- Completed 23-02 (swap widget refactor)
 
-Progress: [########░░] 83% (10/12 v1.4 plans)
+Progress: [##########] 100% (12/12 v1.4 plans)
 
 ## Performance Metrics
 
@@ -73,6 +73,7 @@ All decisions logged in PROJECT.md Key Decisions table.
 - [22-01] Pending stat cards use Link component for client-side navigation to order tables
 - [22-02] Added status/updatedAt to order type interfaces for all-status display
 - [22-02] Actions column only shows buttons for PENDING orders; empty for other statuses
+- [23-02] Pure structural refactor of swap-widget -- no behavior/style/logic changes
 
 ### Pending Todos
 
@@ -91,5 +92,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-16
-Stopped at: Completed 22-02-PLAN.md (Phase 22 complete)
+Stopped at: Completed 23-02-PLAN.md
 Resume file: None
