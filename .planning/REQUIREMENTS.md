@@ -71,7 +71,7 @@ Deferred from UI/UX critique. Tracked but not in current roadmap.
 
 ### UX Enhancements
 
-- **UX-01**: Landing page section reordering (Hero → HowItWorks → MarketTicker → MarketCards)
+- **UX-01**: Landing page section reordering (Hero -> HowItWorks -> MarketTicker -> MarketCards)
 - **UX-02**: Draft/pending order surfacing in portfolio with clear status distinction
 - **UX-03**: Shipping time estimate shown earlier in redeem flow (before review step)
 
@@ -95,40 +95,40 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| WALL-01 | — | Pending |
-| WALL-02 | — | Pending |
-| A11Y-01 | — | Pending |
-| A11Y-02 | — | Pending |
-| A11Y-03 | — | Pending |
-| A11Y-04 | — | Pending |
-| THEME-01 | — | Pending |
-| THEME-02 | — | Pending |
-| THEME-03 | — | Pending |
-| THEME-04 | — | Pending |
-| NAV-01 | — | Pending |
-| NAV-02 | — | Pending |
-| NAV-03 | — | Pending |
-| MINT-01 | — | Pending |
-| MINT-02 | — | Pending |
-| REDM-01 | — | Pending |
-| REDM-02 | — | Pending |
-| ADMN-01 | — | Pending |
-| ADMN-02 | — | Pending |
-| ADMN-03 | — | Pending |
-| ADMN-04 | — | Pending |
-| ADMN-05 | — | Pending |
-| ADMN-06 | — | Pending |
-| PROF-01 | — | Pending |
-| TRAD-01 | — | Pending |
-| TRAD-02 | — | Pending |
-| LAND-01 | — | Pending |
-| LAND-02 | — | Pending |
+| THEME-01 | Phase 18 | Pending |
+| THEME-02 | Phase 18 | Pending |
+| THEME-03 | Phase 18 | Pending |
+| THEME-04 | Phase 18 | Pending |
+| A11Y-04 | Phase 18 | Pending |
+| A11Y-01 | Phase 19 | Pending |
+| A11Y-02 | Phase 19 | Pending |
+| A11Y-03 | Phase 19 | Pending |
+| WALL-01 | Phase 20 | Pending |
+| WALL-02 | Phase 20 | Pending |
+| NAV-01 | Phase 20 | Pending |
+| NAV-02 | Phase 20 | Pending |
+| NAV-03 | Phase 20 | Pending |
+| MINT-01 | Phase 21 | Pending |
+| MINT-02 | Phase 21 | Pending |
+| REDM-01 | Phase 21 | Pending |
+| REDM-02 | Phase 21 | Pending |
+| PROF-01 | Phase 21 | Pending |
+| TRAD-01 | Phase 21 | Pending |
+| ADMN-01 | Phase 22 | Pending |
+| ADMN-02 | Phase 22 | Pending |
+| ADMN-03 | Phase 22 | Pending |
+| ADMN-04 | Phase 22 | Pending |
+| ADMN-05 | Phase 22 | Pending |
+| ADMN-06 | Phase 22 | Pending |
+| LAND-01 | Phase 23 | Pending |
+| LAND-02 | Phase 23 | Pending |
+| TRAD-02 | Phase 23 | Pending |
 
 **Coverage:**
 - v1.4 requirements: 28 total
-- Mapped to phases: 0
-- Unmapped: 28 ⚠️
+- Mapped to phases: 28
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-16*
-*Last updated: 2026-02-16 after initial definition*
+*Last updated: 2026-02-16 after roadmap creation*
