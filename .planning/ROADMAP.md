@@ -81,11 +81,11 @@ Plans:
   2. App section has 4-tab navigation (Dashboard, Trade, Portfolio, Profile) with active state indicators
   3. Visiting any app route without a connected wallet redirects to the landing page
   4. Navigation is responsive -- sidebar on desktop, bottom tabs on mobile
-**Plans**: TBD
+**Plans:** 2 plans
 
 Plans:
-- [ ] 13-01: TBD
-- [ ] 13-02: TBD
+- [ ] 13-01-PLAN.md -- Route groups ((landing) + (app)), wallet gate, move existing routes
+- [ ] 13-02-PLAN.md -- Responsive 4-tab AppNav (sidebar desktop, bottom tabs mobile)
 
 ### Phase 14: Dashboard
 **Goal**: Users see a personal dashboard as their home screen with token balances, recent activity, and quick actions
