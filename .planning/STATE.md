@@ -52,6 +52,9 @@ All decisions logged in PROJECT.md Key Decisions table.
 - [19-02] Used aria-current="page" on active nav links per WAI-ARIA spec
 - [19-02] Changed time-range-selector from role="group" to role="tablist" for semantic correctness
 - [19-02] Added aria-labels to wallet button states for mobile accessibility (text hidden via sm:inline)
+- [Phase 19-01]: Mapped 6 new Tailwind colors from CSS variables (border-hover, border-active, border-default, text-primary, text-secondary, text-muted)
+- [Phase 19-01]: Used className template literals with ternary for conditional hover states (active vs inactive)
+- [Phase 19-01]: Applied global focus-visible outline to raw interactive elements for keyboard a11y
 
 ### Pending Todos
 
@@ -66,6 +69,7 @@ None.
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 1 | Refactor manual fetch mutations to use TanStack Query useMutation hooks | 2026-02-15 | 94bf174 | [1-refactor-manual-fetch-mutations-to-use-t](./quick/1-refactor-manual-fetch-mutations-to-use-t/) |
+| Phase 19 P01 | 25min | 2 tasks | 19 files |
 
 ## Session Continuity
 
