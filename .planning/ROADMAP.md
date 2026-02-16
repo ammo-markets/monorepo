@@ -68,7 +68,7 @@ Full details: `.planning/milestones/v1.3-ROADMAP.md`
 - [x] **Phase 20: Navigation & Wallet** - Nav improvements and wallet dropdown (completed 2026-02-16)
 - [x] **Phase 21: User Flow Improvements** - Mint/redeem UX, profile KYC, swap Coming Soon (completed 2026-02-16)
 - [x] **Phase 22: Admin Enhancements** - Reject/refund actions, dashboard enrichment, order details, table filters (completed 2026-02-16)
-- [ ] **Phase 23: Landing Page & Cleanup** - Trust strip, social proof, swap widget refactor
+- [x] **Phase 23: Landing Page & Cleanup** - Trust strip, social proof, swap widget refactor (completed 2026-02-16)
 
 ## Phase Details
 
@@ -211,7 +211,7 @@ Phases execute in numeric order: 18 -> 19 -> 20 -> 21 -> 22 -> 23
 | 20. Navigation & Wallet                  | v1.4      | 2/2            | Complete    | 2026-02-16 |
 | 21. User Flow Improvements               | v1.4      | 2/2            | Complete    | 2026-02-16 |
 | 22. Admin Enhancements                   | v1.4      | Complete    | 2026-02-16 | -          |
-| 23. Landing Page & Cleanup               | v1.4      | 0/2            | Not started | -          |
+| 23. Landing Page & Cleanup               | v1.4      | Complete    | 2026-02-16 | -          |
 
 ---
 
