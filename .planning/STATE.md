@@ -5,15 +5,15 @@
 See: .planning/PROJECT.md (updated 2026-02-16)
 
 **Core value:** Anyone worldwide can get price exposure to U.S. ammunition by minting ammo tokens with USDC, while only verified U.S. residents in allowed states can redeem for physical delivery.
-**Current focus:** Phase 20 - Navigation & Wallet
+**Current focus:** Phase 21 - User Flow Improvements
 
 ## Current Position
 
 Milestone: v1.4 UI/UX Polish & Accessibility
-Phase: 20 of 23 (Navigation & Wallet)
-Plan: 2 of 2 in current phase
-Status: Phase complete
-Last activity: 2026-02-16 -- Completed 20-02 (navigation & mobile responsive admin)
+Phase: 21 of 23 (User Flow Improvements)
+Plan: 0 of 2 in current phase
+Status: Ready to plan
+Last activity: 2026-02-16 -- Phase 20 complete, verified, ready for Phase 21
 
 Progress: [#####░░░░░] 50% (6/12 v1.4 plans)
 

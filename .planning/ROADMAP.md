@@ -65,7 +65,7 @@ Full details: `.planning/milestones/v1.3-ROADMAP.md`
 
 - [x] **Phase 18: Theme & Accessibility Foundation** - Unified design system and color contrast fixes (completed 2026-02-16)
 - [x] **Phase 19: Interactive States & ARIA** - Focus-visible, hover classes, and screen reader support (completed 2026-02-16)
-- [ ] **Phase 20: Navigation & Wallet** - Nav improvements and wallet dropdown
+- [x] **Phase 20: Navigation & Wallet** - Nav improvements and wallet dropdown (completed 2026-02-16)
 - [ ] **Phase 21: User Flow Improvements** - Mint/redeem UX, profile KYC, swap Coming Soon
 - [ ] **Phase 22: Admin Enhancements** - Reject/refund actions, dashboard enrichment, order details, table filters
 - [ ] **Phase 23: Landing Page & Cleanup** - Trust strip, social proof, swap widget refactor
@@ -115,8 +115,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 20-01-PLAN.md -- Wallet dropdown menu with copy address, explorer link, and disconnect confirmation dialog
-- [ ] 20-02-PLAN.md -- Market nav link, admin responsive mobile navigation, keeper admin link in bottom tabs
+- [x] 20-01-PLAN.md -- Wallet dropdown menu with copy address, explorer link, and disconnect confirmation dialog
+- [x] 20-02-PLAN.md -- Market nav link, admin responsive mobile navigation, keeper admin link in bottom tabs
 
 ### Phase 21: User Flow Improvements
 **Goal**: Users encounter clear disclosures before committing to actions and can complete KYC from profile
@@ -190,7 +190,7 @@ Phases execute in numeric order: 18 -> 19 -> 20 -> 21 -> 22 -> 23
 | 17. Trade UX Fix & Stats Wiring | v1.3 | 1/1 | Complete | 2026-02-16 |
 | 18. Theme & Accessibility Foundation | v1.4 | 2/2 | Complete | 2026-02-16 |
 | 19. Interactive States & ARIA | v1.4 | 2/2 | Complete | 2026-02-16 |
-| 20. Navigation & Wallet | v1.4 | 0/2 | Not started | - |
+| 20. Navigation & Wallet | v1.4 | 2/2 | Complete | 2026-02-16 |
 | 21. User Flow Improvements | v1.4 | 0/2 | Not started | - |
 | 22. Admin Enhancements | v1.4 | 0/2 | Not started | - |
 | 23. Landing Page & Cleanup | v1.4 | 0/2 | Not started | - |
