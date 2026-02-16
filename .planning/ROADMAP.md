@@ -175,12 +175,12 @@ Plans:
 1. Trust strip text on the landing page is clearly readable against the dark background (adequate contrast)
 2. Landing page displays real social proof stats (total volume, registered users, rounds tokenized)
 3. Swap widget component is refactored into smaller sub-components (each under 300 lines)
-   **Plans**: TBD
+   **Plans**: 2 plans
 
 Plans:
 
-- [ ] 23-01: Landing page trust strip contrast and social proof stats
-- [ ] 23-02: Swap widget component refactor
+- [ ] 23-01-PLAN.md -- Trust strip contrast fix, social proof stats API + display
+- [ ] 23-02-PLAN.md -- Swap widget refactor into co-located sub-components
 
 ## Progress
 
