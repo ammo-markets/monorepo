@@ -1592,6 +1592,7 @@ export function RedeemFlow({
   }, [marketCalibers]);
 
   const [step, setStep] = useState(0);
+  const [showKycPrompt, setShowKycPrompt] = useState(false);
   const [selectedCaliber, setSelectedCaliber] = useState<Caliber | null>(() => {
     if (preselected) return preselected;
     return null;
@@ -1623,6 +1624,18 @@ export function RedeemFlow({
   const kycStatus = kycData?.kycStatus ?? "NONE";
   const kycPrefill = kycData?.kycPrefill;
   const { mutateAsync: submitKyc, isPending: kycSubmitting } = useKycSubmit();
+  // Show KYC prompt upfront for unverified users once data loads
+  useEffect(() => {
+    if (
+      wallet.isConnected &&
+      !kycLoading &&
+      kycData &&
+      (kycStatus === "NONE" || kycStatus === "REJECTED")
+    ) {
+      setShowKycPrompt(true);
+    }
+  }, [wallet.isConnected, kycLoading, kycData, kycStatus]);
+
   const tokenAddress = CONTRACT_ADDRESSES.fuji.calibers[activeCaliber].token;
   const marketAddress = CONTRACT_ADDRESSES.fuji.calibers[activeCaliber].market;
   const allowance = useAllowance(tokenAddress, wallet.address, marketAddress);
@@ -1721,6 +1734,7 @@ export function RedeemFlow({
       zip: "",
     });
     setAgeVerified(false);
+    setShowKycPrompt(false);
     kycAutoSkipRef.current = false;
   }, [redeemTx, isEmbedded, preselected]);
 
@@ -1741,6 +1755,57 @@ export function RedeemFlow({
         </div>
       )}
 
+      {/* KYC pre-check banner for unverified users */}
+      {step === 0 && !marketLoading && showKycPrompt && wallet.isConnected && (
+        <div
+          className="mb-6 rounded-xl px-5 py-5"
+          style={{
+            backgroundColor: "rgba(243, 156, 18, 0.08)",
+            border: "1.5px solid var(--amber)",
+          }}
+        >
+          <div className="flex gap-3">
+            <Shield
+              size={20}
+              className="mt-0.5 flex-shrink-0"
+              style={{ color: "var(--amber)" }}
+            />
+            <div className="flex-1">
+              <h3
+                className="text-sm font-bold"
+                style={{ color: "var(--text-primary)" }}
+              >
+                Identity Verification Required
+              </h3>
+              <p
+                className="mt-1.5 text-xs leading-relaxed"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                You must complete KYC verification before redeeming tokens for
+                physical delivery. This is a one-time process required by
+                federal law.
+              </p>
+              <div className="mt-4 flex flex-wrap gap-3">
+                <a
+                  href="/profile#kyc"
+                  className="inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-bold transition-all duration-150 bg-brass text-ax-primary hover:bg-brass-hover"
+                >
+                  <Shield size={14} />
+                  Complete Verification
+                </a>
+                <button
+                  type="button"
+                  onClick={() => setShowKycPrompt(false)}
+                  className="inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-bold transition-all duration-150 bg-transparent border border-border-hover text-text-primary hover:bg-ax-tertiary hover:border-brass-border"
+                >
+                  Dismiss
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {step === 0 && !marketLoading && (
         <StepSelectCaliberAmount
           selectedCaliber={selectedCaliber}
@@ -1749,7 +1814,14 @@ export function RedeemFlow({
           caliberDetailsMap={caliberDetailsMap}
           onSelectCaliber={setSelectedCaliber}
           setRoundsAmount={setRoundsAmount}
-          onNext={() => setStep(1)}
+          onNext={() => {
+            // Block progression if KYC not started/approved
+            if (kycStatus !== "APPROVED" && kycStatus !== "PENDING") {
+              setShowKycPrompt(true);
+              return;
+            }
+            setStep(1);
+          }}
           isEmbedded={isEmbedded}
           isConnected={wallet.isConnected}
           onConnect={wallet.connect}
