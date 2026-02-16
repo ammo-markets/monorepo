@@ -5,7 +5,7 @@
 - ✅ **v1.0 Fuji Testnet Integration** -- Phases 1-6 (shipped 2026-02-11)
 - ✅ **v1.1 End-to-End Flow Fix** -- Phase 7 (shipped 2026-02-15)
 - ✅ **v1.2 Production Hardening** -- Phases 9-11 + 9.1 (shipped 2026-02-15)
-- **v1.3 UX Restructure & Data Enrichment** -- Phases 12-17 (in progress)
+- ✅ **v1.3 UX Restructure & Data Enrichment** -- Phases 12-17 (shipped 2026-02-16)
 
 ## Phases
 
@@ -53,7 +53,7 @@ Full details: `.planning/milestones/v1.2-ROADMAP.md`
 - [x] **Phase 14: Dashboard** - Personal dashboard with balances, orders, and quick actions
 - [x] **Phase 15: Unified Trade Page** - Combined mint/redeem/swap with inline caliber info
 - [x] **Phase 16: Landing Page** - Public marketing page with hero, how-it-works, caliber showcase, FAQ
-- [ ] **Phase 17: Trade UX Fix & Stats Wiring** - Eliminate duplicate caliber selection, wire orphaned stats endpoint
+- [x] **Phase 17: Trade UX Fix & Stats Wiring** - Eliminate duplicate caliber selection, wire orphaned stats endpoint
 
 ## Phase Details
 
@@ -186,9 +186,9 @@ Phases execute in numeric order: 12 -> 13 -> 14 -> 15 -> 16 -> 17
 | 14. Dashboard                            | v1.3      | 1/1            | Complete | 2026-02-16 |
 | 15. Unified Trade Page                   | v1.3      | 1/1            | Complete | 2026-02-16 |
 | 16. Landing Page                         | v1.3      | 1/1            | Complete | 2026-02-16 |
-| 17. Trade UX Fix & Stats Wiring          | v1.3      | 0/1            | Planned  | -          |
+| 17. Trade UX Fix & Stats Wiring          | v1.3      | 1/1            | Complete | 2026-02-16 |
 
 ---
 
 _Roadmap created: 2026-02-10_
-_Last updated: 2026-02-16 (Phase 17 added — gap closure from audit)_
+_Last updated: 2026-02-16 (Phase 17 complete — v1.3 milestone complete)_

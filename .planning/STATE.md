@@ -5,16 +5,17 @@
 See: .planning/PROJECT.md (updated 2026-02-15)
 
 **Core value:** Anyone worldwide can get price exposure to U.S. ammunition by minting ammo tokens with USDC, while only verified U.S. residents in allowed states can redeem for physical delivery.
-**Current focus:** Phase 17 - Trade UX Fix and Stats Wiring (gap closure)
+**Current focus:** v1.3 Milestone Complete
 
 ## Current Position
 
-Phase: 17 (1 of 1 gap closure)
+Milestone: v1.3 UX Restructure & Data Enrichment — COMPLETE
+Phase: 17 (6 of 6 in v1.3) — final phase
 Plan: 01 of 01 complete
-Status: Phase Complete
-Last activity: 2026-02-16 -- Completed 17-01 (trade UX fix and stats wiring)
+Status: Milestone Complete
+Last activity: 2026-02-16 -- Phase 17 verified, v1.3 shipped
 
-Progress: [██████████] 100% (phase 17)
+Progress: [██████████] 100% (v1.3)
 
 ## Performance Metrics
 
@@ -97,5 +98,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-16
-Stopped at: Completed 17-01-PLAN.md -- Phase 17 complete, trade UX fix and stats wiring done
+Stopped at: v1.3 milestone complete — all 6 phases (12-17) shipped
 Resume file: None
