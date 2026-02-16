@@ -44,129 +44,21 @@ Full details: `.planning/milestones/v1.2-ROADMAP.md`
 
 </details>
 
-### v1.3 UX Restructure & Data Enrichment (In Progress)
+<details>
+<summary>v1.3 UX Restructure & Data Enrichment (Phases 12-17) -- SHIPPED 2026-02-16</summary>
 
-**Milestone Goal:** Split the app into a public landing site and a wallet-connected app with clean 4-tab navigation, enriched database for protocol stats/activity/preferences, and unified trade experience.
+- [x] Phase 12: Database Schema & Stats Worker (2/2 plans) -- completed 2026-02-15
+- [x] Phase 13: App Shell Restructure (2/2 plans) -- completed 2026-02-16
+- [x] Phase 14: Dashboard (1/1 plan) -- completed 2026-02-16
+- [x] Phase 15: Unified Trade Page (1/1 plan) -- completed 2026-02-16
+- [x] Phase 16: Landing Page (1/1 plan) -- completed 2026-02-16
+- [x] Phase 17: Trade UX Fix & Stats Wiring (1/1 plan) -- completed 2026-02-16
 
-- [x] **Phase 12: Database Schema & Stats Worker** - New tables and periodic stats computation
-- [x] **Phase 13: App Shell Restructure** - Route groups, 4-tab nav, wallet gate
-- [x] **Phase 14: Dashboard** - Personal dashboard with balances, orders, and quick actions
-- [x] **Phase 15: Unified Trade Page** - Combined mint/redeem/swap with inline caliber info
-- [x] **Phase 16: Landing Page** - Public marketing page with hero, how-it-works, caliber showcase, FAQ
-- [x] **Phase 17: Trade UX Fix & Stats Wiring** - Eliminate duplicate caliber selection, wire orphaned stats endpoint
+Full details: `.planning/milestones/v1.3-ROADMAP.md`
 
-## Phase Details
-
-### Phase 12: Database Schema & Stats Worker
-
-**Goal**: Protocol has enriched data layer with stats, activity tracking, and user preferences ready for UI consumption
-**Depends on**: Nothing (data layer foundation for this milestone)
-**Requirements**: DB-01, DB-02, DB-03, DB-04
-**Success Criteria** (what must be TRUE):
-
-1. ProtocolStats table exists and stores aggregate metrics (total minted/redeemed per caliber, user count, volume)
-2. ActivityLog table stores human-readable transaction history with descriptions and status changes
-3. UserPreference table stores favorite calibers and display settings per user
-4. Worker job periodically computes and caches protocol stats from chain and DB data
-5. API endpoints exist that serve protocol stats, activity log, and user preferences
-   **Plans:** 2 plans
-
-Plans:
-
-- [x] 12-01-PLAN.md -- Prisma schema (ProtocolStats, ActivityLog, UserPreference) + migration + seed
-- [x] 12-02-PLAN.md -- Stats worker cron job + API endpoints (stats, activity, preferences)
-
-### Phase 13: App Shell Restructure
-
-**Goal**: App has clean separation between public landing routes and wallet-connected app routes with responsive 4-tab navigation
-**Depends on**: Nothing (can run parallel with Phase 12, but listed after for clarity)
-**Requirements**: SHELL-01, SHELL-02, SHELL-03, SHELL-04
-**Success Criteria** (what must be TRUE):
-
-1. Next.js route groups split landing (public) and app (wallet-connected) with distinct layouts
-2. App section has 4-tab navigation (Dashboard, Trade, Portfolio, Profile) with active state indicators
-3. Visiting any app route without a connected wallet redirects to the landing page
-4. Navigation is responsive -- sidebar on desktop, bottom tabs on mobile
-   **Plans:** 2 plans
-
-Plans:
-
-- [x] 13-01-PLAN.md -- Route groups ((landing) + (app)), wallet gate, move existing routes
-- [x] 13-02-PLAN.md -- Responsive 4-tab AppNav (sidebar desktop, bottom tabs mobile)
-
-### Phase 14: Dashboard
-
-**Goal**: Users see a personal dashboard as their home screen with token balances, recent activity, and quick actions
-**Depends on**: Phase 12 (needs DB tables and stats), Phase 13 (needs app shell and nav)
-**Requirements**: DASH-01, DASH-02, DASH-03, DASH-04
-**Success Criteria** (what must be TRUE):
-
-1. User sees token balances for all 4 calibers with USD value on dashboard
-2. User sees last 5 orders with status, amount, and timestamp on dashboard
-3. User can initiate Mint or Redeem directly from dashboard quick action buttons
-4. User sees a banner when they have pending orders that need attention
-   **Plans:** 1 plan
-
-Plans:
-
-- [x] 14-01-PLAN.md -- Dashboard page with balance cards, recent orders, quick actions, pending banner
-
-### Phase 15: Unified Trade Page
-
-**Goal**: Users have a single trade page where they can mint, redeem, or swap any caliber with full context
-**Depends on**: Phase 13 (needs app shell and nav)
-**Requirements**: TRADE-01, TRADE-02, TRADE-03, TRADE-04
-**Success Criteria** (what must be TRUE):
-
-1. User can select any caliber and see inline specs (grain, type, min order) with current price
-2. User can switch between Mint and Redeem via tabs on the unified Trade page
-3. User can access the swap widget for token trading on the Trade page
-4. User sees order summary with fees, amounts, and total before confirming any action
-   **Plans:** 1 plan
-
-Plans:
-
-- [x] 15-01-PLAN.md -- Caliber info panel, Mint/Redeem/Swap tabs, unified trade page
-
-### Phase 16: Landing Page
-
-**Goal**: Visitors see a polished public landing page that explains the protocol and drives them to connect a wallet
-**Depends on**: Phase 13 (needs public route group from shell restructure)
-**Requirements**: LAND-01, LAND-02, LAND-03, LAND-04
-**Success Criteria** (what must be TRUE):
-
-1. Visitor sees hero section with protocol tagline and a prominent "Launch App" CTA
-2. Visitor sees how-it-works section explaining mint/trade/redeem in 3-4 visual steps
-3. Visitor sees caliber showcase displaying all 4 calibers with specs and current prices
-4. Visitor sees FAQ section answering common questions about the protocol
-   **Plans:** 1 plan
-
-Plans:
-
-- [x] 16-01-PLAN.md -- Update hero CTA, enhance caliber showcase with specs, add FAQ section
-
-### Phase 17: Trade UX Fix & Stats Wiring
-
-**Goal**: Trade page has single caliber selection flow (no duplicates) and landing page displays real protocol stats from worker-computed data
-**Depends on**: Phase 15 (trade page), Phase 12 (stats endpoint), Phase 16 (landing page)
-**Requirements**: None (gap closure — fixes integration and UX issues from audit)
-**Gap Closure**: Closes gaps from v1.3-MILESTONE-AUDIT.md
-**Success Criteria** (what must be TRUE):
-
-1. User selects caliber ONCE on Trade page — CaliberInfoPanel selection skips MintFlow/RedeemFlow step 0
-2. MintFlow and RedeemFlow read `?caliber=` URL param and start at amount step when caliber is pre-selected
-3. Landing page ProtocolStats component fetches from `/api/stats` and displays real unique holder count
-4. No hardcoded "--" values remain in ProtocolStats display
-   **Plans:** 1 plan
-
-Plans:
-
-- [ ] 17-01-PLAN.md -- Fix duplicate caliber selection + wire ProtocolStats to /api/stats
+</details>
 
 ## Progress
-
-**Execution Order:**
-Phases execute in numeric order: 12 -> 13 -> 14 -> 15 -> 16 -> 17
 
 | Phase                                    | Milestone | Plans Complete | Status   | Completed  |
 | ---------------------------------------- | --------- | -------------- | -------- | ---------- |
@@ -191,4 +83,4 @@ Phases execute in numeric order: 12 -> 13 -> 14 -> 15 -> 16 -> 17
 ---
 
 _Roadmap created: 2026-02-10_
-_Last updated: 2026-02-16 (Phase 17 complete — v1.3 milestone complete)_
+_Last updated: 2026-02-16 (v1.3 milestone archived)_

@@ -47,3 +47,23 @@
 **Delivered:** Production-hardened DeFi protocol -- every API request authenticated, every contract event indexed reliably, every component on TanStack Query with error boundaries.
 
 ---
+
+## v1.3 UX Restructure & Data Enrichment (Shipped: 2026-02-16)
+
+**Phases completed:** 6 phases (12-17), 8 plans, 17 tasks
+**Files changed:** 193 (+10,040 / -3,480)
+**Git range:** `4c667ec` (feat(12-01)) → `bd8c1d3` (docs(phase-17))
+
+**Key accomplishments:**
+
+- Enriched data layer with ProtocolStats, ActivityLog, and UserPreference tables plus 15-minute stats cron job
+- Split app into public landing and wallet-gated app with responsive 4-tab navigation (Dashboard, Trade, Portfolio, Profile)
+- Personal dashboard with on-chain token balances, recent orders, quick actions, and pending order banner
+- Unified Trade page with CaliberInfoPanel, Mint/Redeem/Swap tabs, and URL param pre-selection
+- Public landing page with hero CTA, caliber showcase with specs, and FAQ accordion
+- Eliminated duplicate caliber selection and wired ProtocolStats to real /api/stats data
+
+**Delivered:** Full UX restructure -- visitors see a polished landing page, authenticated users get a 4-tab app with dashboard, unified trade, and enriched protocol data.
+
+---
+
