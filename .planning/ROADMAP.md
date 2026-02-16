@@ -51,7 +51,7 @@ Full details: `.planning/milestones/v1.2-ROADMAP.md`
 - [x] **Phase 12: Database Schema & Stats Worker** - New tables and periodic stats computation
 - [x] **Phase 13: App Shell Restructure** - Route groups, 4-tab nav, wallet gate
 - [x] **Phase 14: Dashboard** - Personal dashboard with balances, orders, and quick actions
-- [ ] **Phase 15: Unified Trade Page** - Combined mint/redeem/swap with inline caliber info
+- [x] **Phase 15: Unified Trade Page** - Combined mint/redeem/swap with inline caliber info
 - [ ] **Phase 16: Landing Page** - Public marketing page with hero, how-it-works, caliber showcase, FAQ
 
 ## Phase Details
@@ -113,7 +113,7 @@ Plans:
 **Plans:** 1 plan
 
 Plans:
-- [ ] 15-01-PLAN.md -- Caliber info panel, Mint/Redeem/Swap tabs, unified trade page
+- [x] 15-01-PLAN.md -- Caliber info panel, Mint/Redeem/Swap tabs, unified trade page
 
 ### Phase 16: Landing Page
 **Goal**: Visitors see a polished public landing page that explains the protocol and drives them to connect a wallet
@@ -151,9 +151,9 @@ Phases execute in numeric order: 12 -> 13 -> 14 -> 15 -> 16
 | 12. Database Schema & Stats Worker | v1.3 | 2/2 | Complete | 2026-02-15 |
 | 13. App Shell Restructure | v1.3 | 2/2 | Complete | 2026-02-16 |
 | 14. Dashboard | v1.3 | 1/1 | Complete | 2026-02-16 |
-| 15. Unified Trade Page | v1.3 | 0/1 | Not started | - |
+| 15. Unified Trade Page | v1.3 | 1/1 | Complete | 2026-02-16 |
 | 16. Landing Page | v1.3 | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-02-10*
-*Last updated: 2026-02-16 (Phase 15 planned -- 1 plan)*
+*Last updated: 2026-02-16 (Phase 15 complete)*
