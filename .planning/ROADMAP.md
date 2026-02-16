@@ -5,7 +5,7 @@
 - ✅ **v1.0 Fuji Testnet Integration** -- Phases 1-6 (shipped 2026-02-11)
 - ✅ **v1.1 End-to-End Flow Fix** -- Phase 7 (shipped 2026-02-15)
 - ✅ **v1.2 Production Hardening** -- Phases 9-11 + 9.1 (shipped 2026-02-15)
-- **v1.3 UX Restructure & Data Enrichment** -- Phases 12-16 (in progress)
+- **v1.3 UX Restructure & Data Enrichment** -- Phases 12-16 (shipped 2026-02-16)
 
 ## Phases
 
@@ -52,7 +52,7 @@ Full details: `.planning/milestones/v1.2-ROADMAP.md`
 - [x] **Phase 13: App Shell Restructure** - Route groups, 4-tab nav, wallet gate
 - [x] **Phase 14: Dashboard** - Personal dashboard with balances, orders, and quick actions
 - [x] **Phase 15: Unified Trade Page** - Combined mint/redeem/swap with inline caliber info
-- [ ] **Phase 16: Landing Page** - Public marketing page with hero, how-it-works, caliber showcase, FAQ
+- [x] **Phase 16: Landing Page** - Public marketing page with hero, how-it-works, caliber showcase, FAQ
 
 ## Phase Details
 
@@ -127,7 +127,7 @@ Plans:
 **Plans:** 1 plan
 
 Plans:
-- [ ] 16-01-PLAN.md -- Update hero CTA, enhance caliber showcase with specs, add FAQ section
+- [x] 16-01-PLAN.md -- Update hero CTA, enhance caliber showcase with specs, add FAQ section
 
 ## Progress
 
@@ -151,8 +151,8 @@ Phases execute in numeric order: 12 -> 13 -> 14 -> 15 -> 16
 | 13. App Shell Restructure | v1.3 | 2/2 | Complete | 2026-02-16 |
 | 14. Dashboard | v1.3 | 1/1 | Complete | 2026-02-16 |
 | 15. Unified Trade Page | v1.3 | 1/1 | Complete | 2026-02-16 |
-| 16. Landing Page | v1.3 | 0/TBD | Not started | - |
+| 16. Landing Page | v1.3 | 1/1 | Complete | 2026-02-16 |
 
 ---
 *Roadmap created: 2026-02-10*
-*Last updated: 2026-02-16 (Phase 15 complete)*
+*Last updated: 2026-02-16 (Phase 16 complete — v1.3 milestone complete)*

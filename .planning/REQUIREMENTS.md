@@ -9,38 +9,38 @@ Requirements for UX Restructure & Data Enrichment milestone. Each maps to roadma
 
 ### Landing Page
 
-- [ ] **LAND-01**: Visitor sees hero section with protocol tagline and "Launch App" CTA
-- [ ] **LAND-02**: Visitor sees how-it-works section explaining mint/trade/redeem in 3-4 visual steps
-- [ ] **LAND-03**: Visitor sees caliber showcase displaying all 4 calibers with specs and current prices
-- [ ] **LAND-04**: Visitor sees FAQ section answering common questions about the protocol
+- [x] **LAND-01**: Visitor sees hero section with protocol tagline and "Launch App" CTA
+- [x] **LAND-02**: Visitor sees how-it-works section explaining mint/trade/redeem in 3-4 visual steps
+- [x] **LAND-03**: Visitor sees caliber showcase displaying all 4 calibers with specs and current prices
+- [x] **LAND-04**: Visitor sees FAQ section answering common questions about the protocol
 
 ### App Shell
 
-- [ ] **SHELL-01**: Next.js route groups split landing (public) and app (wallet-connected) with distinct layouts
-- [ ] **SHELL-02**: App has 4-tab navigation: Dashboard, Trade, Portfolio, Profile with active state indicators
-- [ ] **SHELL-03**: App routes redirect to landing page if wallet is not connected
-- [ ] **SHELL-04**: Navigation is responsive -- sidebar on desktop, bottom tabs on mobile
+- [x] **SHELL-01**: Next.js route groups split landing (public) and app (wallet-connected) with distinct layouts
+- [x] **SHELL-02**: App has 4-tab navigation: Dashboard, Trade, Portfolio, Profile with active state indicators
+- [x] **SHELL-03**: App routes redirect to landing page if wallet is not connected
+- [x] **SHELL-04**: Navigation is responsive -- sidebar on desktop, bottom tabs on mobile
 
 ### Dashboard
 
-- [ ] **DASH-01**: User sees token balances for all calibers with USD value on dashboard
-- [ ] **DASH-02**: User sees last 5 orders with status, amount, and timestamp on dashboard
-- [ ] **DASH-03**: User can initiate Mint or Redeem from dashboard quick action buttons
-- [ ] **DASH-04**: User sees a banner alerting them to pending orders that need attention
+- [x] **DASH-01**: User sees token balances for all calibers with USD value on dashboard
+- [x] **DASH-02**: User sees last 5 orders with status, amount, and timestamp on dashboard
+- [x] **DASH-03**: User can initiate Mint or Redeem from dashboard quick action buttons
+- [x] **DASH-04**: User sees a banner alerting them to pending orders that need attention
 
 ### Trade
 
-- [ ] **TRADE-01**: User can select caliber with inline specs (grain, type, min order) and current price
-- [ ] **TRADE-02**: User can switch between Mint and Redeem via tabs on a unified Trade page
-- [ ] **TRADE-03**: User can access swap widget for token trading on the Trade page
-- [ ] **TRADE-04**: User sees order summary with fees, amounts, and total before confirming
+- [x] **TRADE-01**: User can select caliber with inline specs (grain, type, min order) and current price
+- [x] **TRADE-02**: User can switch between Mint and Redeem via tabs on a unified Trade page
+- [x] **TRADE-03**: User can access swap widget for token trading on the Trade page
+- [x] **TRADE-04**: User sees order summary with fees, amounts, and total before confirming
 
 ### Database
 
-- [ ] **DB-01**: ProtocolStats table stores aggregate metrics (total minted/redeemed per caliber, user count, volume)
-- [ ] **DB-02**: ActivityLog table stores human-readable transaction history with descriptions and status changes
-- [ ] **DB-03**: UserPreference table stores favorite calibers, display settings, and notification preferences
-- [ ] **DB-04**: Worker job periodically computes and caches protocol stats from chain and DB data
+- [x] **DB-01**: ProtocolStats table stores aggregate metrics (total minted/redeemed per caliber, user count, volume)
+- [x] **DB-02**: ActivityLog table stores human-readable transaction history with descriptions and status changes
+- [x] **DB-03**: UserPreference table stores favorite calibers, display settings, and notification preferences
+- [x] **DB-04**: Worker job periodically computes and caches protocol stats from chain and DB data
 
 ## Future Requirements
 
@@ -76,26 +76,26 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| LAND-01 | Phase 16 | Pending |
-| LAND-02 | Phase 16 | Pending |
-| LAND-03 | Phase 16 | Pending |
-| LAND-04 | Phase 16 | Pending |
-| SHELL-01 | Phase 13 | Pending |
-| SHELL-02 | Phase 13 | Pending |
-| SHELL-03 | Phase 13 | Pending |
-| SHELL-04 | Phase 13 | Pending |
-| DASH-01 | Phase 14 | Pending |
-| DASH-02 | Phase 14 | Pending |
-| DASH-03 | Phase 14 | Pending |
-| DASH-04 | Phase 14 | Pending |
-| TRADE-01 | Phase 15 | Pending |
-| TRADE-02 | Phase 15 | Pending |
-| TRADE-03 | Phase 15 | Pending |
-| TRADE-04 | Phase 15 | Pending |
-| DB-01 | Phase 12 | Pending |
-| DB-02 | Phase 12 | Pending |
-| DB-03 | Phase 12 | Pending |
-| DB-04 | Phase 12 | Pending |
+| LAND-01 | Phase 16 | Complete |
+| LAND-02 | Phase 16 | Complete |
+| LAND-03 | Phase 16 | Complete |
+| LAND-04 | Phase 16 | Complete |
+| SHELL-01 | Phase 13 | Complete |
+| SHELL-02 | Phase 13 | Complete |
+| SHELL-03 | Phase 13 | Complete |
+| SHELL-04 | Phase 13 | Complete |
+| DASH-01 | Phase 14 | Complete |
+| DASH-02 | Phase 14 | Complete |
+| DASH-03 | Phase 14 | Complete |
+| DASH-04 | Phase 14 | Complete |
+| TRADE-01 | Phase 15 | Complete |
+| TRADE-02 | Phase 15 | Complete |
+| TRADE-03 | Phase 15 | Complete |
+| TRADE-04 | Phase 15 | Complete |
+| DB-01 | Phase 12 | Complete |
+| DB-02 | Phase 12 | Complete |
+| DB-03 | Phase 12 | Complete |
+| DB-04 | Phase 12 | Complete |
 
 **Coverage:**
 - v1.3 requirements: 20 total
@@ -104,4 +104,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-15*
-*Last updated: 2026-02-15 after roadmap creation*
+*Last updated: 2026-02-16 — all v1.3 requirements complete*
