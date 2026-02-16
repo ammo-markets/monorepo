@@ -54,10 +54,7 @@ export function AdminSidebar() {
           aria-expanded={mobileOpen}
         >
           {mobileOpen ? (
-            <X
-              className="h-5 w-5"
-              style={{ color: "var(--text-secondary)" }}
-            />
+            <X className="h-5 w-5" style={{ color: "var(--text-secondary)" }} />
           ) : (
             <Menu
               className="h-5 w-5"

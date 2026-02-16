@@ -2,11 +2,7 @@
 
 import { useState } from "react";
 import { useAuth } from "@/contexts/auth-context";
-import {
-  ChevronDown,
-  ChevronUp,
-  ArrowDownUp,
-} from "lucide-react";
+import { ChevronDown, ChevronUp, ArrowDownUp } from "lucide-react";
 import type { TokenId, Token } from "./swap-types";
 import { getToken } from "./swap-types";
 import { TokenSelector } from "./token-selector";

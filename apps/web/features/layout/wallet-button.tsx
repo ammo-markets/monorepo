@@ -78,7 +78,9 @@ export function WalletButton() {
         className="flex items-center gap-2 rounded-lg border border-ammo-amber bg-transparent px-4 py-2 text-sm font-medium text-ammo-amber transition-all duration-150 hover:bg-ammo-amber/10"
         onClick={switchToFuji}
         disabled={isSwitching}
-        aria-label={isSwitching ? "Switching network" : "Switch to Fuji network"}
+        aria-label={
+          isSwitching ? "Switching network" : "Switch to Fuji network"
+        }
       >
         <Wallet size={16} />
         <span className="hidden sm:inline">

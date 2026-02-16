@@ -54,6 +54,7 @@ completed: 2026-02-16
 - **Files modified:** 4
 
 ## Accomplishments
+
 - Trust strip text changed from muted CSS variable to white (#FFFFFF) with subtle rgba separator border
 - Stats API extended with 3 new social proof fields via parallel Prisma queries
 - ProtocolStats component simplified from 4 stats (2 hooks) to 3 stats (1 hook) with abbreviated formatting
@@ -66,12 +67,14 @@ Each task was committed atomically:
 2. **Task 2: Update ProtocolStats to 3 social proof stats** - `d1bf45c` (feat)
 
 ## Files Created/Modified
+
 - `apps/web/features/home/hero.tsx` - Trust strip white text, rgba separator border, white dividers
 - `apps/web/features/home/protocol-stats.tsx` - 3-stat layout with formatCount helper, removed useMarketData dependency
 - `apps/web/app/api/stats/route.ts` - Added totalVolumeRounds, registeredUsers, roundsTokenized to response
 - `apps/web/hooks/use-protocol-stats.ts` - Updated ProtocolStatsResponse interface with new fields
 
 ## Decisions Made
+
 - Used `totalVolumeRounds` (sum of completed order `amount` field) instead of `totalVolumeUsdc` since the Order model has no `usdcAmount` column. Volume is displayed in round count with $ prefix via formatCompact.
 - Kept formatCompact for dollar-style volume display, added formatCount for count-style stats with + suffix.
 
@@ -80,6 +83,7 @@ Each task was committed atomically:
 ### Auto-fixed Issues
 
 **1. [Rule 3 - Blocking] Adapted totalVolumeUsdc query to totalVolumeRounds**
+
 - **Found during:** Task 1 (Stats API extension)
 - **Issue:** Plan specified `prisma.order.aggregate({ _sum: { usdcAmount: true } })` but Order model has no `usdcAmount` field. Only `amount` (String, round count) exists.
 - **Fix:** Used `prisma.order.findMany({ where: { status: "COMPLETED" }, select: { amount: true } })` and summed amounts as round-based volume. Renamed field to `totalVolumeRounds` for clarity.
@@ -93,15 +97,19 @@ Each task was committed atomically:
 **Impact on plan:** Necessary adaptation due to schema mismatch in plan. No scope creep. Volume stat still functional with round-based data.
 
 ## Issues Encountered
+
 None beyond the schema deviation documented above.
 
 ## User Setup Required
+
 None - no external service configuration required.
 
 ## Next Phase Readiness
+
 - Trust strip and social proof stats complete
 - Ready for 23-02 plan execution (remaining landing page cleanup tasks)
 
 ---
-*Phase: 23-landing-page-cleanup*
-*Completed: 2026-02-16*
+
+_Phase: 23-landing-page-cleanup_
+_Completed: 2026-02-16_

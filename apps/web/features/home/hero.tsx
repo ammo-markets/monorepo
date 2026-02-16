@@ -117,7 +117,11 @@ export function Hero() {
         {/* Trust strip */}
         <div
           className="mt-16 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-[11px] font-medium uppercase tracking-[0.08em] sm:gap-x-6"
-          style={{ color: "#FFFFFF", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "1.5rem" }}
+          style={{
+            color: "#FFFFFF",
+            borderTop: "1px solid rgba(255,255,255,0.1)",
+            paddingTop: "1.5rem",
+          }}
         >
           <span>Backed by physical inventory</span>
           <span

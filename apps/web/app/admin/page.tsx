@@ -17,10 +17,7 @@ export default function AdminDashboardPage() {
             Admin Dashboard
           </h1>
         </div>
-        <p
-          className="mt-2 text-sm"
-          style={{ color: "var(--text-secondary)" }}
-        >
+        <p className="mt-2 text-sm" style={{ color: "var(--text-secondary)" }}>
           Protocol overview and management
         </p>
       </div>

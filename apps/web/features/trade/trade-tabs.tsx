@@ -46,7 +46,11 @@ export function TradeTabs({
   return (
     <div>
       {/* Tab buttons */}
-      <div className="mb-6 flex items-center justify-center gap-2" role="tablist" aria-label="Trade options">
+      <div
+        className="mb-6 flex items-center justify-center gap-2"
+        role="tablist"
+        aria-label="Trade options"
+      >
         {TABS.map((tab) => {
           const isActive = activeTab === tab.id;
           const Icon = tab.icon;
@@ -174,10 +178,7 @@ export function TradeTabs({
               exchange pools. Swap between calibers or convert to USDC without
               the 24-48h settlement window.
             </p>
-            <p
-              className="mt-4 text-xs"
-              style={{ color: "var(--text-muted)" }}
-            >
+            <p className="mt-4 text-xs" style={{ color: "var(--text-muted)" }}>
               Powered by Uniswap V3 on Avalanche
             </p>
           </div>

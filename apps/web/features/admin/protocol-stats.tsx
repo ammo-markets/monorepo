@@ -95,7 +95,10 @@ export function ProtocolStats() {
   }: {
     label: string;
     value: string;
-    icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
+    icon: React.ComponentType<{
+      className?: string;
+      style?: React.CSSProperties;
+    }>;
   }) {
     return (
       <div
@@ -131,7 +134,10 @@ export function ProtocolStats() {
   }: {
     label: string;
     value: string;
-    icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
+    icon: React.ComponentType<{
+      className?: string;
+      style?: React.CSSProperties;
+    }>;
     href: string;
     highlighted: boolean;
   }) {

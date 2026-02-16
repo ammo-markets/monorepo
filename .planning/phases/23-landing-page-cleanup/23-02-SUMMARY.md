@@ -55,6 +55,7 @@ completed: 2026-02-16
 - **Files modified:** 8 (7 created, 1 deleted)
 
 ## Accomplishments
+
 - Extracted types and helpers to swap-types.ts (38 lines)
 - Extracted 4 SVG icon components to token-icons.tsx (106 lines)
 - Extracted token dropdown with outside-click handler to token-selector.tsx (99 lines)
@@ -71,6 +72,7 @@ Each task was committed atomically:
 1. **Task 1: Create swap-widget/ folder with sub-component files** - `7046f16` (refactor)
 
 ## Files Created/Modified
+
 - `apps/web/features/trade/swap-widget/swap-types.ts` - TokenId, Token types, buildTokens, getToken helpers
 - `apps/web/features/trade/swap-widget/token-icons.tsx` - UsdcIcon, UniswapLogo, AaveLogo, TokenIcon components
 - `apps/web/features/trade/swap-widget/token-selector.tsx` - TokenSelector dropdown with outside-click
@@ -81,6 +83,7 @@ Each task was committed atomically:
 - `apps/web/features/trade/swap-widget.tsx` - DELETED (original 749-line monolith)
 
 ## Decisions Made
+
 - Pure structural refactor -- no behavior, style, or logic changes
 
 ## Deviations from Plan
@@ -88,12 +91,15 @@ Each task was committed atomically:
 None - plan executed exactly as written.
 
 ## Issues Encountered
+
 None
 
 ## User Setup Required
+
 None - no external service configuration required.
 
 ## Next Phase Readiness
+
 - Swap widget is now modular and maintainable
 - Each sub-component can be independently edited without touching other files
 - No blockers for remaining phase 23 plans
@@ -103,5 +109,6 @@ None - no external service configuration required.
 All 7 created files verified on disk. Commit `7046f16` verified in git log. Original `swap-widget.tsx` confirmed deleted. TypeScript check passes.
 
 ---
-*Phase: 23-landing-page-cleanup*
-*Completed: 2026-02-16*
+
+_Phase: 23-landing-page-cleanup_
+_Completed: 2026-02-16_

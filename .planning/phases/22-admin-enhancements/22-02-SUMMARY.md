@@ -58,6 +58,7 @@ completed: 2026-02-16
 - **Files modified:** 7
 
 ## Accomplishments
+
 - Admin can click any order row to open a right-side Sheet drawer showing full order details
 - Drawer displays prominent status badge, order timeline, wallet/tx links, and action buttons for pending orders
 - Both order tables have text search with 300ms debounce, caliber filter dropdown, and pagination
@@ -71,6 +72,7 @@ Each task was committed atomically:
 2. **Task 2: Create order detail drawer and add search/filter/pagination to order tables** - `4ae4363` (feat)
 
 ## Files Created/Modified
+
 - `apps/web/features/admin/order-detail-drawer.tsx` - Sheet drawer with status badge, KYC info, shipping address, vertical timeline, and action footer
 - `apps/web/app/api/admin/orders/route.ts` - Enhanced with search, caliber, status, page/limit params and paginated response
 - `apps/web/features/admin/mint-orders-table.tsx` - Added row click, search input, caliber filter, pagination, status column
@@ -80,6 +82,7 @@ Each task was committed atomically:
 - `apps/web/features/admin/index.ts` - Added OrderDetailDrawer export
 
 ## Decisions Made
+
 - Added `status` and `updatedAt` fields to AdminMintOrder and AdminRedeemOrder interfaces since tables now display all statuses (not just PENDING)
 - Actions column only renders Finalize/Reject/Cancel buttons for PENDING orders; non-pending rows show empty actions cell
 - Used e.stopPropagation() on action buttons to prevent drawer opening when clicking Finalize/Reject/Cancel
@@ -89,6 +92,7 @@ Each task was committed atomically:
 ### Auto-fixed Issues
 
 **1. [Rule 2 - Missing Critical] Added status and updatedAt to order type interfaces**
+
 - **Found during:** Task 2 (creating drawer and updating tables)
 - **Issue:** AdminMintOrder and AdminRedeemOrder types lacked `status` and `updatedAt` fields, which are now returned by the API and needed for the drawer timeline and status column
 - **Fix:** Added `status: string` and `updatedAt: string` to both interfaces in finalize-mint-dialog.tsx and finalize-redeem-dialog.tsx
@@ -102,12 +106,15 @@ Each task was committed atomically:
 **Impact on plan:** Essential type update for correctness. No scope creep.
 
 ## Issues Encountered
+
 None
 
 ## User Setup Required
+
 None - no external service configuration required.
 
 ## Next Phase Readiness
+
 - Phase 22 (Admin Enhancements) complete
 - All admin order management features in place: finalize, reject/cancel, detail drawer, search/filter/pagination
 - Ready for next phase
@@ -117,5 +124,6 @@ None - no external service configuration required.
 All 7 files verified present. Both task commits (898c145, 4ae4363) verified in git log. SUMMARY.md exists.
 
 ---
-*Phase: 22-admin-enhancements*
-*Completed: 2026-02-16*
+
+_Phase: 22-admin-enhancements_
+_Completed: 2026-02-16_

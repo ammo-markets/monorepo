@@ -76,7 +76,9 @@ export function AppNav() {
           {isKeeper && (
             <Link
               href="/admin"
-              aria-current={isActiveLink(pathname, "/admin") ? "page" : undefined}
+              aria-current={
+                isActiveLink(pathname, "/admin") ? "page" : undefined
+              }
               className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors duration-150 border-l-[3px] ${
                 isActiveLink(pathname, "/admin")
                   ? "text-accent bg-ax-tertiary border-l-accent"
