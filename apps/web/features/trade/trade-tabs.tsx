@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { Plus, ArrowDownToLine, ArrowDownUp } from "lucide-react";
 import { MintFlow } from "@/features/mint";
 import { RedeemFlow } from "@/features/redeem";
-import { SwapWidget } from "@/features/trade/swap-widget";
+
 import { CaliberInfoPanel } from "@/features/trade/caliber-info-panel";
 import type { Caliber } from "@ammo-exchange/shared";
 import type { MarketCaliberFromAPI } from "@/lib/types";
@@ -65,6 +65,17 @@ export function TradeTabs({
             >
               <Icon size={15} />
               {tab.label}
+              {tab.id === "swap" && (
+                <span
+                  className="ml-1.5 rounded-full px-1.5 py-0.5 text-[10px] font-semibold"
+                  style={{
+                    backgroundColor: "rgba(243, 156, 18, 0.15)",
+                    color: "var(--amber)",
+                  }}
+                >
+                  Soon
+                </span>
+              )}
             </button>
           );
         })}
@@ -139,8 +150,36 @@ export function TradeTabs({
           ))}
 
         {activeTab === "swap" && (
-          <div className="flex justify-center">
-            <SwapWidget defaultOpen />
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <div
+              className="mb-4 flex h-14 w-14 items-center justify-center rounded-full"
+              style={{
+                backgroundColor: "rgba(243, 156, 18, 0.1)",
+                border: "1.5px solid var(--amber)",
+              }}
+            >
+              <ArrowDownUp size={24} style={{ color: "var(--amber)" }} />
+            </div>
+            <h3
+              className="mb-2 text-lg font-semibold"
+              style={{ color: "var(--text-primary)" }}
+            >
+              Swap Coming Soon
+            </h3>
+            <p
+              className="max-w-sm text-sm leading-relaxed"
+              style={{ color: "var(--text-secondary)" }}
+            >
+              Trade ammo tokens directly with other users via decentralized
+              exchange pools. Swap between calibers or convert to USDC without
+              the 24-48h settlement window.
+            </p>
+            <p
+              className="mt-4 text-xs"
+              style={{ color: "var(--text-muted)" }}
+            >
+              Powered by Uniswap V3 on Avalanche
+            </p>
           </div>
         )}
       </div>
