@@ -144,11 +144,11 @@ Plans:
   3. Admin dashboard has quick action buttons that jump directly to the pending orders queue
   4. Admin order tables support text search, filter by caliber, and paginated navigation
   5. Admin can click any order row to see full details (wallet address, transaction history, KYC status, shipping info, timeline)
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 22-01: Reject/refund actions and dashboard alerts
-- [ ] 22-02: Order detail view, table search, filter, and pagination
+- [ ] 22-01-PLAN.md -- Reject/refund actions, AlertDialog confirmations, and dashboard alert stat cards
+- [ ] 22-02-PLAN.md -- Order detail drawer, table search, caliber filter, and pagination
 
 ### Phase 23: Landing Page & Cleanup
 **Goal**: Landing page builds trust with visible social proof, and codebase is clean of oversized components
