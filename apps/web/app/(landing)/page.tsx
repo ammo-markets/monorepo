@@ -1,4 +1,4 @@
-import { Hero, HowItWorks, ProtocolStats } from "@/features/home";
+import { Faq, Hero, HowItWorks, ProtocolStats } from "@/features/home";
 import { MarketTicker, MarketCards } from "@/features/market";
 
 export default function Page() {
@@ -8,6 +8,7 @@ export default function Page() {
       <MarketTicker />
       <HowItWorks />
       <MarketCards />
+      <Faq />
       <ProtocolStats />
     </>
   );
