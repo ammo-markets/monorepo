@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 
 Milestone: v1.4 UI/UX Polish & Accessibility
 Phase: 20 of 23 (Navigation & Wallet)
-Plan: 1 of 2 in current phase
-Status: Executing
-Last activity: 2026-02-16 -- Completed 20-01 (wallet dropdown menu)
+Plan: 2 of 2 in current phase
+Status: Phase complete
+Last activity: 2026-02-16 -- Completed 20-02 (navigation & mobile responsive admin)
 
-Progress: [#####░░░░░] 42% (5/12 v1.4 plans)
+Progress: [#####░░░░░] 50% (6/12 v1.4 plans)
 
 ## Performance Metrics
 
@@ -57,6 +57,9 @@ All decisions logged in PROJECT.md Key Decisions table.
 - [Phase 19-01]: Applied global focus-visible outline to raw interactive elements for keyboard a11y
 - [20-01] Used AVALANCHE_FUJI.blockExplorers.default for explorer URL (testnet-appropriate)
 - [20-01] AlertDialog confirmation pattern for destructive wallet actions
+- [20-02] Used BarChart3 icon for Market nav item (charts-appropriate)
+- [20-02] Dynamic grid-cols-5/6 for mobile tabs based on keeper status
+- [20-02] Admin mobile nav uses collapsible dropdown rather than sheet/drawer for simplicity
 
 ### Pending Todos
 
@@ -75,5 +78,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-16
-Stopped at: Completed 20-01-PLAN.md
+Stopped at: Phase 20 complete -- ready for Phase 21
 Resume file: None
