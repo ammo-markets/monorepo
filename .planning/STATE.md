@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 
 Milestone: v1.4 UI/UX Polish & Accessibility
 Phase: 21 of 23 (User Flow Improvements)
-Plan: 1 of 2 in current phase
-Status: Executing
-Last activity: 2026-02-16 -- Completed 21-01 (mint disclosures & swap coming soon)
+Plan: 2 of 2 in current phase
+Status: Phase complete
+Last activity: 2026-02-16 -- Completed 21-02 (KYC pre-check & profile verification)
 
-Progress: [######░░░░] 58% (7/12 v1.4 plans)
+Progress: [######░░░░] 67% (8/12 v1.4 plans)
 
 ## Performance Metrics
 
@@ -62,6 +62,9 @@ All decisions logged in PROJECT.md Key Decisions table.
 - [20-02] Admin mobile nav uses collapsible dropdown rather than sheet/drawer for simplicity
 - [21-01] Used borderLeft muted color for price disclaimer to differentiate from processing time warning
 - [21-01] Badge text "Soon" instead of full "Coming Soon" to keep tab compact
+- [21-02] KYC gate as banner above Step 0 (not separate step) to avoid renumbering
+- [21-02] PENDING users allowed past Step 0 (they hit Step 2 KYC check)
+- [21-02] Profile page invalidates both kyc and profile queries on KYC submit
 
 ### Pending Todos
 
@@ -80,5 +83,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-16
-Stopped at: Completed 21-01-PLAN.md
+Stopped at: Completed 21-02-PLAN.md -- Phase 21 complete
 Resume file: None
