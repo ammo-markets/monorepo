@@ -57,7 +57,10 @@ export async function GET(request: NextRequest) {
 
     // Parse pagination
     const page = Math.max(1, parseInt(pageParam ?? "1", 10) || 1);
-    const limit = Math.min(100, Math.max(1, parseInt(limitParam ?? "20", 10) || 20));
+    const limit = Math.min(
+      100,
+      Math.max(1, parseInt(limitParam ?? "20", 10) || 20),
+    );
     const skip = (page - 1) * limit;
 
     // Build where clause

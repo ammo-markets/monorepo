@@ -14,7 +14,9 @@ export interface AdminMintOrder {
   walletAddress: string | null;
   caliber: string;
   amount: string;
+  status: string;
   createdAt: string;
+  updatedAt: string;
   onChainOrderId: string | null;
   txHash: string | null;
 }

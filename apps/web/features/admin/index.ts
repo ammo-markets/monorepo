@@ -7,3 +7,4 @@ export { FinalizeRedeemDialog } from "./finalize-redeem-dialog";
 export { ProtocolStats } from "./protocol-stats";
 export { RejectMintDialog } from "./reject-mint-dialog";
 export { CancelRedeemDialog } from "./cancel-redeem-dialog";
+export { OrderDetailDrawer } from "./order-detail-drawer";

@@ -13,7 +13,9 @@ export interface AdminRedeemOrder {
   walletAddress: string | null;
   caliber: string;
   amount: string;
+  status: string;
   createdAt: string;
+  updatedAt: string;
   onChainOrderId: string | null;
   txHash: string | null;
   user: { kycStatus: string } | null;
