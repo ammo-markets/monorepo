@@ -49,7 +49,7 @@ Full details: `.planning/milestones/v1.2-ROADMAP.md`
 **Milestone Goal:** Split the app into a public landing site and a wallet-connected app with clean 4-tab navigation, enriched database for protocol stats/activity/preferences, and unified trade experience.
 
 - [x] **Phase 12: Database Schema & Stats Worker** - New tables and periodic stats computation
-- [ ] **Phase 13: App Shell Restructure** - Route groups, 4-tab nav, wallet gate
+- [x] **Phase 13: App Shell Restructure** - Route groups, 4-tab nav, wallet gate
 - [ ] **Phase 14: Dashboard** - Personal dashboard with balances, orders, and quick actions
 - [ ] **Phase 15: Unified Trade Page** - Combined mint/redeem/swap with inline caliber info
 - [ ] **Phase 16: Landing Page** - Public marketing page with hero, how-it-works, caliber showcase, FAQ
@@ -84,8 +84,8 @@ Plans:
 **Plans:** 2 plans
 
 Plans:
-- [ ] 13-01-PLAN.md -- Route groups ((landing) + (app)), wallet gate, move existing routes
-- [ ] 13-02-PLAN.md -- Responsive 4-tab AppNav (sidebar desktop, bottom tabs mobile)
+- [x] 13-01-PLAN.md -- Route groups ((landing) + (app)), wallet gate, move existing routes
+- [x] 13-02-PLAN.md -- Responsive 4-tab AppNav (sidebar desktop, bottom tabs mobile)
 
 ### Phase 14: Dashboard
 **Goal**: Users see a personal dashboard as their home screen with token balances, recent activity, and quick actions
@@ -151,11 +151,11 @@ Phases execute in numeric order: 12 -> 13 -> 14 -> 15 -> 16
 | 10. Worker Hardening | v1.2 | 2/2 | Complete | 2026-02-15 |
 | 11. Frontend Data Layer and Quality | v1.2 | 2/2 | Complete | 2026-02-15 |
 | 12. Database Schema & Stats Worker | v1.3 | 2/2 | Complete | 2026-02-15 |
-| 13. App Shell Restructure | v1.3 | 0/TBD | Not started | - |
+| 13. App Shell Restructure | v1.3 | 2/2 | Complete | 2026-02-16 |
 | 14. Dashboard | v1.3 | 0/TBD | Not started | - |
 | 15. Unified Trade Page | v1.3 | 0/TBD | Not started | - |
 | 16. Landing Page | v1.3 | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-02-10*
-*Last updated: 2026-02-15 (Phase 12 complete -- 2/2 plans)*
+*Last updated: 2026-02-16 (Phase 13 complete -- 2/2 plans)*
