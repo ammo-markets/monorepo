@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-15)
 
 **Core value:** Anyone worldwide can get price exposure to U.S. ammunition by minting ammo tokens with USDC, while only verified U.S. residents in allowed states can redeem for physical delivery.
-**Current focus:** Phase 13 - App Shell Restructure (COMPLETE)
+**Current focus:** Phase 14 - Dashboard
 
 ## Current Position
 
-Phase: 13 (2 of 5 in v1.3)
-Plan: 02 of 02 complete
+Phase: 14 (3 of 5 in v1.3)
+Plan: 01 of 01 complete
 Status: Phase Complete
-Last activity: 2026-02-16 -- Completed 13-02 (responsive 4-tab navigation)
+Last activity: 2026-02-16 -- Completed 14-01 (dashboard page components)
 
-Progress: [████░░░░░░] 40% (v1.3)
+Progress: [██████░░░░] 60% (v1.3)
 
 ## Performance Metrics
 
@@ -41,6 +41,7 @@ Progress: [████░░░░░░] 40% (v1.3)
 | 12 | 02 | 3min | 4 | 8 |
 | 13 | 01 | 2min | 1 | 19 |
 | 13 | 02 | 2min | 2 | 3 |
+| 14 | 01 | 2min | 2 | 6 |
 
 ## Accumulated Context
 
@@ -60,6 +61,9 @@ All decisions logged in PROJECT.md Key Decisions table.
 - 13-02: Single AppNav component renders both sidebar and bottom tabs (CSS-driven responsiveness)
 - 13-02: Active link detection uses startsWith for nested route support
 - 13-02: Sidebar width 240px (w-60) with matching ml-60 offset on main content
+- 14-01: Dashboard components receive data via props (not internal hooks) for testability
+- 14-01: Portfolio value includes USDC balance in total calculation
+- 14-01: Recent orders limited to 5 with View All link to /portfolio
 
 ### Pending Todos
 
@@ -78,5 +82,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-16
-Stopped at: Completed 13-02-PLAN.md -- Phase 13 complete, ready for Phase 14
+Stopped at: Completed 14-01-PLAN.md -- Phase 14 complete
 Resume file: None
