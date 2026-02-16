@@ -11,30 +11,34 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 
 Milestone: v1.4 UI/UX Polish & Accessibility
 Phase: 22 of 23 (Admin Enhancements)
-Plan: 1 of 2 in current phase
-Status: Executing
-Last activity: 2026-02-16 -- Completed 22-01 (reject/cancel actions + dashboard stats)
+Plan: 2 of 2 in current phase (COMPLETE)
+Status: Phase Complete
+Last activity: 2026-02-16 -- Completed 22-02 (order detail drawer + table controls)
 
-Progress: [#######░░░] 75% (9/12 v1.4 plans)
+Progress: [########░░] 83% (10/12 v1.4 plans)
 
 ## Performance Metrics
 
 **v1.0 Velocity:**
+
 - Total plans completed: 12
 - Average duration: ~9 min
 - Total execution time: ~2 hours
 
 **v1.1 Velocity:**
+
 - Total plans completed: 2
 - Average duration: ~1.5 min
 - Total execution time: ~3 min
 
 **v1.2 Velocity:**
+
 - Total plans completed: 10
 - Average duration: ~3 min
 - Total execution time: ~30 min
 
 **v1.3 Velocity:**
+
 - Total plans completed: 8
 - Average duration: ~2.6 min
 - Total execution time: ~21 min
@@ -67,6 +71,8 @@ All decisions logged in PROJECT.md Key Decisions table.
 - [21-02] Profile page invalidates both kyc and profile queries on KYC submit
 - [22-01] Used reasonCode=1 default for on-chain refundMint/cancelRedeem (ABI requires uint8 param)
 - [22-01] Pending stat cards use Link component for client-side navigation to order tables
+- [22-02] Added status/updatedAt to order type interfaces for all-status display
+- [22-02] Actions column only shows buttons for PENDING orders; empty for other statuses
 
 ### Pending Todos
 
@@ -78,12 +84,12 @@ None.
 
 ### Quick Tasks Completed
 
-| # | Description | Date | Commit | Directory |
-|---|-------------|------|--------|-----------|
-| 1 | Refactor manual fetch mutations to use TanStack Query useMutation hooks | 2026-02-15 | 94bf174 | [1-refactor-manual-fetch-mutations-to-use-t](./quick/1-refactor-manual-fetch-mutations-to-use-t/) |
+| #   | Description                                                             | Date       | Commit  | Directory                                                                                         |
+| --- | ----------------------------------------------------------------------- | ---------- | ------- | ------------------------------------------------------------------------------------------------- |
+| 1   | Refactor manual fetch mutations to use TanStack Query useMutation hooks | 2026-02-15 | 94bf174 | [1-refactor-manual-fetch-mutations-to-use-t](./quick/1-refactor-manual-fetch-mutations-to-use-t/) |
 
 ## Session Continuity
 
 Last session: 2026-02-16
-Stopped at: Completed 22-01-PLAN.md
+Stopped at: Completed 22-02-PLAN.md (Phase 22 complete)
 Resume file: None
