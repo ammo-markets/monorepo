@@ -66,7 +66,25 @@ Anyone worldwide can get price exposure to U.S. ammunition by minting ammo token
 
 ### Active
 
-(None -- planning next milestone)
+## Current Milestone: v1.4 UI/UX Polish & Accessibility
+
+**Goal:** Address UI/UX critique — fix critical UX issues, accessibility gaps, theme inconsistencies, and admin usability.
+
+**Target features:**
+- Wallet dropdown menu (replace instant disconnect)
+- Focus-visible states + CSS hover (replace inline JS hover)
+- Admin responsive mobile navigation
+- Unified theme system (consolidate dual CSS variable systems)
+- KYC pre-check in redeem flow
+- Admin reject/refund actions (refundMint, cancelRedeem)
+- Admin dashboard enrichment (alerts, badges, quick actions)
+- Admin order detail views + table search/filter/pagination
+- Accessibility fixes (ARIA labels, color contrast, focus states)
+- Mint flow improvements (processing time disclosure, price clarity)
+- Market page in main navigation
+- Swap tab "Coming Soon" label + widget refactor
+- Profile page standalone KYC completion
+- Landing page trust strip visibility + social proof
 
 ### Out of Scope
 
@@ -152,4 +170,4 @@ The full DeFi protocol is functional on Avalanche Fuji testnet with production-g
 
 ---
 
-*Last updated: 2026-02-16 after v1.3 milestone*
+*Last updated: 2026-02-16 after v1.4 milestone started*
