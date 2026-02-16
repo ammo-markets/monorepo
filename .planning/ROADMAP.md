@@ -63,7 +63,7 @@ Full details: `.planning/milestones/v1.3-ROADMAP.md`
 
 **Milestone Goal:** Address UI/UX critique -- fix accessibility gaps, theme inconsistencies, navigation issues, flow UX problems, and admin usability.
 
-- [ ] **Phase 18: Theme & Accessibility Foundation** - Unified design system and color contrast fixes
+- [x] **Phase 18: Theme & Accessibility Foundation** - Unified design system and color contrast fixes (completed 2026-02-16)
 - [ ] **Phase 19: Interactive States & ARIA** - Focus-visible, hover classes, and screen reader support
 - [ ] **Phase 20: Navigation & Wallet** - Nav improvements and wallet dropdown
 - [ ] **Phase 21: User Flow Improvements** - Mint/redeem UX, profile KYC, swap Coming Soon
@@ -85,8 +85,8 @@ Full details: `.planning/milestones/v1.3-ROADMAP.md`
 **Plans**: 2 plans
 
 Plans:
-- [ ] 18-01-PLAN.md -- Consolidate CSS variable systems, fix contrast, remove next-themes, enforce dark-only
-- [ ] 18-02-PLAN.md -- Migrate admin components from hardcoded Tailwind colors to unified theme variables
+- [x] 18-01-PLAN.md -- Consolidate CSS variable systems, fix contrast, remove next-themes, enforce dark-only
+- [x] 18-02-PLAN.md -- Migrate admin components from hardcoded Tailwind colors to unified theme variables
 
 ### Phase 19: Interactive States & ARIA
 **Goal**: Every interactive element communicates its state to all users (sighted and assistive tech)
@@ -188,7 +188,7 @@ Phases execute in numeric order: 18 -> 19 -> 20 -> 21 -> 22 -> 23
 | 15. Unified Trade Page | v1.3 | 1/1 | Complete | 2026-02-16 |
 | 16. Landing Page | v1.3 | 1/1 | Complete | 2026-02-16 |
 | 17. Trade UX Fix & Stats Wiring | v1.3 | 1/1 | Complete | 2026-02-16 |
-| 18. Theme & Accessibility Foundation | v1.4 | 0/2 | Not started | - |
+| 18. Theme & Accessibility Foundation | v1.4 | 2/2 | Complete | 2026-02-16 |
 | 19. Interactive States & ARIA | v1.4 | 0/2 | Not started | - |
 | 20. Navigation & Wallet | v1.4 | 0/2 | Not started | - |
 | 21. User Flow Improvements | v1.4 | 0/2 | Not started | - |
