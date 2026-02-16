@@ -30,6 +30,11 @@
     "db:migrate": {
       "cache": false
     },
+    "start": {
+      "dependsOn": ["build"],
+      "persistent": true,
+      "cache": false
+    },
     "test": {
       "dependsOn": ["^build"]
     }
