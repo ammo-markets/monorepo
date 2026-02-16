@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 
 Milestone: v1.4 UI/UX Polish & Accessibility
 Phase: 20 of 23 (Navigation & Wallet)
-Plan: 0 of 2 in current phase
-Status: Ready to plan
-Last activity: 2026-02-16 -- Phase 19 complete, verified, ready for Phase 20
+Plan: 1 of 2 in current phase
+Status: Executing
+Last activity: 2026-02-16 -- Completed 20-01 (wallet dropdown menu)
 
-Progress: [####░░░░░░] 33% (4/12 v1.4 plans)
+Progress: [#####░░░░░] 42% (5/12 v1.4 plans)
 
 ## Performance Metrics
 
@@ -55,6 +55,8 @@ All decisions logged in PROJECT.md Key Decisions table.
 - [Phase 19-01]: Mapped 6 new Tailwind colors from CSS variables (border-hover, border-active, border-default, text-primary, text-secondary, text-muted)
 - [Phase 19-01]: Used className template literals with ternary for conditional hover states (active vs inactive)
 - [Phase 19-01]: Applied global focus-visible outline to raw interactive elements for keyboard a11y
+- [20-01] Used AVALANCHE_FUJI.blockExplorers.default for explorer URL (testnet-appropriate)
+- [20-01] AlertDialog confirmation pattern for destructive wallet actions
 
 ### Pending Todos
 
@@ -73,5 +75,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-16
-Stopped at: Phase 19 verified and complete -- ready to plan Phase 20
+Stopped at: Completed 20-01-PLAN.md
 Resume file: None
