@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v1.5 Pitch Deck
 Phase: 25 of 26 (Slide Content & Navigation)
-Plan: 1 of 2 in current phase
-Status: Plan 25-01 complete
-Last activity: 2026-02-17 -- Completed 25-01 slide system infrastructure
+Plan: 2 of 2 in current phase
+Status: Phase 25 complete
+Last activity: 2026-02-17 -- Completed 25-02 slide content (all 13 slides)
 
-Progress: [█████████░] 50%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -45,9 +45,9 @@ Progress: [█████████░] 50%
 - Total execution time: ~24 min (estimated)
 
 **v1.5 Velocity:**
-- Total plans completed: 2
+- Total plans completed: 3
 - Average duration: ~2 min
-- Total execution time: ~4 min
+- Total execution time: ~6 min
 
 ## Accumulated Context
 
@@ -65,6 +65,9 @@ Recent decisions affecting current work:
 - [24-01] CALIBER_SPECS import validates workspace transpilation at build time
 - [25-01] Non-null assertion for SLIDES array access (useDeck guarantees bounds)
 - [25-01] overflow:hidden on PitchDeck container to prevent Space key page scrolling
+- [25-02] SlideLayout thin wrapper (flex col, p-12) for consistent slide styling
+- [25-02] All Recharts colors as hex literals (no CSS variables) for oklch-free guarantee
+- [25-02] CALIBER_SPECS and RESTRICTED_STATES imported from shared for data consistency
 
 ### Pending Todos
 
@@ -84,5 +87,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-17
-Stopped at: Completed 25-01-PLAN.md (slide system infrastructure)
+Stopped at: Completed 25-02-PLAN.md (all 13 slide content components)
 Resume file: None
