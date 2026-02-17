@@ -5,17 +5,17 @@
 See: .planning/PROJECT.md (updated 2026-02-17)
 
 **Core value:** Anyone worldwide can get price exposure to U.S. ammunition by minting ammo tokens with USDC, while only verified U.S. residents in allowed states can redeem for physical delivery.
-**Current focus:** Phase 24 -- Foundation & Setup (v1.5 Pitch Deck)
+**Current focus:** Phase 25 -- Slide Content & Navigation (v1.5 Pitch Deck)
 
 ## Current Position
 
 Milestone: v1.5 Pitch Deck
-Phase: 24 of 26 (Foundation & Setup)
-Plan: 1 of 1 in current phase
-Status: Phase 24 complete
-Last activity: 2026-02-17 -- Completed 24-01 pitchdeck scaffold
+Phase: 25 of 26 (Slide Content & Navigation)
+Plan: 1 of 2 in current phase
+Status: Plan 25-01 complete
+Last activity: 2026-02-17 -- Completed 25-01 slide system infrastructure
 
-Progress: [██████████] 100%
+Progress: [█████████░] 50%
 
 ## Performance Metrics
 
@@ -45,9 +45,9 @@ Progress: [██████████] 100%
 - Total execution time: ~24 min (estimated)
 
 **v1.5 Velocity:**
-- Total plans completed: 1
+- Total plans completed: 2
 - Average duration: ~2 min
-- Total execution time: ~2 min
+- Total execution time: ~4 min
 
 ## Accumulated Context
 
@@ -63,6 +63,8 @@ Recent decisions affecting current work:
 - [24-01] Hex-only theme uses --color-*: initial to wipe Tailwind oklch defaults
 - [24-01] Minimal pitchdeck deps: no wagmi, prisma, shadcn, or iron-session
 - [24-01] CALIBER_SPECS import validates workspace transpilation at build time
+- [25-01] Non-null assertion for SLIDES array access (useDeck guarantees bounds)
+- [25-01] overflow:hidden on PitchDeck container to prevent Space key page scrolling
 
 ### Pending Todos
 
@@ -82,5 +84,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-17
-Stopped at: Completed 24-01-PLAN.md (pitchdeck scaffold)
+Stopped at: Completed 25-01-PLAN.md (slide system infrastructure)
 Resume file: None
