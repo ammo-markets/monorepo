@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v1.5 Pitch Deck
 Phase: 24 of 26 (Foundation & Setup)
-Plan: 0 of 1 in current phase
-Status: Ready to plan
-Last activity: 2026-02-17 -- Roadmap created for v1.5
+Plan: 1 of 1 in current phase
+Status: Phase 24 complete
+Last activity: 2026-02-17 -- Completed 24-01 pitchdeck scaffold
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -44,6 +44,11 @@ Progress: [░░░░░░░░░░] 0%
 - Average duration: ~2 min (estimated)
 - Total execution time: ~24 min (estimated)
 
+**v1.5 Velocity:**
+- Total plans completed: 1
+- Average duration: ~2 min
+- Total execution time: ~2 min
+
 ## Accumulated Context
 
 ### Decisions
@@ -55,6 +60,9 @@ Recent decisions affecting current work:
 - [v1.5] Hex-only CSS colors to prevent oklch crash in html2canvas PDF export
 - [v1.5] Static export (output: "export") -- no API routes, pure client-side
 - [v1.5] html2canvas-pro (not html2canvas) for Tailwind v4 CSS compatibility
+- [24-01] Hex-only theme uses --color-*: initial to wipe Tailwind oklch defaults
+- [24-01] Minimal pitchdeck deps: no wagmi, prisma, shadcn, or iron-session
+- [24-01] CALIBER_SPECS import validates workspace transpilation at build time
 
 ### Pending Todos
 
@@ -74,5 +82,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-17
-Stopped at: Roadmap created for v1.5 Pitch Deck -- ready to plan Phase 24
+Stopped at: Completed 24-01-PLAN.md (pitchdeck scaffold)
 Resume file: None
