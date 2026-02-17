@@ -81,36 +81,36 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SETUP-01 | — | Pending |
-| SETUP-02 | — | Pending |
-| SETUP-03 | — | Pending |
-| SLIDE-01 | — | Pending |
-| SLIDE-02 | — | Pending |
-| SLIDE-03 | — | Pending |
-| SLIDE-04 | — | Pending |
-| SLIDE-05 | — | Pending |
-| SLIDE-06 | — | Pending |
-| SLIDE-07 | — | Pending |
-| SLIDE-08 | — | Pending |
-| SLIDE-09 | — | Pending |
-| SLIDE-10 | — | Pending |
-| SLIDE-11 | — | Pending |
-| SLIDE-12 | — | Pending |
-| SLIDE-13 | — | Pending |
-| NAV-01 | — | Pending |
-| NAV-02 | — | Pending |
-| NAV-03 | — | Pending |
-| NAV-04 | — | Pending |
-| PDF-01 | — | Pending |
-| PDF-02 | — | Pending |
-| PDF-03 | — | Pending |
-| DEPLOY-01 | — | Pending |
+| SETUP-01 | Phase 24 | Pending |
+| SETUP-02 | Phase 24 | Pending |
+| SETUP-03 | Phase 24 | Pending |
+| SLIDE-01 | Phase 25 | Pending |
+| SLIDE-02 | Phase 25 | Pending |
+| SLIDE-03 | Phase 25 | Pending |
+| SLIDE-04 | Phase 25 | Pending |
+| SLIDE-05 | Phase 25 | Pending |
+| SLIDE-06 | Phase 25 | Pending |
+| SLIDE-07 | Phase 25 | Pending |
+| SLIDE-08 | Phase 25 | Pending |
+| SLIDE-09 | Phase 25 | Pending |
+| SLIDE-10 | Phase 25 | Pending |
+| SLIDE-11 | Phase 25 | Pending |
+| SLIDE-12 | Phase 25 | Pending |
+| SLIDE-13 | Phase 25 | Pending |
+| NAV-01 | Phase 25 | Pending |
+| NAV-02 | Phase 25 | Pending |
+| NAV-03 | Phase 25 | Pending |
+| NAV-04 | Phase 25 | Pending |
+| PDF-01 | Phase 26 | Pending |
+| PDF-02 | Phase 26 | Pending |
+| PDF-03 | Phase 26 | Pending |
+| DEPLOY-01 | Phase 26 | Pending |
 
 **Coverage:**
 - v1.5 requirements: 24 total
-- Mapped to phases: 0
-- Unmapped: 24 ⚠️
+- Mapped to phases: 24
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-17*
-*Last updated: 2026-02-17 after initial definition*
+*Last updated: 2026-02-17 after roadmap creation*
