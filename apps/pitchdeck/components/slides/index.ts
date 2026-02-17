@@ -1,30 +1,30 @@
 import type { ComponentType } from "react";
 import { SlideCover } from "./SlideCover";
 import { SlideProblem } from "./SlideProblem";
-import { SlideVolatility } from "./SlideVolatility";
-import { SlideSolution } from "./SlideSolution";
-import { SlideHowItWorks } from "./SlideHowItWorks";
+import { SlideWhyNow } from "./SlideWhyNow";
 import { SlideMarket } from "./SlideMarket";
-import { SlideCompetitive } from "./SlideCompetitive";
+import { SlidePersonas } from "./SlidePersonas";
+import { SlideSolution } from "./SlideSolution";
 import { SlideRevenue } from "./SlideRevenue";
+import { SlideCompetitive } from "./SlideCompetitive";
 import { SlideTraction } from "./SlideTraction";
 import { SlideRegulatory } from "./SlideRegulatory";
 import { SlideRoadmap } from "./SlideRoadmap";
-import { SlideTeam } from "./SlideTeam";
 import { SlideAsk } from "./SlideAsk";
+import { SlideClose } from "./SlideClose";
 
 export const SLIDES: ComponentType[] = [
   SlideCover,
   SlideProblem,
-  SlideVolatility,
-  SlideSolution,
-  SlideHowItWorks,
+  SlideWhyNow,
   SlideMarket,
-  SlideCompetitive,
+  SlidePersonas,
+  SlideSolution,
   SlideRevenue,
+  SlideCompetitive,
   SlideTraction,
   SlideRegulatory,
   SlideRoadmap,
-  SlideTeam,
   SlideAsk,
+  SlideClose,
 ];

@@ -4,11 +4,6 @@
 // Types
 // ---------------------------------------------------------------------------
 
-export interface PriceDataPoint {
-  year: string;
-  price: number;
-}
-
 export interface MarketStats {
   tam: string;
   tamValue: string;
@@ -20,6 +15,7 @@ export interface MarketStats {
   somPercent: string;
   gunOwnership: string;
   regularBuyers: string;
+  globalDimension: string;
 }
 
 export interface FeeEntry {
@@ -32,16 +28,8 @@ export interface RoadmapPhase {
   phase: number;
   name: string;
   timeline: string;
-  description: string;
-  items: string[];
+  outcome: string;
   current?: boolean;
-}
-
-export interface TeamMember {
-  name: string;
-  role: string;
-  bio: string;
-  initials: string;
 }
 
 export interface CompetitorEntry {
@@ -59,22 +47,27 @@ export interface ProblemStat {
   detail: string;
 }
 
+export interface WhyNowPoint {
+  stat: string;
+  label: string;
+}
+
+export interface Persona {
+  title: string;
+  description: string;
+  motivation: string;
+}
+
+export interface RevenueProjection {
+  som: string;
+  feeRate: string;
+  arr: string;
+  label: string;
+}
+
 // ---------------------------------------------------------------------------
 // Data
 // ---------------------------------------------------------------------------
-
-/** 9mm FMJ price history 2018-2025 (whitepaper section 1.2) */
-export const PRICE_DATA: PriceDataPoint[] = [
-  { year: "2018", price: 0.18 },
-  { year: "2019", price: 0.17 },
-  { year: "2020 Q1", price: 0.19 },
-  { year: "2020 Q3", price: 0.35 },
-  { year: "2021", price: 0.82 },
-  { year: "2022", price: 0.38 },
-  { year: "2023", price: 0.24 },
-  { year: "2024", price: 0.22 },
-  { year: "2025", price: 0.21 },
-];
 
 /** TAM / SAM / SOM market sizing */
 export const MARKET_STATS: MarketStats = {
@@ -88,6 +81,8 @@ export const MARKET_STATS: MarketStats = {
   somPercent: "1%",
   gunOwnership: "32%",
   regularBuyers: "44%",
+  globalDimension:
+    "Tokenization removes borders. Anyone on earth gets price exposure.",
 };
 
 /** Protocol fee structure */
@@ -114,84 +109,33 @@ export const FEE_TABLE: FeeEntry[] = [
   },
 ];
 
-/** Product roadmap (whitepaper section 9) */
+/** Product roadmap -- outcome milestones */
 export const ROADMAP_PHASES: RoadmapPhase[] = [
   {
     phase: 1,
-    name: "MVP",
+    name: "Testnet Live",
     timeline: "Q1 2026",
-    description: "Fuji testnet launch with core protocol",
-    items: [
-      "4 caliber tokens (9mm, 5.56, .22 LR, .308)",
-      "Mint and redeem flows with admin finalization",
-      "Basic web dashboard",
-      "Fuji testnet deployment",
-    ],
+    outcome: "4 caliber tokens trading on testnet with full mint/redeem flow",
     current: true,
   },
   {
     phase: 2,
-    name: "Expansion",
+    name: "Mainnet + Liquidity",
     timeline: "Q3 2026",
-    description: "Mainnet launch and liquidity",
-    items: [
-      "Avalanche C-Chain mainnet deployment",
-      "Additional caliber tokens",
-      "Uniswap v3 liquidity pools",
-      "Mobile-optimized UI",
-    ],
+    outcome: "Mainnet launch with DEX liquidity pools and mobile UI",
   },
   {
     phase: 3,
-    name: "DeFi Integration",
+    name: "DeFi Composability",
     timeline: "Q1 2027",
-    description: "Protocol composability and oracles",
-    items: [
-      "Chainlink price oracle feeds",
-      "Lending / borrowing with ammo collateral",
-      "Yield strategies for token holders",
-      "Cross-chain bridge (Ethereum, Arbitrum)",
-    ],
+    outcome: "Chainlink oracles, lending markets, and cross-chain bridges",
   },
   {
     phase: 4,
-    name: "Scale",
+    name: "Institutional Scale",
     timeline: "2027+",
-    description: "Institutional and international expansion",
-    items: [
-      "Institutional custody solutions",
-      "International market expansion",
-      "Reloading component tokens",
-      "Governance token launch",
-    ],
-  },
-];
-
-/** Placeholder team members */
-export const TEAM_MEMBERS: TeamMember[] = [
-  {
-    name: "TBD",
-    role: "Founder & CEO",
-    bio: "Background in DeFi protocol design and commodity markets",
-    initials: "F",
-  },
-  {
-    name: "TBD",
-    role: "CTO",
-    bio: "Full-stack engineer with Solidity and EVM expertise",
-    initials: "T",
-  },
-  {
-    name: "TBD",
-    role: "Head of Compliance",
-    bio: "Former ATF regulatory advisor, firearms law specialist",
-    initials: "C",
-  },
-  {
-    name: "TBD",
-    role: "Head of Operations",
-    bio: "Supply chain management with FFL distributor network",
-    initials: "O",
+    outcome:
+      "Institutional custody, international expansion, governance token, and RWA framework exploration",
   },
 ];
 
@@ -231,30 +175,68 @@ export const COMPETITIVE_DATA: CompetitorEntry[] = [
   },
 ];
 
-/** Problem slide statistics */
+/** Problem slide statistics -- tightened to 1 sentence each */
 export const PROBLEM_STATS: ProblemStat[] = [
   {
     icon: "$",
     headline: "$8B market with zero financial instruments",
-    detail:
-      "No futures, no ETFs, no options. Ammunition is the only major commodity without a derivatives market.",
+    detail: "No futures, no ETFs, no options -- the only major commodity without a derivatives market.",
   },
   {
     icon: "%",
     headline: "355% price spike with no hedge",
-    detail:
-      "9mm FMJ surged from $0.17 to $0.82 per round during the 2020-2021 shortage. No way to hedge exposure.",
+    detail: "9mm surged from $0.17 to $0.82 per round in 2020-2021. No way to hedge.",
   },
   {
     icon: "X",
     headline: "Geographic restrictions limit access",
-    detail:
-      "Physical ammunition cannot cross most international borders. 95% of the world has zero access to the US ammo market.",
+    detail: "Physical ammo cannot cross most borders. 95% of the world has zero market access.",
   },
   {
     icon: "?",
     headline: "Fragmented market, no transparent pricing",
-    detail:
-      "Thousands of retailers, no centralized exchange, no real-time price discovery mechanism.",
+    detail: "Thousands of retailers, no centralized exchange, no real-time price discovery.",
   },
 ];
+
+// ---------------------------------------------------------------------------
+// New data for rewritten slides
+// ---------------------------------------------------------------------------
+
+/** Why Now slide -- geopolitical hook */
+export const WHY_NOW_HOOK =
+  "Defense budgets are surging, ammo shelves are thinning, and 80M gun owners have no financial tool to manage it.";
+
+export const WHY_NOW_POINTS: WhyNowPoint[] = [
+  { stat: "$886B", label: "US defense budget (2024) -- record high" },
+  { stat: "3x", label: "Major shortage events in the last 5 years" },
+  { stat: "80M+", label: "American gun owners -- all-time record" },
+  { stat: "0", label: "Financial instruments for ammunition exposure" },
+];
+
+/** Persona slide -- 3 beachhead users */
+export const PERSONA_DATA: Persona[] = [
+  {
+    title: "Crypto Trader",
+    description: "Seeks uncorrelated real-world assets beyond gold and oil.",
+    motivation: "Portfolio diversification into a tangible commodity.",
+  },
+  {
+    title: "Gun Store Owner",
+    description: "Needs to hedge inventory against unpredictable price spikes.",
+    motivation: "Lock in today's price, protect margins from volatility.",
+  },
+  {
+    title: "Global Speculator",
+    description: "Wants US ammo price exposure without import barriers.",
+    motivation: "Trade a restricted commodity from anywhere on earth.",
+  },
+];
+
+/** Revenue projection for the revenue slide */
+export const REVENUE_PROJECTION: RevenueProjection = {
+  som: "$80M",
+  feeRate: "3%",
+  arr: "$2.4M",
+  label: "Year 1 ARR at full SOM capture",
+};

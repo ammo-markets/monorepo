@@ -36,7 +36,7 @@ export function SlideMarket() {
         US ammunition -- a massive, underserved commodity market
       </p>
 
-      <div className="mb-10 flex flex-1 flex-col items-center justify-center gap-4">
+      <div className="mb-6 flex flex-1 flex-col items-center justify-center gap-4">
         {TIERS.map((tier) => (
           <div
             key={tier.label}
@@ -56,6 +56,10 @@ export function SlideMarket() {
           </div>
         ))}
       </div>
+
+      <p className="mb-6 text-center text-base text-text-muted">
+        {MARKET_STATS.globalDimension}
+      </p>
 
       <div className="flex items-center justify-center gap-12">
         <div className="text-center">

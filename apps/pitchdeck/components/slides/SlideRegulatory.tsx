@@ -5,21 +5,22 @@ const POINTS = [
   {
     title: "No FFL required for token trading",
     detail:
-      "Ammo tokens are digital assets, not ammunition. Trading tokens does not require a Federal Firearms License.",
+      "Ammo tokens are digital assets, not ammunition. No Federal Firearms License needed.",
   },
   {
     title: "KYC at redemption only",
     detail:
-      "Identity verification is required only when converting tokens to physical ammunition. Token-to-token trading is permissionless.",
+      "Identity verification required only for physical delivery. Token trading is permissionless.",
   },
   {
     title: "Restricted states enforced on-chain",
-    detail: `Physical delivery is blocked in restricted jurisdictions: ${RESTRICTED_STATES.join(", ")}. Token trading remains global.`,
+    detail:
+      "Physical delivery blocked in restricted jurisdictions. Token trading remains global.",
   },
   {
     title: "Utility token classification",
     detail:
-      "Ammo tokens provide commodity access (1 token = 1 round). They are utility tokens for physical goods, not securities.",
+      "1 token = 1 round. Commodity access tokens, not securities.",
   },
 ];
 
@@ -50,12 +51,9 @@ export function SlideRegulatory() {
         ))}
       </div>
 
-      <div className="mt-8 rounded-lg border border-surface-elevated bg-surface px-6 py-4 text-center">
-        <p className="text-sm text-text-muted">
-          Legal review pending &middot; Regulatory framework designed with ATF
-          and SEC guidance in mind
-        </p>
-      </div>
+      <p className="mt-8 text-center text-xs text-text-muted">
+        Restricted states: {RESTRICTED_STATES.join(", ")}
+      </p>
     </SlideLayout>
   );
 }

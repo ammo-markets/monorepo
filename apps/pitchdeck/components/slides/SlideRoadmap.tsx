@@ -36,25 +36,10 @@ export function SlideRoadmap() {
             >
               {phase.name}
             </h3>
-            <p className="mb-1 text-sm text-text-muted">{phase.timeline}</p>
-            <p className="mb-4 text-sm text-text-secondary">
-              {phase.description}
+            <p className="mb-4 text-sm text-text-muted">{phase.timeline}</p>
+            <p className="mt-auto text-sm leading-relaxed text-text-secondary">
+              {phase.outcome}
             </p>
-            <ul className="mt-auto space-y-2">
-              {phase.items.map((item) => (
-                <li
-                  key={item}
-                  className="flex items-start gap-2 text-sm text-text-secondary"
-                >
-                  <span
-                    className={`mt-1 ${phase.current ? "text-brass" : "text-text-muted"}`}
-                  >
-                    &bull;
-                  </span>
-                  {item}
-                </li>
-              ))}
-            </ul>
           </div>
         ))}
       </div>

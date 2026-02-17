@@ -23,7 +23,7 @@ export function SlideAsk() {
         We are seeking partners to bring ammunition on-chain
       </p>
 
-      <div className="mb-10 grid grid-cols-3 gap-8">
+      <div className="grid grid-cols-3 gap-8">
         {ASK_ITEMS.map((item) => (
           <div
             key={item.title}
@@ -35,20 +35,6 @@ export function SlideAsk() {
             </p>
           </div>
         ))}
-      </div>
-
-      <div className="mb-8 rounded-lg bg-surface-elevated px-8 py-4">
-        <p className="text-text-muted">
-          Contact:{" "}
-          <span className="font-semibold text-brass">hello@ammo.exchange</span>
-        </p>
-      </div>
-
-      <div className="mt-4">
-        <p className="text-4xl font-bold text-brass">Make Your Ammo Liquid</p>
-        <p className="mt-2 text-lg text-text-secondary">
-          The first DeFi protocol for ammunition price exposure
-        </p>
       </div>
     </SlideLayout>
   );

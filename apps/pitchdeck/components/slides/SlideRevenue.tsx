@@ -1,5 +1,5 @@
 import { SlideLayout } from "../SlideLayout";
-import { FEE_TABLE } from "@/lib/slideData";
+import { FEE_TABLE, REVENUE_PROJECTION } from "@/lib/slideData";
 
 export function SlideRevenue() {
   return (
@@ -10,7 +10,7 @@ export function SlideRevenue() {
         margins
       </p>
 
-      <div className="mb-10 grid grid-cols-2 gap-8">
+      <div className="grid grid-cols-2 gap-8">
         {/* Fee table */}
         <div className="rounded-xl border border-surface-elevated bg-surface p-6">
           <h3 className="mb-4 text-xl font-semibold text-brass">
@@ -34,34 +34,29 @@ export function SlideRevenue() {
           </div>
         </div>
 
-        {/* Unit economics */}
+        {/* Revenue projection */}
         <div className="flex flex-col gap-6">
-          <div className="rounded-xl border border-surface-elevated bg-surface p-6">
-            <h3 className="mb-4 text-xl font-semibold text-brass">
-              Unit Economics Example
-            </h3>
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-text-secondary">Mint order</span>
-                <span className="font-mono text-text">$10,000 USDC</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-text-secondary">Protocol fee (1.5%)</span>
-                <span className="font-mono text-brass">$150</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-text-secondary">User receives</span>
-                <span className="font-mono text-text">$9,850 in tokens</span>
-              </div>
-              <div className="mt-2 border-t border-surface-elevated pt-3">
-                <div className="flex justify-between">
-                  <span className="text-text-secondary">
-                    Wholesale margin (~10%)
-                  </span>
-                  <span className="font-mono text-brass">~$985</span>
-                </div>
-              </div>
-            </div>
+          <div className="flex flex-1 flex-col items-center justify-center rounded-xl border border-brass/30 bg-surface p-8 text-center">
+            <p className="mb-2 text-sm font-semibold text-text-muted">
+              Revenue Projection
+            </p>
+            <p className="text-2xl text-text-secondary">
+              <span className="font-bold text-brass">
+                {REVENUE_PROJECTION.som}
+              </span>{" "}
+              SOM{" "}
+              <span className="text-text-muted">&times;</span>{" "}
+              <span className="font-bold text-brass">
+                {REVENUE_PROJECTION.feeRate}
+              </span>{" "}
+              fees
+            </p>
+            <p className="mt-4 text-5xl font-bold text-brass">
+              {REVENUE_PROJECTION.arr}
+            </p>
+            <p className="mt-2 text-sm text-text-muted">
+              {REVENUE_PROJECTION.label}
+            </p>
           </div>
 
           <div className="rounded-xl border border-brass/30 bg-surface p-6 text-center">

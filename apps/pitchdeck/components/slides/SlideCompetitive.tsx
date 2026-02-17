@@ -75,26 +75,10 @@ export function SlideCompetitive() {
         </table>
       </div>
 
-      <div className="mt-8 flex items-center justify-center gap-8">
-        <div className="rounded-lg border border-brass/30 bg-surface px-6 py-3 text-center">
-          <p className="font-semibold text-brass">Blockchain settlement</p>
-          <p className="text-sm text-text-muted">
-            Trustless, transparent, immutable
-          </p>
-        </div>
-        <div className="rounded-lg border border-brass/30 bg-surface px-6 py-3 text-center">
-          <p className="font-semibold text-brass">Global access</p>
-          <p className="text-sm text-text-muted">
-            Price exposure without physical storage
-          </p>
-        </div>
-        <div className="rounded-lg border border-brass/30 bg-surface px-6 py-3 text-center">
-          <p className="font-semibold text-brass">DeFi composability</p>
-          <p className="text-sm text-text-muted">
-            Yield, lending, AMM pools
-          </p>
-        </div>
-      </div>
+      <p className="mt-8 text-center text-lg font-semibold text-brass">
+        The only platform offering global ammo price exposure without touching a
+        single bullet.
+      </p>
     </SlideLayout>
   );
 }

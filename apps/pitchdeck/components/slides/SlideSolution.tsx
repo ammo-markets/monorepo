@@ -5,22 +5,21 @@ const STEPS = [
     step: "1",
     icon: "USDC",
     title: "Deposit USDC",
-    description:
-      "Users deposit USDC stablecoins to initiate a mint request for any supported caliber token.",
+    description: "Deposit stablecoins to mint any supported caliber token.",
   },
   {
     step: "2",
     icon: "AX",
     title: "Receive Ammo Tokens",
     description:
-      "After admin verification and procurement, ERC-20 ammo tokens are minted to the user's wallet. 1 token = 1 round.",
+      "ERC-20 tokens are minted to your wallet. 1 token = 1 round.",
   },
   {
     step: "3",
     icon: "PKG",
     title: "Redeem for Physical",
     description:
-      "Verified US residents in allowed states can burn tokens and receive physical ammunition shipped to their door.",
+      "Verified US residents burn tokens and receive ammo shipped to their door.",
   },
 ];
 
@@ -29,11 +28,11 @@ export function SlideSolution() {
     <SlideLayout>
       <h2 className="mb-2 text-5xl font-bold text-text">The Solution</h2>
       <p className="mb-10 text-lg text-text-muted">
-        Tokenized ammunition -- global price exposure, optional physical
-        delivery
+        Anyone on earth can trade ammo prices. Only verified Americans take
+        delivery.
       </p>
 
-      <div className="mb-10 grid flex-1 grid-cols-3 gap-8">
+      <div className="grid flex-1 grid-cols-3 gap-8">
         {STEPS.map((step) => (
           <div
             key={step.step}
@@ -50,21 +49,6 @@ export function SlideSolution() {
             </p>
           </div>
         ))}
-      </div>
-
-      <div className="flex items-center justify-center gap-8">
-        <div className="rounded-lg border border-brass/30 bg-surface px-6 py-3 text-center">
-          <p className="text-sm text-text-muted">Global access</p>
-          <p className="font-semibold text-brass">
-            Anyone worldwide can get price exposure
-          </p>
-        </div>
-        <div className="rounded-lg border border-brass/30 bg-surface px-6 py-3 text-center">
-          <p className="text-sm text-text-muted">Physical delivery</p>
-          <p className="font-semibold text-brass">
-            Only verified US residents can redeem
-          </p>
-        </div>
       </div>
     </SlideLayout>
   );
