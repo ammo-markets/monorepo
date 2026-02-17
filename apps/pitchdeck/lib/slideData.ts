@@ -38,7 +38,7 @@ export interface CompetitorEntry {
   priceExposure: boolean;
   globalAccess: boolean;
   blockchain: boolean;
-  noStorage: boolean;
+  storageFree: boolean;
 }
 
 export interface ProblemStat {
@@ -79,8 +79,8 @@ export const MARKET_STATS: MarketStats = {
   som: "Serviceable Obtainable Market",
   somValue: "$80M",
   somPercent: "1%",
-  gunOwnership: "32%",
-  regularBuyers: "44%",
+  gunOwnership: "42%",
+  regularBuyers: "60%",
   globalDimension:
     "Tokenization removes borders. Anyone on earth gets price exposure.",
 };
@@ -147,15 +147,23 @@ export const COMPETITIVE_DATA: CompetitorEntry[] = [
     priceExposure: false,
     globalAccess: false,
     blockchain: false,
-    noStorage: false,
+    storageFree: false,
   },
   {
     name: "AmmoSquared",
-    type: "Layaway program",
+    type: "Physical reserve",
+    priceExposure: true,
+    globalAccess: false,
+    blockchain: false,
+    storageFree: true,
+  },
+  {
+    name: "GunBroker",
+    type: "Auction marketplace",
     priceExposure: false,
     globalAccess: false,
     blockchain: false,
-    noStorage: false,
+    storageFree: false,
   },
   {
     name: "Forums / Discord",
@@ -163,7 +171,7 @@ export const COMPETITIVE_DATA: CompetitorEntry[] = [
     priceExposure: false,
     globalAccess: false,
     blockchain: false,
-    noStorage: false,
+    storageFree: false,
   },
   {
     name: "Ammo Exchange",
@@ -171,7 +179,7 @@ export const COMPETITIVE_DATA: CompetitorEntry[] = [
     priceExposure: true,
     globalAccess: true,
     blockchain: true,
-    noStorage: true,
+    storageFree: true,
   },
 ];
 
@@ -190,7 +198,7 @@ export const PROBLEM_STATS: ProblemStat[] = [
   {
     icon: "X",
     headline: "Geographic restrictions limit access",
-    detail: "Physical ammo cannot cross most borders. 95% of the world has zero market access.",
+    detail: "Physical ammo cannot cross most borders. Import/export bans lock out non-US buyers entirely.",
   },
   {
     icon: "?",
@@ -209,7 +217,7 @@ export const WHY_NOW_HOOK =
 
 export const WHY_NOW_POINTS: WhyNowPoint[] = [
   { stat: "$886B", label: "US defense budget (2024) -- record high" },
-  { stat: "3x", label: "Major shortage events in the last 5 years" },
+  { stat: "2020+", label: "Prolonged ammo shortage -- COVID, Ukraine, global demand" },
   { stat: "80M+", label: "American gun owners -- all-time record" },
   { stat: "0", label: "Financial instruments for ammunition exposure" },
 ];

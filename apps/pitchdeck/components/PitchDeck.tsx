@@ -1,5 +1,6 @@
 "use client";
 
+import { AnimatePresence } from "framer-motion";
 import { useDeck } from "@/lib/useDeck";
 import { SlideRenderer } from "./SlideRenderer";
 import { SlideControls } from "./SlideControls";
@@ -11,22 +12,36 @@ export function PitchDeck() {
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-background">
+      {/* Ambient background glow */}
+      <div className="ambient-glow pointer-events-none absolute right-0 top-0 h-[600px] w-[600px]" />
+
       {/* Slide viewport */}
       <div className="relative flex-1 overflow-hidden">
-        <SlideRenderer slide={deck.currentSlide} direction={deck.direction}>
-          <SlideComponent />
-        </SlideRenderer>
+        <AnimatePresence mode="wait" custom={deck.direction}>
+          <SlideRenderer
+            key={deck.currentSlide}
+            slide={deck.currentSlide}
+            direction={deck.direction}
+          >
+            <SlideComponent />
+          </SlideRenderer>
+        </AnimatePresence>
       </div>
 
-      {/* Progress bar */}
-      <div className="h-1 bg-surface">
-        <div
-          className="h-full bg-brass"
-          style={{
-            width: `${((deck.currentSlide + 1) / deck.totalSlides) * 100}%`,
-            transition: "width 300ms ease-out",
-          }}
-        />
+      {/* Magazine progress bar */}
+      <div className="flex h-1.5 gap-px bg-background px-px">
+        {SLIDES.map((_, i) => (
+          <div
+            key={i}
+            className={`flex-1 transition-colors duration-200 ${
+              i < deck.currentSlide
+                ? "bg-brass"
+                : i === deck.currentSlide
+                  ? "bg-brass/60"
+                  : "bg-surface-elevated"
+            }`}
+          />
+        ))}
       </div>
 
       {/* Controls */}

@@ -1,21 +1,48 @@
+"use client";
+
+import { motion } from "framer-motion";
+
 interface SlideRendererProps {
   slide: number;
   direction: "left" | "right";
   children: React.ReactNode;
 }
 
-export function SlideRenderer({ slide, direction, children }: SlideRendererProps) {
+const variants = {
+  enter: (direction: "left" | "right") => ({
+    x: direction === "right" ? 80 : -80,
+    opacity: 0,
+  }),
+  center: {
+    x: 0,
+    opacity: 1,
+  },
+  exit: (direction: "left" | "right") => ({
+    x: direction === "right" ? -60 : 60,
+    opacity: 0,
+  }),
+};
+
+export function SlideRenderer({
+  slide,
+  direction,
+  children,
+}: SlideRendererProps) {
   return (
-    <div
+    <motion.div
       key={slide}
-      className="absolute inset-0"
-      style={{
-        animation: `${
-          direction === "right" ? "slideInRight" : "slideInLeft"
-        } 300ms ease-out`,
+      custom={direction}
+      variants={variants}
+      initial="enter"
+      animate="center"
+      exit="exit"
+      transition={{
+        x: { type: "tween", duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] },
+        opacity: { duration: 0.25 },
       }}
+      className="absolute inset-0"
     >
       {children}
-    </div>
+    </motion.div>
   );
 }

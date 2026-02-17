@@ -38,24 +38,160 @@
   color: var(--color-text);
 }
 
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(30px);
+/* ── Brass shimmer ────────────────────────────── */
+
+@keyframes brass-shimmer {
+  0% {
+    background-position: -200% center;
   }
-  to {
-    opacity: 1;
-    transform: translateX(0);
+  100% {
+    background-position: 200% center;
   }
 }
 
-@keyframes slideInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-30px);
+.brass-shimmer {
+  background: linear-gradient(
+    90deg,
+    #c6a44e 0%,
+    #c6a44e 40%,
+    #f0d080 50%,
+    #c6a44e 60%,
+    #c6a44e 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: brass-shimmer 1.5s ease-in-out 1s 1;
+}
+
+/* ── Button recoil ────────────────────────────── */
+
+@keyframes recoil-right {
+  0% {
+    transform: scale(1) translateX(0);
   }
-  to {
+  50% {
+    transform: scale(0.94) translateX(2px);
+  }
+  100% {
+    transform: scale(1) translateX(0);
+  }
+}
+
+@keyframes recoil-left {
+  0% {
+    transform: scale(1) translateX(0);
+  }
+  50% {
+    transform: scale(0.94) translateX(-2px);
+  }
+  100% {
+    transform: scale(1) translateX(0);
+  }
+}
+
+.btn-recoil-next:active {
+  animation: recoil-right 120ms ease-out;
+}
+
+.btn-recoil-prev:active {
+  animation: recoil-left 120ms ease-out;
+}
+
+/* ── Card hover ───────────────────────────────── */
+
+.card-hover {
+  transition:
+    transform 200ms ease-out,
+    box-shadow 200ms ease-out,
+    border-color 200ms ease-out;
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(198, 164, 78, 0.08);
+  border-color: #a8893f;
+}
+
+/* ── Ambient background glow ──────────────────── */
+
+@keyframes ambient-breathe {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.ambient-glow {
+  background: radial-gradient(
+    circle at center,
+    rgba(198, 164, 78, 0.04) 0%,
+    transparent 70%
+  );
+  animation: ambient-breathe 8s ease-in-out infinite;
+}
+
+/* ── Live ping dot ────────────────────────────── */
+
+@keyframes live-ping {
+  0% {
+    transform: scale(1);
     opacity: 1;
-    transform: translateX(0);
   }
+  75% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+.live-dot {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.live-dot::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #2ecc71;
+  margin-right: 6px;
+  flex-shrink: 0;
+}
+
+.live-dot::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #2ecc71;
+  animation: live-ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* ── Current badge pulse ──────────────────────── */
+
+@keyframes badge-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.badge-pulse {
+  animation: badge-pulse 2s ease-in-out infinite;
 }

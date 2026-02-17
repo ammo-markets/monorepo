@@ -1,4 +1,5 @@
 import { SlideLayout } from "../SlideLayout";
+import { StaggerContainer, StaggerItem } from "../StaggerContainer";
 import { PROBLEM_STATS } from "@/lib/slideData";
 
 export function SlideProblem() {
@@ -9,24 +10,23 @@ export function SlideProblem() {
         A massive commodity market with zero financial infrastructure
       </p>
 
-      <div className="grid flex-1 grid-cols-2 gap-6">
+      <StaggerContainer preset="magazine-load" className="grid flex-1 grid-cols-2 gap-6">
         {PROBLEM_STATS.map((stat) => (
-          <div
-            key={stat.icon}
-            className="flex flex-col rounded-xl border border-surface-elevated bg-surface p-8"
-          >
-            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-surface-elevated text-2xl font-bold text-brass">
-              {stat.icon}
+          <StaggerItem key={stat.icon}>
+            <div className="card-hover flex h-full flex-col rounded-xl border border-surface-elevated bg-surface p-8">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-surface-elevated text-2xl font-bold text-brass">
+                {stat.icon}
+              </div>
+              <h3 className="mb-3 text-xl font-semibold text-text">
+                {stat.headline}
+              </h3>
+              <p className="text-base leading-relaxed text-text-secondary">
+                {stat.detail}
+              </p>
             </div>
-            <h3 className="mb-3 text-xl font-semibold text-text">
-              {stat.headline}
-            </h3>
-            <p className="text-base leading-relaxed text-text-secondary">
-              {stat.detail}
-            </p>
-          </div>
+          </StaggerItem>
         ))}
-      </div>
+      </StaggerContainer>
     </SlideLayout>
   );
 }

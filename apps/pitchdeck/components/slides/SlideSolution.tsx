@@ -1,4 +1,5 @@
 import { SlideLayout } from "../SlideLayout";
+import { StaggerContainer, StaggerItem } from "../StaggerContainer";
 
 const STEPS = [
   {
@@ -32,24 +33,23 @@ export function SlideSolution() {
         delivery.
       </p>
 
-      <div className="grid flex-1 grid-cols-3 gap-8">
+      <StaggerContainer preset="firing-sequence" className="grid flex-1 grid-cols-3 gap-8">
         {STEPS.map((step) => (
-          <div
-            key={step.step}
-            className="flex flex-col items-center rounded-xl border border-surface-elevated bg-surface p-8 text-center"
-          >
-            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-surface-elevated text-xl font-bold text-brass">
-              {step.icon}
+          <StaggerItem key={step.step} preset="firing-sequence">
+            <div className="card-hover flex h-full flex-col items-center rounded-xl border border-surface-elevated bg-surface p-8 text-center">
+              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-surface-elevated text-xl font-bold text-brass">
+                {step.icon}
+              </div>
+              <h3 className="mb-3 text-xl font-semibold text-text">
+                {step.title}
+              </h3>
+              <p className="text-base leading-relaxed text-text-secondary">
+                {step.description}
+              </p>
             </div>
-            <h3 className="mb-3 text-xl font-semibold text-text">
-              {step.title}
-            </h3>
-            <p className="text-base leading-relaxed text-text-secondary">
-              {step.description}
-            </p>
-          </div>
+          </StaggerItem>
         ))}
-      </div>
+      </StaggerContainer>
     </SlideLayout>
   );
 }

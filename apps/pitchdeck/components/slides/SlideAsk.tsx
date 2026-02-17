@@ -1,4 +1,5 @@
 import { SlideLayout } from "../SlideLayout";
+import { StaggerContainer, StaggerItem } from "../StaggerContainer";
 
 const ASK_ITEMS = [
   {
@@ -23,19 +24,18 @@ export function SlideAsk() {
         We are seeking partners to bring ammunition on-chain
       </p>
 
-      <div className="grid grid-cols-3 gap-8">
+      <StaggerContainer preset="magazine-load" className="grid grid-cols-3 gap-8">
         {ASK_ITEMS.map((item) => (
-          <div
-            key={item.title}
-            className="rounded-xl border border-brass/30 bg-surface p-8"
-          >
-            <h3 className="mb-3 text-xl font-bold text-brass">{item.title}</h3>
-            <p className="text-base leading-relaxed text-text-secondary">
-              {item.detail}
-            </p>
-          </div>
+          <StaggerItem key={item.title}>
+            <div className="card-hover rounded-xl border border-brass/30 bg-surface p-8">
+              <h3 className="mb-3 text-xl font-bold text-brass">{item.title}</h3>
+              <p className="text-base leading-relaxed text-text-secondary">
+                {item.detail}
+              </p>
+            </div>
+          </StaggerItem>
         ))}
-      </div>
+      </StaggerContainer>
     </SlideLayout>
   );
 }

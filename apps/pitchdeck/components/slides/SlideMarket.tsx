@@ -1,3 +1,6 @@
+"use client";
+
+import { motion } from "framer-motion";
 import { SlideLayout } from "../SlideLayout";
 import { MARKET_STATS } from "@/lib/slideData";
 
@@ -7,24 +10,30 @@ const TIERS = [
     name: MARKET_STATS.tam,
     value: MARKET_STATS.tamValue,
     detail: "US ammunition market (annual)",
-    width: "w-full",
+    targetWidth: "100%",
     opacity: "opacity-30",
+    delay: 0,
+    duration: 0.6,
   },
   {
     label: "SAM",
     name: MARKET_STATS.sam,
     value: MARKET_STATS.samValue,
     detail: `Online / accessible segment (${MARKET_STATS.samPercent})`,
-    width: "w-3/4",
+    targetWidth: "75%",
     opacity: "opacity-50",
+    delay: 0.2,
+    duration: 0.5,
   },
   {
     label: "SOM",
     name: MARKET_STATS.som,
     value: MARKET_STATS.somValue,
     detail: `Initial target (${MARKET_STATS.somPercent})`,
-    width: "w-1/2",
+    targetWidth: "50%",
     opacity: "opacity-100",
+    delay: 0.4,
+    duration: 0.4,
   },
 ];
 
@@ -38,9 +47,15 @@ export function SlideMarket() {
 
       <div className="mb-6 flex flex-1 flex-col items-center justify-center gap-4">
         {TIERS.map((tier) => (
-          <div
+          <motion.div
             key={tier.label}
-            className={`${tier.width} rounded-xl border border-brass bg-brass ${tier.opacity} flex items-center justify-between px-8 py-5`}
+            initial={{ width: "0%", opacity: 0 }}
+            animate={{ width: tier.targetWidth, opacity: 1 }}
+            transition={{
+              width: { duration: tier.duration, delay: tier.delay, ease: "easeOut" },
+              opacity: { duration: 0.3, delay: tier.delay },
+            }}
+            className={`rounded-xl border border-brass bg-brass ${tier.opacity} flex items-center justify-between px-8 py-5`}
           >
             <div>
               <span className="text-sm font-bold text-background">
@@ -53,7 +68,7 @@ export function SlideMarket() {
             <span className="text-3xl font-bold text-background">
               {tier.value}
             </span>
-          </div>
+          </motion.div>
         ))}
       </div>
 
@@ -67,7 +82,7 @@ export function SlideMarket() {
             {MARKET_STATS.gunOwnership}
           </p>
           <p className="mt-1 text-sm text-text-muted">
-            US households own firearms
+            of US households own firearms (Gallup)
           </p>
         </div>
         <div className="text-center">
@@ -75,7 +90,7 @@ export function SlideMarket() {
             {MARKET_STATS.regularBuyers}
           </p>
           <p className="mt-1 text-sm text-text-muted">
-            of gun owners buy ammo regularly
+            of gun owners fire rounds annually (NSSF)
           </p>
         </div>
       </div>

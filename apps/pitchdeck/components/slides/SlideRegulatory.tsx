@@ -1,5 +1,6 @@
 import { RESTRICTED_STATES } from "@ammo-exchange/shared";
 import { SlideLayout } from "../SlideLayout";
+import { StaggerContainer, StaggerItem } from "../StaggerContainer";
 
 const POINTS = [
   {
@@ -34,22 +35,21 @@ export function SlideRegulatory() {
         Designed for compliance -- tokens are not ammunition
       </p>
 
-      <div className="grid flex-1 grid-cols-2 gap-6">
+      <StaggerContainer preset="magazine-load" className="grid flex-1 grid-cols-2 gap-6">
         {POINTS.map((point) => (
-          <div
-            key={point.title}
-            className="flex gap-4 rounded-xl border border-surface-elevated bg-surface p-6"
-          >
-            <span className="mt-1 shrink-0 text-2xl text-green">&#10003;</span>
-            <div>
-              <h3 className="text-lg font-semibold text-text">{point.title}</h3>
-              <p className="mt-2 text-base leading-relaxed text-text-secondary">
-                {point.detail}
-              </p>
+          <StaggerItem key={point.title}>
+            <div className="card-hover flex gap-4 rounded-xl border border-surface-elevated bg-surface p-6">
+              <span className="mt-1 shrink-0 text-2xl text-green">&#10003;</span>
+              <div>
+                <h3 className="text-lg font-semibold text-text">{point.title}</h3>
+                <p className="mt-2 text-base leading-relaxed text-text-secondary">
+                  {point.detail}
+                </p>
+              </div>
             </div>
-          </div>
+          </StaggerItem>
         ))}
-      </div>
+      </StaggerContainer>
 
       <p className="mt-8 text-center text-xs text-text-muted">
         Restricted states: {RESTRICTED_STATES.join(", ")}

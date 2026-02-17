@@ -1,3 +1,6 @@
+"use client";
+
+import { motion } from "framer-motion";
 import { SlideLayout } from "../SlideLayout";
 import { COMPETITIVE_DATA } from "@/lib/slideData";
 
@@ -13,10 +16,13 @@ const COLUMNS = [
   { key: "priceExposure" as const, label: "Price Exposure" },
   { key: "globalAccess" as const, label: "Global Access" },
   { key: "blockchain" as const, label: "Blockchain" },
-  { key: "noStorage" as const, label: "No Storage" },
+  { key: "storageFree" as const, label: "Storage-Free" },
 ];
 
 export function SlideCompetitive() {
+  const competitors = COMPETITIVE_DATA.filter((e) => e.name !== "Ammo Exchange");
+  const us = COMPETITIVE_DATA.find((e) => e.name === "Ammo Exchange")!;
+
   return (
     <SlideLayout>
       <h2 className="mb-2 text-5xl font-bold text-text">
@@ -48,29 +54,55 @@ export function SlideCompetitive() {
             </tr>
           </thead>
           <tbody>
-            {COMPETITIVE_DATA.map((entry) => {
-              const isUs = entry.name === "Ammo Exchange";
-              return (
-                <tr
-                  key={entry.name}
-                  className={`border-b border-surface-elevated ${isUs ? "bg-surface" : ""}`}
-                >
-                  <td
-                    className={`px-4 py-4 text-base font-semibold ${isUs ? "text-brass" : "text-text"}`}
-                  >
-                    {entry.name}
+            {/* Competitor rows — firing-sequence stagger */}
+            {competitors.map((entry, i) => (
+              <motion.tr
+                key={entry.name}
+                initial={{ opacity: 0, x: -15 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.35, delay: i * 0.05, ease: "easeOut" }}
+                className="border-b border-surface-elevated"
+              >
+                <td className="px-4 py-4 text-base font-semibold text-text">
+                  {entry.name}
+                </td>
+                <td className="px-4 py-4 text-sm text-text-secondary">
+                  {entry.type}
+                </td>
+                {COLUMNS.map((col) => (
+                  <td key={col.key} className="px-4 py-4 text-center">
+                    {entry[col.key] ? <Check /> : <Cross />}
                   </td>
-                  <td className="px-4 py-4 text-sm text-text-secondary">
-                    {entry.type}
-                  </td>
-                  {COLUMNS.map((col) => (
-                    <td key={col.key} className="px-4 py-4 text-center">
-                      {entry[col.key] ? <Check /> : <Cross />}
-                    </td>
-                  ))}
-                </tr>
-              );
-            })}
+                ))}
+              </motion.tr>
+            ))}
+
+            {/* Golden row — Ammo Exchange */}
+            <motion.tr
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.4,
+                delay: competitors.length * 0.05 + 0.5,
+                ease: "easeOut",
+              }}
+              className="border-b border-surface-elevated bg-surface"
+              style={{
+                boxShadow: "0 0 20px rgba(198,164,78,0.15)",
+              }}
+            >
+              <td className="px-4 py-4 text-base font-semibold text-brass">
+                {us.name}
+              </td>
+              <td className="px-4 py-4 text-sm text-text-secondary">
+                {us.type}
+              </td>
+              {COLUMNS.map((col) => (
+                <td key={col.key} className="px-4 py-4 text-center">
+                  {us[col.key] ? <Check /> : <Cross />}
+                </td>
+              ))}
+            </motion.tr>
           </tbody>
         </table>
       </div>
