@@ -1,136 +1,116 @@
-# Requirements: Ammo Exchange
+# Requirements: Ammo Exchange Pitch Deck
 
-**Defined:** 2026-02-16
+**Defined:** 2026-02-17
 **Core Value:** Anyone worldwide can get price exposure to U.S. ammunition by minting ammo tokens with USDC, while only verified U.S. residents in allowed states can redeem for physical delivery.
 
-## v1.4 Requirements
+## v1.5 Requirements
 
-Requirements for UI/UX Polish & Accessibility milestone. Each maps to roadmap phases.
+Requirements for the Pitch Deck milestone. Each maps to roadmap phases.
 
-### Wallet & Auth
+### Setup & Foundation
 
-- [ ] **WALL-01**: User sees a dropdown menu when clicking wallet button (copy address, view on explorer, disconnect)
-- [ ] **WALL-02**: User must confirm before disconnecting wallet
+- [ ] **SETUP-01**: Pitch deck app scaffolded at `apps/pitchdeck` with Next.js 15, Tailwind v4, and static export (`output: "export"`)
+- [ ] **SETUP-02**: Hex-only CSS theme matching ammo-exchange brass/dark palette (no oklch colors)
+- [ ] **SETUP-03**: Turborepo integration with correct build deps (shared package only, port 3001)
 
-### Accessibility
+### Slide Content
 
-- [ ] **A11Y-01**: All interactive elements have focus-visible states (CSS, not inline JS)
-- [ ] **A11Y-02**: All hover states use Tailwind hover: classes instead of onMouseEnter/onMouseLeave
-- [ ] **A11Y-03**: Icon-only buttons have aria-label attributes
-- [ ] **A11Y-04**: Color contrast meets WCAG AA (--text-muted upgraded to >=4.5:1 ratio)
+- [ ] **SLIDE-01**: Cover slide with brand identity, tagline, and 5-second hook
+- [ ] **SLIDE-02**: Problem slide presenting $8B ammunition market pain points
+- [ ] **SLIDE-03**: Interactive 9mm price volatility chart with historical data (Recharts)
+- [ ] **SLIDE-04**: Solution slide — USDC in, tokens out, redeem for physical delivery
+- [ ] **SLIDE-05**: How It Works — 2-step async mint/redeem flow with per-caliber tokens
+- [ ] **SLIDE-06**: Market Opportunity — TAM/SAM/SOM with buyer statistics
+- [ ] **SLIDE-07**: Competitive Landscape — "PAXG for ammunition" positioning vs AmmoSeek/AmmoSquared
+- [ ] **SLIDE-08**: Revenue Model — fee structure table and unit economics
+- [ ] **SLIDE-09**: Traction/Demo slide with live testnet link CTA to Fuji dashboard
+- [ ] **SLIDE-10**: Regulatory Positioning — no FFL required, KYC at redemption, token classification
+- [ ] **SLIDE-11**: Roadmap — protocol development timeline and milestones
+- [ ] **SLIDE-12**: Team slide with placeholder bios
+- [ ] **SLIDE-13**: Ask/CTA — general call-to-action for investors and partners
 
-### Theme & Design
+### Navigation & Interaction
 
-- [ ] **THEME-01**: Single unified CSS variable system (consolidate shadcn + custom variables)
-- [ ] **THEME-02**: Admin sidebar uses shared theme variables (not hardcoded Tailwind classes)
-- [ ] **THEME-03**: Border radius uses consistent scale from CSS variables
-- [ ] **THEME-04**: Dark-mode enforcement committed (remove unused theme toggle)
+- [ ] **NAV-01**: Keyboard navigation (ArrowLeft/Right, Space, Home/End)
+- [ ] **NAV-02**: Slide counter and progress indicator
+- [ ] **NAV-03**: CSS slide transitions (opacity + translateX, no animation library)
+- [ ] **NAV-04**: Prev/Next click controls
 
-### Navigation
+### PDF Export
 
-- [ ] **NAV-01**: Market page is accessible from main navigation
-- [ ] **NAV-02**: Admin has responsive mobile navigation (hamburger or bottom tabs)
-- [ ] **NAV-03**: Mobile bottom nav includes Admin link for keepers
+- [ ] **PDF-01**: Client-side PDF export via html2canvas-pro + jsPDF (all 13 slides)
+- [ ] **PDF-02**: Off-screen rendering at 1920x1080 with scale:2 for crisp text
+- [ ] **PDF-03**: Export progress indicator during PDF generation
 
-### Mint Flow
+### Deployment
 
-- [ ] **MINT-01**: Processing time (24-48h) disclosed prominently before user starts mint
-- [ ] **MINT-02**: Price disclaimer explains admin sets final price at fulfillment
+- [ ] **DEPLOY-01**: Static export deployable to Vercel at shareable investor URL
 
-### Redeem Flow
+## v2 Requirements
 
-- [ ] **REDM-01**: KYC status checked at start of redeem flow (pre-check before Steps 0-1)
-- [ ] **REDM-02**: User nudged to complete KYC before proceeding if not verified
+Deferred to future release. Tracked but not in current roadmap.
 
-### Admin
+### Personalization
 
-- [ ] **ADMN-01**: Admin can reject/refund a mint order (calls refundMint on contract)
-- [ ] **ADMN-02**: Admin can cancel a redeem order (calls cancelRedeem on contract)
-- [ ] **ADMN-03**: Admin dashboard shows pending order alerts and count badges
-- [ ] **ADMN-04**: Admin dashboard has quick action buttons to jump to pending orders
-- [ ] **ADMN-05**: Admin order tables have search, filter by caliber, and pagination
-- [ ] **ADMN-06**: Admin can click an order to view full details (wallet, tx history, KYC, shipping, timeline)
+- **PERS-01**: URL parameter personalization (?investor=Name shows "Prepared for [Name]" on cover)
 
-### Profile
+### Advanced Visuals
 
-- [ ] **PROF-01**: User can complete KYC verification directly from profile page
+- **VIS-01**: Animated protocol flow visualization on How It Works slide
+- **VIS-02**: Live on-chain metrics feed from Fuji testnet
 
-### Trade
+### Analytics
 
-- [ ] **TRAD-01**: Swap tab clearly labeled "Coming Soon" with explanation
-- [ ] **TRAD-02**: Swap widget refactored into smaller components (<300 lines each)
-
-### Landing Page
-
-- [ ] **LAND-01**: Trust strip text has adequate contrast (visible on dark background)
-- [ ] **LAND-02**: Landing page shows social proof stats (total volume, users, rounds tokenized)
-
-## Future Requirements
-
-Deferred from UI/UX critique. Tracked but not in current roadmap.
-
-### UX Enhancements
-
-- **UX-01**: Landing page section reordering (Hero -> HowItWorks -> MarketTicker -> MarketCards)
-- **UX-02**: Draft/pending order surfacing in portfolio with clear status distinction
-- **UX-03**: Shipping time estimate shown earlier in redeem flow (before review step)
-
-### Infrastructure
-
-- **INFRA-01**: Email notification system for order status changes and shipping updates
-- **INFRA-02**: User notification preferences configuration
+- **ANLY-01**: Custom view analytics for tracking investor engagement
 
 ## Out of Scope
 
-| Feature                                     | Reason                                                        |
-| ------------------------------------------- | ------------------------------------------------------------- |
-| Light mode / theme toggle                   | Brand is dark-only, no user demand                            |
-| Batch admin operations                      | Single order finalization sufficient for testnet volume       |
-| Admin charts (mint/redeem volume over time) | Requires time-series data infrastructure, defer to production |
-| Real-time order status push notifications   | WebSocket infrastructure not justified for testnet            |
+| Feature | Reason |
+|---------|--------|
+| Presentation editor/CMS | Content changes quarterly; edit the code directly |
+| Presenter mode / speaker notes | Unnecessary complexity for investor distribution |
+| Slide transitions beyond CSS | Framer Motion adds 30KB+ for one transition effect |
+| Embedded dApp in deck | Link out to Fuji dashboard instead — keeps deck lightweight |
+| Multi-language support | English-only for U.S.-focused initial investor outreach |
+| Tokenomics slides | Deferred in whitepaper; including them invites securities scrutiny |
+| Dark mode toggle | Deck is always dark theme (brass/dark brand) |
 
 ## Traceability
 
 Which phases cover which requirements. Updated during roadmap creation.
 
-| Requirement | Phase    | Status  |
-| ----------- | -------- | ------- |
-| THEME-01    | Phase 18 | Pending |
-| THEME-02    | Phase 18 | Pending |
-| THEME-03    | Phase 18 | Pending |
-| THEME-04    | Phase 18 | Pending |
-| A11Y-04     | Phase 18 | Pending |
-| A11Y-01     | Phase 19 | Pending |
-| A11Y-02     | Phase 19 | Pending |
-| A11Y-03     | Phase 19 | Pending |
-| WALL-01     | Phase 20 | Pending |
-| WALL-02     | Phase 20 | Pending |
-| NAV-01      | Phase 20 | Pending |
-| NAV-02      | Phase 20 | Pending |
-| NAV-03      | Phase 20 | Pending |
-| MINT-01     | Phase 21 | Pending |
-| MINT-02     | Phase 21 | Pending |
-| REDM-01     | Phase 21 | Pending |
-| REDM-02     | Phase 21 | Pending |
-| PROF-01     | Phase 21 | Pending |
-| TRAD-01     | Phase 21 | Pending |
-| ADMN-01     | Phase 22 | Pending |
-| ADMN-02     | Phase 22 | Pending |
-| ADMN-03     | Phase 22 | Pending |
-| ADMN-04     | Phase 22 | Pending |
-| ADMN-05     | Phase 22 | Pending |
-| ADMN-06     | Phase 22 | Pending |
-| LAND-01     | Phase 23 | Pending |
-| LAND-02     | Phase 23 | Pending |
-| TRAD-02     | Phase 23 | Pending |
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| SETUP-01 | — | Pending |
+| SETUP-02 | — | Pending |
+| SETUP-03 | — | Pending |
+| SLIDE-01 | — | Pending |
+| SLIDE-02 | — | Pending |
+| SLIDE-03 | — | Pending |
+| SLIDE-04 | — | Pending |
+| SLIDE-05 | — | Pending |
+| SLIDE-06 | — | Pending |
+| SLIDE-07 | — | Pending |
+| SLIDE-08 | — | Pending |
+| SLIDE-09 | — | Pending |
+| SLIDE-10 | — | Pending |
+| SLIDE-11 | — | Pending |
+| SLIDE-12 | — | Pending |
+| SLIDE-13 | — | Pending |
+| NAV-01 | — | Pending |
+| NAV-02 | — | Pending |
+| NAV-03 | — | Pending |
+| NAV-04 | — | Pending |
+| PDF-01 | — | Pending |
+| PDF-02 | — | Pending |
+| PDF-03 | — | Pending |
+| DEPLOY-01 | — | Pending |
 
 **Coverage:**
-
-- v1.4 requirements: 28 total
-- Mapped to phases: 28
-- Unmapped: 0
+- v1.5 requirements: 24 total
+- Mapped to phases: 0
+- Unmapped: 24 ⚠️
 
 ---
-
-_Requirements defined: 2026-02-16_
-_Last updated: 2026-02-16 after roadmap creation_
+*Requirements defined: 2026-02-17*
+*Last updated: 2026-02-17 after initial definition*
