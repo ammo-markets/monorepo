@@ -106,11 +106,11 @@ Plans:
   3. Clicking Prev/Next buttons navigates between slides and buttons disable at boundaries
   4. A slide counter shows current position (e.g., "3 / 13") and a progress indicator reflects advancement
   5. Slide transitions use CSS opacity + translateX animation (no animation library, smooth visual change between slides)
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 25-01: Slide system architecture (PitchDeck orchestrator, SlideRenderer, SlideControls, keyboard nav, transitions)
-- [ ] 25-02: All 13 slide content components with data and visuals
+- [ ] 25-01-PLAN.md -- Slide system architecture (useDeck hook, PitchDeck orchestrator, SlideRenderer, SlideControls, keyboard nav, CSS transitions, recharts install)
+- [ ] 25-02-PLAN.md -- All 13 slide content components with slideData.ts and SlideLayout
 
 ### Phase 26: PDF Export & Deployment
 **Goal**: Users can download a crisp multi-page PDF of the entire deck and access it at a shareable URL
