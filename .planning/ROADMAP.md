@@ -91,10 +91,10 @@ Full details: `.planning/milestones/v1.3-ROADMAP.md`
   2. The app uses hex-only CSS custom properties for all colors (no oklch values anywhere in the pitchdeck globals.css)
   3. `pnpm build` from the monorepo root builds the pitchdeck app as a static export (output directory contains only HTML/CSS/JS, no server)
   4. The pitchdeck app imports from `@ammo-exchange/shared` without build errors (transpilePackages configured)
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 24-01: Scaffold Next.js 15 app, Tailwind v4 with hex theme, static export config, Turborepo wiring
+- [ ] 24-01-PLAN.md -- Scaffold pitchdeck app with hex-only theme, static export, and Turborepo wiring
 
 ### Phase 25: Slide Content & Navigation
 **Goal**: Users can view a complete 13-slide investor deck in the browser with keyboard navigation, click controls, and smooth transitions
