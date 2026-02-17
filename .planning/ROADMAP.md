@@ -76,7 +76,7 @@ Full details: `.planning/milestones/v1.3-ROADMAP.md`
 
 **Milestone Goal:** Build a standalone pitch deck app for Ammo Exchange -- custom React slide system with PDF export, showcasing the DeFi + RWA tokenization narrative for investors and partners.
 
-- [ ] **Phase 24: Foundation & Setup** - Scaffold pitchdeck app with hex-only brass/dark theme and Turborepo integration
+- [x] **Phase 24: Foundation & Setup** - Scaffold pitchdeck app with hex-only brass/dark theme and Turborepo integration (completed 2026-02-17)
 - [ ] **Phase 25: Slide Content & Navigation** - All 13 slides with keyboard navigation, transitions, and progress indicator
 - [ ] **Phase 26: PDF Export & Deployment** - Client-side PDF generation and static deploy to shareable investor URL
 
@@ -157,7 +157,7 @@ Phases execute in numeric order: 24 -> 25 -> 26
 | 21. User Flow Improvements | v1.4 | 2/2 | Complete | 2026-02-16 |
 | 22. Admin Enhancements | v1.4 | 2/2 | Complete | 2026-02-16 |
 | 23. Landing Page & Cleanup | v1.4 | 2/2 | Complete | 2026-02-16 |
-| 24. Foundation & Setup | v1.5 | 0/1 | Not started | - |
+| 24. Foundation & Setup | v1.5 | Complete    | 2026-02-17 | - |
 | 25. Slide Content & Navigation | v1.5 | 0/2 | Not started | - |
 | 26. PDF Export & Deployment | v1.5 | 0/2 | Not started | - |
 
