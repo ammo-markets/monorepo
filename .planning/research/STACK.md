@@ -1,449 +1,248 @@
-# Stack Research: Fuji Testnet Integration
+# Technology Stack
 
-**Research Date:** 2026-02-10
-**Scope:** Wiring a DeFi protocol frontend to deployed contracts, building an event indexer, and serving data via API routes in a Next.js monorepo on Avalanche Fuji testnet.
-**Context:** Ammo Exchange -- tokenized ammunition DeFi protocol. Existing codebase has mocked UI, skeleton worker, unused DB schema. Goal: wire everything together for Fuji testnet.
+**Project:** Ammo Exchange Pitch Deck App (`apps/pitchdeck`)
+**Researched:** 2026-02-17
 
----
+## Context
 
-## 1. Current State (What We Have)
+Adding a standalone pitch deck app to the existing Ammo Exchange monorepo. The app renders an investor-facing slide deck in the browser with PDF export capability. It shares `packages/shared` for caliber specs and chain config but has NO dependency on `packages/db`, `packages/contracts`, or any Web3 libraries.
 
-| Layer        | Package               | Version (package.json) | Resolved (lock) | Status                                 |
-| ------------ | --------------------- | ---------------------- | --------------- | -------------------------------------- |
-| Frontend     | Next.js               | ^15.1.6                | ~15.x           | Mocked UI, no contract calls           |
-| React hooks  | wagmi                 | ^2.14.11               | ~2.19.5         | Config exists, no wallet UI            |
-| Chain client | viem                  | ^2.23.2                | ~2.x            | Used in worker skeleton                |
-| Query cache  | @tanstack/react-query | ^5.66.0                | ~5.90.x         | Provider wired, unused                 |
-| ORM          | Prisma                | ^7.3.0                 | 7.3.x           | Schema defined, no migrations run      |
-| DB adapter   | @prisma/adapter-pg    | ^7.3.0                 | 7.3.x           | Using `pg` driver, not Neon serverless |
-| Build        | Turborepo             | ^2.4.4                 | ~2.4.x          | Fully configured                       |
-| Contracts    | Foundry               | nightly                | nightly         | Contracts written, ABIs exported       |
-| Worker       | Bun                   | 1.2+                   | system          | Skeleton only                          |
-| Shared       | @ammo-exchange/shared | workspace              | workspace       | Config + constants defined             |
+## Recommended Stack
 
-**Key observation:** The project already uses wagmi ^2 with the `^` range, and pnpm has resolved to 2.19.5. The wagmi v3 migration guide exists but the ecosystem (RainbowKit, ConnectKit) has inconsistent v3 support. Staying on wagmi 2.x is the right call for this milestone.
+### Inherited from Monorepo (DO NOT install separately)
 
----
+These are already validated and configured at the monorepo level:
 
-## 2. Stack Decisions
+| Technology | Version | Purpose | Notes |
+|------------|---------|---------|-------|
+| Next.js | ^15.1.6 | App framework | Match `apps/web` exactly |
+| React | ^19.0.0 | UI library | Already in monorepo |
+| React DOM | ^19.0.0 | DOM rendering | Already in monorepo |
+| Tailwind CSS | ^4.0.6 | Styling | Use `@tailwindcss/postcss` pattern from `apps/web` |
+| TypeScript | ^5.7.3 | Type safety | Shared tsconfig at root |
+| Turborepo | ^2.4.4 | Build orchestration | Already configured |
+| pnpm | 10.4.1 | Package manager | Workspace protocol |
 
-### 2.1 Contract Deployment -- Foundry `forge script`
+### NEW Dependencies -- PDF Export
 
-**Decision:** Use Foundry `forge script` for Fuji deployment
-**Confidence:** HIGH
+| Technology | Version | Purpose | Why This |
+|------------|---------|---------|----------|
+| html2canvas-pro | ^1.6.7 | DOM-to-canvas rendering | Fork of html2canvas with modern CSS support: `oklch()`, `color()`, `calc()` in background-position, CSS `rotate`. Critical because Tailwind v4 generates modern CSS color functions that original html2canvas cannot render. No peer dependencies. [HIGH confidence -- npm verified 2026-02-17] |
+| jsPDF | ^4.1.0 | Canvas-to-PDF conversion | Industry standard client-side PDF generation. v4.x includes security patches (CVE-2025-68428 path traversal fix). No peer dependencies. [HIGH confidence -- npm verified 2026-02-17] |
 
-| Attribute      | Value                                                                                                                                                                                      |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Tool           | Foundry (forge) -- latest nightly via `foundryup`                                                                                                                                          |
-| Solidity       | 0.8.24 (already configured)                                                                                                                                                                |
-| EVM version    | Must set `evm_version = "cancun"` in foundry.toml. Solidity 0.8.30+ defaults to Pectra opcodes not supported on Avalanche. Since we pin 0.8.24, this is safe but worth adding defensively. |
-| Fuji RPC       | `https://api.avax-test.network/ext/bc/C/rpc` (chain ID 43113)                                                                                                                              |
-| Deploy command | `forge script script/DeployAll.s.sol --chain-id 43113 --rpc-url $FUJI_RPC_URL --broadcast --slow -vvvv`                                                                                    |
-| Verification   | `--verify --verifier-url "https://api.avascan.info/v2/network/testnet/evm/43113/etherscan"`                                                                                                |
+### NEW Dependencies -- Presentation & Theming
 
-**Rationale:** Foundry is already configured with `fuji` RPC endpoint in `foundry.toml`. No new tooling needed. The `--slow` flag is critical for Avalanche because it waits for each transaction confirmation before sending the next one (Avalanche has faster finality but scripts can race ahead).
+| Technology | Version | Purpose | Why This |
+|------------|---------|---------|----------|
+| next-themes | ^0.4.6 | Dark/light mode toggle | Works with Next.js 15 App Router + React 19 (peer deps verified: `react ^16.8 || ^17 || ^18 || ^19`). Adds `class="dark"` to `<html>` which Tailwind v4 `dark:` variant reads natively. Handles SSR flash-of-wrong-theme, system preference detection, localStorage persistence. 15KB. [HIGH confidence -- npm verified, peer deps confirmed] |
+| lucide-react | ^0.563.0 | Icons | ALREADY in `apps/web` at this version (latest is 0.564.0). Use same version range for consistency. Tree-shakeable, consistent stroke-based style. Do NOT add a second icon library. [HIGH confidence -- already validated in monorepo] |
 
-**What NOT to use:**
+### Shared Package Dependencies
 
-- Hardhat: Would require an entirely separate toolchain. Foundry is already set up and battle-tested in this codebase.
-- Ignition (Hardhat deploy): Same reason. Foundry scripts are simpler and the team already knows them.
+| Package | Why Used |
+|---------|----------|
+| `@ammo-exchange/shared` | Caliber specs (names, descriptions, categories), chain config (network details for protocol slides), protocol constants (fee percentages, supported calibers) |
 
-**New files needed:**
+### NOT Needed (explicitly exclude)
 
-- `packages/contracts/script/DeployAll.s.sol` -- deployment script
-- `packages/contracts/script/DeployFuji.sh` -- convenience shell wrapper
+| Technology | Why Exclude |
+|------------|-------------|
+| wagmi / viem | No wallet connection in a pitch deck |
+| iron-session | No auth needed |
+| Prisma / @ammo-exchange/db | No database -- static content |
+| @ammo-exchange/contracts | No on-chain interaction |
+| @tanstack/react-query | No async data fetching |
+| Reveal.js | 300KB+, opinionated CSS that fights Tailwind, PDF export requires separate plugin, no control over slide-to-canvas pipeline |
+| Spectacle | React-based but heavyweight theme system conflicts with Tailwind, custom layout primitives fight against standard HTML/CSS |
+| Slidev | Vue-based, wrong ecosystem entirely |
+| html2pdf.js | Wraps original html2canvas (not -pro) + jsPDF. Locks you into html2canvas without modern CSS support. The abstraction hides configuration we need to control (scale, backgroundColor, format). |
+| jspdf-html2canvas | Convenience wrapper that adds a dependency for ~20 lines of glue code. Not worth the indirection when we need precise control over the render pipeline. |
+| react-to-pdf | Uses html2canvas (not -pro) under the hood. Same modern CSS rendering problem. |
+| @react-pdf/renderer | Requires rewriting all slides in react-pdf primitives (View, Text, Image) instead of HTML/CSS. Defeats the purpose of a visual web deck that doubles as a presentation. |
 
----
+## PDF Export Architecture
 
-### 2.2 Wallet Connection -- wagmi 2.x + RainbowKit 2.x (or bare wagmi)
-
-**Decision:** Stay on wagmi 2.x; add a wallet connection UI
-**Confidence:** HIGH (wagmi 2.x), MEDIUM (wallet UI library choice)
-
-| Package               | Version         | Why                                                                                                                                                                 |
-| --------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| wagmi                 | ^2.14.11 (keep) | Already installed. v3 (3.4.2) exists but RainbowKit and ConnectKit have inconsistent v3 support. Migrating now adds risk with zero benefit for a testnet milestone. |
-| viem                  | ^2.23.2 (keep)  | Peer dependency of wagmi 2.x. Latest is 2.45.1 but `^2.23.2` range will resolve correctly. No reason to pin higher.                                                 |
-| @tanstack/react-query | ^5.66.0 (keep)  | Latest is 5.90.20. Caret range handles it.                                                                                                                          |
-
-**Wallet UI options (pick one):**
-
-| Option         | Latest Version | wagmi 2.x Support | Pros                                        | Cons                                     |
-| -------------- | -------------- | ----------------- | ------------------------------------------- | ---------------------------------------- |
-| **RainbowKit** | 2.x            | YES (stable)      | Polished UI, active maintenance, great docs | Heavier bundle, opinionated styling      |
-| **ConnectKit** | 3.x            | YES (wagmi 2.x)   | Lighter, cleaner API                        | Less frequent updates, smaller community |
-| **Bare wagmi** | N/A            | N/A               | Zero extra deps, full control               | Must build modal UI from scratch         |
-
-**Recommendation:** For a testnet milestone, use **bare wagmi** (no wallet UI library). The codebase already has a custom `Providers` component and the UI is fully mocked with shadcn/ui. Adding RainbowKit introduces another dependency and styling conflict with the existing Tailwind/Radix design system. A simple "Connect Wallet" button using `useConnect()` + `useDisconnect()` + `useAccount()` from wagmi is sufficient for testnet. Add RainbowKit later if needed for mainnet polish.
-
-**wagmi connectors to install:**
+The export pipeline renders each slide DOM element to a canvas image, then assembles them into a multi-page landscape PDF:
 
 ```
-pnpm --filter @ammo-exchange/web add @wagmi/connectors
+Slide DOM elements (16:9 aspect ratio)
+    --> html2canvas-pro (renders each slide to canvas, honoring Tailwind v4 CSS)
+    --> jsPDF (creates multi-page landscape PDF from canvas images)
+    --> Browser download via blob URL
 ```
 
-For Fuji testnet, configure:
-
-- `injected()` -- MetaMask and browser wallets
-- `walletConnect({ projectId })` -- optional, useful for mobile testing
-
-**What NOT to use:**
-
-- wagmi v3 (3.4.2): Hook renames (`useAccount` -> `useConnection`) would touch every component. Ecosystem support is inconsistent. Migrate AFTER mainnet, not during testnet wiring.
-- AppKit (Web3Modal): Overkill for a testnet. Adds WalletConnect dependency and their cloud infra.
-- ethers.js: The codebase is standardized on viem. Do not introduce ethers.
-
----
-
-### 2.3 Event Indexing -- viem `watchContractEvent` in Bun Worker
-
-**Decision:** Custom indexer using viem in the existing Bun worker
-**Confidence:** HIGH
-
-| Attribute   | Value                                                                                             |
-| ----------- | ------------------------------------------------------------------------------------------------- |
-| Runtime     | Bun 1.3.9 (latest stable)                                                                         |
-| Client      | viem `createPublicClient` with `webSocket` or `http` transport                                    |
-| Pattern     | `publicClient.watchContractEvent()` for real-time + `getContractEvents()` for historical backfill |
-| Persistence | Write events to Prisma/Neon via `@ammo-exchange/db`                                               |
-
-**Architecture:**
-
-```
-Avalanche Fuji RPC (WebSocket or HTTP polling)
-        |
-  viem watchContractEvent()
-        |
-  Bun Worker (apps/worker)
-        |
-  Prisma -> Neon PostgreSQL
-```
-
-**Why NOT Ponder:**
-
-- Ponder is a full indexing framework with its own server, GraphQL API, and database. This project already has Next.js API routes + Prisma + Neon. Ponder would duplicate the data layer and add operational complexity.
-- For 4 contracts with ~10 events total, a custom viem watcher is simpler, faster to build, and uses the existing DB schema.
-- Ponder makes sense for protocols with 50+ contracts or when you need a public GraphQL API. This is a closed system with an admin dashboard.
-
-**Why NOT The Graph / Subgraph:**
-
-- Fuji testnet subgraph hosting is unreliable. Self-hosting a Graph node is operational overhead that does not serve a testnet milestone.
-- The data requirements (orders, inventory, audit logs) map directly to the existing Prisma schema. No need for a separate indexing layer.
-
-**Implementation pattern:**
+**Key configuration:**
 
 ```typescript
-// apps/worker/src/index.ts
-const publicClient = createPublicClient({
-  chain: avalancheFuji,
-  transport: webSocket(process.env.FUJI_WS_URL),
-  // fallback: http(process.env.FUJI_RPC_URL)
-});
+import html2canvas from "html2canvas-pro";
+import { jsPDF } from "jspdf";
 
-// Watch each contract's events
-const unwatchMint = publicClient.watchContractEvent({
-  address: CONTRACT_ADDRESSES.fuji.caliberMarket,
-  abi: CaliberMarketAbi,
-  eventName: 'MintStarted',
-  onLogs: async (logs) => {
-    for (const log of logs) {
-      await prisma.order.create({ ... });
-    }
-  },
-});
-```
-
-**Resilience considerations:**
-
-- `watchContractEvent` uses polling (eth_getFilterChanges) by default over HTTP. WebSocket is preferred for lower latency but less reliable on public endpoints.
-- Must store last processed block number in DB for crash recovery (backfill from that block on restart using `getContractEvents`).
-- Avalanche Fuji public RPC rate limits are generous but should still implement exponential backoff.
-
-**New env vars needed:**
-
-- `FUJI_WS_URL` (optional) -- WebSocket endpoint for real-time events
-
----
-
-### 2.4 Admin Dashboard -- Next.js 15 App Router
-
-**Decision:** Keep Next.js 15.x, use App Router with Server Components + Route Handlers
-**Confidence:** HIGH
-
-| Attribute     | Value                                                                                     |
-| ------------- | ----------------------------------------------------------------------------------------- |
-| Framework     | Next.js ^15.1.6 (keep current)                                                            |
-| React         | ^19.0.0 (keep current)                                                                    |
-| Rendering     | Server Components for data display, Client Components for wallet interaction              |
-| Data fetching | Server Components call Prisma directly; Client Components use TanStack Query + API routes |
-
-**Why NOT upgrade to Next.js 16:**
-
-- Next.js 16.1 is available (released Dec 2025) and brings Turbopack stable for both dev and build. However, upgrading Next.js major versions during a wiring milestone introduces risk: potential breaking changes in middleware, route handlers, and React 19 integration.
-- The `^15.1.6` range resolves to 15.5.12 (latest 15.x patch) which is fully stable and has all the features needed.
-- Upgrade to 16 in a separate milestone after testnet is working.
-
-**Dashboard architecture:**
-
-- `/admin/orders` -- Server Component, fetches from Prisma directly
-- `/admin/inventory` -- Server Component, fetches from Prisma directly
-- `/admin/contracts` -- Client Component, reads on-chain state via wagmi hooks
-- API routes serve the frontend for mutations and real-time data
-
----
-
-### 2.5 API Routes -- Next.js Route Handlers + Prisma
-
-**Decision:** Next.js App Router Route Handlers (`app/api/.../route.ts`)
-**Confidence:** HIGH
-
-| Attribute  | Value                                                |
-| ---------- | ---------------------------------------------------- |
-| Location   | `apps/web/app/api/`                                  |
-| Validation | Zod ^4.3.6 (already installed)                       |
-| Auth       | Wallet signature verification (viem `verifyMessage`) |
-| DB         | Prisma client from `@ammo-exchange/db`               |
-
-**Route structure:**
-
-```
-app/api/
-  orders/
-    route.ts          -- GET (list), POST (create)
-    [id]/route.ts     -- GET (detail), PATCH (update status)
-  inventory/
-    route.ts          -- GET (list)
-    [caliber]/route.ts -- GET (detail)
-  users/
-    route.ts          -- POST (register/upsert on wallet connect)
-    [address]/route.ts -- GET (profile + KYC status)
-  health/
-    route.ts          -- GET (system health check)
-```
-
-**Prisma singleton pattern (already implemented):**
-The existing `packages/db/src/client.ts` uses the global singleton pattern with `globalThis` caching, which prevents connection exhaustion in Next.js serverless functions. This is correct for the current `@prisma/adapter-pg` setup.
-
-**Database adapter decision -- keep `@prisma/adapter-pg`:**
-
-- The project currently uses `@prisma/adapter-pg` (node `pg` driver), not `@prisma/adapter-neon` (Neon serverless driver).
-- For Vercel serverless, `@prisma/adapter-neon` with `@neondatabase/serverless` provides WebSocket connections and lower cold-start latency. However, switching adapters is a small change that can be done later.
-- For testnet, the current `pg` adapter works fine with Neon's pooled connection string. Keep it.
-- **Future optimization:** Switch to `@prisma/adapter-neon` + `@neondatabase/serverless` before mainnet to get WebSocket connections and message pipelining.
-
-**What NOT to use:**
-
-- tRPC: Adds complexity without benefit for this project size. Plain route handlers + Zod validation are sufficient.
-- GraphQL: The data model is simple CRUD. REST is the right choice.
-- Prisma Accelerate: Paid service for connection pooling. Neon's built-in pooler (free) handles this.
-
----
-
-### 2.6 Shared Package -- Chain Config + Contract Addresses
-
-**Decision:** Extend `@ammo-exchange/shared` with deployed Fuji addresses
-**Confidence:** HIGH
-
-The `packages/shared/src/config/index.ts` already defines `AVALANCHE_FUJI` chain config and placeholder `CONTRACT_ADDRESSES.fuji`. After deployment, update these zero addresses with actual deployed addresses. The worker and web app both import from this package, so a single update propagates everywhere.
-
-**Pattern for post-deployment address updates:**
-
-1. Deploy contracts via `forge script`
-2. Parse deployment artifacts from `packages/contracts/broadcast/`
-3. Update `CONTRACT_ADDRESSES.fuji` in shared package
-4. Run `pnpm check` to verify types propagate
-
-**Missing from shared package:**
-
-- `CONTRACT_ADDRESSES.fuji` is missing `caliberMarket`, `ammoFactory`, and `ammoManager` addresses. Only individual token addresses are listed. Must add:
-  - `caliberMarket`
-  - `ammoFactory`
-  - `ammoManager`
-
----
-
-## 3. Version Matrix (Prescriptive)
-
-### Keep (No Changes)
-
-| Package               | Current  | Latest Available | Action           | Rationale                                                                                                                        |
-| --------------------- | -------- | ---------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| wagmi                 | ^2.14.11 | 3.4.2            | **KEEP 2.x**     | Ecosystem (RainbowKit, ConnectKit) has inconsistent v3 support. Hook renames would touch every component. Migrate after mainnet. |
-| viem                  | ^2.23.2  | 2.45.1           | **KEEP ^2.23.2** | Caret range resolves to latest 2.x. No breaking changes.                                                                         |
-| next                  | ^15.1.6  | 16.1             | **KEEP 15.x**    | Major version upgrade during wiring milestone is unnecessary risk. 15.5.12 is stable.                                            |
-| react                 | ^19.0.0  | 19.x             | **KEEP**         | Already on React 19. No action needed.                                                                                           |
-| @tanstack/react-query | ^5.66.0  | 5.90.20          | **KEEP**         | Caret range handles it.                                                                                                          |
-| prisma                | ^7.3.0   | 7.3.x            | **KEEP**         | Already on latest stable line.                                                                                                   |
-| @prisma/adapter-pg    | ^7.3.0   | 7.3.x            | **KEEP for now** | Works with Neon pooled connections. Switch to adapter-neon before mainnet.                                                       |
-| typescript            | ^5.7.3   | 5.7.x            | **KEEP**         | wagmi v3 requires 5.7.3 minimum, which we already meet.                                                                          |
-| turbo                 | ^2.4.4   | 2.8.3            | **KEEP ^2.4.4**  | No breaking changes. Caret range is fine. Update if specific features needed.                                                    |
-| zod                   | ^4.3.6   | 4.x              | **KEEP**         | Already on Zod 4.                                                                                                                |
-
-### Add (New Dependencies)
-
-| Package             | Version | Where    | Why                                                                                                     |
-| ------------------- | ------- | -------- | ------------------------------------------------------------------------------------------------------- |
-| `@wagmi/connectors` | ^6.0.1  | apps/web | Required for wagmi 2.x connector setup (injected, walletConnect). Was previously bundled, now separate. |
-
-**That is it.** No other new dependencies are needed for this milestone. The existing stack covers every requirement.
-
-### Do NOT Add
-
-| Package              | Why Not                                                                               |
-| -------------------- | ------------------------------------------------------------------------------------- |
-| RainbowKit           | Bare wagmi is sufficient for testnet. Adds styling conflicts with existing shadcn/ui. |
-| ConnectKit           | Same reasoning as RainbowKit.                                                         |
-| Ponder               | Overkill for 4 contracts. Custom viem watcher is simpler.                             |
-| The Graph            | Fuji testnet hosting unreliable. Existing Prisma schema is the index.                 |
-| ethers.js            | Codebase is standardized on viem. Do not introduce competing libraries.               |
-| tRPC                 | Project size does not justify the abstraction layer.                                  |
-| Next.js 16           | Major version bump during wiring milestone is risk without reward.                    |
-| wagmi v3             | Ecosystem not ready. Hook renames touch every component.                              |
-| @prisma/adapter-neon | Optimization for mainnet, not required for testnet.                                   |
-
----
-
-## 4. Architecture Patterns
-
-### 4.1 Frontend Contract Interaction Pattern
-
-```
-User action (button click)
-  -> wagmi hook (useWriteContract / useReadContract)
-    -> viem encodes ABI call
-      -> Wallet signs transaction (MetaMask popup)
-        -> Broadcast to Fuji RPC
-          -> Transaction confirmed
-            -> wagmi hook returns receipt
-              -> TanStack Query invalidates relevant queries
-                -> UI updates
-```
-
-**Key wagmi hooks for this project:**
-
-| Hook                             | Use Case                                          |
-| -------------------------------- | ------------------------------------------------- |
-| `useAccount()`                   | Get connected wallet address, chain ID            |
-| `useConnect()`                   | Trigger wallet connection                         |
-| `useDisconnect()`                | Disconnect wallet                                 |
-| `useReadContract()`              | Read on-chain state (balances, prices, inventory) |
-| `useWriteContract()`             | Send transactions (mint, redeem, list, buy)       |
-| `useWaitForTransactionReceipt()` | Wait for tx confirmation after write              |
-| `useSwitchChain()`               | Switch to Fuji if user is on wrong network        |
-| `useBalance()`                   | Get AVAX balance                                  |
-
-### 4.2 Worker Event Processing Pattern
-
-```
-Startup:
-  1. Read last_processed_block from DB
-  2. Backfill: getContractEvents(fromBlock: last_processed_block)
-  3. Process backfill events
-  4. Start: watchContractEvent (polling or WebSocket)
-
-Runtime:
-  1. Receive event log batch
-  2. For each log:
-     a. Parse event args (viem decodes automatically)
-     b. Idempotency check (txHash + logIndex unique constraint)
-     c. Write to Prisma (order creation, inventory update, audit log)
-     d. Update last_processed_block
-  3. On error: log, retry with backoff, do not crash
-
-Shutdown:
-  1. Call unwatch() for all watchers
-  2. Flush pending DB writes
-  3. Exit cleanly
-```
-
-### 4.3 API Route Pattern
-
-```typescript
-// app/api/orders/route.ts
-import { prisma } from "@ammo-exchange/db";
-import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
-
-const querySchema = z.object({
-  status: z.enum(["PENDING", "PROCESSING", "COMPLETED", "FAILED"]).optional(),
-  limit: z.coerce.number().min(1).max(100).default(20),
-  offset: z.coerce.number().min(0).default(0),
-});
-
-export async function GET(request: NextRequest) {
-  const params = querySchema.parse(
-    Object.fromEntries(request.nextUrl.searchParams),
-  );
-  const orders = await prisma.order.findMany({
-    where: params.status ? { status: params.status } : undefined,
-    take: params.limit,
-    skip: params.offset,
-    orderBy: { createdAt: "desc" },
+async function exportToPdf(slides: HTMLElement[]) {
+  // Landscape 16:9 at 1920x1080
+  const pdf = new jsPDF({
+    orientation: "landscape",
+    unit: "px",
+    format: [1920, 1080],
   });
-  return NextResponse.json(orders);
+
+  for (let i = 0; i < slides.length; i++) {
+    const canvas = await html2canvas(slides[i], {
+      scale: 2, // 2x for crisp rendering (retina quality)
+      useCORS: true, // if loading external images/logos
+      backgroundColor: null, // respect slide's own background
+    });
+
+    const imgData = canvas.toDataURL("image/png");
+    if (i > 0) pdf.addPage();
+    pdf.addImage(imgData, "PNG", 0, 0, 1920, 1080);
+  }
+
+  pdf.save("ammo-exchange-pitch-deck.pdf");
 }
 ```
 
----
+**Limitation to accept:** PDF text is rasterized (not selectable/searchable). For an investor pitch deck this is acceptable -- visual fidelity and consistent styling matter more than text search. If searchable text becomes a requirement, that would need a server-side renderer (Puppeteer/Playwright), which is a fundamentally different architecture.
 
-## 5. Environment Variables (Complete for Fuji)
+## Fluid Typography with clamp()
+
+Use CSS `clamp()` for responsive text sizing that works across screen sizes AND in the PDF export (html2canvas-pro computes the resolved value at render time):
+
+```css
+/* In Tailwind v4 via @theme or arbitrary values */
+.slide-title {
+  font-size: clamp(2rem, 4vw, 4rem);
+}
+.slide-body {
+  font-size: clamp(1rem, 2vw, 1.5rem);
+}
+```
+
+## next-themes Setup Pattern
+
+Required configuration for Next.js 15 App Router:
+
+```tsx
+// app/layout.tsx
+import { ThemeProvider } from "next-themes";
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+          {children}
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+- `suppressHydrationWarning` on `<html>` is mandatory -- next-themes modifies the element client-side
+- `attribute="class"` makes Tailwind v4 `dark:` variants work automatically
+- `defaultTheme="dark"` because pitch decks look better on dark backgrounds for investor presentations
+
+## Integration with Monorepo
+
+### Package Configuration
+
+The new app slots into the existing workspace with zero changes to `pnpm-workspace.yaml` (already has `apps/*` glob):
+
+```jsonc
+// apps/pitchdeck/package.json
+{
+  "name": "@ammo-exchange/pitchdeck",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev --port 3001",
+    "build": "next build",
+    "start": "next start",
+    "check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ammo-exchange/shared": "workspace:*",
+    "html2canvas-pro": "^1.6.7",
+    "jspdf": "^4.1.0",
+    "lucide-react": "^0.563.0",
+    "next": "^15.1.6",
+    "next-themes": "^0.4.6",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.0.6",
+    "@types/node": "^22.13.1",
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
+    "tailwindcss": "^4.0.6",
+    "typescript": "^5.7.3"
+  }
+}
+```
+
+### Port Assignment
+
+| App | Port | Purpose |
+|-----|------|---------|
+| `apps/web` | 3000 | Main dashboard |
+| `apps/pitchdeck` | 3001 | Pitch deck |
+
+No conflict when running `pnpm dev` (Turbo TUI shows both).
+
+### Turbo Integration
+
+No changes to `turbo.json` needed. Existing task definitions (`build`, `dev`, `check`) apply automatically. The pitchdeck app has no `db:generate` dependency -- Turbo handles missing scripts gracefully (skips the task for packages that do not define it).
+
+### Build Dependency Graph
+
+```
+packages/shared (no build step) --> apps/pitchdeck
+```
+
+Single dependency. Significantly simpler than `apps/web` which depends on shared + db + contracts.
+
+## Installation
 
 ```bash
-# Database (Neon PostgreSQL)
-DATABASE_URL="postgresql://user:password@ep-xxx.us-east-2.aws.neon.tech:5432/ammo_exchange?sslmode=require"
-
-# Avalanche RPCs
-AVALANCHE_RPC_URL="https://api.avax.network/ext/bc/C/rpc"
-FUJI_RPC_URL="https://api.avax-test.network/ext/bc/C/rpc"
-FUJI_WS_URL="wss://api.avax-test.network/ext/bc/C/ws"  # Optional: for WebSocket indexing
-
-# Deployment (Foundry)
-DEPLOYER_PRIVATE_KEY="0x..."  # Fuji testnet deployer wallet (DO NOT commit)
-
-# WalletConnect (optional, for mobile wallet testing)
-NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID="..."  # From cloud.walletconnect.com
+# From monorepo root, after creating apps/pitchdeck/package.json
+pnpm install
 ```
 
----
+All dependencies resolve through the workspace. Summary of what is NEW to the monorepo:
 
-## 6. Build & Deploy Pipeline
+| Package | New to monorepo? | Unpacked size |
+|---------|-------------------|---------------|
+| html2canvas-pro | YES | ~450KB |
+| jsPDF | YES | ~2.5MB (includes font data) |
+| next-themes | YES | ~15KB |
+| lucide-react | No (shared with apps/web via hoisting) | 0 additional |
+| next, react, react-dom | No (shared with apps/web via hoisting) | 0 additional |
 
-```
-1. pnpm contracts:build          # Compile Solidity + export ABIs
-2. forge script DeployAll.s.sol   # Deploy to Fuji
-3. Update CONTRACT_ADDRESSES.fuji # In @ammo-exchange/shared
-4. pnpm db:migrate                # Run Prisma migrations on Neon
-5. pnpm build                     # Build all (Turbo handles dependency graph)
-6. Deploy web to Vercel           # git push triggers Vercel
-7. Deploy worker to Railway       # git push triggers Railway (Bun runtime)
-```
+**Total new dependency weight:** ~3MB unpacked. Minimal footprint.
 
----
+## Alternatives Considered
 
-## 7. Risk Assessment
+| Category | Recommended | Alternative | Why Not |
+|----------|-------------|-------------|---------|
+| DOM capture | html2canvas-pro | html2canvas (original) | No modern CSS support -- fails on `oklch()`, `color()`, `calc()` in background-position. Tailwind v4 generates these. |
+| DOM capture | html2canvas-pro | dom-to-image | Less maintained, worse cross-browser, no modern CSS fixes |
+| DOM capture | html2canvas-pro | modern-screenshot | Newer but smaller community, less battle-tested for multi-slide PDF pipelines |
+| PDF generation | jsPDF (client-side) | Puppeteer/Playwright (server-side) | Adds server infrastructure for a static deck. Client-side export is simpler and works offline. |
+| PDF generation | jsPDF | @react-pdf/renderer | Forces rewriting slides in non-HTML primitives. Cannot reuse the web presentation as-is. |
+| Theming | next-themes | Manual CSS variables + script | next-themes handles FOUC prevention, system preference, persistence in 15KB. Reinventing this is error-prone. |
+| Slide system | Custom (CSS scroll-snap + sections) | Reveal.js | 300KB, opinionated CSS conflicts with Tailwind, PDF export is a separate plugin with its own quirks |
+| Slide system | Custom | Spectacle (Formidable) | React-based but has its own theme/layout system that duplicates what Tailwind already provides |
+| Icons | lucide-react | heroicons, react-icons | Already using lucide in `apps/web`. Consistency across the monorepo is more important than marginal preference. |
 
-| Risk                                    | Likelihood | Impact                            | Mitigation                                                                                         |
-| --------------------------------------- | ---------- | --------------------------------- | -------------------------------------------------------------------------------------------------- |
-| Fuji public RPC rate limits             | MEDIUM     | Worker misses events              | Store last_processed_block, backfill on restart. Consider Alchemy/QuickNode free tier for testnet. |
-| wagmi ^2.14.11 resolves to broken patch | LOW        | Frontend breaks                   | Pin exact version in pnpm overrides if needed.                                                     |
-| Prisma cold starts on Vercel            | MEDIUM     | Slow first API call               | Global singleton pattern (already implemented). Switch to adapter-neon for mainnet.                |
-| Neon compute auto-suspend (5 min idle)  | MEDIUM     | 500ms-2s latency spike after idle | Acceptable for testnet. For mainnet, keep compute always-on or use Prisma Accelerate.              |
-| Contract deployment fails on Fuji       | LOW        | Blocks all integration            | Test with `anvil --fork-url $FUJI_RPC_URL` first. Use `--slow` flag for deployment.                |
+## Sources
 
----
-
-## 8. Confidence Summary
-
-| Decision                         | Confidence | Notes                                                 |
-| -------------------------------- | ---------- | ----------------------------------------------------- |
-| Foundry for deployment           | HIGH       | Already configured, Avalanche docs recommend it       |
-| Stay on wagmi 2.x                | HIGH       | Ecosystem not ready for v3, zero benefit for testnet  |
-| Stay on Next.js 15.x             | HIGH       | Stable, no features in 16 that we need                |
-| Custom viem indexer (not Ponder) | HIGH       | 4 contracts, simple events, existing DB schema        |
-| Bare wagmi (no RainbowKit)       | MEDIUM     | Could change if stakeholders want polished wallet UI  |
-| Keep @prisma/adapter-pg          | MEDIUM     | Works for testnet; switch to adapter-neon for mainnet |
-| Route Handlers (not tRPC)        | HIGH       | Right tool for project size                           |
-
----
-
-_Research completed: 2026-02-10. Feed this into roadmap creation._
+- [html2canvas-pro on npm](https://www.npmjs.com/package/html2canvas-pro) -- v1.6.7 verified 2026-02-17
+- [jsPDF on npm](https://www.npmjs.com/package/jspdf) -- v4.1.0 verified 2026-02-17
+- [next-themes on npm](https://www.npmjs.com/package/next-themes) -- v0.4.6, React 19 peer dep verified
+- [next-themes on GitHub](https://github.com/pacocoursey/next-themes) -- App Router setup pattern with suppressHydrationWarning
+- [lucide-react on npm](https://www.npmjs.com/package/lucide-react) -- v0.564.0 latest, using ^0.563.0 to match apps/web
+- [html2canvas-pro DeepWiki](https://deepwiki.com/yorickshan/html2canvas-pro) -- Modern CSS support details (oklch, color functions)
+- [shadcn/ui dark mode guide](https://ui.shadcn.com/docs/dark-mode/next) -- next-themes + Next.js App Router integration pattern
+- [Best HTML to Canvas Solutions 2025](https://portalzine.de/best-html-to-canvas-solutions-in-2025/) -- DOM capture library comparison

@@ -1,497 +1,321 @@
-# Pitfalls Analysis: DeFi Protocol Integration
+# Domain Pitfalls
 
-**Research Date:** 2026-02-10
-**Domain:** DeFi contract-to-frontend wiring, event indexing, keeper workflows, testnet deployment
-**Project:** Ammo Exchange — Tokenized ammunition on Avalanche
-
----
-
-## P1. Event Listener Silently Dies, Orders Stuck Forever
-
-**Severity:** CRITICAL
-**Phase:** Worker event indexer implementation
-
-**The Pitfall:**
-viem's `watchContractEvent` uses polling-based filter watching under the hood. When the RPC endpoint drops the filter (common on public Avalanche endpoints under load), viem throws a "filter not found" error and the watcher silently stops. No events are emitted, no error callback fires. Meanwhile, users have called `startMint()` and their USDC is locked in the CaliberMarket contract with `MintStatus.Started`, waiting for a `finalizeMint()` that never comes because the worker never saw the event.
-
-The current worker skeleton (`apps/worker/src/index.ts`) uses `http()` transport with no error handling, no reconnection logic, and no heartbeat. On Fuji, public RPC endpoints are rate-limited and occasionally return stale data.
-
-**Warning Signs:**
-
-- Worker logs stop printing new events but process stays alive (no crash = no Railway restart)
-- Database `Order` table has no new rows despite on-chain `MintStarted` events
-- Users report "stuck" orders in the admin queue with no matching DB entry
-- `publicClient.getBlockNumber()` returns the same value across multiple calls (stale connection)
-
-**Prevention Strategy:**
-
-1. Do NOT rely solely on `watchContractEvent` for production event ingestion. Implement a polling loop with `publicClient.getContractEvents()` (getLogs) that tracks the last processed block number in the database. This is the pattern recommended by viem maintainers for reliability.
-2. Store `lastProcessedBlock` in a persistent table (e.g., `IndexerState` in Prisma). On restart, resume from that block, not from "latest".
-3. Add a heartbeat check: every 30 seconds, call `getBlockNumber()` and compare to the last known block. If stale for >2 minutes, recreate the public client.
-4. Add a "gap detector" API route that compares on-chain `nextOrderId` for each CaliberMarket against the count of orders in the database. If they diverge, trigger a backfill from the gap.
-5. Log every processed event with block number and tx hash. This audit trail is essential for debugging missed events.
-
-**References:**
-
-- [viem Discussion #534: watchEvents skipping events](https://github.com/wevm/viem/discussions/534)
-- [viem Issue #1084: watchEvent dies after 30s on Bun](https://github.com/wevm/viem/issues/1084)
-- [viem Issue #1063: watchContractEvent not working properly](https://github.com/wevm/viem/issues/1063)
+**Domain:** Pitch deck app added to DeFi protocol Turborepo monorepo
+**Researched:** 2026-02-17
 
 ---
 
-## P2. USDC Approval UX Breaks the Mint Flow
+## Critical Pitfalls
 
-**Severity:** HIGH
-**Phase:** Frontend wagmi wiring for mint flow
+Mistakes that cause rewrites or major issues.
 
-**The Pitfall:**
-The mint flow requires two sequential wallet transactions: (1) ERC20 `approve(caliberMarketAddress, usdcAmount)` on the USDC contract, then (2) `startMint(usdcAmount, maxSlippageBps, deadline)` on the CaliberMarket. The current mock UI (`apps/web/features/mint/mint-flow.tsx` lines 1044-1049) simulates this with `setTimeout`, but wiring real wagmi hooks introduces several failure modes:
+### Pitfall 1: html2canvas-pro Cannot Parse oklch() Colors from Tailwind v4
 
-- **Approval for wrong amount:** If the user changes the USDC amount between approval and mint, the allowance may be insufficient. The `startMint` call's internal `_safeTransferFrom` will revert with `InvalidAmount` (CaliberMarket line 328-331), but the error message is opaque.
-- **Approval for wrong contract:** Each caliber has its own CaliberMarket address. Approving USDC for the 9MM market does not help if the user switches to 556.
-- **Non-standard USDC behavior:** Avalanche's native USDC (0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E) returns `bool` from `approve()`, but wagmi's standard `erc20Abi` can break with some USDC implementations. On Fuji, you will deploy your own mock USDC, which may have different behavior than mainnet USDC.
-- **Double-approval anti-pattern:** Some ERC20 tokens (not standard USDC, but worth noting) require setting allowance to 0 before setting a new value. The frontend must handle the "approval already exists but for a different amount" case.
-- **User closes wallet popup:** If the user rejects or closes the approval transaction, the frontend state machine must reset cleanly. The current `WalletState` type does not have an "approval-rejected" state.
+**What goes wrong:** html2canvas and its forks throw "Attempting to parse an unsupported color function 'oklch'" when rendering any element styled with Tailwind CSS v4 default colors. The existing `apps/web/app/globals.css` defines ALL shadcn semantic tokens in oklch format (e.g., `--background: oklch(0.13 0.01 280)`). If the pitch deck app reuses this theme system, PDF export will crash or render with missing colors on every slide.
 
-**Warning Signs:**
+**Why it happens:** Tailwind CSS v4 adopted oklch() as the default color space for superior perceptual uniformity. html2canvas-pro claims oklch() support but has reported spacing/rendering issues. The original html2canvas does not support oklch() at all. This is a fundamental incompatibility between the rendering library and the CSS color format.
 
-- Users report "Transaction Failed" after clicking "Confirm Mint" even though they approved
-- `useWriteContract` returns `isPending: true` indefinitely (wagmi issue #4187 with WalletConnect)
-- Approval transaction succeeds on-chain but frontend still shows "Approving..."
-- Different behavior between MetaMask and WalletConnect during approval
+**Consequences:** PDF export produces blank pages, black backgrounds where colors should be, or crashes entirely. This is a complete blocker for the core feature of the pitch deck app.
 
-**Prevention Strategy:**
+**Prevention:**
+1. Define ALL colors in the pitch deck's `globals.css` using hex/rgba exclusively. The Ammo Exchange custom tokens (`--brass: #c6a44e`, `--bg-primary: #0a0a0f`, etc.) already use hex and are safe -- replicate this pattern for ALL colors.
+2. Do NOT import shadcn's oklch-based variables. Create a standalone color system for the pitch deck that maps the same visual brass/dark theme using hex values.
+3. Test PDF export on the very first slide before building additional content. Validate that html2canvas-pro renders correctly with your exact color definitions.
+4. Fallback option: use `@csstools/postcss-oklab-function` PostCSS plugin to auto-generate sRGB fallbacks alongside oklch values, but this adds complexity -- hex-only is simpler.
 
-1. Before calling `startMint`, always check current allowance with `useReadContract` calling `usdc.allowance(userAddress, caliberMarketAddress)`. Only prompt approval if `allowance < usdcAmount`.
-2. Use the exact CaliberMarket address for the selected caliber, not a hardcoded address. Pull from `AmmoFactory.calibers(caliberId).market` or from the shared config after deployment.
-3. Add explicit error parsing for CaliberMarket custom errors (InvalidAmount, InvalidBps, MarketPaused) using viem's `decodeErrorResult`. Show human-readable messages instead of raw hex.
-4. Add a "approval-failed" and "approval-rejected" state to the `WalletState` machine in the mint flow component.
-5. For Fuji testnet, deploy a mock USDC that matches mainnet behavior (6 decimals, standard ERC20 returns). Do NOT use an 18-decimal test token -- the CaliberMarket's `usdcDecimals` is immutable and set at deployment.
-6. Implement `useWaitForTransactionReceipt` after approval to confirm it landed before enabling the mint button.
+**Detection:** PDF export produces blank/white/black areas where colors should be. Console errors mentioning "unsupported color function." Colors render as transparent or default black.
 
-**References:**
+**Confidence:** HIGH -- verified via [niklasvh/html2canvas#3269](https://github.com/niklasvh/html2canvas/issues/3269), [html2canvas-pro npm](https://www.npmjs.com/package/html2canvas-pro), and direct inspection of the project's `globals.css` which uses oklch() for 20+ color variables.
 
-- [wagmi Issue #4423: USDT non-standard ERC20 approval](https://github.com/wevm/wagmi/issues/4423)
-- [wagmi Issue #4187: useWriteContract hash not returning with WalletConnect](https://github.com/wevm/wagmi/issues/4187)
+**Phase impact:** Must be addressed in Phase 1 (foundation/setup). The CSS color strategy is foundational -- changing it after slides are built means rewriting every color reference.
 
 ---
 
-## P3. Fuji Testnet Has No Official USDC -- Deployment Address Mismatch
+### Pitfall 2: Blurry Text in PDF Output (Canvas DPI/Scale Mismatch)
 
-**Severity:** HIGH
-**Phase:** Contract deployment to Fuji
+**What goes wrong:** html2canvas renders DOM content as a bitmap, then jsPDF embeds that bitmap into the PDF. At default settings (scale: 1), all text is rendered at CSS pixel resolution, which is half or third the resolution of modern Retina displays. The resulting PDF has visibly blurry text -- unacceptable for a pitch deck meant to impress investors.
 
-**The Pitfall:**
-The shared config (`packages/shared/src/config/index.ts`) has placeholder `0x000...` addresses for Fuji USDC. Avalanche Fuji does not have an official Circle USDC deployment. You must deploy your own mock USDC token. However, this creates a cascade of issues:
+**Why it happens:** html2canvas captures at 1x CSS pixel density by default, ignoring `window.devicePixelRatio`. When this low-resolution bitmap is placed into a PDF at standard print dimensions (letter or A4), the effective DPI is roughly 72 instead of the 144-216 needed for sharp text.
 
-- **Decimal mismatch:** CaliberMarket's `usdcDecimals` is immutable (set in constructor, line 76). If you deploy a mock USDC with 18 decimals instead of 6, all price calculations will be off by 10^12. The formula `uint256 scale = 10 ** (18 - usdcDecimals)` (line 156) will compute `10^0 = 1` instead of `10^12`, producing wildly wrong token amounts.
-- **Address config propagation:** After deploying contracts to Fuji, you must update `CONTRACT_ADDRESSES.fuji` in the shared package AND the wagmi config. If the frontend reads from one source and the worker from another, they will disagree on which contracts to interact with.
-- **Factory creates markets at deployment-time addresses:** When `AmmoFactory.createCaliber()` deploys a new CaliberMarket, the market address is deterministic but not known until the transaction is mined. The frontend and worker need to discover these addresses either from the factory's `calibers()` mapping or from the `CaliberCreated` event.
-- **Foundry deploy scripts must set AmmoManager.treasury():** If treasury is not set before the first `finalizeMint()`, the transaction will revert with `TreasuryNotSet` (CaliberMarket line 212). This is easy to forget in deployment scripts.
+**Consequences:** Text is fuzzy, gradients show banding, thin borders and lines disappear. The pitch deck looks unprofessional, undermining credibility with investors and partners.
 
-**Warning Signs:**
+**Prevention:**
+1. Set `scale: 2` in html2canvas options. This renders at 2x resolution, producing sharp text on all displays.
+2. When adding the canvas to jsPDF, use the page dimensions (not canvas dimensions) so the high-res image is scaled down to fit: `pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, slideWidth, slideHeight)`.
+3. Do NOT use `scale: 3` or higher -- file sizes balloon (60MB+ reported) with diminishing quality returns. `scale: 2` is the sweet spot for text clarity vs file size.
+4. For slides with photos/gradients, use JPEG at quality 0.92 instead of PNG to keep file sizes reasonable.
 
-- `finalizeMint` reverts with `TreasuryNotSet` on the first order
-- Minted token amounts are astronomically large or near-zero (decimal mismatch)
-- Frontend shows "0 balance" despite successful mint (reading wrong contract address)
-- Worker indexes events from wrong contract address
+**Detection:** Export a PDF and zoom to 200%. If text appears pixelated compared to the on-screen version, the scale is too low.
 
-**Prevention Strategy:**
+**Confidence:** HIGH -- well-documented across [html2canvas#576](https://github.com/niklasvh/html2canvas/issues/576), [html2canvas#158](https://github.com/niklasvh/html2canvas/issues/158), and [html2pdf.js#85](https://github.com/eKoopmans/html2pdf.js/issues/85).
 
-1. Create a comprehensive Foundry deployment script (`script/Deploy.s.sol`) that deploys in order: (a) Mock USDC with 6 decimals, (b) AmmoManager with feeRecipient, (c) AmmoFactory with manager + USDC addresses, (d) createCaliber for each of the 4 calibers, (e) setTreasury on AmmoManager, (f) setKeeper for the keeper wallet.
-2. After deployment, run `export-abis.ts` AND a new `export-addresses.ts` script that reads deployment artifacts and updates `packages/shared/src/config/index.ts` with real Fuji addresses.
-3. Add a sanity-check script that reads `usdcDecimals` from each deployed CaliberMarket and verifies it matches the mock USDC's `decimals()` return value.
-4. Add the mock USDC contract to your Foundry project's `test/` directory (you already have `MockERC20.sol` there -- ensure it supports configurable decimals).
+**Phase impact:** Must be configured in the PDF export implementation. The `scale: 2` setting is a one-line fix, but slide layout dimensions must be designed for a fixed resolution from the start (e.g., 1280x720 base, rendered at 2560x1440 for capture).
 
 ---
 
-## P4. Admin Finalization From Browser Wallet Has Gas and Nonce Issues
+### Pitfall 3: On-Screen UI Artifacts Captured in PDF (Navigation Chrome, Scroll Offset)
 
-**Severity:** HIGH
-**Phase:** Admin dashboard and keeper workflow
+**What goes wrong:** html2canvas captures exactly what exists in the DOM, including navigation arrows, slide progress indicators, keyboard shortcut hints, hover states, active button highlights, and page scroll offsets. The exported PDF contains visible "Next/Previous" buttons, slide counters, or has mysterious white space at the top from scroll position.
 
-**The Pitfall:**
-The architecture decision is that admin (keeper) triggers `finalizeMint()` and `finalizeRedeem()` from a browser wallet via wagmi in the admin UI. This means the keeper's hot wallet private key is in MetaMask or a similar browser extension. Several issues arise:
+**Why it happens:** html2canvas clones the target DOM node and renders it as-is. It makes no distinction between "presentation content" and "interactive UI." Additionally, `window.scrollY` affects the capture viewport -- if the page is scrolled, the top of the captured image gets white space.
 
-- **Gas estimation on Fuji is unreliable:** Avalanche Fuji's gas estimation can return values that are too low for contract calls that do token minting + USDC transfers. If the admin clicks "Finalize" and the transaction runs out of gas, the order stays in `MintStatus.Started` state. The admin must manually retry, and there is no obvious indicator that gas was the issue (just a generic "transaction reverted").
-- **Nonce collision:** If the admin clicks "Finalize" on two orders rapidly, the second transaction may use the same nonce as the first (wagmi batches requests). This causes one transaction to fail silently.
-- **Keeper wallet balance runs out of AVAX:** On Fuji, the keeper wallet needs test AVAX for gas. Faucets limit to 2 AVAX per day. If the keeper processes many orders in testing, they can run out of gas funds with no warning.
-- **Price parameter is manually supplied:** `finalizeMint(orderId, actualPriceX18)` takes a price. The admin UI must compute this correctly. If `actualPriceX18` is in the wrong units (e.g., dollars instead of wei-scaled 1e18), the minted token amount will be wrong. There is no bounds check in the contract beyond slippage protection.
-- **Keeper wallet exposure:** The keeper wallet address has elevated permissions (can mint tokens, refund USDC, cancel redeems). If the browser extension is compromised, the attacker can drain the protocol.
+**Consequences:** PDFs look broken or amateur. Navigation buttons appear on every slide. White space at the top pushes content down. Any hover state active at capture time gets frozen into the image.
 
-**Warning Signs:**
+**Prevention:**
+1. **Off-screen clone technique (recommended):** For PDF export, clone each slide's content DOM into a hidden container with fixed dimensions (1280x720), strip all navigation/interactive elements, then capture the clone. Position the clone at `position: fixed; left: -9999px; top: 0;` so it is in the document but off-screen.
+2. Mark ALL navigation UI elements with the `data-html2canvas-ignore` attribute so they are automatically excluded from capture.
+3. Set `scrollX: 0, scrollY: -window.scrollY` in html2canvas options to neutralize scroll offset.
+4. Use the `onclone` callback to manipulate the cloned document: remove unwanted elements, force specific widths, reset animation states, disable hover effects.
+5. Separate content components from navigation components architecturally: `<SlideContent>` (captured) vs `<SlideControls>` (ignored).
 
-- Finalization transactions revert with no clear error ("execution reverted" with no custom error decoded)
-- Admin sees "pending" transactions that never confirm (nonce gap)
-- Token amounts minted are clearly wrong (e.g., 1e30 tokens for a $100 mint)
-- Admin's AVAX balance hits zero mid-session
+**Detection:** Export a PDF and inspect every slide for buttons, indicators, or white space that should not be there.
 
-**Prevention Strategy:**
+**Confidence:** HIGH -- the project context explicitly mentions P2 Markets encountered this exact issue and needed off-screen DOM duplication for clean PDF output.
 
-1. Add explicit gas limit override in the admin UI's `useWriteContract` calls. Set gas to 500,000 for finalize operations (typical usage is 150k-300k, but leave headroom). Do not rely on estimation.
-2. Display the admin wallet's AVAX balance prominently on the admin dashboard. Add a warning banner when balance drops below 0.5 AVAX.
-3. Build a price calculation helper in the admin UI: given the USDC amount and intended token output, compute `actualPriceX18 = (netUsdc * scale * 1e18) / expectedTokens`. Show the admin the expected token output BEFORE they submit.
-4. Add contract-level price bounds in a future iteration: revert if `actualPriceX18` deviates more than 20% from `order.requestPrice`.
-5. For testnet, create a faucet helper script that drips AVAX to the keeper wallet using the Fuji faucet API.
-6. Use `useWaitForTransactionReceipt` after every finalization to confirm success before allowing the next action. Disable the "Finalize" button while a transaction is pending.
+**Phase impact:** Must be designed into the architecture from the start. The separation between "capturable content" and "interactive chrome" needs to be in the component hierarchy from Phase 1, not retrofitted later.
 
 ---
 
-## P5. Prisma Connection Pooling Exhaustion on Neon Serverless
+## Moderate Pitfalls
 
-**Severity:** MEDIUM-HIGH
-**Phase:** Next.js API routes + worker DB integration
+### Pitfall 4: Port Collision When Running Multiple Next.js Apps in Dev
 
-**The Pitfall:**
-The current Prisma client (`packages/db/src/client.ts`) uses the `@prisma/adapter-pg` with a raw connection string. In a serverless environment (Vercel), each API route invocation creates a new connection. Under load, this exhausts Neon's connection limit (default: 100 connections on free tier). The symptoms are intermittent "too many connections" errors that appear randomly under traffic.
+**What goes wrong:** Running `pnpm dev` at the monorepo root triggers `turbo dev`, which starts ALL apps in parallel. Both `apps/web` (port 3000) and `apps/pitchdeck` will try to bind to port 3000 if the pitch deck has no explicit port configured. One fails silently or Next.js auto-picks a random port, causing confusion.
 
-Additionally, the worker on Railway is a long-running process that holds a single connection. If the connection drops (Neon's idle timeout is 5 minutes for free tier), the next Prisma query fails silently and the worker may crash.
+**Prevention:**
+1. Set an explicit, unique port in `apps/pitchdeck/package.json`: `"dev": "next dev --port 3001"`.
+2. Alternatively, during pitch deck development, use `turbo dev --filter=@ammo-exchange/pitchdeck` to run only that app.
+3. Document the port assignment in the monorepo CLAUDE.md.
 
-The `globalForPrisma` pattern (client.ts lines 18-26) helps in development but does NOT help in production Vercel because each serverless function is a separate process with its own global scope.
+**Detection:** `turbo dev` output shows both apps starting but one has a different port than expected, or one shows "Port 3000 already in use."
 
-**Warning Signs:**
+**Confidence:** HIGH -- directly observable from `apps/web/package.json` which hardcodes `--port 3000`.
 
-- API routes intermittently return 500 errors with "Connection terminated unexpectedly"
-- Worker crashes with "Connection refused" after idle periods
-- Prisma queries take 2-5 seconds on first call after cold start (Neon compute waking up)
-- Database shows connection count near limit in Neon dashboard
-
-**Prevention Strategy:**
-
-1. Use Neon's pooled connection string (with `-pooler` suffix) for the Vercel deployment. This routes through PgBouncer.
-2. For the worker on Railway, add connection retry logic: wrap Prisma operations in a try/catch that reconnects on connection errors. Alternatively, use `$disconnect()` and `$connect()` to reset the connection.
-3. Set `connection_limit=1` in the DATABASE_URL for serverless deployments: `?connection_limit=1&pool_timeout=10`.
-4. Add a health check endpoint (`/api/health`) that runs a simple Prisma query (`prisma.$queryRaw\`SELECT 1\``) to verify database connectivity. Monitor this endpoint.
-5. Consider using Prisma Accelerate or Neon's serverless driver (`@neondatabase/serverless`) for the Vercel edge runtime to avoid connection pooling issues entirely.
-
-**References:**
-
-- [Prisma + Neon documentation](https://www.prisma.io/docs/orm/overview/databases/neon)
-- [Neon connection latency docs](https://neon.com/docs/connect/connection-latency)
+**Phase impact:** Phase 1 setup. Trivial one-line fix but confusing to debug if missed.
 
 ---
 
-## P6. On-Chain and Off-Chain Order State Diverge
+### Pitfall 5: Tailwind v4 Automatic Content Scanning Misses New App
 
-**Severity:** MEDIUM-HIGH
-**Phase:** Worker indexer + API routes + frontend
+**What goes wrong:** Tailwind CSS v4 uses automatic content detection, scanning from the CSS file's directory. A new app (`apps/pitchdeck`) without its own PostCSS and CSS configuration will have missing utility classes. Styles silently fail to apply, elements appear unstyled.
 
-**The Pitfall:**
-The system has two sources of truth for order state: the CaliberMarket contract (on-chain `MintOrder` / `RedeemOrder` structs) and the Prisma `Order` table (off-chain). These can diverge in several ways:
+**Why it happens:** Tailwind v4 removed the explicit `content` configuration from `tailwind.config.js` (which no longer exists in v4). Instead, it scans for class usage based on the `@import "tailwindcss"` directive location. If the pitch deck app does not have its own `globals.css` with `@import "tailwindcss"` and its own `postcss.config.mjs`, Tailwind has nothing to scan.
 
-- **Worker misses an event** (see P1) -- on-chain order exists, DB row does not.
-- **Admin finalizes an order but DB update fails** -- on-chain status is `Finalized`, DB status is still `PENDING`.
-- **User's transaction reverts after the frontend optimistically writes to DB** -- DB row exists with txHash, but on-chain order does not.
-- **Chain reorganization** (rare on Avalanche, but possible on Fuji) -- event is processed, DB updated, then the block is reverted. The order disappears on-chain but persists in DB.
-
-The frontend currently plans to read order state from the API (which queries DB), but users may also check the block explorer. Discrepancies erode trust.
-
-**Warning Signs:**
-
-- Portfolio page shows an order as "Pending" but block explorer shows it as finalized
-- Admin dashboard shows a different order count than on-chain `nextOrderId`
-- User sees "Order not found" in the API but can verify on-chain that their `startMint` succeeded
-- DB has orders with `status: COMPLETED` but no corresponding `MintFinalized` event on-chain
-
-**Prevention Strategy:**
-
-1. Treat on-chain state as the canonical source of truth. The DB is a read-optimized cache.
-2. Add a reconciliation job (cron or manual admin button) that reads all orders from each CaliberMarket contract (iterating `mintOrders(1..nextOrderId)` and `redeemOrders(1..nextOrderId)`) and compares against DB state. Flag and auto-fix discrepancies.
-3. When the worker indexes a `MintFinalized` or `RedeemFinalized` event, upsert the order (create if missing, update if exists). Do not assume the `MintStarted` event was processed first.
-4. Add `onChainOrderId` (uint256) and `onChainStatus` fields to the Prisma `Order` model. Store the contract's order ID and status alongside the DB status.
-5. Wait for at least 2 block confirmations before writing finalized state to DB to minimize reorg risk.
-
----
-
-## P7. wagmi SSR Hydration Mismatch in Next.js 15
-
-**Severity:** MEDIUM
-**Phase:** Frontend wagmi wiring
-
-**The Pitfall:**
-The wagmi config (`apps/web/lib/wagmi.ts`) sets `ssr: true`, and the Providers component (`apps/web/app/providers.tsx`) wraps the app in `WagmiProvider`. However, Next.js 15's App Router aggressively server-renders components. Wallet-dependent hooks like `useAccount`, `useBalance`, and `useReadContract` return different values on server (no wallet) vs. client (wallet connected), causing React hydration mismatches.
-
-The current mint/redeem flow components are marked `"use client"`, which helps, but any server component that imports data dependent on wallet state (e.g., portfolio page showing user balances) will hit this issue.
-
-Additionally, the `QueryClient` is created as a module-level singleton (providers.tsx line 8). In Next.js 15, this can leak state between server-side renders of different requests if the app is deployed on a shared server (not a concern on Vercel's serverless, but relevant for development).
-
-**Warning Signs:**
-
-- Console warnings: "Text content does not match server-rendered HTML"
-- Wallet connection state flickers on page load (shows disconnected then connected)
-- Balance reads show "0" briefly before populating
-- React Query cache shows stale data from a previous user's session
-
-**Prevention Strategy:**
-
-1. Never read wallet-dependent data in server components. Use `"use client"` boundary for any component that calls `useAccount`, `useBalance`, `useReadContract`, etc.
-2. Create the `QueryClient` inside the Providers component (not at module level) or use a factory pattern with `useState`:
-   ```tsx
-   const [queryClient] = useState(() => new QueryClient());
+**Prevention:**
+1. Create `apps/pitchdeck/postcss.config.mjs` mirroring `apps/web/postcss.config.mjs`:
+   ```js
+   const config = {
+     plugins: { "@tailwindcss/postcss": {} },
+   };
+   export default config;
    ```
-3. Use wagmi's `useAccount` with an initial `status: "disconnected"` and only render wallet-dependent UI after hydration completes.
-4. For the portfolio and admin pages, use a loading skeleton that shows while wallet state resolves. Do not SSR these pages with wallet data.
+2. Create `apps/pitchdeck/app/globals.css` with `@import "tailwindcss"` and the pitch deck's hex-only color tokens.
+3. Verify Tailwind is generating classes by inspecting a styled element in DevTools.
+
+**Detection:** Elements with Tailwind classes (e.g., `bg-brass`, `text-lg`) render unstyled. DevTools shows no matching CSS rules generated.
+
+**Confidence:** HIGH -- documented in [Turborepo Tailwind guide](https://turborepo.dev/docs/guides/tools/tailwind) and [community PostCSS fix](https://medium.com/@preciousmbaekwe/fixing-tailwind-css-v4-component-styling-issues-in-turborepo-monorepos-the-postcss-base-path-1ceefbdc12b1).
+
+**Phase impact:** Phase 1 setup. Must be correct before any styling work begins.
 
 ---
 
-## P8. CaliberMarket Addresses Are Dynamic -- Config Cannot Be Hardcoded
+### Pitfall 6: CSS clamp() and Viewport Units Fail in html2canvas Off-Screen Rendering
 
-**Severity:** MEDIUM
-**Phase:** Contract deployment + frontend + worker wiring
+**What goes wrong:** Fluid typography using `clamp()` (e.g., `font-size: clamp(1rem, 2.5vw, 2rem)`) renders incorrectly when html2canvas captures an off-screen clone. Viewport units (`vw`, `vh`) resolve relative to the actual browser viewport, not the off-screen container dimensions. Text sizes in the PDF differ significantly from on-screen appearance.
 
-**The Pitfall:**
-The current shared config (`packages/shared/src/config/index.ts`) hardcodes individual token addresses (`ammoToken9MM`, `ammoToken556`, etc.). But the actual architecture uses `AmmoFactory.createCaliber()` to deploy CaliberMarket contracts, each of which creates its own AmmoToken. The addresses are not known until deployment.
+**Why it happens:** html2canvas re-parses CSS and resolves viewport-relative units against the browser window dimensions, not the cloned element's dimensions. An off-screen clone at `left: -9999px` still resolves `vw` against the full browser viewport. The `clamp()` function itself may not be fully parsed by html2canvas's CSS engine.
 
-Furthermore, the config structure conflates AmmoToken addresses with CaliberMarket addresses. The frontend needs CaliberMarket addresses (to call `startMint`), the worker needs CaliberMarket addresses (to watch events), and both need AmmoToken addresses (to read balances). The current config only stores token addresses.
+**Prevention:**
+1. Use a fixed-dimension slide container (e.g., 1280x720px) with `transform: scale()` for responsive on-screen display. The content uses fixed `px` or `rem` values. Scaling is handled by the container, not the typography.
+2. This means html2canvas captures the unscaled, fixed-dimension slides -- no viewport units to resolve incorrectly.
+3. If clamp() is used for on-screen responsiveness, override with fixed values in the `onclone` callback before capture.
 
-If a new caliber is added post-deployment, or if contracts are redeployed on Fuji for bug fixes, every consumer must be updated. Manual address management is the #1 source of integration bugs in DeFi projects.
+**Detection:** Text in the exported PDF is significantly larger or smaller than on-screen. Elements sized with `vw`/`vh` appear wrong proportionally.
 
-**Warning Signs:**
+**Confidence:** MEDIUM -- inferred from html2canvas's known limitations with viewport units and its CSS parser scope. The [html2canvas features page](https://html2canvas.hertzen.com/features/) lists supported properties but does not explicitly address clamp().
 
-- Frontend calls `startMint` on the wrong address (gets "execution reverted" with no helpful error)
-- Worker watches the AmmoToken address instead of the CaliberMarket address for events
-- After redeployment, some parts of the system use old addresses while others use new ones
-- New caliber added via `createCaliber` but not reflected in frontend
+**Phase impact:** This determines the slide CSS architecture. Choose `transform: scale()` over fluid typography in Phase 1.
 
-**Prevention Strategy:**
+---
 
-1. Restructure the config to store: `AmmoManager`, `AmmoFactory`, and per-caliber entries with both `market` and `token` addresses:
+### Pitfall 7: Missing transpilePackages Breaks Shared Package Imports
+
+**What goes wrong:** The pitch deck app imports from `@ammo-exchange/shared` (for types, constants, brand assets config) but Next.js fails to compile because the shared package ships raw TypeScript without a build step. Build errors with "Unexpected token" on TypeScript syntax in node_modules.
+
+**Why it happens:** Next.js does not transpile workspace dependencies by default. The `@ammo-exchange/shared` package has `"type": "module"` and ships `.ts` files directly. Without `transpilePackages`, Next.js treats the import as pre-compiled JavaScript and chokes on TypeScript syntax.
+
+**Prevention:**
+1. Copy the relevant `next.config.ts` settings from `apps/web`:
    ```ts
-   export const CONTRACTS = {
-     fuji: {
-       ammoManager: "0x...",
-       ammoFactory: "0x...",
-       calibers: {
-         "9MM": { market: "0x...", token: "0x..." },
-         "556": { market: "0x...", token: "0x..." },
-         // ...
-       },
-     },
-   } as const;
+   transpilePackages: ["@ammo-exchange/shared"],
+   webpack: (config) => {
+     config.resolve.extensionAlias = {
+       ".js": [".ts", ".tsx", ".js"],
+     };
+     return config;
+   },
    ```
-2. Write a post-deployment script that reads addresses from Foundry's broadcast artifacts and updates the config file automatically.
-3. Add a runtime discovery fallback: the worker can call `ammoFactory.calibers(caliberId)` to get the market+token address pair. Cache this on startup.
-4. For the frontend, consider reading caliber addresses from the factory contract on page load (single multicall) rather than relying on hardcoded config. This makes the frontend resilient to redeployments.
+2. The pitch deck likely does NOT need `@ammo-exchange/db` or `@ammo-exchange/contracts` -- omit those to keep dependencies minimal.
+3. Do NOT add Prisma-related `serverExternalPackages` since the pitch deck has no database interaction.
+
+**Detection:** `next build` or `next dev` fails immediately with syntax errors pointing to files in `node_modules/@ammo-exchange/shared`.
+
+**Confidence:** HIGH -- directly observable from `apps/web/next.config.ts` which already solves this exact pattern.
+
+**Phase impact:** Phase 1 setup. Copy from the existing app's config.
 
 ---
 
-## P9. Deadline Field Misuse Leads to Stuck or Prematurely Expired Orders
+### Pitfall 8: Keyboard Navigation Conflicts with Browser Defaults
 
-**Severity:** MEDIUM
-**Phase:** Frontend mint/redeem wiring
+**What goes wrong:** Arrow keys, Space, Escape, and Enter -- the natural presentation shortcuts -- conflict with browser scrolling, form input behavior, and browser keyboard shortcuts. Space scrolls the page down. Arrow keys scroll. Escape may trigger browser-specific behavior. The presentation feels broken because keyboard input does not work as expected.
 
-**The Pitfall:**
-CaliberMarket's `startMint` and `startRedeem` accept a `uint64 deadline` parameter. If `deadline != 0 && block.timestamp > deadline`, finalization reverts with `DeadlineExpired` (lines 209, 249). The frontend must set this correctly:
+**Why it happens:** The browser has default handlers for these keys at the document level. Without explicit `event.preventDefault()`, browser behavior takes priority over custom keyboard handlers.
 
-- **Deadline too short:** If the frontend sets a 30-minute deadline, but the admin (human-in-the-loop) takes 24-48 hours to finalize, every order will expire. The keeper will have to `refundMint` every order.
-- **Deadline = 0 means no deadline:** This is a valid choice but means orders can sit indefinitely in `Started` state if the keeper never acts. Users have no recourse except hoping for a refund.
-- **Block timestamp vs. JavaScript Date:** `block.timestamp` is in seconds. If the frontend computes deadline using `Date.now()` (milliseconds) and forgets to divide by 1000, the deadline will be in the year 52000+.
-- **Fuji block timestamps:** Fuji's block times are ~2 seconds, but timestamps can drift from wall clock time.
+**Prevention:**
+1. Use a focusable slide container with `tabIndex={0}` and an `onKeyDown` handler. Call `event.preventDefault()` for captured keys (ArrowLeft, ArrowRight, Space, Escape).
+2. Only capture keys when the presentation container has focus. Do NOT add a global `window.addEventListener('keydown')` -- this creates conflicts with browser chrome and any overlaid modals (like the PDF export progress dialog).
+3. Ensure Tab key is NOT captured -- it must still move focus out of the presentation for accessibility (WCAG "no keyboard traps" criterion).
+4. Add a custom focus indicator (subtle outline or none with `outline: none` plus a visual cue) so the browser's default blue focus ring does not look jarring on a full-width slide container.
 
-**Warning Signs:**
+**Detection:** Press Space while viewing the deck -- if the page scrolls instead of advancing slides, keyboard capture is broken. Press Tab -- if focus gets trapped inside the presentation, accessibility is violated.
 
-- Admin clicks "Finalize" and gets `DeadlineExpired` revert on orders that were submitted recently
-- All orders have `deadline: 0` (no protection for users) or `deadline: Date.now()` (already expired)
-- Deadline values in the database look like millisecond timestamps (13 digits) instead of seconds (10 digits)
+**Confidence:** HIGH -- standard web accessibility concern, documented in [freecodecamp keyboard accessibility guide](https://www.freecodecamp.org/news/designing-keyboard-accessibility-for-complex-react-experiences/).
 
-**Prevention Strategy:**
-
-1. For the MVP with human-in-the-loop finalization, set deadline to `Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60)` (7 days from now). This gives the admin ample time while still protecting users.
-2. Display the deadline as a human-readable date in both the user's portfolio and the admin order queue.
-3. Add a unit test that verifies the frontend's deadline computation produces a valid `uint64` in seconds.
-4. In the admin dashboard, sort pending orders by deadline (soonest first) and highlight orders expiring within 24 hours.
+**Phase impact:** Phase 2 (slide system/navigation). Straightforward if addressed deliberately.
 
 ---
 
-## P10. Mock Data Leaks Into Production Code Paths
+### Pitfall 9: CSS Animations Captured Mid-State in PDF
 
-**Severity:** MEDIUM
-**Phase:** DB integration and mock data replacement
+**What goes wrong:** Slides with entrance animations (fade-in, slide-up, scale) or CSS transitions are captured by html2canvas while the animation is in progress. The resulting PDF slide shows content at partial opacity, shifted position, or mid-transform. Elements that animate on scroll or on intersection may not be visible at all if they are in their initial (pre-animation) state.
 
-**The Pitfall:**
-The entire frontend currently runs on mock data (`apps/web/lib/mock-data.ts` imported in mint-flow.tsx line 22, redeem-flow.tsx line 29, and likely many other components). The mock data includes hardcoded prices, fake user balances, and simulated transaction delays (`setTimeout`). When wiring real contract calls and API routes, developers often:
+**Prevention:**
+1. In the off-screen clone or `onclone` callback, inject a style that disables all animations:
+   ```css
+   *, *::before, *::after {
+     animation: none !important;
+     transition: none !important;
+     opacity: 1 !important;
+   }
+   ```
+2. For elements using CSS `transform` for animation, reset transforms in the clone to their final state.
+3. If using Intersection Observer for scroll-triggered animations, ensure the off-screen clone elements are in their "visible" state.
 
-- Leave mock fallbacks that silently activate when the API fails, masking real bugs
-- Forget to replace `caliberDetails[caliberId].price` (mock) with on-chain oracle data
-- Keep `setTimeout` delays alongside real `useWaitForTransactionReceipt` calls, causing double-loading states
-- Ship mock `userUsdcBalance` / `userTokenBalance` to production, showing fake balances
+**Detection:** Exported PDF slides have partially transparent text, elements shifted from their expected positions, or missing content that should be visible.
 
-The mint flow (line 1057: `Math.random() > 0.2` for success) and redeem flow (line 1501: `Math.random() > 0.15`) simulate random failures. These MUST be fully removed.
+**Confidence:** MEDIUM -- logical consequence of html2canvas's DOM cloning behavior. Not widely documented but follows directly from how the library works.
 
-**Warning Signs:**
-
-- Users see non-zero balances without ever connecting a wallet
-- Prices on the market page do not match on-chain oracle prices
-- Transaction confirmations appear faster than block time (setTimeout artifacts)
-- "Order submitted" UI appears before the transaction is actually mined
-
-**Prevention Strategy:**
-
-1. Create a `lib/mock-data.ts` barrel that exports ONLY when `process.env.NEXT_PUBLIC_USE_MOCKS === "true"`. Default to real data paths.
-2. Add a lint rule or grep check in CI that flags imports of `mock-data` in non-test files.
-3. Replace mock data incrementally per feature: first balances (useReadContract), then prices (API route from DB), then order state (API route), then transaction flows (useWriteContract).
-4. Add a visible "TESTNET MODE" banner that shows when connected to Fuji (chainId 43113). This helps testers distinguish real vs. mock behavior.
-5. Each component that currently uses mock data should have a `// TODO: Replace with real data` comment that can be grep-tracked.
+**Phase impact:** PDF export phase. A single CSS injection in the clone handler prevents the issue.
 
 ---
 
-## P11. Worker Process Crash Loses In-Flight Events With No Recovery
+## Minor Pitfalls
 
-**Severity:** MEDIUM
-**Phase:** Worker deployment on Railway
+### Pitfall 10: Font Loading Race Condition During PDF Capture
 
-**The Pitfall:**
-The worker (`apps/worker/src/index.ts`) is a single long-running Bun process on Railway. If it crashes (OOM, unhandled promise rejection, Railway restart), any events that were received but not yet persisted to the database are lost. There is no event queue, no dead-letter mechanism, and no WAL (write-ahead log).
+**What goes wrong:** When capturing slides for PDF export (especially using off-screen clones), custom fonts (Inter, JetBrains Mono loaded via `next/font`) may not be ready for the cloned elements. The PDF renders with system fallback fonts (Arial, Helvetica) instead of the project's chosen fonts, creating visual inconsistency.
 
-Additionally, Railway free tier restarts containers periodically. The worker has no graceful shutdown handler. On restart, it will start watching from "latest" block, missing all events that occurred during downtime.
+**Prevention:**
+1. Await `document.fonts.ready` before starting any html2canvas capture:
+   ```ts
+   await document.fonts.ready;
+   const canvas = await html2canvas(element, options);
+   ```
+2. Ensure font-face declarations are global (loaded in the root layout), not dynamically injected per component.
+3. Next.js `next/font` handles loading well, but the promise ensures fonts are fully rasterized before capture begins.
 
-The combination of this pitfall with P1 (silent watcher death) means there are two independent failure modes that both result in missed events.
+**Detection:** PDF shows sans-serif system fonts instead of Inter. Most visible in monospace code blocks where JetBrains Mono should appear.
 
-**Warning Signs:**
+**Confidence:** HIGH -- documented in [html2canvas#1940](https://github.com/niklasvh/html2canvas/issues/1940).
 
-- Railway dashboard shows the worker restarted but the DB has a gap in order timestamps
-- Worker logs show "Starting Ammo Exchange event listener..." repeatedly (restart loop) with no events in between
-- Orders appear on-chain that have no corresponding DB entry
-
-**Prevention Strategy:**
-
-1. Store `lastProcessedBlock` per CaliberMarket in the database. On startup, query this value and start indexing from `lastProcessedBlock + 1` using `getContractEvents` (getLogs), not `watchContractEvent`.
-2. Process events in a transaction: read events, write to DB, update `lastProcessedBlock` -- all in one Prisma `$transaction`. If the write fails, the block number is not advanced and events will be reprocessed on next iteration.
-3. Add a `process.on("SIGTERM")` handler that logs the current block number and cleanly disconnects from the database.
-4. Run the polling loop with a 5-second interval. This is fast enough for user experience (orders take 24-48 hours) and resilient to momentary RPC failures.
-5. Add Railway health check endpoint (HTTP server on a secondary port) that returns 200 if the last poll succeeded within 30 seconds.
+**Phase impact:** PDF export phase. One line of code (`await document.fonts.ready`) prevents it.
 
 ---
 
-## P12. Admin Dashboard Auth Is UX-Only -- Keeper Contract Auth Is the Real Gate
+### Pitfall 11: Large PDF File Sizes from Multi-Slide High-Res Capture
 
-**Severity:** MEDIUM
-**Phase:** Admin dashboard implementation
+**What goes wrong:** With `scale: 2` and 15+ slides, each slide generates a ~2-4MB PNG canvas. The full pitch deck PDF can reach 30-60MB -- too large to email (most providers cap at 25MB), attach to investor portals, or share casually.
 
-**The Pitfall:**
-The architecture decision states: "Admin auth = wallet address check. Contract already reverts for non-keepers. Middleware is UX, not security." This is correct for on-chain security, but creates a UX trap:
+**Prevention:**
+1. Use JPEG format for slides with gradients, photos, or complex backgrounds: `canvas.toDataURL('image/jpeg', 0.85)`.
+2. Use PNG only for slides with text on solid backgrounds where JPEG compression artifacts would be visible.
+3. Target a maximum of 10-15MB for a 15-slide deck. Test with representative content early.
+4. Consider offering "Standard" (scale: 1.5, JPEG) and "High Quality" (scale: 2, PNG) export options.
 
-- If the admin connects a non-keeper wallet, the dashboard loads fine but every "Finalize" button will produce a confusing `NotKeeper` revert error. The error is only visible after the user submits the transaction and it fails.
-- If `AmmoManager.setKeeper(adminAddress, false)` is called (removing keeper status), the admin dashboard still loads and shows the order queue. The admin discovers they lost access only when they try to finalize.
-- Multiple admins could see the same pending order and both try to finalize it. The second transaction reverts with `InvalidStatus` (order already finalized).
+**Detection:** Check exported PDF file size. If over 20MB for 15 slides, optimization is needed.
 
-**Warning Signs:**
+**Confidence:** MEDIUM -- depends on slide content complexity. Text-heavy slides compress well; image-heavy slides do not.
 
-- Admin sees orders but every finalization attempt reverts
-- Two admins finalize the same order; one gets a confusing "InvalidStatus" error
-- Admin changes their wallet in MetaMask without realizing the new wallet is not a keeper
-
-**Prevention Strategy:**
-
-1. On admin page load, call `ammoManager.isKeeper(connectedAddress)` and display a clear error banner if false. Do not show the order queue to non-keepers.
-2. On the order detail page, check `mintOrders(orderId).status` on-chain before showing the "Finalize" button. If status is not `Started`, gray out the button and show "Already processed."
-3. Consider adding optimistic locking: when an admin clicks "Finalize", immediately update the DB order status to `PROCESSING`. Other admins see this and know the order is being handled. If the transaction fails, revert the DB status.
-4. Show the connected wallet address and keeper status prominently in the admin header.
+**Phase impact:** PDF export phase. Worth testing with representative content early to calibrate quality settings.
 
 ---
 
-## P13. ABI Export Pipeline Breaks Silently After Contract Changes
+### Pitfall 12: Static Export Breaks If Server Features Are Accidentally Added
 
-**Severity:** MEDIUM
-**Phase:** Contract development iteration on Fuji
+**What goes wrong:** If the pitch deck uses `output: "export"` in next.config.ts for static deployment, accidentally adding a Route Handler (`app/api/`), Server Action (`"use server"`), or dynamic route without `generateStaticParams` will cause `next build` to fail with cryptic errors.
 
-**The Pitfall:**
-The build dependency graph is: `forge build` (compiles .sol to `out/`) -> `export-abis.ts` (reads JSON artifacts, writes TypeScript) -> frontend/worker import ABIs. If a developer modifies a Solidity contract (e.g., adds a new event or changes a function signature) but forgets to run `pnpm contracts:build`, the TypeScript ABIs become stale.
+**Prevention:**
+1. Decide upfront: the pitch deck is a purely static, client-side app. Set `output: "export"` and commit to it.
+2. All logic (PDF generation, keyboard navigation, slide state) is client-side only.
+3. Do not add `app/api/` directories. If analytics or tracking are needed later, use client-side services (PostHog, Plausible script).
+4. If PDF generation later needs server-side rendering (e.g., using Puppeteer), remove `output: "export"` at that point and deploy to a server runtime.
 
-viem's type inference from `as const` ABIs means the TypeScript compiler will NOT catch the mismatch -- it will happily encode/decode based on the old ABI. The error only manifests at runtime as a cryptic "execution reverted" or decoded garbage data.
+**Detection:** `next build` fails with clear error messages about API routes or server features being incompatible with static export.
 
-The `export-abis.ts` script (line 23) silently skips contracts whose artifacts are not found, printing only a `console.warn`. This means if the `out/` directory is stale or missing, the ABIs remain unchanged and no error is thrown.
+**Confidence:** HIGH -- documented in [Next.js static export docs](https://nextjs.org/docs/messages/api-routes-static-export).
 
-**Warning Signs:**
-
-- New event added to CaliberMarket but worker never receives it (ABI filter does not include the new event)
-- Function call reverts on-chain but works in Foundry tests (ABI signature mismatch)
-- `export-abis.ts` prints warnings that are buried in CI output
-- Frontend type-checks pass but transactions revert at runtime
-
-**Prevention Strategy:**
-
-1. Add `contracts:build` as a dependency of `dev` and `build` in turbo.json. This already exists (`^build` in dependsOn), but verify it triggers `forge build` AND `export-abis.ts` in sequence.
-2. Make `export-abis.ts` exit with code 1 if any artifact is missing (change `console.warn` + `continue` to `console.error` + `process.exit(1)`).
-3. Add a CI step that runs `forge build && tsx scripts/export-abis.ts && pnpm check` to verify ABIs and types are in sync.
-4. After any `.sol` file change, always run `pnpm contracts:build` before testing the frontend. Add this to the CLAUDE.md development workflow.
+**Phase impact:** Phase 1 decision. Choose the deployment model upfront.
 
 ---
 
-## P14. USDC Decimal Scaling Error in Price Display vs. Contract Math
+### Pitfall 13: Turbo Build Dependency Graph Includes Unnecessary Tasks for Pitch Deck
 
-**Severity:** MEDIUM
-**Phase:** Frontend price display + contract interaction
+**What goes wrong:** The existing `turbo.json` configures `build` to depend on `^build` and `^db:generate`. When building the pitch deck, Turbo runs Prisma generation and Foundry contract compilation even though the pitch deck has no database or contract dependencies. This slows builds and introduces failure modes (e.g., missing DATABASE_URL env var fails the build even though the pitch deck does not need it).
 
-**The Pitfall:**
-USDC on Avalanche has 6 decimals. AmmoToken has 18 decimals. CaliberMarket uses a scaling formula: `uint256 scale = 10 ** (18 - usdcDecimals)` (line 156). The price oracle returns prices in 18-decimal fixed-point (`actualPriceX18`).
+**Prevention:**
+1. Ensure the pitch deck's `package.json` does NOT list `@ammo-exchange/db` or `@ammo-exchange/contracts` as dependencies. Turbo's `^build` and `^db:generate` only trigger for actual dependency graph edges.
+2. For isolated pitch deck builds, use `turbo build --filter=@ammo-exchange/pitchdeck` which only builds the pitch deck and its actual dependencies.
+3. If `@ammo-exchange/shared` depends on `db` or `contracts`, consider whether the pitch deck actually needs the shared package, or if it only needs a subset (e.g., brand constants). If it only needs types/constants, the dependency is lightweight.
 
-The frontend must handle three different decimal scales:
+**Detection:** `turbo build` for the pitch deck triggers Prisma generation or Foundry compilation. Build times are longer than expected for a simple static site.
 
-1. USDC amounts: 6 decimals (1 USDC = 1_000_000 units)
-2. AmmoToken amounts: 18 decimals (1 token = 1e18 units)
-3. Oracle prices: 18-decimal fixed-point (e.g., $0.30/round = 300000000000000000)
+**Confidence:** HIGH -- directly follows from the existing `turbo.json` configuration and Turbo's dependency resolution behavior.
 
-The current mock UI uses floating-point JavaScript numbers (`Number.parseFloat(usdcAmount)`, mint-flow.tsx line 257). When wiring real contract calls, you must convert to BigInt with correct scaling. A common mistake is:
-
-- Passing `100` (meaning $100 USDC) directly to `startMint` instead of `100_000_000n` (100 \* 1e6)
-- Displaying token amounts as raw BigInt without dividing by 1e18
-- Mixing up "price per round in USD" (human-readable) with "price per round in 1e18 wei" (contract format)
-
-**Warning Signs:**
-
-- User enters $100 USDC but the contract receives $0.0001 USDC (or $100 trillion USDC)
-- Token balance shows as "1000000000000000000" instead of "1.0"
-- Price chart shows numbers that are 10^12x too large or too small
-- `parseUnits` / `formatUnits` used with wrong decimal parameter
-
-**Prevention Strategy:**
-
-1. Use viem's `parseUnits(amount, 6)` for USDC and `parseUnits(amount, 18)` for AmmoToken amounts. Never do manual BigInt multiplication.
-2. Use `formatUnits(bigintValue, 6)` for displaying USDC and `formatUnits(bigintValue, 18)` for tokens.
-3. Create shared utility functions in `packages/shared`: `toUsdcUnits(dollarAmount: string)`, `fromUsdcUnits(rawAmount: bigint)`, `toTokenUnits(roundCount: string)`, `fromTokenUnits(rawAmount: bigint)`.
-4. Add unit tests for these conversion functions with edge cases: max uint256, zero, fractional amounts, amounts that lose precision.
+**Phase impact:** Phase 1 setup. Keep the pitch deck's dependency surface minimal.
 
 ---
 
-## P15. Fuji Public RPC Rate Limiting Breaks Development Workflow
+## Phase-Specific Warnings
 
-**Severity:** LOW-MEDIUM
-**Phase:** Development and testing on Fuji
-
-**The Pitfall:**
-The wagmi config (`apps/web/lib/wagmi.ts`) uses `http()` with no custom RPC URL for both Avalanche mainnet and Fuji. This defaults to the public RPC endpoints. Public Fuji RPC (`https://api.avax-test.network/ext/bc/C/rpc`) has aggressive rate limiting. When the frontend makes multiple `useReadContract` calls on page load (balance checks, order status, market prices), it can hit the rate limit and return errors.
-
-The worker also uses `http()` without a custom URL. If both the frontend (via Vercel) and the worker (via Railway) are hitting the same public endpoint, they compete for rate limit quota.
-
-Additionally, React Query's default `refetchInterval` behavior combined with wagmi's auto-refresh on block changes can create a firehose of RPC requests on a single page.
-
-**Warning Signs:**
-
-- Console shows "429 Too Many Requests" errors from the RPC endpoint
-- Balance reads return undefined intermittently
-- Worker logs show "request failed" errors during high frontend activity
-- Page load takes 5+ seconds due to sequential failed RPC retries
-
-**Prevention Strategy:**
-
-1. Use a dedicated RPC provider for Fuji (QuickNode, Alchemy, or Infura all offer free Avalanche Fuji endpoints). Set the URL via `FUJI_RPC_URL` env var.
-2. Configure separate RPC URLs for frontend and worker to avoid shared rate limits.
-3. Use wagmi's `multicall` batching (enabled by default in wagmi v2) to combine multiple `useReadContract` calls into a single RPC request.
-4. Set explicit `refetchInterval` on React Query hooks: 30 seconds for balances, 60 seconds for market data. Do not use wagmi's `watchBlockNumber` for frontend data refresh -- it creates too many requests.
+| Phase Topic | Likely Pitfall | Mitigation |
+|-------------|---------------|------------|
+| Project setup (Phase 1) | Port collision (#4), Tailwind scanning (#5), transpilePackages (#7), unnecessary build deps (#13) | Copy proven patterns from apps/web, set unique port, keep deps minimal |
+| CSS/Theme (Phase 1) | oklch() color crash (#1), clamp() rendering (#6) | Hex-only colors in pitchdeck globals.css; use transform: scale() not fluid typography |
+| Component architecture (Phase 1) | UI artifacts in PDF (#3) | Separate SlideContent from SlideControls in component hierarchy from day one |
+| Slide system (Phase 2) | Keyboard conflicts (#8) | tabIndex container, preventDefault on captured keys, no keyboard traps |
+| PDF export (Phase 3) | Blurry text (#2), animations mid-state (#9), font loading (#10), file size (#11) | scale: 2, onclone animation reset, document.fonts.ready, JPEG for image slides |
+| Deployment (Phase 3) | Static export incompatibility (#12) | Commit to output: "export" upfront, all logic client-side |
 
 ---
 
-## Summary: Pitfall Priority by Phase
+## Sources
 
-| Phase                          | Pitfalls                                                                             | Action                                                                   |
-| ------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
-| **Contract Deployment (Fuji)** | P3 (USDC decimals), P4 (treasury not set), P8 (address config)                       | Deploy script must handle all setup atomically                           |
-| **Worker Event Indexer**       | P1 (silent death), P6 (state divergence), P11 (crash recovery)                       | Use getLogs polling with persistent block cursor, not watchContractEvent |
-| **Frontend Wagmi Wiring**      | P2 (approval UX), P7 (SSR hydration), P9 (deadline), P10 (mock data), P14 (decimals) | Replace mocks incrementally; use parseUnits/formatUnits everywhere       |
-| **Admin Dashboard**            | P4 (gas/nonce), P12 (auth UX), P13 (ABI staleness)                                   | Check keeper status on load; add gas overrides; keep ABIs in sync        |
-| **Infrastructure**             | P5 (Prisma pooling), P15 (RPC rate limits)                                           | Pooled connection string for Vercel; dedicated RPC endpoint              |
+- [html2canvas oklch issue #3269](https://github.com/niklasvh/html2canvas/issues/3269) -- HIGH confidence
+- [html2canvas-pro npm package](https://www.npmjs.com/package/html2canvas-pro) -- HIGH confidence
+- [html2canvas blurry fix #576](https://github.com/niklasvh/html2canvas/issues/576) -- HIGH confidence
+- [html2canvas blurry canvas #158](https://github.com/niklasvh/html2canvas/issues/158) -- HIGH confidence
+- [html2pdf.js DPI/Scale #85](https://github.com/eKoopmans/html2pdf.js/issues/85) -- HIGH confidence
+- [html2canvas font caching #1940](https://github.com/niklasvh/html2canvas/issues/1940) -- HIGH confidence
+- [html2canvas off-screen rendering #117](https://github.com/niklasvh/html2canvas/issues/117) -- MEDIUM confidence
+- [html2canvas features page](https://html2canvas.hertzen.com/features/) -- HIGH confidence
+- [Turborepo Tailwind CSS guide](https://turborepo.dev/docs/guides/tools/tailwind) -- HIGH confidence
+- [Tailwind v4 PostCSS base path fix](https://medium.com/@preciousmbaekwe/fixing-tailwind-css-v4-component-styling-issues-in-turborepo-monorepos-the-postcss-base-path-1ceefbdc12b1) -- MEDIUM confidence
+- [Next.js static export docs](https://nextjs.org/docs/messages/api-routes-static-export) -- HIGH confidence
+- [freecodecamp keyboard accessibility](https://www.freecodecamp.org/news/designing-keyboard-accessibility-for-complex-react-experiences/) -- HIGH confidence
+- [Joyfill: Creating PDFs from HTML+CSS](https://joyfill.io/blog/creating-pdfs-from-html-css-in-javascript-what-actually-works) -- MEDIUM confidence
 
 ---
 
-_Pitfalls analysis: 2026-02-10_
+_Pitfalls analysis for pitch deck milestone: 2026-02-17_

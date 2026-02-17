@@ -1,203 +1,182 @@
 # Project Research Summary
 
-**Project:** Ammo Exchange
-**Domain:** DeFi protocol integration -- tokenized RWA (physical ammunition) on Avalanche
-**Researched:** 2026-02-10
+**Project:** Ammo Exchange — Pitch Deck App (`apps/pitchdeck`)
+**Domain:** Investor-facing pitch deck web app within an existing DeFi protocol monorepo
+**Researched:** 2026-02-17
 **Confidence:** HIGH
 
 ## Executive Summary
 
-Ammo Exchange is a 2-step settlement DeFi protocol where users deposit USDC to mint ERC20 tokens backed 1:1 by physical ammunition, and a human keeper finalizes orders after off-chain procurement. The existing codebase has all the raw materials -- audited smart contracts, a complete mock UI, a database schema, and a worker skeleton -- but none of them are wired together. The milestone is clear: deploy contracts to Avalanche Fuji, connect every layer (chain, worker, database, API, frontend, admin), and replace all mock data with real on-chain and off-chain reads.
+The pitch deck app is a standalone, statically-exported Next.js 15 app added to the existing Ammo Exchange Turborepo monorepo. It serves a single purpose: convert protocol whitepaper content into a compelling 13-slide investor/partner presentation with PDF export capability. Because the protocol (smart contracts, dashboard, admin, event indexer) already exists on Fuji testnet, the deck's credibility hook — showing a working product — costs nearly nothing to implement. The recommended approach is to build the deck as a pure client-side app with no database, no wallet connection, and no server-side dependencies; content is hardcoded in React components; the only new infrastructure is client-side PDF generation via `html2canvas-pro` + `jsPDF`.
 
-The recommended approach is to build strictly bottom-up: deploy contracts and update shared config first, then build the event indexer (the backbone that populates the database), then API routes (data access layer), then wire the frontend, and finally build the admin dashboard. This order is non-negotiable because each layer depends on the one below it. The existing stack (Next.js 15, wagmi 2.x, viem, Prisma 7, Foundry, Bun worker) is correct and requires almost no changes -- only `@wagmi/connectors` needs to be added as a new dependency. Do not upgrade wagmi to v3, Next.js to 16, or add Ponder/The Graph. The stack is right; the work is wiring, not tooling.
+The recommended stack reuses the monorepo's proven foundation (Next.js 15, React 19, Tailwind v4, TypeScript strict mode, pnpm workspaces, Turborepo) with exactly three new packages: `html2canvas-pro` (Tailwind v4-compatible DOM-to-canvas renderer), `jsPDF` v4 (PDF assembly), and `next-themes` (dark/light toggle with FOUC prevention). No presentation framework (Reveal.js, Spectacle, Slidev) is needed — a ~150-line custom orchestrator with CSS transitions is simpler, faster, and does not conflict with the Ammo Exchange brass/dark theme. The deck deploys independently as a static site (`output: "export"`) to its own Vercel project at a shareable investor URL.
 
-The dominant risk is the event indexer silently dying without anyone noticing, leaving user funds locked in contracts with no corresponding database records. viem's `watchContractEvent` is unreliable on public Avalanche endpoints. The worker must use a polling-based `getContractEvents` loop with persistent block checkpoints, not real-time watchers. The second major risk is decimal scaling errors -- USDC has 6 decimals, AmmoToken has 18, and oracle prices use 18-decimal fixed-point. Every contract interaction must use viem's `parseUnits`/`formatUnits` with the correct decimal parameter. Third, the deployment script must be comprehensive: deploy mock USDC (6 decimals), set treasury, set keeper, and output all addresses atomically. Missing any step (especially `setTreasury`) causes silent failures during finalization.
+The most critical risk is a CSS color compatibility issue: Tailwind v4 generates `oklch()` color values by default, which `html2canvas` cannot render, causing PDF export to produce blank pages. The mitigation is non-negotiable and must be established in Phase 1: all colors in the pitch deck's `globals.css` must use hex/rgba exclusively. The Ammo Exchange custom token system (`--brass: #c6a44e`, `--bg-primary: #0a0a0f`) already does this — the pitfall is accidentally reusing shadcn's oklch-based semantic tokens from `apps/web`, which must be explicitly excluded.
+
+---
 
 ## Key Findings
 
 ### Recommended Stack
 
-The existing stack is production-ready for this milestone. No major dependency changes are needed. The only addition is `@wagmi/connectors` for wallet connection setup. Every other package stays at its current version range.
+The stack is minimal and almost entirely inherited from the existing monorepo. Three new packages are the only additions. `html2canvas-pro` is the critical dependency: it is a maintained fork of `html2canvas` with explicit modern CSS support (`oklch()`, `color()`, `calc()` in background-position, CSS `rotate`), which is mandatory for Tailwind v4 compatibility. `jsPDF` v4.1.0 adds PDF assembly with a security patch for CVE-2025-68428. `next-themes` v0.4.6 provides SSR-safe dark mode with `suppressHydrationWarning` on `<html>` and React 19 peer dep compatibility.
+
+The deck is explicitly scoped to `apps/pitchdeck/` on port 3001 with no dependency on `@ammo-exchange/db`, `@ammo-exchange/contracts`, wagmi, viem, iron-session, Prisma, or TanStack Query. Build dependency graph: `packages/shared (no build step) → apps/pitchdeck`. Turbo handles this correctly with zero config changes to the monorepo root.
 
 **Core technologies:**
-
-- **Foundry (forge):** Contract deployment to Fuji -- already configured, use `--slow` flag for Avalanche's fast finality
-- **wagmi 2.x + viem 2.x:** Frontend contract interaction -- stay on v2; ecosystem (RainbowKit, ConnectKit) has inconsistent v3 support
-- **Next.js 15 App Router:** Dashboard + API routes -- Server Components for data display, Client Components for wallet interaction
-- **Prisma 7 + Neon PostgreSQL:** Off-chain data persistence -- existing schema covers orders, users, audit logs
-- **Bun worker + viem:** Event indexer -- custom `getContractEvents` polling loop, not Ponder or The Graph
-- **Bare wagmi (no RainbowKit):** Wallet connection UI -- simple `useConnect`/`useDisconnect` hooks sufficient for testnet
-- **Zod 4:** API route validation -- already installed, use for all route handler input parsing
-
-**Do NOT add:** RainbowKit, Ponder, The Graph, ethers.js, tRPC, wagmi v3, Next.js 16.
+- `html2canvas-pro ^1.6.7`: DOM-to-canvas rendering — only fork supporting Tailwind v4's modern CSS color functions
+- `jsPDF ^4.1.0`: PDF assembly — industry standard, v4 includes security patches (CVE-2025-68428)
+- `next-themes ^0.4.6`: Dark/light mode — React 19 compatible, handles SSR FOUC, 15KB footprint
+- `lucide-react ^0.563.0`: Icons — already in `apps/web`, zero additional bundle cost via pnpm hoisting
+- `@ammo-exchange/shared`: Protocol constants and caliber specs for slide content (optional — only if needed)
 
 ### Expected Features
 
-**Must have (table stakes) -- user-facing:**
+The feature landscape divides into 10 table-stakes slides (the actual deck content), 7 differentiators, and 6 anti-features to explicitly avoid. All 10 table-stakes slides are independent of each other and can be built in parallel. The investor-optimized narrative flow: Cover → Problem → Price Volatility → Solution → How It Works → Market Opportunity → Competitive Landscape → Revenue Model → Traction/Demo → Regulatory → Roadmap → Team → Ask (13 slides, ~4 minute read time).
 
-- Wallet connection with chain switching to Fuji
-- Real ERC20 token balances (multicall `balanceOf` for all calibers + USDC)
-- Mint flow with real USDC approval + `startMint()` contract calls
-- Redeem flow with real token approval + `startRedeem()` contract calls
-- Order status tracking from database (populated by worker)
-- Transaction hash links to Snowtrace explorer
-- Oracle price display with proper decimal scaling
-- Fee transparency (read `mintFeeBps`/`redeemFeeBps` from contract)
+**Must have (table stakes):**
+- Cover slide — brand identity, tagline ("Make Your Ammo Liquid"), 5-second hook
+- Problem slide — $8B market, no liquid secondary exchange, price volatility data
+- Price Volatility chart — interactive 9mm prices 2019-2025, 4x swing, the single most compelling visual
+- Solution slide — USDC in, tokens out, redeem for physical; one diagram, three steps
+- How It Works — two-step async mint/redeem flow, per-caliber tokens (9MM, 556, 22LR, 308)
+- Market Opportunity — TAM/SAM/SOM with 26.2M first-time gun buyers since 2020
+- Competitive Landscape — "PAXG for ammunition" framing vs. AmmoSeek, AmmoSquared
+- Revenue Model — fee structure table, wholesale spread unit economics, conservative projections
+- Regulatory Positioning — no FFL required, KYC at redemption only, token classification rationale
+- Team and The Ask — fundraising strategy, use-of-funds breakdown, milestones unlocked
 
-**Must have (table stakes) -- admin:**
-
-- Wallet-gated admin access (`isKeeper` check)
-- Pending order queue (filterable by status/type)
-- Finalize/refund mint actions with price input
-- Finalize/cancel redeem actions
-- Protocol stats overview (total minted, fees collected, treasury balance)
-
-**Should have (differentiators) -- build after core works:**
-
-- Proof of reserves dashboard (on-chain supply vs. off-chain inventory)
-- Activity feed (recent protocol activity for social proof)
-- Admin audit trail (every keeper action logged with tx hash)
+**Should have (competitive differentiators):**
+- Interactive 9mm price volatility chart — the "wow" slide; hardcoded historical data, built with Recharts
+- Live testnet demo link — existing Fuji dashboard, link with CTA costs near zero to add
+- PDF export — practical necessity for investor email distribution
+- URL-param personalization ("Prepared for [Investor Name]") — low effort, high perceived value
 
 **Defer to v2+:**
+- Animated protocol flow visualization — Medium-High complexity; static diagram covers 90% of value
+- Live on-chain metrics feed — API work required; "as of [date]" static numbers work initially
+- Custom view analytics — use Plausible/PostHog initially instead of building custom event tracking
 
-- KYC provider integration (Persona/Jumio) -- auto-approve for testnet
-- Push notifications for order status changes
-- Price charts with historical data
-- DEX swap widget with real Uniswap integration
-- Fiat on-ramp, cross-chain bridging, mobile app, governance
+**Explicit anti-features (do not build):**
+- Presentation editor or CMS — content changes quarterly, edit the code
+- Presenter mode, speaker notes, slide transitions beyond CSS opacity+translateX
+- Full dApp embedded inside deck — link out to Fuji dashboard instead
+- Multi-language support — English-only for U.S.-focused initial investor outreach
+- Governance token/tokenomics slides — deferred in whitepaper; including them invites securities scrutiny
 
 ### Architecture Approach
 
-The system is a six-component integration: smart contracts emit events, the worker indexes events to the database, API routes serve database data to the frontend, the frontend reads on-chain state directly via wagmi and off-chain state via API routes, and the admin dashboard triggers keeper contract calls from the browser. The worker is strictly an indexer -- it never calls finalization functions. The admin human reviews orders, procures ammunition off-chain, and triggers finalization from the browser using their keeper wallet. The database is a read-optimized cache of enriched off-chain data; the chain is the source of truth for settlement state.
+The pitch deck uses a thin custom slide system: a `PitchDeck` orchestrator component owns all slide state, keyboard navigation, and the slides array definition. A `SlideRenderer` wrapper handles CSS opacity+translateX transitions — no Framer Motion needed, one CSS transition does not justify 30KB+ of animation library. Each slide is a full-viewport React component rendered one at a time. PDF export uses an off-screen clone technique: all slides are rendered simultaneously in a hidden `position: fixed; left: -9999px` container at fixed 1920x1080 resolution, captured sequentially with `html2canvas-pro`, then assembled into a multi-page landscape PDF by `jsPDF`. The `output: "export"` Next.js config produces a fully static site — no server, no API routes, deployable to any static host.
+
+No new shared packages are needed. The CSS theme variables from `apps/web` (~20 lines of custom properties) and the `cn()` utility (3 lines) are copied directly into the pitch deck — creating a `packages/ui/` shared package for this overlap adds build complexity for near-zero benefit. The overlap is intentionally minimal.
 
 **Major components:**
-
-1. **Smart Contracts (Fuji)** -- settlement logic, token minting/burning, fee distribution, access control
-2. **Event Indexer Worker (Railway)** -- chain-to-database bridge; watches 6 event types across 4 CaliberMarket contracts
-3. **PostgreSQL via Prisma (Neon)** -- off-chain state: users, orders, shipping, audit logs, inventory
-4. **Next.js API Routes (Vercel)** -- thin data-access wrappers for frontend consumption
-5. **Frontend UI (Vercel)** -- wallet interaction, transaction submission, data display
-6. **Admin Dashboard (Vercel, same app)** -- keeper operations UI for order finalization
+1. `PitchDeck` orchestrator — owns `currentSlide` state, keyboard event listener, slides array definition
+2. `SlideRenderer` — CSS transition wrapper (opacity + translateX, no external animation library)
+3. `Slide` base — full-viewport layout wrapper (consistent padding, max-width, brass/dark background)
+4. `SlideHeader` — reusable icon + title + subtitle presentational component
+5. `SlideControls` — prev/next buttons, slide counter, PDF export trigger
+6. `PDFExporter` — off-screen hidden container rendering all slides at 1920x1080 for capture
+7. Individual slide components (13 files in `slides/`) — one per slide, pure presentational content
 
 ### Critical Pitfalls
 
-1. **Event listener silently dies (P1, CRITICAL)** -- viem's `watchContractEvent` drops filters on public Avalanche endpoints without error. Use polling-based `getContractEvents` with persistent `lastProcessedBlock` stored in database. Add heartbeat checks and gap detection.
+1. **oklch() color crash in PDF export** — Tailwind v4 defaults generate `oklch()` colors that `html2canvas` cannot parse, causing blank PDF pages. Prevention: define ALL colors in pitchdeck's `globals.css` using hex/rgba exclusively; never import shadcn's oklch semantic tokens; validate PDF export on the first slide before building any more content.
 
-2. **USDC approval UX breaks mint flow (P2, HIGH)** -- Two sequential transactions (approve + startMint) create multiple failure modes. Always check current allowance before prompting approval. Wait for approval receipt before enabling mint. Parse CaliberMarket custom errors for human-readable messages.
+2. **Blurry text in PDF output** — Default html2canvas `scale:1` produces ~72 DPI rasterization, visibly fuzzy in print. Prevention: always set `scale: 2` in html2canvas options; pass page dimensions (not canvas dimensions) to `jsPDF.addImage()` so the 2x image scales back down to fit the page.
 
-3. **No official USDC on Fuji (P3, HIGH)** -- Must deploy mock USDC with exactly 6 decimals. If decimals are wrong, all price calculations are off by 10^12. Deploy script must set treasury address or first `finalizeMint` reverts with `TreasuryNotSet`.
+3. **Navigation chrome captured in PDF** — html2canvas captures the full DOM including prev/next buttons, progress bars, and hover states. Prevention: separate `SlideContent` from `SlideControls` in the component hierarchy from day one; use `data-html2canvas-ignore` on all interactive chrome; use the off-screen clone technique so only content elements are captured.
 
-4. **Admin gas and nonce issues (P4, HIGH)** -- Browser-based finalization has unreliable gas estimation on Fuji. Set explicit gas limit (500k). Show keeper AVAX balance on admin dashboard. Add price calculation helper to prevent `actualPriceX18` unit errors.
+4. **CSS clamp()/viewport units break in off-screen rendering** — `vw`/`vh` units resolve against the browser window, not the off-screen clone container, causing text size mismatches between PDF and screen. Prevention: use a fixed-dimension slide container (1920x1080) with CSS `transform: scale()` for responsive on-screen display; slide content uses fixed `px`/`rem`, not fluid typography.
 
-5. **On-chain and off-chain state diverge (P6, MEDIUM-HIGH)** -- Worker misses events, DB update fails after finalization, or chain reorg causes discrepancy. Treat on-chain as canonical. Upsert orders on finalization events (create if missing). Add reconciliation job comparing `nextOrderId` against DB count.
+5. **Phase 1 setup traps (four independent issues)** — port collision (must use `--port 3001`), Tailwind v4 not scanning the new app (needs own `postcss.config.mjs`), missing `transpilePackages: ["@ammo-exchange/shared"]` in `next.config.ts`, and pitch deck inheriting unnecessary db/contracts Turbo build deps. All are one-line fixes but collectively block the entire setup if missed.
+
+---
 
 ## Implications for Roadmap
 
-Based on research, suggested phase structure:
+Based on research, the pitch deck builds naturally in three phases following a foundation → content → export/deploy progression:
 
-### Phase 1: Foundation -- Contracts and Config
+### Phase 1: Foundation and Setup
+**Rationale:** The CSS color strategy is foundational — changing from oklch to hex after slides are built means touching every color reference across 13 components. All four setup traps (#4 port collision, #5 Tailwind scanning, #7 transpilePackages, #13 Turbo deps) must be resolved before any slide content can be written or tested. The `output: "export"` deployment choice must be made upfront because adding API routes later is incompatible with static export.
+**Delivers:** Working `apps/pitchdeck` scaffold — Next.js 15 app running on port 3001, Tailwind v4 with hex-only brass/dark theme, PostCSS config, TypeScript config extending root, `next.config.ts` with `transpilePackages` and `output: "export"`, first blank slide renders correctly in browser and exports a non-blank page to PDF.
+**Addresses:** Prerequisites for all slide and PDF work; validates that html2canvas-pro renders the brass/dark color palette without errors.
+**Avoids:** oklch crash (#1), port collision (#4), Tailwind silent failure (#5), transpilePackages build error (#7), unnecessary Turbo build deps (#13)
 
-**Rationale:** Everything depends on deployed contracts and correct addresses in the shared config. The schema also needs new fields (`onChainOrderId`, `marketAddress`, `BlockCheckpoint` model) before the worker can write data.
-**Delivers:** Deployed contracts on Fuji, updated `CONTRACT_ADDRESSES.fuji` with all addresses (AmmoManager, AmmoFactory, 4x CaliberMarket, 4x AmmoToken, mock USDC, mock oracle), database migration with new fields.
-**Addresses:** Contract deployment (PROJECT.md active requirement), shared config update
-**Avoids:** P3 (USDC decimal mismatch) by deploying mock USDC with 6 decimals; P8 (hardcoded addresses) by restructuring config to include market + token per caliber; P3 (`TreasuryNotSet`) by setting treasury in deploy script.
+### Phase 2: Core Slide Content and Navigation
+**Rationale:** All 13 slides are independent of each other and can be built in parallel once the scaffold exists. Slide content is drawn entirely from existing whitepaper sections — no new research or decisions needed except team bios and fundraising figures (which can use placeholders). The custom slide navigation system (keyboard arrows, progress bar, slide counter, CSS transitions) also belongs here as it is purely presentational with no PDF coupling.
+**Delivers:** Complete 13-slide investor deck visible in browser with keyboard navigation (ArrowLeft/Right/Space/Home/End), progress indicator, and CSS slide transitions; interactive 9mm price volatility chart; live testnet demo link CTA; URL parameter personalization for investor-specific cover slides.
+**Uses:** Next.js 15, React 19, Tailwind v4, lucide-react, Recharts (for price chart), whitepaper content
+**Implements:** PitchDeck orchestrator, SlideRenderer, Slide base, SlideHeader, SlideControls, ProgressBar, all 13 slide components
+**Avoids:** Keyboard conflicts with browser defaults (#8) via `tabIndex` container and `preventDefault` on captured keys
 
-### Phase 2: Event Indexer Worker
-
-**Rationale:** The worker populates the database. API routes, the portfolio page, the admin order queue, and protocol stats all need data in the database. Without the indexer, the rest of the app has nothing to display.
-**Delivers:** Working Bun worker that watches all 6 CaliberMarket events across 4 markets, writes orders/users/audit logs to Prisma, recovers from restarts using persistent block checkpoints.
-**Addresses:** Features 1.8 (worker event indexing)
-**Avoids:** P1 (silent watcher death) by using polling `getContractEvents` instead of `watchContractEvent`; P11 (crash recovery) by storing `lastProcessedBlock` and processing in Prisma transactions; P6 (state divergence) by upserting orders on finalization events.
-
-### Phase 3: API Routes
-
-**Rationale:** The frontend needs API routes to query off-chain data (orders, users, market stats). These are thin Prisma wrappers that depend on the worker having populated the database.
-**Delivers:** REST endpoints for orders, markets, portfolio, admin order queue, admin stats, and shipping address submission. Zod validation on all inputs.
-**Addresses:** Features 1.5 (order status tracking), 2.2 (pending order queue), 2.5 (protocol stats)
-**Avoids:** P5 (connection pooling) by using Neon pooled connection string and `connection_limit=1` for serverless.
-
-### Phase 4: Frontend Wiring
-
-**Rationale:** With contracts deployed, events indexed, and API routes serving data, the frontend can replace all mock data with real reads. Wallet connection is the foundation; token balances and prices come next; then transaction flows.
-**Delivers:** Real wallet connection, on-chain token/USDC balances, oracle prices, mint flow with USDC approval + `startMint`, redeem flow with token approval + `startRedeem`, order status from API, tx hash links to Snowtrace.
-**Addresses:** Features 1.1 (wallet connection), 1.2 (balances), 1.3 (mint flow), 1.4 (redeem flow), 1.5 (order status), 1.6 (tx links), 1.7 (oracle price), 1.9 (fee transparency)
-**Avoids:** P2 (approval UX) by checking allowance first and waiting for approval receipt; P7 (SSR hydration) by keeping wallet hooks in client components and using `useState` for QueryClient; P9 (deadline) by setting 7-day deadline; P10 (mock data leak) by incrementally replacing mocks with gated `NEXT_PUBLIC_USE_MOCKS` flag; P14 (decimal scaling) by creating shared `parseUnits`/`formatUnits` utility functions.
-
-### Phase 5: Admin Dashboard
-
-**Rationale:** The admin dashboard depends on everything: deployed contracts (to call finalize), indexed events (to see pending orders), API routes (to query orders), and wagmi (to submit keeper transactions). Build this last.
-**Delivers:** Wallet-gated `/admin` layout, pending order queue with filters, finalize/refund mint actions with price calculator, finalize/cancel redeem actions, protocol stats overview, audit trail display.
-**Addresses:** Features 2.1 (admin gate), 2.2 (order queue), 2.3 (finalize/refund mint), 2.4 (finalize/cancel redeem), 2.5 (protocol stats), 3.7 (audit trail)
-**Avoids:** P4 (gas/nonce) by setting explicit gas limits and showing AVAX balance; P12 (auth UX) by checking `isKeeper` on page load and showing status in header; P13 (ABI staleness) by ensuring `contracts:build` runs before dev/build.
-
-### Phase 6: Differentiators (Post-MVP Polish)
-
-**Rationale:** These features add trust and polish but are not required for the Fuji testnet milestone to be functional. Build them after the core mint-trade-redeem loop works end-to-end.
-**Delivers:** Dynamic proof of reserves, activity feed, price charts, enhanced audit trail.
-**Addresses:** Features 3.1 (proof of reserves), 3.5 (activity feed), 3.3 (price charts)
+### Phase 3: PDF Export and Deployment
+**Rationale:** PDF export depends on all slides being finalized in Phase 2. The off-screen rendering architecture, animation reset handling, font loading synchronization, and file size optimization are all PDF-specific concerns that belong together after slide content stabilizes.
+**Delivers:** Working PDF export (all 13 slides, `scale: 2`, JPEG compression targeting 10-15MB output); "Export PDF" button in SlideControls; animation reset injected via `onclone` callback; `document.fonts.ready` await before capture; deployment to Vercel static host at shareable investor URL.
+**Avoids:** Blurry text (#2), UI artifacts in PDF (#3), CSS clamp rendering failure (#6), animation mid-state capture (#9), font loading race condition (#10), oversized PDF files (#11), static export incompatibility (#12)
 
 ### Phase Ordering Rationale
 
-- **Bottom-up is mandatory:** Each layer depends on the one below it. Contracts must exist before the worker can index events. The worker must populate the database before API routes return data. API routes must serve data before the frontend can display it. The frontend must work before the admin dashboard makes sense.
-- **Worker before frontend:** The worker is the backbone that connects on-chain activity to the database. Without it, the portfolio page, order tracking, admin queue, and protocol stats all show empty data. Building the worker early means data is available for every subsequent phase.
-- **Admin last, not first:** The admin dashboard is the most complex phase (forms, contract writes, price calculations, multi-step workflows) and depends on all other layers working. Building it last means fewer "works in isolation but fails in integration" bugs.
-- **Differentiators are separate:** Proof of reserves, activity feed, and price charts are valuable but orthogonal to the core settlement flow. They can be built in parallel or deferred without blocking testnet validation.
+- Phase 1 before Phase 2: CSS color foundation must be validated (PDF renders a non-blank slide) before slide content is written. Fixing oklch colors after 13 slides are built means touching every component.
+- Phase 2 before Phase 3: PDF export is tested against finalized slides. Layout changes after PDF architecture is built may require adjusting the off-screen clone dimensions and capture logic.
+- Content (Phase 2) is entirely internal — all whitepaper data is available now, no external blockers except team bios and fundraising figures (use placeholders).
+- Phase 3 is the natural completion boundary: a shareable URL + downloadable PDF constitutes a shippable pitch deck.
 
 ### Research Flags
 
-Phases likely needing deeper research during planning:
+Phases with standard, well-documented patterns (research-phase can be skipped):
 
-- **Phase 1 (Foundation):** The deployment script is the highest-risk deliverable. Must handle mock USDC, mock oracle, correct constructor params, role setup, and address export atomically. Research the existing `MockERC20.sol` and Foundry broadcast artifact format.
-- **Phase 2 (Worker):** viem's event watching reliability on Avalanche public endpoints is the project's biggest technical risk. Need to validate the polling pattern with actual Fuji RPC behavior, test crash recovery, and measure block lag.
-- **Phase 5 (Admin):** The `actualPriceX18` calculation for `finalizeMint` is easy to get wrong. Need to research the exact formula: how does the contract compute token amounts from USDC and price, and how should the admin UI reverse-engineer the expected output to validate the input.
+- **Phase 1:** Every setup step has a direct analog in `apps/web`. Copy `next.config.ts`, `postcss.config.mjs`, `package.json` patterns. Zero novel decisions. The pitfalls document provides exact prevention code for each setup trap.
+- **Phase 2:** Slide content comes from the whitepaper. Component patterns are fully specified in ARCHITECTURE.md with code samples. The CSS slide transition is ~50 lines of React using no external libraries.
+- **Phase 3:** PDF export architecture is fully specified in ARCHITECTURE.md (off-screen clone, `scale: 2`, `onclone` animation reset, `document.fonts.ready`). All pitfalls documented with prevention code. No additional research needed.
 
-Phases with standard patterns (skip additional research):
+None of the three phases require additional `/gsd:research-phase` work. The research is comprehensive and the implementation path is unambiguous.
 
-- **Phase 3 (API Routes):** Standard Next.js route handlers + Prisma queries. Well-documented, established patterns.
-- **Phase 4 (Frontend Wiring):** wagmi hooks (`useWriteContract`, `useReadContract`, `useWaitForTransactionReceipt`) are well-documented. The existing mock UI provides the component structure -- just swap data sources.
+---
 
 ## Confidence Assessment
 
-| Area         | Confidence | Notes                                                                                                                                                                                                                                              |
-| ------------ | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Stack        | HIGH       | Existing stack is correct. Research confirms no changes needed except adding `@wagmi/connectors`. All version decisions are well-justified with specific rationale for staying vs. upgrading.                                                      |
-| Features     | HIGH       | Clear separation of table stakes vs. differentiators. Feature dependency graph is well-mapped. Existing mock UI provides exact scope for what needs wiring.                                                                                        |
-| Architecture | HIGH       | Six-component architecture with clear boundaries matches the existing codebase structure. Data flows are fully documented for both mint and redeem paths. Worker-as-indexer and admin-as-keeper pattern is explicitly defined in PROJECT.md.       |
-| Pitfalls     | HIGH       | 15 pitfalls identified with specific warning signs and prevention strategies. The most critical ones (silent watcher death, USDC decimals, state divergence) have actionable mitigations. References to actual viem GitHub issues add credibility. |
+| Area | Confidence | Notes |
+|------|------------|-------|
+| Stack | HIGH | All versions npm-verified 2026-02-17. Peer dependencies confirmed. Monorepo compatibility verified via direct codebase inspection of `apps/web` patterns. |
+| Features | HIGH | Slide structure derived from multiple funded DeFi/RWA pitch deck analyses. Narrative flow validated across investor psychology research. Slide content sourced from existing whitepaper. |
+| Architecture | HIGH | Derived directly from existing `apps/web` codebase patterns. Component hierarchy is a known, simple pattern with no novel design decisions. Reference code included in ARCHITECTURE.md. |
+| Pitfalls | HIGH | 10 of 13 pitfalls rated HIGH confidence with specific GitHub issue references, npm package inspection, and direct codebase verification. 3 pitfalls rated MEDIUM (logically inferred from library behavior). |
 
 **Overall confidence:** HIGH
 
 ### Gaps to Address
 
-- **Mock USDC behavior vs. mainnet USDC:** The project will use a custom mock USDC on Fuji. Need to verify it matches mainnet Avalanche USDC (6 decimals, standard ERC20 returns). The existing `MockERC20.sol` in the test directory should be checked for configurable decimals.
-- **Fuji WebSocket RPC availability:** The worker ideally uses WebSocket for lower latency, but Fuji public WebSocket endpoints may be unreliable. Need to test `wss://api.avax-test.network/ext/bc/C/ws` and have HTTP polling as a fallback.
-- **Oracle price source for testnet:** The price oracle contract is listed as "out of scope" for implementation. The deploy script needs a mock oracle that returns configurable prices. Need to determine what price values to use for each caliber during testing.
-- **Neon free tier connection limits:** The free tier allows 100 connections. With Vercel serverless functions and a Railway worker, connection exhaustion is possible under load. Should validate with Neon's pooled connection string before building API routes.
-- **Admin `actualPriceX18` formula:** The exact calculation the admin must perform to convert a dollar-denominated Ammo Squared invoice price into the `actualPriceX18` parameter is not documented in the research. This needs to be derived from the CaliberMarket contract's `_calculateMintTokens` function.
+- **Team bios and photos** (Slide 12): Content depends on team providing materials. Mark as placeholder in Phase 2 and fill before launch. Not a technical blocker.
+- **Fundraising decisions for The Ask slide** (Slide 13): Raise amount and use-of-funds breakdown require founder decision before slide content can be written. Same placeholder approach. Not a technical blocker.
+- **Historical 9mm price data** (Price Volatility chart, Slide 3): Data available from AmmoSeek/AmmoStats archives. Source and format as a JSON array before building the chart component. Build the component with sample data first, replace with real data before launch.
+- **PDF file size validation**: Actual file size depends on slide content complexity. The JPEG-at-0.85 approach targets 10-15MB but should be validated with representative content early in Phase 3. Adjust quality parameter if needed.
+
+---
 
 ## Sources
 
 ### Primary (HIGH confidence)
-
-- Existing codebase analysis -- contract source, mock UI, Prisma schema, worker skeleton, shared config
-- PROJECT.md -- architecture decisions, scope definition, constraints
-- viem documentation -- `watchContractEvent`, `getContractEvents`, transport options
-- wagmi v2 documentation -- hooks, connectors, SSR configuration
-- Foundry documentation -- `forge script`, deployment, verification
+- Direct codebase inspection (`turbo.json`, `pnpm-workspace.yaml`, `apps/web/package.json`, `apps/web/next.config.ts`, `apps/web/app/globals.css`) — monorepo compatibility and CSS patterns
+- [html2canvas-pro on npm](https://www.npmjs.com/package/html2canvas-pro) — v1.6.7, modern CSS support verified 2026-02-17
+- [jsPDF on npm](https://www.npmjs.com/package/jspdf) — v4.1.0, CVE-2025-68428 patch confirmed
+- [next-themes on npm](https://www.npmjs.com/package/next-themes) — v0.4.6, React 19 peer dep confirmed
+- [html2canvas oklch issue #3269](https://github.com/niklasvh/html2canvas/issues/3269) — oklch() color crash confirmed
+- [html2canvas blurry text #576](https://github.com/niklasvh/html2canvas/issues/576), [#158](https://github.com/niklasvh/html2canvas/issues/158) — scale:2 fix
+- [html2canvas font loading #1940](https://github.com/niklasvh/html2canvas/issues/1940) — document.fonts.ready pattern
+- [Next.js static export docs](https://nextjs.org/docs/messages/api-routes-static-export) — output: "export" constraints
+- [Turborepo Tailwind CSS guide](https://turborepo.dev/docs/guides/tools/tailwind) — per-app PostCSS config requirement
 
 ### Secondary (MEDIUM confidence)
-
-- viem GitHub issues (#534, #1084, #1063) -- `watchContractEvent` reliability problems
-- wagmi GitHub issues (#4423, #4187) -- ERC20 approval and WalletConnect edge cases
-- Prisma + Neon documentation -- connection pooling, serverless adapter patterns
-- Neon documentation -- connection latency, idle timeout behavior
+- [Ink Narrates DeFi Pitch Deck Guide](https://www.inknarrates.com/post/defi-pitch-deck) — slide narrative structure and investor expectations
+- [Storydoc pitch deck engagement data](https://www.storydoc.com/blog/best-pitch-deck-software) — interactive deck 2.3x sharing statistic
+- [Nerdbot pitch deck 2026 rules](https://nerdbot.com/2025/11/07/what-are-the-5-new-rules-for-designing-a-pitch-deck-in-2026/) — live data and mobile-first trend
+- [IMARC Group ammunition market](https://www.imarcgroup.com/ammunition-market) — $26.7B civilian ammunition market in 2025
+- [Tailwind v4 PostCSS base path fix](https://medium.com/@preciousmbaekwe/fixing-tailwind-css-v4-component-styling-issues-in-turborepo-monorepos-the-postcss-base-path-1ceefbdc12b1) — per-app config validation
 
 ### Tertiary (LOW confidence)
-
-- Avalanche Fuji public RPC rate limits -- exact limits not officially documented, based on community reports
-- RainbowKit/ConnectKit wagmi v3 support -- "inconsistent" based on community discussion, not officially confirmed
+- Market size estimates vary significantly ($24B-$80B) depending on scope (civilian vs. military). Use the $26-29B civilian estimate for pitch materials as the more defensible figure. Grand View's $80B estimate includes military; do not lead with it.
 
 ---
-
-_Research completed: 2026-02-10_
-_Ready for roadmap: yes_
+*Research completed: 2026-02-17*
+*Ready for roadmap: yes*
