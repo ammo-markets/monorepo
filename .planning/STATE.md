@@ -2,20 +2,18 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-02-16)
+See: .planning/PROJECT.md (updated 2026-02-17)
 
 **Core value:** Anyone worldwide can get price exposure to U.S. ammunition by minting ammo tokens with USDC, while only verified U.S. residents in allowed states can redeem for physical delivery.
-**Current focus:** Phase 23 - Landing Page Cleanup
+**Current focus:** Defining requirements for v1.5 Pitch Deck
 
 ## Current Position
 
-Milestone: v1.4 UI/UX Polish & Accessibility
-Phase: 23 of 23 (Landing Page Cleanup)
-Plan: 2 of 2 in current phase
-Status: Executing
-Last activity: 2026-02-16 - Completed quick task 2: Add Get Test USDC faucet button
-
-Progress: [##########] 100% (12/12 v1.4 plans)
+Milestone: v1.5 Pitch Deck
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-02-17 — Milestone v1.5 started
 
 ## Performance Metrics
 
@@ -94,6 +92,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-16
-Stopped at: Completed quick task 2 (USDC faucet button)
+Last session: 2026-02-17
+Stopped at: Starting milestone v1.5 (Pitch Deck)
 Resume file: None

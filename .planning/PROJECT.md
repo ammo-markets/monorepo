@@ -66,26 +66,21 @@ Anyone worldwide can get price exposure to U.S. ammunition by minting ammo token
 
 ### Active
 
-## Current Milestone: v1.4 UI/UX Polish & Accessibility
+## Current Milestone: v1.5 Pitch Deck
 
-**Goal:** Address UI/UX critique — fix critical UX issues, accessibility gaps, theme inconsistencies, and admin usability.
+**Goal:** Build a standalone pitch deck app for Ammo Exchange — custom React slide system with PDF export, showcasing the DeFi + RWA tokenization narrative and democratized global ammunition price exposure.
 
 **Target features:**
 
-- Wallet dropdown menu (replace instant disconnect)
-- Focus-visible states + CSS hover (replace inline JS hover)
-- Admin responsive mobile navigation
-- Unified theme system (consolidate dual CSS variable systems)
-- KYC pre-check in redeem flow
-- Admin reject/refund actions (refundMint, cancelRedeem)
-- Admin dashboard enrichment (alerts, badges, quick actions)
-- Admin order detail views + table search/filter/pagination
-- Accessibility fixes (ARIA labels, color contrast, focus states)
-- Mint flow improvements (processing time disclosure, price clarity)
-- Market page in main navigation
-- Swap tab "Coming Soon" label + widget refactor
-- Profile page standalone KYC completion
-- Landing page trust strip visibility + social proof
+- Standalone Next.js app at `apps/pitchdeck` within the monorepo
+- Custom slide system with keyboard navigation (arrow keys) and slide counter
+- PDF export via html2canvas + jsPDF with progress tracking
+- Ammo Exchange brand (brass/dark theme, Tailwind v4)
+- ~10-12 slides: Title, Problem, Solution, How It Works, RWA Advantage, Market, Product, Roadmap, Team, CTA
+- Narrative: DeFi + RWA tokenization wave + democratized global access to ammunition price exposure
+- Audience: Investors, partners, and general (versatile)
+- Responsive slide layout with fluid typography (clamp-based)
+- Reuse packages/shared for caliber specs, chain config, and protocol constants
 
 ### Out of Scope
 
@@ -171,4 +166,4 @@ The full DeFi protocol is functional on Avalanche Fuji testnet with production-g
 
 ---
 
-_Last updated: 2026-02-16 after v1.4 milestone started_
+_Last updated: 2026-02-17 after v1.5 milestone started_
