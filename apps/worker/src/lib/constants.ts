@@ -1,5 +1,10 @@
-import { CONTRACT_ADDRESSES, DEPLOYMENT_BLOCKS } from "@ammo-exchange/shared";
+import {
+  CONTRACT_ADDRESSES,
+  DEPLOYMENT_BLOCKS,
+  CALIBER_TO_PRISMA,
+} from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
+import type { Caliber as PrismaCaliber } from "@ammo-exchange/db";
 
 // ── Polling Configuration ───────────────────────────────────────────
 
@@ -25,9 +30,16 @@ export const CHAIN_ID = 43113;
 /** First block where protocol contracts exist on Fuji -- floor for event scanning */
 export const DEPLOYMENT_BLOCK = DEPLOYMENT_BLOCKS.fuji;
 
-// ── Market Addresses ────────────────────────────────────────────────
+// ── Caliber Registry (config-driven) ────────────────────────────────
 
-/** All 4 CaliberMarket contract addresses for multi-address event queries */
+/** All calibers derived from shared config — adding a new caliber to CONTRACT_ADDRESSES automatically includes it here */
+export const CALIBERS: PrismaCaliber[] = (
+  Object.keys(CONTRACT_ADDRESSES.fuji.calibers) as Caliber[]
+).map((c) => CALIBER_TO_PRISMA[c]);
+
+// ── Market Addresses (config-driven) ────────────────────────────────
+
+/** All CaliberMarket contract addresses for multi-address event queries — derived from CONTRACT_ADDRESSES */
 export const MARKET_ADDRESSES: `0x${string}`[] = Object.values(
   CONTRACT_ADDRESSES.fuji.calibers,
 ).map((c) => c.market);
