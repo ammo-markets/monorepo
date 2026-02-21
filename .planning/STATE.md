@@ -5,17 +5,17 @@
 See: .planning/PROJECT.md (updated 2026-02-21)
 
 **Core value:** Anyone worldwide can get price exposure to U.S. ammunition by minting ammo tokens with USDC, while only verified U.S. residents in allowed states can redeem for physical delivery.
-**Current focus:** Phase 29 - Security Hardening (v1.6 Audit Remediation)
+**Current focus:** Phase 30 - Architecture & Contract Hardening (v1.6 Audit Remediation)
 
 ## Current Position
 
 Milestone: v1.6 Audit Remediation
-Phase: 29 of 31 (Security Hardening)
-Plan: 01 of 01 (Phase 29) -- PHASE COMPLETE
-Status: Phase 29 Complete
-Last activity: 2026-02-21 — Completed 29-01 (Security Hardening)
+Phase: 30 of 31 (Architecture & Contract Hardening)
+Plan: 02 of 03 (Phase 30)
+Status: Executing Phase 30
+Last activity: 2026-02-21 — Completed 30-02 (Dynamic Caliber Registry & Gap-Aware Backfill)
 
-Progress: [█████░░░░░] 50% (v1.6)
+Progress: [██████░░░░] 60% (v1.6)
 
 ## Performance Metrics
 
@@ -78,6 +78,8 @@ Recent decisions affecting current work:
 - [28-02] Portfolio/dashboard display USDC for MINT, rounds for REDEEM (not raw coalesced value)
 - [29-01] VALID_US_STATE_CODES typed as Set<string> for Zod transform compatibility
 - [29-01] SIWE chainId checked post-verify (siwe library verify() does not accept chainId option)
+- [30-02] CALIBERS derived from CONTRACT_ADDRESSES.fuji.calibers keys via CALIBER_TO_PRISMA mapping
+- [30-02] Gap backfill uses latest ActivityLog timestamp + skipDuplicates for idempotency
 
 ### Pending Todos
 
@@ -98,5 +100,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 29-01-PLAN.md (Security Hardening) -- Phase 29 complete
+Stopped at: Completed 30-02-PLAN.md (Dynamic Caliber Registry & Gap-Aware Backfill)
 Resume file: None
