@@ -8,17 +8,17 @@ import { ROADMAP_PHASES } from "@/lib/slideData";
 export function SlideRoadmap() {
   return (
     <SlideLayout>
-      <h2 className="mb-2 font-display text-5xl font-bold uppercase tracking-tight text-text">
+      <h2 className="mb-2 font-display text-2xl font-bold uppercase tracking-tight text-text sm:text-4xl lg:text-5xl">
         Roadmap
       </h2>
-      <p className="mb-10 text-lg text-text-muted">
+      <p className="mb-4 text-sm text-text-muted sm:mb-6 sm:text-base lg:mb-10 lg:text-lg">
         Four-phase plan from testnet to institutional scale
       </p>
 
       <div className="relative flex-1">
         <StaggerContainer
           preset="firing-sequence"
-          className="grid grid-cols-4 gap-6"
+          className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4"
         >
           {ROADMAP_PHASES.map((phase) => (
             <StaggerItem key={phase.phase} preset="firing-sequence">
@@ -60,7 +60,7 @@ export function SlideRoadmap() {
           initial={{ width: "0%" }}
           animate={{ width: "100%" }}
           transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-          className="absolute bottom-0 left-0 h-px bg-brass/30"
+          className="absolute bottom-0 left-0 hidden h-px bg-brass/30 lg:block"
         />
       </div>
     </SlideLayout>

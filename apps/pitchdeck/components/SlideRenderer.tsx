@@ -40,7 +40,7 @@ export function SlideRenderer({
         x: { type: "tween", duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] },
         opacity: { duration: 0.25 },
       }}
-      className="absolute inset-0"
+      className="absolute inset-0 overflow-y-auto overflow-x-hidden lg:overflow-hidden"
     >
       {children}
     </motion.div>

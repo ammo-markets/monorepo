@@ -5,17 +5,17 @@ import { FEE_TABLE, REVENUE_PROJECTION } from "@/lib/slideData";
 export function SlideRevenue() {
   return (
     <SlideLayout>
-      <h2 className="mb-2 font-display text-5xl font-bold uppercase tracking-tight text-text">
+      <h2 className="mb-2 font-display text-2xl font-bold uppercase tracking-tight text-text sm:text-4xl lg:text-5xl">
         Revenue Model
       </h2>
-      <p className="mb-10 text-lg text-text-muted">
+      <p className="mb-4 text-sm text-text-muted sm:mb-6 sm:text-base lg:mb-10 lg:text-lg">
         Protocol fees on every mint and redeem, plus wholesale procurement
         margins
       </p>
 
       <StaggerContainer
         preset="magazine-load"
-        className="grid grid-cols-2 gap-8"
+        className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-8"
       >
         <StaggerItem>
           <div className="card-hover rounded-none border border-surface-elevated bg-surface p-6">
@@ -43,7 +43,7 @@ export function SlideRevenue() {
 
         <StaggerItem>
           <div className="flex h-full flex-col gap-6">
-            <div className="card-hover flex flex-1 flex-col items-center justify-center rounded-none border border-brass/30 bg-surface p-8 text-center">
+            <div className="card-hover flex flex-1 flex-col items-center justify-center rounded-none border border-brass/30 bg-surface p-4 text-center sm:p-6 lg:p-8">
               <p className="mb-2 text-sm font-semibold text-text-muted">
                 Revenue Projection
               </p>
@@ -57,7 +57,7 @@ export function SlideRevenue() {
                 </span>{" "}
                 fees
               </p>
-              <p className="mt-4 text-5xl font-bold text-brass">
+              <p className="mt-4 text-3xl font-bold text-brass sm:text-4xl lg:text-5xl">
                 {REVENUE_PROJECTION.arr}
               </p>
               <p className="mt-2 text-sm text-text-muted">
@@ -66,7 +66,7 @@ export function SlideRevenue() {
             </div>
 
             <div className="card-hover rounded-none border border-brass/30 bg-surface p-6 text-center">
-              <p className="font-display text-3xl font-bold uppercase text-brass">
+              <p className="font-display text-xl font-bold uppercase text-brass sm:text-2xl lg:text-3xl">
                 3% round-trip
               </p>
               <p className="mt-2 text-sm text-text-muted">

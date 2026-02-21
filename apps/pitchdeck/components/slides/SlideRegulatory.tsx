@@ -27,20 +27,20 @@ const POINTS = [
 export function SlideRegulatory() {
   return (
     <SlideLayout>
-      <h2 className="mb-2 font-display text-5xl font-bold uppercase tracking-tight text-text">
+      <h2 className="mb-2 font-display text-2xl font-bold uppercase tracking-tight text-text sm:text-4xl lg:text-5xl">
         Regulatory Positioning
       </h2>
-      <p className="mb-10 text-lg text-text-muted">
+      <p className="mb-4 text-sm text-text-muted sm:mb-6 sm:text-base lg:mb-10 lg:text-lg">
         Designed for compliance -- tokens are not ammunition
       </p>
 
       <StaggerContainer
         preset="magazine-load"
-        className="grid flex-1 grid-cols-2 gap-6"
+        className="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6"
       >
         {POINTS.map((point) => (
           <StaggerItem key={point.title}>
-            <div className="card-hover flex gap-4 rounded-none border border-surface-elevated bg-surface p-6">
+            <div className="card-hover flex gap-4 rounded-none border border-surface-elevated bg-surface p-4 sm:p-6">
               <span className="mt-1 shrink-0 text-2xl text-green">
                 &#10003;
               </span>

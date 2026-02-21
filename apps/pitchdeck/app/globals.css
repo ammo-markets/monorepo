@@ -109,11 +109,13 @@
     border-color 200ms ease-out;
 }
 
-.card-hover:hover {
-  transform: translateY(-2px);
-  box-shadow: none;
-  border-color: var(--color-brass);
-  background-color: var(--color-surface-elevated);
+@media (hover: hover) {
+  .card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: none;
+    border-color: var(--color-brass);
+    background-color: var(--color-surface-elevated);
+  }
 }
 
 /* ── Ambient background glow ──────────────────── */

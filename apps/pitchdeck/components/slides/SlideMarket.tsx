@@ -40,10 +40,10 @@ const TIERS = [
 export function SlideMarket() {
   return (
     <SlideLayout>
-      <h2 className="mb-2 font-display text-5xl font-bold uppercase tracking-tight text-text">
+      <h2 className="mb-2 font-display text-2xl font-bold uppercase tracking-tight text-text sm:text-4xl lg:text-5xl">
         Market Opportunity
       </h2>
-      <p className="mb-10 text-lg text-text-muted">
+      <p className="mb-4 text-sm text-text-muted sm:mb-6 sm:text-base lg:mb-10 lg:text-lg">
         US ammunition -- a massive, underserved commodity market
       </p>
 
@@ -61,17 +61,17 @@ export function SlideMarket() {
               },
               opacity: { duration: 0.3, delay: tier.delay },
             }}
-            className={`rounded-none border border-brass bg-brass ${tier.opacity} flex items-center justify-between px-8 py-5`}
+            className={`rounded-none border border-brass bg-brass ${tier.opacity} flex items-center justify-between px-3 py-3 sm:px-6 sm:py-4 lg:px-8 lg:py-5`}
           >
             <div>
               <span className="text-sm font-bold text-background">
                 {tier.label}
               </span>
-              <span className="ml-3 text-sm text-background/80">
+              <span className="ml-3 hidden text-sm text-background/80 sm:inline">
                 {tier.detail}
               </span>
             </div>
-            <span className="font-display text-3xl font-bold uppercase text-background">
+            <span className="font-display text-lg font-bold uppercase text-background sm:text-2xl lg:text-3xl">
               {tier.value}
             </span>
           </motion.div>
@@ -82,9 +82,9 @@ export function SlideMarket() {
         {MARKET_STATS.globalDimension}
       </p>
 
-      <div className="flex items-center justify-center gap-12">
+      <div className="flex items-center justify-center gap-4 sm:gap-8 lg:gap-12">
         <div className="text-center">
-          <p className="font-display text-4xl font-bold uppercase text-brass">
+          <p className="font-display text-2xl font-bold uppercase text-brass sm:text-3xl lg:text-4xl">
             {MARKET_STATS.gunOwnership}
           </p>
           <p className="mt-1 text-sm text-text-muted">
@@ -92,7 +92,7 @@ export function SlideMarket() {
           </p>
         </div>
         <div className="text-center">
-          <p className="font-display text-4xl font-bold uppercase text-brass">
+          <p className="font-display text-2xl font-bold uppercase text-brass sm:text-3xl lg:text-4xl">
             {MARKET_STATS.regularBuyers}
           </p>
           <p className="mt-1 text-sm text-text-muted">

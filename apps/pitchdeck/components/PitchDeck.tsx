@@ -13,7 +13,7 @@ export function PitchDeck() {
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-background">
       {/* Ambient background glow */}
-      <div className="ambient-glow pointer-events-none absolute right-0 top-0 h-[600px] w-[600px]" />
+      <div className="ambient-glow pointer-events-none absolute right-0 top-0 h-[300px] w-[300px] sm:h-[400px] sm:w-[400px] lg:h-[600px] lg:w-[600px]" />
 
       {/* Slide viewport */}
       <div className="relative flex-1 overflow-hidden">

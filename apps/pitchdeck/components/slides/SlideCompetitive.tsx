@@ -27,16 +27,16 @@ export function SlideCompetitive() {
 
   return (
     <SlideLayout>
-      <h2 className="mb-2 font-display text-5xl font-bold uppercase tracking-tight text-text">
+      <h2 className="mb-2 font-display text-2xl font-bold uppercase tracking-tight text-text sm:text-4xl lg:text-5xl">
         Competitive Landscape
       </h2>
-      <p className="mb-10 text-lg text-text-muted">
+      <p className="mb-4 text-sm text-text-muted sm:mb-6 sm:text-base lg:mb-10 lg:text-lg">
         Positioned as &ldquo;PAXG for Ammunition&rdquo; -- tokenized commodity
         exposure
       </p>
 
-      <div className="flex-1">
-        <table className="w-full">
+      <div className="flex-1 overflow-x-auto">
+        <table className="w-full min-w-[600px]">
           <thead>
             <tr className="border-b border-surface-elevated">
               <th className="px-4 py-3 text-left text-sm font-semibold text-text-muted">
@@ -113,7 +113,7 @@ export function SlideCompetitive() {
         </table>
       </div>
 
-      <p className="mt-8 text-center text-lg font-semibold text-brass">
+      <p className="mt-4 text-center text-sm font-semibold text-brass sm:mt-6 sm:text-base lg:mt-8 lg:text-lg">
         The only platform offering global ammo price exposure without touching a
         single bullet.
       </p>

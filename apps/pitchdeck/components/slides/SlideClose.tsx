@@ -28,23 +28,26 @@ export function SlideClose() {
       >
         <motion.h1
           variants={fadeUp}
-          className="font-display mb-6 text-7xl font-bold uppercase tracking-tight text-brass"
+          className="font-display mb-6 text-3xl font-bold uppercase tracking-tight text-brass sm:text-5xl lg:text-7xl"
         >
           Make Your Ammo Liquid
         </motion.h1>
         <motion.p
           variants={fadeUp}
-          className="mb-4 text-2xl font-light text-text"
+          className="mb-4 text-base font-light text-text sm:text-xl lg:text-2xl"
         >
           The first DeFi protocol for ammunition price exposure
         </motion.p>
-        <motion.p variants={fadeUp} className="mb-10 text-lg text-text-muted">
+        <motion.p
+          variants={fadeUp}
+          className="mb-6 text-sm text-text-muted sm:mb-8 sm:text-base lg:mb-10 lg:text-lg"
+        >
           Global price exposure &middot; Tokenized trading &middot; Optional
           physical delivery
         </motion.p>
         <motion.div
           variants={fadeUp}
-          className="rounded-none bg-surface-elevated px-8 py-4"
+          className="rounded-none bg-surface-elevated px-4 py-3 sm:px-6 sm:py-4 lg:px-8"
         >
           <p className="text-text-muted">
             <span className="font-semibold text-brass">
