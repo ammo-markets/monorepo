@@ -12,7 +12,8 @@ export interface AdminRedeemOrder {
   id: string;
   walletAddress: string | null;
   caliber: string;
-  amount: string;
+  usdcAmount: string | null;
+  tokenAmount: string | null;
   status: string;
   createdAt: string;
   updatedAt: string;
@@ -158,7 +159,7 @@ export function FinalizeRedeemDialog({
               className="font-mono"
               style={{ color: "var(--text-primary)" }}
             >
-              {formatTokenAmount(order.amount)} rounds
+              {formatTokenAmount(order.tokenAmount ?? "0")} rounds
             </span>
           </div>
           <div className="flex justify-between">

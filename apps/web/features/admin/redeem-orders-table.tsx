@@ -348,7 +348,7 @@ export function RedeemOrdersTable() {
                       className="px-4 py-3 text-right font-mono"
                       style={{ color: "var(--text-primary)" }}
                     >
-                      {formatTokenAmount(order.amount)} rounds
+                      {formatTokenAmount(order.tokenAmount ?? "0")} rounds
                     </td>
                     <td className="px-4 py-3">
                       <KycBadge status={order.user?.kycStatus ?? "NONE"} />

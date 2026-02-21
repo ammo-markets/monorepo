@@ -13,7 +13,8 @@ export interface AdminMintOrder {
   id: string;
   walletAddress: string | null;
   caliber: string;
-  amount: string;
+  usdcAmount: string | null;
+  tokenAmount: string | null;
   status: string;
   createdAt: string;
   updatedAt: string;
@@ -163,7 +164,7 @@ export function FinalizeMintDialog({
               className="font-mono"
               style={{ color: "var(--text-primary)" }}
             >
-              {formatUsdc(order.amount)} USDC
+              {formatUsdc(order.usdcAmount ?? "0")} USDC
             </span>
           </div>
         </div>

@@ -309,7 +309,7 @@ export function MintOrdersTable() {
                       className="px-4 py-3 text-right font-mono"
                       style={{ color: "var(--text-primary)" }}
                     >
-                      {formatUsdc(order.amount)} USDC
+                      {formatUsdc(order.usdcAmount ?? "0")} USDC
                     </td>
                     <td className="px-4 py-3">
                       <StatusBadge status={order.status} />

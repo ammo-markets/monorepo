@@ -339,8 +339,8 @@ export function OrderDetailDrawer({
                     style={{ color: "var(--text-primary)" }}
                   >
                     {type === "MINT"
-                      ? `${formatUsdc(order.amount)} USDC`
-                      : `${formatTokenAmount(order.amount)} rounds`}
+                      ? `${formatUsdc(order.usdcAmount ?? "0")} USDC`
+                      : `${formatTokenAmount(order.tokenAmount ?? "0")} rounds`}
                   </span>
                 </div>
 
