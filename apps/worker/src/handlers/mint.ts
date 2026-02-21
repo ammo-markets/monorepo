@@ -27,7 +27,7 @@ export interface MintFinalizedArgs {
 /**
  * Handle a MintStarted event by creating a PENDING MINT order.
  *
- * Uses txHash-based upsert for idempotency (safe to reprocess).
+ * Uses composite (txHash, logIndex) upsert for idempotency (safe to reprocess).
  * Auto-creates User records via connectOrCreate for new wallets.
  */
 export async function handleMintStarted(
@@ -40,15 +40,21 @@ export async function handleMintStarted(
   const userAddress = args.user.toLowerCase();
 
   await tx.order.upsert({
-    where: { txHash: meta.transactionHash },
+    where: {
+      txHash_logIndex: {
+        txHash: meta.transactionHash,
+        logIndex: meta.logIndex,
+      },
+    },
     create: {
       type: "MINT",
       status: "PENDING",
       caliber: prismaCaliber,
-      amount: args.usdcAmount.toString(),
+      usdcAmount: args.usdcAmount.toString(),
       onChainOrderId: args.orderId.toString(),
       walletAddress: userAddress,
       txHash: meta.transactionHash,
+      logIndex: meta.logIndex,
       chainId: CHAIN_ID,
       user: {
         connectOrCreate: {
@@ -63,10 +69,13 @@ export async function handleMintStarted(
 
 /**
  * Handle a MintFinalized event by updating the matching PENDING MINT order
- * to COMPLETED status.
+ * to COMPLETED status with tokenAmount.
  *
  * Uses updateMany because onChainOrderId is not a unique field --
  * the lookup is by (onChainOrderId, caliber, type, status).
+ *
+ * Self-healing: if no pending order exists (e.g. MintStarted was missed),
+ * creates the order from the finalization event directly.
  */
 export async function handleMintFinalized(
   tx: PrismaTx,
@@ -89,34 +98,70 @@ export async function handleMintFinalized(
     },
   });
 
-  // Write ActivityLog entry for completed mint
-  if (count > 0) {
-    try {
-      const order = await tx.order.findFirst({
-        where: {
-          onChainOrderId: args.orderId.toString(),
-          caliber: prismaCaliber,
-          type: "MINT",
-          status: "COMPLETED",
+  // Self-healing: if no pending order exists, create from finalization event
+  if (count === 0) {
+    const userAddress = args.user.toLowerCase();
+    await tx.order.upsert({
+      where: {
+        txHash_logIndex: {
+          txHash: meta.transactionHash,
+          logIndex: meta.logIndex,
         },
-        select: { id: true, caliber: true, amount: true, walletAddress: true },
-      });
-
-      if (order) {
-        await tx.activityLog.create({
-          data: {
-            type: "MINT",
-            caliber: order.caliber,
-            amount: order.amount,
-            txHash: meta.transactionHash,
-            walletAddress: order.walletAddress ?? "",
-            createdAt: new Date(),
+      },
+      create: {
+        type: "MINT",
+        status: "COMPLETED",
+        caliber: prismaCaliber,
+        tokenAmount: args.tokenAmount.toString(),
+        // usdcAmount unknown from finalization event alone -- leave null
+        onChainOrderId: args.orderId.toString(),
+        walletAddress: userAddress,
+        txHash: meta.transactionHash,
+        logIndex: meta.logIndex,
+        chainId: CHAIN_ID,
+        user: {
+          connectOrCreate: {
+            where: { walletAddress: userAddress },
+            create: { walletAddress: userAddress },
           },
-        });
-        console.log(`[mint] Created ActivityLog entry for mint ${order.id}`);
-      }
-    } catch (error) {
-      console.error("[mint] Failed to create ActivityLog entry:", error);
+        },
+      },
+      update: {},
+    });
+  }
+
+  // Write ActivityLog entry for completed mint
+  try {
+    const order = await tx.order.findFirst({
+      where: {
+        onChainOrderId: args.orderId.toString(),
+        caliber: prismaCaliber,
+        type: "MINT",
+        status: "COMPLETED",
+      },
+      select: {
+        id: true,
+        caliber: true,
+        usdcAmount: true,
+        tokenAmount: true,
+        walletAddress: true,
+      },
+    });
+
+    if (order) {
+      await tx.activityLog.create({
+        data: {
+          type: "MINT",
+          caliber: order.caliber,
+          amount: order.usdcAmount ?? order.tokenAmount ?? "0",
+          txHash: meta.transactionHash,
+          walletAddress: order.walletAddress ?? "",
+          createdAt: new Date(),
+        },
+      });
+      console.log(`[mint] Created ActivityLog entry for mint ${order.id}`);
     }
+  } catch (error) {
+    console.error("[mint] Failed to create ActivityLog entry:", error);
   }
 }

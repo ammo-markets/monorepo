@@ -28,7 +28,7 @@ export interface RedeemFinalizedArgs {
 /**
  * Handle a RedeemRequested event by creating a PENDING REDEEM order.
  *
- * Uses txHash-based upsert for idempotency (safe to reprocess).
+ * Uses composite (txHash, logIndex) upsert for idempotency (safe to reprocess).
  * Auto-creates User records via connectOrCreate for new wallets.
  */
 export async function handleRedeemRequested(
@@ -41,16 +41,21 @@ export async function handleRedeemRequested(
   const userAddress = args.user.toLowerCase();
 
   await tx.order.upsert({
-    where: { txHash: meta.transactionHash },
+    where: {
+      txHash_logIndex: {
+        txHash: meta.transactionHash,
+        logIndex: meta.logIndex,
+      },
+    },
     create: {
       type: "REDEEM",
       status: "PENDING",
       caliber: prismaCaliber,
-      amount: args.tokenAmount.toString(),
       tokenAmount: args.tokenAmount.toString(),
       onChainOrderId: args.orderId.toString(),
       walletAddress: userAddress,
       txHash: meta.transactionHash,
+      logIndex: meta.logIndex,
       chainId: CHAIN_ID,
       user: {
         connectOrCreate: {
@@ -65,10 +70,13 @@ export async function handleRedeemRequested(
 
 /**
  * Handle a RedeemFinalized event by updating the matching PENDING REDEEM order
- * to COMPLETED status.
+ * to COMPLETED status with final burned token amount.
  *
  * Uses updateMany because onChainOrderId is not a unique field --
  * the lookup is by (onChainOrderId, caliber, type, status).
+ *
+ * Self-healing: if no pending order exists (e.g. RedeemRequested was missed),
+ * creates the order from the finalization event directly.
  */
 export async function handleRedeemFinalized(
   tx: PrismaTx,
@@ -87,39 +95,76 @@ export async function handleRedeemFinalized(
     },
     data: {
       status: "COMPLETED",
+      tokenAmount: args.burnedTokens.toString(),
     },
   });
 
-  // Write ActivityLog entry for completed redeem
-  if (count > 0) {
-    try {
-      const order = await tx.order.findFirst({
-        where: {
-          onChainOrderId: args.orderId.toString(),
-          caliber: prismaCaliber,
-          type: "REDEEM",
-          status: "COMPLETED",
+  // Self-healing: if no pending order exists, create from finalization event
+  if (count === 0) {
+    const userAddress = args.user.toLowerCase();
+    await tx.order.upsert({
+      where: {
+        txHash_logIndex: {
+          txHash: meta.transactionHash,
+          logIndex: meta.logIndex,
         },
-        select: { id: true, caliber: true, amount: true, walletAddress: true },
-      });
-
-      if (order) {
-        await tx.activityLog.create({
-          data: {
-            type: "REDEEM",
-            caliber: order.caliber,
-            amount: order.amount,
-            txHash: meta.transactionHash,
-            walletAddress: order.walletAddress ?? "",
-            createdAt: new Date(),
+      },
+      create: {
+        type: "REDEEM",
+        status: "COMPLETED",
+        caliber: prismaCaliber,
+        tokenAmount: args.burnedTokens.toString(),
+        // usdcAmount unknown from finalization event alone -- leave null
+        onChainOrderId: args.orderId.toString(),
+        walletAddress: userAddress,
+        txHash: meta.transactionHash,
+        logIndex: meta.logIndex,
+        chainId: CHAIN_ID,
+        user: {
+          connectOrCreate: {
+            where: { walletAddress: userAddress },
+            create: { walletAddress: userAddress },
           },
-        });
-        console.log(
-          `[redeem] Created ActivityLog entry for redeem ${order.id}`,
-        );
-      }
-    } catch (error) {
-      console.error("[redeem] Failed to create ActivityLog entry:", error);
+        },
+      },
+      update: {},
+    });
+  }
+
+  // Write ActivityLog entry for completed redeem
+  try {
+    const order = await tx.order.findFirst({
+      where: {
+        onChainOrderId: args.orderId.toString(),
+        caliber: prismaCaliber,
+        type: "REDEEM",
+        status: "COMPLETED",
+      },
+      select: {
+        id: true,
+        caliber: true,
+        usdcAmount: true,
+        tokenAmount: true,
+        walletAddress: true,
+      },
+    });
+
+    if (order) {
+      await tx.activityLog.create({
+        data: {
+          type: "REDEEM",
+          caliber: order.caliber,
+          amount: order.usdcAmount ?? order.tokenAmount ?? "0",
+          txHash: meta.transactionHash,
+          walletAddress: order.walletAddress ?? "",
+          createdAt: new Date(),
+        },
+      });
+      console.log(
+        `[redeem] Created ActivityLog entry for redeem ${order.id}`,
+      );
     }
+  } catch (error) {
+    console.error("[redeem] Failed to create ActivityLog entry:", error);
   }
 }
