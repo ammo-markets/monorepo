@@ -1,4 +1,5 @@
 import { SiweMessage } from "siwe";
+import { avalancheFuji } from "viem/chains";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@ammo-exchange/db";
 
@@ -33,9 +34,19 @@ export async function POST(request: Request) {
 
   try {
     const siweMessage = new SiweMessage(body.message);
+
+    // SEC-05: Enforce domain, URI scheme, and chainId policy
+    const expectedDomain =
+      process.env.NEXT_PUBLIC_APP_DOMAIN ?? "localhost:3000";
+    const expectedUri =
+      process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+    const expectedChainId = avalancheFuji.id; // 43113
+
     const result = await siweMessage.verify({
       signature: body.signature,
       nonce: session.nonce,
+      domain: expectedDomain,
+      scheme: expectedUri.startsWith("https") ? "https" : "http",
     });
 
     if (!result.success) {
@@ -43,6 +54,15 @@ export async function POST(request: Request) {
         { error: result.error?.type ?? "Verification failed" },
         { status: 401 },
       );
+    }
+
+    // SEC-05: Verify domain and chainId match expected values
+    if (result.data.domain !== expectedDomain) {
+      return Response.json({ error: "Invalid domain" }, { status: 401 });
+    }
+
+    if (result.data.chainId !== expectedChainId) {
+      return Response.json({ error: "Invalid chain ID" }, { status: 401 });
     }
 
     const address = result.data.address.toLowerCase();

@@ -26,7 +26,9 @@ let requestCounter = 0;
 function getRateLimitKey(request: NextRequest): string {
   const forwarded = request.headers.get("x-forwarded-for");
   if (forwarded) {
-    return forwarded.split(",")[0]!.trim();
+    // SEC-03: Use last entry (added by trusted proxy), not first (client-supplied)
+    const parts = forwarded.split(",");
+    return parts[parts.length - 1]!.trim();
   }
   // request.ip is available at runtime on Vercel but not in Next.js types
   return (request as NextRequest & { ip?: string }).ip ?? "unknown";
