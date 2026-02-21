@@ -166,7 +166,11 @@ Plans:
   2. Activity API response includes `updatedAt` timestamp and the activity feed sorts entries by most recent state change, not creation time
   3. When a user submits a redeem order, the shipping address is persisted to the database via the shipping API before the confirmation step renders
   4. Stats API and supply API return all BigInt-derived values as string-formatted numbers (no JavaScript Number conversion that silently truncates values above 2^53)
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 28-01-PLAN.md -- Fix API routes for BigInt safety, normalized amount fields, and updatedAt in activity
+- [ ] 28-02-PLAN.md -- Update all UI components for correct amount display and wire redeem shipping persistence
 
 ### Phase 29: Security Hardening
 **Goal**: All user-facing endpoints enforce proper data masking, input validation, and authentication policy so sensitive data never leaks and invalid inputs are rejected
