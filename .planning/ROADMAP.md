@@ -220,6 +220,7 @@ Plans:
    **Plans**: 3 plans
 
 Plans:
+
 - [ ] 30-01-PLAN.md -- Contract guards: deadline validation (CNTR-01) and price sanity bounds (CNTR-02) with Foundry tests
 - [ ] 30-02-PLAN.md -- Architecture fixes: config-driven caliber registry (ARCH-02) and gap-aware ActivityLog backfill (ARCH-03)
 - [ ] 30-03-PLAN.md -- ABI export, Fuji redeployment, and shared config address update
@@ -273,7 +274,7 @@ Phases execute in numeric order: 27 -> 28 -> 29 -> 30 -> 31
 | 26. PDF Export & Deployment              | v1.5      | 0/2            | Not started | -          |
 | 27. Data Model Migration                 | v1.6      | Complete       | 2026-02-21  | -          |
 | 28. Data Flow Completion                 | v1.6      | Complete       | 2026-02-21  | -          |
-| 29. Security Hardening                   | v1.6      | Complete    | 2026-02-21 | -          |
+| 29. Security Hardening                   | v1.6      | Complete       | 2026-02-21  | -          |
 | 30. Architecture & Contract Hardening    | v1.6      | 0/3            | Not started | -          |
 | 31. Test Suite                           | v1.6      | 0/?            | Not started | -          |
 
