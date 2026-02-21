@@ -11,9 +11,9 @@ See: .planning/PROJECT.md (updated 2026-02-21)
 
 Milestone: v1.6 Audit Remediation
 Phase: 27 of 31 (Data Model Migration)
-Plan: 01 of 02 (Phase 27) -- COMPLETE
-Status: Executing
-Last activity: 2026-02-21 — Completed 27-01 (Order schema migration)
+Plan: 02 of 02 (Phase 27) -- COMPLETE
+Status: Phase 27 Complete
+Last activity: 2026-02-21 — Completed 27-02 (Worker handler migration)
 
 Progress: [█░░░░░░░░░] 10% (v1.6)
 
@@ -62,6 +62,8 @@ Recent decisions affecting current work:
 - [v1.6] Tests (Phase 31) come last since they exercise code from all prior phases
 - [27-01] Used prisma migrate diff + deploy workflow for non-interactive migration
 - [27-01] Wiped 7 testnet orders for clean schema migration
+- [27-02] Self-healing finalization creates with tokenAmount only (usdcAmount unavailable from finalization args)
+- [27-02] ActivityLog amount uses coalesce: usdcAmount ?? tokenAmount ?? "0"
 
 ### Pending Todos
 
@@ -82,5 +84,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 27-01-PLAN.md (Order schema migration)
+Stopped at: Completed 27-02-PLAN.md (Worker handler migration) -- Phase 27 complete
 Resume file: None
