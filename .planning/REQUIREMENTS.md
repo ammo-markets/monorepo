@@ -9,32 +9,32 @@ Requirements for the Pitch Deck milestone. Each maps to roadmap phases.
 
 ### Setup & Foundation
 
-- [ ] **SETUP-01**: Pitch deck app scaffolded at `apps/pitchdeck` with Next.js 15, Tailwind v4, and static export (`output: "export"`)
-- [ ] **SETUP-02**: Hex-only CSS theme matching ammo-exchange brass/dark palette (no oklch colors)
-- [ ] **SETUP-03**: Turborepo integration with correct build deps (shared package only, port 3001)
+- [x] **SETUP-01**: Pitch deck app scaffolded at `apps/pitchdeck` with Next.js 15, Tailwind v4, and static export (`output: "export"`)
+- [x] **SETUP-02**: Hex-only CSS theme matching ammo-exchange brass/dark palette (no oklch colors)
+- [x] **SETUP-03**: Turborepo integration with correct build deps (shared package only, port 3001)
 
 ### Slide Content
 
-- [ ] **SLIDE-01**: Cover slide with brand identity, tagline, and 5-second hook
-- [ ] **SLIDE-02**: Problem slide presenting $8B ammunition market pain points
-- [ ] **SLIDE-03**: Interactive 9mm price volatility chart with historical data (Recharts)
-- [ ] **SLIDE-04**: Solution slide — USDC in, tokens out, redeem for physical delivery
-- [ ] **SLIDE-05**: How It Works — 2-step async mint/redeem flow with per-caliber tokens
-- [ ] **SLIDE-06**: Market Opportunity — TAM/SAM/SOM with buyer statistics
-- [ ] **SLIDE-07**: Competitive Landscape — "PAXG for ammunition" positioning vs AmmoSeek/AmmoSquared
-- [ ] **SLIDE-08**: Revenue Model — fee structure table and unit economics
-- [ ] **SLIDE-09**: Traction/Demo slide with live testnet link CTA to Fuji dashboard
-- [ ] **SLIDE-10**: Regulatory Positioning — no FFL required, KYC at redemption, token classification
-- [ ] **SLIDE-11**: Roadmap — protocol development timeline and milestones
-- [ ] **SLIDE-12**: Team slide with placeholder bios
-- [ ] **SLIDE-13**: Ask/CTA — general call-to-action for investors and partners
+- [x] **SLIDE-01**: Cover slide with brand identity, tagline, and 5-second hook
+- [x] **SLIDE-02**: Problem slide presenting $8B ammunition market pain points
+- [x] **SLIDE-03**: Why Now slide — market timing narrative with ammunition demand trends and crypto convergence
+- [x] **SLIDE-04**: Market Opportunity — TAM/SAM/SOM with buyer statistics
+- [x] **SLIDE-05**: Buyer Personas — target customer profiles (institutional, retail, international)
+- [x] **SLIDE-06**: Solution slide — USDC in, tokens out, redeem for physical delivery
+- [x] **SLIDE-07**: Revenue Model — fee structure table and unit economics
+- [x] **SLIDE-08**: Competitive Landscape — "PAXG for ammunition" positioning vs AmmoSeek/AmmoSquared
+- [x] **SLIDE-09**: Traction/Demo slide with live testnet link CTA to Fuji dashboard
+- [x] **SLIDE-10**: Regulatory Positioning — no FFL required, KYC at redemption, token classification
+- [x] **SLIDE-11**: Roadmap — protocol development timeline and milestones
+- [x] **SLIDE-12**: Ask/CTA — general call-to-action for investors and partners
+- [x] **SLIDE-13**: Close slide — final brand impression with contact details
 
 ### Navigation & Interaction
 
-- [ ] **NAV-01**: Keyboard navigation (ArrowLeft/Right, Space, Home/End)
-- [ ] **NAV-02**: Slide counter and progress indicator
-- [ ] **NAV-03**: CSS slide transitions (opacity + translateX, no animation library)
-- [ ] **NAV-04**: Prev/Next click controls
+- [x] **NAV-01**: Keyboard navigation (ArrowLeft/Right, Space, Home/End)
+- [x] **NAV-02**: Slide counter and progress indicator
+- [x] **NAV-03**: Slide transitions via framer-motion (opacity + translateX, smooth visual change)
+- [x] **NAV-04**: Prev/Next click controls
 
 ### PDF Export
 
@@ -56,7 +56,7 @@ Deferred to future release. Tracked but not in current roadmap.
 
 ### Advanced Visuals
 
-- **VIS-01**: Animated protocol flow visualization on How It Works slide
+- **VIS-01**: Animated protocol flow visualization on solution slide
 - **VIS-02**: Live on-chain metrics feed from Fuji testnet
 
 ### Analytics
@@ -69,7 +69,6 @@ Deferred to future release. Tracked but not in current roadmap.
 |---------|--------|
 | Presentation editor/CMS | Content changes quarterly; edit the code directly |
 | Presenter mode / speaker notes | Unnecessary complexity for investor distribution |
-| Slide transitions beyond CSS | Framer Motion adds 30KB+ for one transition effect |
 | Embedded dApp in deck | Link out to Fuji dashboard instead — keeps deck lightweight |
 | Multi-language support | English-only for U.S.-focused initial investor outreach |
 | Tokenomics slides | Deferred in whitepaper; including them invites securities scrutiny |
@@ -81,26 +80,26 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SETUP-01 | Phase 24 | Pending |
-| SETUP-02 | Phase 24 | Pending |
-| SETUP-03 | Phase 24 | Pending |
-| SLIDE-01 | Phase 25 | Pending |
-| SLIDE-02 | Phase 25 | Pending |
-| SLIDE-03 | Phase 25 | Pending |
-| SLIDE-04 | Phase 25 | Pending |
-| SLIDE-05 | Phase 25 | Pending |
-| SLIDE-06 | Phase 25 | Pending |
-| SLIDE-07 | Phase 25 | Pending |
-| SLIDE-08 | Phase 25 | Pending |
-| SLIDE-09 | Phase 25 | Pending |
-| SLIDE-10 | Phase 25 | Pending |
-| SLIDE-11 | Phase 25 | Pending |
-| SLIDE-12 | Phase 25 | Pending |
-| SLIDE-13 | Phase 25 | Pending |
-| NAV-01 | Phase 25 | Pending |
-| NAV-02 | Phase 25 | Pending |
-| NAV-03 | Phase 25 | Pending |
-| NAV-04 | Phase 25 | Pending |
+| SETUP-01 | Phase 24 | Satisfied |
+| SETUP-02 | Phase 24 | Satisfied |
+| SETUP-03 | Phase 24 | Satisfied |
+| SLIDE-01 | Phase 25 | Satisfied |
+| SLIDE-02 | Phase 25 | Satisfied |
+| SLIDE-03 | Phase 25 | Satisfied |
+| SLIDE-04 | Phase 25 | Satisfied |
+| SLIDE-05 | Phase 25 | Satisfied |
+| SLIDE-06 | Phase 25 | Satisfied |
+| SLIDE-07 | Phase 25 | Satisfied |
+| SLIDE-08 | Phase 25 | Satisfied |
+| SLIDE-09 | Phase 25 | Satisfied |
+| SLIDE-10 | Phase 25 | Satisfied |
+| SLIDE-11 | Phase 25 | Satisfied |
+| SLIDE-12 | Phase 25 | Satisfied |
+| SLIDE-13 | Phase 25 | Satisfied |
+| NAV-01 | Phase 25 | Satisfied |
+| NAV-02 | Phase 25 | Satisfied |
+| NAV-03 | Phase 25 | Satisfied |
+| NAV-04 | Phase 25 | Satisfied |
 | PDF-01 | Phase 26 | Pending |
 | PDF-02 | Phase 26 | Pending |
 | PDF-03 | Phase 26 | Pending |
@@ -108,9 +107,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 **Coverage:**
 - v1.5 requirements: 24 total
-- Mapped to phases: 24
+- Satisfied: 20 (Phases 24-25 complete)
+- Pending: 4 (Phase 26)
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-17*
-*Last updated: 2026-02-17 after roadmap creation*
+*Last updated: 2026-02-21 — slide requirements updated to match creative rewrite (WhyNow, Personas, Close replaced Volatility, HowItWorks, Team)*
