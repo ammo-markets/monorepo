@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-21)
 
 Milestone: v1.6 Audit Remediation
 Phase: 27 of 31 (Data Model Migration)
-Plan: —
-Status: Ready to plan
-Last activity: 2026-02-21 — Roadmap created for v1.6
+Plan: 01 of 02 (Phase 27) -- COMPLETE
+Status: Executing
+Last activity: 2026-02-21 — Completed 27-01 (Order schema migration)
 
-Progress: [░░░░░░░░░░] 0% (v1.6)
+Progress: [█░░░░░░░░░] 10% (v1.6)
 
 ## Performance Metrics
 
@@ -60,6 +60,8 @@ Recent decisions affecting current work:
 - [v1.6] Separate usdcAmount/tokenAmount fields replace single ambiguous amount column
 - [v1.6] Contract changes (CNTR-01, CNTR-02) require Fuji redeployment in Phase 30
 - [v1.6] Tests (Phase 31) come last since they exercise code from all prior phases
+- [27-01] Used prisma migrate diff + deploy workflow for non-interactive migration
+- [27-01] Wiped 7 testnet orders for clean schema migration
 
 ### Pending Todos
 
@@ -80,5 +82,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Created v1.6 Audit Remediation roadmap (Phases 27-31)
+Stopped at: Completed 27-01-PLAN.md (Order schema migration)
 Resume file: None
