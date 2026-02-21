@@ -182,7 +182,10 @@ Plans:
   3. Rate limiter extracts client IP from the last entry in x-forwarded-for (trusted proxy) or falls back to socket address -- never trusts the first/raw header value from an untrusted client
   4. State code input is uppercased and validated against the set of valid US state/territory codes server-side before any restricted-state comparison runs
   5. SIWE message verification checks that the domain matches the app domain, the URI matches the expected callback, and the chain ID matches the configured network -- not just nonce validity
-**Plans**: TBD
+**Plans**: 1 plan
+
+Plans:
+- [ ] 29-01-PLAN.md -- All security fixes: KYC data masking, mutation error handling, rate limiter IP trust, state code validation, SIWE policy enforcement
 
 ### Phase 30: Architecture & Contract Hardening
 **Goal**: The system self-heals gaps in activity history, discovers new caliber markets automatically, and smart contracts reject obviously invalid keeper inputs
@@ -243,7 +246,7 @@ Phases execute in numeric order: 27 -> 28 -> 29 -> 30 -> 31
 | 26. PDF Export & Deployment | v1.5 | 0/2 | Not started | - |
 | 27. Data Model Migration | v1.6 | Complete    | 2026-02-21 | - |
 | 28. Data Flow Completion | v1.6 | Complete    | 2026-02-21 | - |
-| 29. Security Hardening | v1.6 | 0/? | Not started | - |
+| 29. Security Hardening | v1.6 | 0/1 | Not started | - |
 | 30. Architecture & Contract Hardening | v1.6 | 0/? | Not started | - |
 | 31. Test Suite | v1.6 | 0/? | Not started | - |
 
