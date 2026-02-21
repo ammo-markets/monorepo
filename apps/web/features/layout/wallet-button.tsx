@@ -23,6 +23,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { AVALANCHE_FUJI } from "@ammo-exchange/shared";
 
 const USDC_DECIMALS = BigInt(1_000_000);
@@ -36,13 +43,15 @@ function formatUsdc(raw: bigint): string {
 
 export function WalletButton() {
   const [showDisconnectDialog, setShowDisconnectDialog] = useState(false);
+  const [showConnectDialog, setShowConnectDialog] = useState(false);
 
   const {
     address,
     isConnected,
     isReconnecting,
     isWrongNetwork,
-    connect,
+    connectors,
+    connectWith,
     disconnect,
     switchToFuji,
     isConnecting,
@@ -55,18 +64,51 @@ export function WalletButton() {
   // During reconnection, render disconnected state to match SSR (prevents hydration mismatch)
   if (isReconnecting || !isConnected) {
     return (
-      <button
-        type="button"
-        className="flex items-center gap-2 rounded-lg border border-border-hover bg-transparent px-4 py-2 text-sm font-medium text-text-primary transition-all duration-150 hover:border-brass-border hover:bg-ax-tertiary"
-        onClick={connect}
-        disabled={isConnecting}
-        aria-label={isConnecting ? "Connecting wallet" : "Connect wallet"}
-      >
-        <Wallet size={16} />
-        <span className="hidden sm:inline">
-          {isConnecting ? "Connecting..." : "Connect Wallet"}
-        </span>
-      </button>
+      <>
+        <button
+          type="button"
+          className="flex items-center gap-2 rounded-lg border border-border-hover bg-transparent px-4 py-2 text-sm font-medium text-text-primary transition-all duration-150 hover:border-brass-border hover:bg-ax-tertiary"
+          onClick={() => setShowConnectDialog(true)}
+          aria-label="Connect wallet"
+        >
+          <Wallet size={16} />
+          <span className="hidden sm:inline">Connect Wallet</span>
+        </button>
+
+        <Dialog open={showConnectDialog} onOpenChange={setShowConnectDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Connect Wallet</DialogTitle>
+              <DialogDescription>
+                Choose a wallet to connect with Ammo Exchange
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex flex-col gap-2">
+              {connectors.map((connector) => (
+                <button
+                  key={connector.uid}
+                  type="button"
+                  className="flex items-center gap-3 rounded-lg border border-border-hover px-4 py-3 text-sm font-medium text-text-primary transition-all duration-150 hover:border-brass-border hover:bg-ax-tertiary disabled:opacity-50"
+                  onClick={() => {
+                    connectWith(connector);
+                    setShowConnectDialog(false);
+                  }}
+                  disabled={isConnecting}
+                >
+                  {connector.icon && (
+                    <img
+                      src={connector.icon}
+                      alt=""
+                      className="h-6 w-6 rounded"
+                    />
+                  )}
+                  <span>{connector.name}</span>
+                </button>
+              ))}
+            </div>
+          </DialogContent>
+        </Dialog>
+      </>
     );
   }
 
