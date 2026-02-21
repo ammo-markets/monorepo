@@ -159,7 +159,9 @@ interface RecentOrdersProps {
 function OrderRow({ order }: { order: OrderFromAPI }) {
   const Icon = caliberIcons[order.caliber as Caliber];
   const displayStatus = mapOrderStatus(order.status);
-  const amount = Math.floor(Number(order.amount));
+  const amount = Math.floor(
+    Number(order.usdcAmount ?? order.tokenAmount ?? "0"),
+  );
 
   return (
     <div
@@ -194,7 +196,9 @@ function OrderRow({ order }: { order: OrderFromAPI }) {
 function OrderCard({ order }: { order: OrderFromAPI }) {
   const Icon = caliberIcons[order.caliber as Caliber];
   const displayStatus = mapOrderStatus(order.status);
-  const amount = Math.floor(Number(order.amount));
+  const amount = Math.floor(
+    Number(order.usdcAmount ?? order.tokenAmount ?? "0"),
+  );
 
   return (
     <div

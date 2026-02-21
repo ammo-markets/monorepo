@@ -53,11 +53,11 @@ export function TokenStats({ data }: TokenStatsProps) {
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <StatCard
           label="Total Supply"
-          value={`${data.totalSupply.toLocaleString("en-US")} rounds`}
+          value={`${Number(data.totalSupply).toLocaleString("en-US")} rounds`}
         />
         <StatCard
           label="Market Cap"
-          value={`$${(data.totalSupply * data.price).toLocaleString("en-US", { maximumFractionDigits: 0 })}`}
+          value={`$${(Number(data.totalSupply) * data.price).toLocaleString("en-US", { maximumFractionDigits: 0 })}`}
         />
         <StatCard label="Mint Fee" value={`${data.mintFee}%`} />
         <StatCard label="Redeem Fee" value={`${data.redeemFee}%`} />

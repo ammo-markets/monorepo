@@ -22,6 +22,7 @@ export async function GET(request: NextRequest) {
       txHash: row.txHash,
       walletAddress: row.walletAddress,
       createdAt: row.createdAt.toISOString(),
+      updatedAt: row.createdAt.toISOString(),
     }));
 
     return Response.json(

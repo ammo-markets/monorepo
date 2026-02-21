@@ -12,8 +12,8 @@ import type { Caliber } from "@ammo-exchange/shared";
 type SortKey = "price" | "totalSupply";
 type SortDir = "asc" | "desc";
 
-function formatRounds(n: number): string {
-  return n.toLocaleString("en-US") + " rounds";
+function formatRounds(n: number | string): string {
+  return Number(n).toLocaleString("en-US") + " rounds";
 }
 
 function SortHeader({
@@ -179,8 +179,8 @@ function MobileCaliberCard({
               className="font-mono text-sm"
               style={{ color: "var(--text-primary)" }}
             >
-              {caliber.totalSupply > 0
-                ? (caliber.totalSupply / 1000).toFixed(0) + "K"
+              {Number(caliber.totalSupply) > 0
+                ? (Number(caliber.totalSupply) / 1000).toFixed(0) + "K"
                 : "--"}
             </span>
           }
@@ -261,8 +261,8 @@ export function MarketTable() {
         aVal = a.pricePerRound;
         bVal = b.pricePerRound;
       } else {
-        aVal = a[sortKey];
-        bVal = b[sortKey];
+        aVal = Number(a[sortKey]);
+        bVal = Number(b[sortKey]);
       }
       return sortDir === "desc" ? bVal - aVal : aVal - bVal;
     });

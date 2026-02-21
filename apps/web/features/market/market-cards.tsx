@@ -65,7 +65,7 @@ function CaliberCard({ caliber }: { caliber: MarketCaliberFromAPI }) {
 
       {/* Supply info */}
       <div className="mt-4 text-xs" style={{ color: "var(--text-muted)" }}>
-        Supply: {caliber.totalSupply.toLocaleString("en-US")} rounds
+        Supply: {Number(caliber.totalSupply).toLocaleString("en-US")} rounds
       </div>
 
       {/* Specs */}

@@ -24,7 +24,9 @@ export function OrdersDesktopRow({
   const Icon = caliberIcons[order.caliber];
   const router = useRouter();
   const displayStatus = mapOrderStatus(order.status);
-  const amount = Math.floor(Number(order.amount));
+  const amount = Math.floor(
+    Number(order.usdcAmount ?? order.tokenAmount ?? "0"),
+  );
   return (
     <tr
       className="cursor-pointer transition-colors duration-100 hover:bg-ax-tertiary"
@@ -82,7 +84,9 @@ export function OrderMobileCard({ order }: { order: OrderFromAPI }) {
   const Icon = caliberIcons[order.caliber];
   const router = useRouter();
   const displayStatus = mapOrderStatus(order.status);
-  const amount = Math.floor(Number(order.amount));
+  const amount = Math.floor(
+    Number(order.usdcAmount ?? order.tokenAmount ?? "0"),
+  );
   return (
     <div
       className="cursor-pointer rounded-xl p-4 transition-all duration-150 bg-ax-secondary border border-border-default hover:border-brass-border"

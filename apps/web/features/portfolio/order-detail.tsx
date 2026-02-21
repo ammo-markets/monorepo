@@ -548,7 +548,9 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
     order.type === "MINT" ? buildMintSteps(order) : buildRedeemSteps(order);
   const spec = CALIBER_SPECS[order.caliber as Caliber];
   const Icon = caliberIcons[order.caliber as Caliber];
-  const amount = Math.floor(Number(order.amount));
+  const amount = Math.floor(
+    Number(order.usdcAmount ?? order.tokenAmount ?? "0"),
+  );
 
   return (
     <div className="mx-auto max-w-[720px] px-4 py-8 sm:py-12">
