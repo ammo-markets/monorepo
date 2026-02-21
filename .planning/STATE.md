@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-21)
 
 Milestone: v1.6 Audit Remediation
 Phase: 30 of 31 (Architecture & Contract Hardening)
-Plan: 02 of 03 (Phase 30)
-Status: Executing Phase 30
-Last activity: 2026-02-21 — Completed 30-02 (Dynamic Caliber Registry & Gap-Aware Backfill)
+Plan: 03 of 03 (Phase 30) -- COMPLETE
+Status: Phase 30 Complete
+Last activity: 2026-02-21 — Completed 30-03 (ABI Export & Fuji Redeployment)
 
-Progress: [██████░░░░] 60% (v1.6)
+Progress: [████████░░] 80% (v1.6)
 
 ## Performance Metrics
 
@@ -83,6 +83,8 @@ Recent decisions affecting current work:
 - [30-01] Oracle returning 0 skips sanity check (graceful degradation)
 - [30-02] CALIBERS derived from CONTRACT_ADDRESSES.fuji.calibers keys via CALIBER_TO_PRISMA mapping
 - [30-02] Gap backfill uses latest ActivityLog timestamp + skipDuplicates for idempotency
+- [30-03] All 15 Fuji contracts redeployed at block 52030756 with deadline/price guards
+- [30-03] Frontend error parser must be updated alongside ABI exports for new contract errors
 
 ### Pending Todos
 
@@ -103,5 +105,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 30-02-PLAN.md (Dynamic Caliber Registry & Gap-Aware Backfill)
+Stopped at: Completed 30-03-PLAN.md (ABI Export & Fuji Redeployment)
 Resume file: None
