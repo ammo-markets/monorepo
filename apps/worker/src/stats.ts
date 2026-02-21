@@ -1,32 +1,30 @@
 import { prisma } from "@ammo-exchange/db";
-import type { Caliber } from "@ammo-exchange/db";
 
-// All 4 calibers to compute stats for
-const CALIBERS: Caliber[] = [
-  "NINE_MM",
-  "FIVE_FIVE_SIX",
-  "TWENTY_TWO_LR",
-  "THREE_OH_EIGHT",
-];
+import { CALIBERS } from "./lib/constants";
 
 /**
- * One-time backfill: populate ActivityLog from completed orders.
- * Runs on worker startup. Skips if ActivityLog already has rows.
+ * Gap-aware backfill: populate ActivityLog from completed orders.
+ * Runs on worker startup. Detects time gaps and fills missing windows
+ * instead of skipping when rows already exist.
  * Never throws -- logs errors and returns so the worker continues.
  */
 export async function backfillActivityLog(): Promise<void> {
   try {
-    const count = await prisma.activityLog.count();
+    // Find the latest ActivityLog entry timestamp
+    const latestLog = await prisma.activityLog.findFirst({
+      orderBy: { createdAt: "desc" },
+      select: { createdAt: true },
+    });
 
-    if (count > 0) {
-      console.log(
-        `[backfill] ActivityLog already populated (${count} rows), skipping`,
-      );
-      return;
+    // Query completed orders that are newer than the latest log entry
+    // If no log entries exist, backfill ALL completed orders
+    const where: Record<string, unknown> = { status: "COMPLETED" };
+    if (latestLog) {
+      where.updatedAt = { gt: latestLog.createdAt };
     }
 
     const orders = await prisma.order.findMany({
-      where: { status: "COMPLETED" },
+      where,
       select: {
         type: true,
         caliber: true,
@@ -39,11 +37,17 @@ export async function backfillActivityLog(): Promise<void> {
     });
 
     if (orders.length === 0) {
-      console.log("[backfill] No completed orders to backfill");
+      if (!latestLog) {
+        console.log("[backfill] No completed orders to backfill");
+      } else {
+        console.log("[backfill] ActivityLog up to date, no gaps found");
+      }
       return;
     }
 
-    await prisma.activityLog.createMany({
+    // Use createMany with skipDuplicates to handle idempotency
+    // (same txHash may already exist if partially backfilled)
+    const result = await prisma.activityLog.createMany({
       data: orders.map((order) => ({
         type: order.type,
         caliber: order.caliber,
@@ -52,10 +56,11 @@ export async function backfillActivityLog(): Promise<void> {
         walletAddress: order.walletAddress ?? "",
         createdAt: order.updatedAt,
       })),
+      skipDuplicates: true,
     });
 
     console.log(
-      `[backfill] Backfilled ${orders.length} completed orders into ActivityLog`,
+      `[backfill] Backfilled ${result.count} activity log entries${latestLog ? " (gap fill)" : " (initial)"}`,
     );
   } catch (error) {
     console.error("[backfill] Failed to backfill ActivityLog:", error);
@@ -120,7 +125,7 @@ export async function computeStats(): Promise<void> {
       });
     }
 
-    console.log("[stats] Computed protocol stats for 4 calibers");
+    console.log(`[stats] Computed protocol stats for ${CALIBERS.length} calibers`);
   } catch (error) {
     console.error("[stats] Failed to compute stats:", error);
   }
