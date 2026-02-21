@@ -5,7 +5,7 @@ import { CONTRACT_ADDRESSES } from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
 import { requireSession } from "@/lib/auth";
 
-const CALIBERS: Caliber[] = ["9MM", "556", "22LR", "308"];
+const CALIBERS = Object.keys(CONTRACT_ADDRESSES.fuji.calibers) as Caliber[];
 const fuji = CONTRACT_ADDRESSES.fuji;
 
 export async function GET() {
