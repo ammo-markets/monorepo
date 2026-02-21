@@ -38,9 +38,8 @@ export async function GET() {
       ],
     });
 
-    // Extract results: first 4 = oracles, next 4 = supplies
-    const oracleResults = phase1.slice(0, 4);
-    const supplyResults = phase1.slice(4);
+    const oracleResults = phase1.slice(0, CALIBERS.length);
+    const supplyResults = phase1.slice(CALIBERS.length);
 
     // Phase 2: Read prices from resolved oracle addresses (4 calls, 1 RPC round trip)
     const oracleAddresses = oracleResults.map((r) =>
