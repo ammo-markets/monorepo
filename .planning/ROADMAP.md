@@ -92,7 +92,7 @@ Full details in Phase Details below.
 - [x] **Phase 28: Data Flow Completion** - APIs and UI render correct amount fields, activity feed sorts by updatedAt, redeem flow persists shipping, BigInt-safe formatting (completed 2026-02-21)
 - [x] **Phase 29: Security Hardening** - KYC endpoint masking, mutation error handling, rate limiter IP trust, state code validation, SIWE policy enforcement (completed 2026-02-21)
 - [x] **Phase 30: Architecture & Contract Hardening** - Dynamic caliber registry, worker backfill self-healing, contract deadline validation, price sanity bounds, Fuji redeployment (completed 2026-02-21)
-- [ ] **Phase 31: Test Suite** - Automated tests for worker idempotency, API auth/compliance, and E2E mint/redeem/finalize flows
+- [x] **Phase 31: Test Suite** - Automated tests for worker idempotency, API auth/compliance, and E2E mint/redeem/finalize flows (completed 2026-02-21)
 
 ## Phase Details
 
@@ -282,7 +282,7 @@ Phases execute in numeric order: 27 -> 28 -> 29 -> 30 -> 31
 | 28. Data Flow Completion                 | v1.6      | Complete       | 2026-02-21  | -          |
 | 29. Security Hardening                   | v1.6      | Complete       | 2026-02-21  | -          |
 | 30. Architecture & Contract Hardening    | v1.6      | Complete    | 2026-02-21 | -          |
-| 31. Test Suite                           | v1.6      | 0/3            | Not started | -          |
+| 31. Test Suite                           | v1.6      | Complete    | 2026-02-21 | -          |
 
 ---
 
