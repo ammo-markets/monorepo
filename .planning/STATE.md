@@ -5,17 +5,17 @@
 See: .planning/PROJECT.md (updated 2026-02-21)
 
 **Core value:** Anyone worldwide can get price exposure to U.S. ammunition by minting ammo tokens with USDC, while only verified U.S. residents in allowed states can redeem for physical delivery.
-**Current focus:** Phase 27 - Data Model Migration (v1.6 Audit Remediation)
+**Current focus:** Phase 28 - Data Flow Completion (v1.6 Audit Remediation)
 
 ## Current Position
 
 Milestone: v1.6 Audit Remediation
-Phase: 27 of 31 (Data Model Migration)
-Plan: 02 of 02 (Phase 27) -- COMPLETE
-Status: Phase 27 Complete
-Last activity: 2026-02-21 — Completed 27-02 (Worker handler migration)
+Phase: 28 of 31 (Data Flow Completion)
+Plan: 01 of 02 (Phase 28)
+Status: Plan 28-01 Complete
+Last activity: 2026-02-21 — Completed 28-01 (API and Type Fixes)
 
-Progress: [█░░░░░░░░░] 10% (v1.6)
+Progress: [██░░░░░░░░] 20% (v1.6)
 
 ## Performance Metrics
 
@@ -64,6 +64,9 @@ Recent decisions affecting current work:
 - [27-01] Wiped 7 testnet orders for clean schema migration
 - [27-02] Self-healing finalization creates with tokenAmount only (usdcAmount unavailable from finalization args)
 - [27-02] ActivityLog amount uses coalesce: usdcAmount ?? tokenAmount ?? "0"
+- [28-01] Use BigInt() constructor (not n suffix) for ES2017 target compatibility
+- [28-01] Activity updatedAt aliases createdAt (ActivityLog creation IS state change time)
+- [28-01] totalSupply returned as integer string via BigInt division, not formatUnits
 
 ### Pending Todos
 
@@ -84,5 +87,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 27-02-PLAN.md (Worker handler migration) -- Phase 27 complete
+Stopped at: Completed 28-01-PLAN.md (API and Type Fixes)
 Resume file: None
