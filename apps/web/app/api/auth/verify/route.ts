@@ -65,6 +65,10 @@ export async function POST(request: Request) {
       return Response.json({ error: "Invalid chain ID" }, { status: 401 });
     }
 
+    if (result.data.uri !== expectedUri) {
+      return Response.json({ error: "Invalid URI" }, { status: 401 });
+    }
+
     const address = result.data.address.toLowerCase();
     const chainId = result.data.chainId;
 
