@@ -617,6 +617,114 @@ contract CaliberMarketTest is Test {
         assertEq(ammoToken.balanceOf(user), balBefore);
     }
 
+    // ═══════════════════════════════════════════════
+    // ── CNTR-01: Deadline validation at initiation ─
+    // ═══════════════════════════════════════════════
+
+    function testStartMintRejectsDeadlineInPast() public {
+        vm.warp(1000);
+
+        vm.prank(user);
+        usdc.approve(address(market), 100e6);
+
+        vm.prank(user);
+        vm.expectRevert(CaliberMarket.DeadlineInPast.selector);
+        market.startMint(100e6, 500, uint64(500));
+    }
+
+    function testStartMintAllowsZeroDeadline() public {
+        vm.prank(user);
+        usdc.approve(address(market), 100e6);
+
+        vm.prank(user);
+        uint256 orderId = market.startMint(100e6, 500, 0);
+        assertEq(orderId, 1);
+    }
+
+    function testStartMintAllowsFutureDeadline() public {
+        vm.prank(user);
+        usdc.approve(address(market), 100e6);
+
+        vm.prank(user);
+        uint256 orderId = market.startMint(100e6, 500, uint64(block.timestamp + 60));
+        assertEq(orderId, 1);
+    }
+
+    function testStartRedeemRejectsDeadlineInPast() public {
+        _mintTokensToUser(user);
+        uint256 redeemAmount = 100e18;
+
+        vm.warp(1000);
+
+        vm.prank(user);
+        ammoToken.approve(address(market), redeemAmount);
+
+        vm.prank(user);
+        vm.expectRevert(CaliberMarket.DeadlineInPast.selector);
+        market.startRedeem(redeemAmount, uint64(500));
+    }
+
+    function testStartRedeemAllowsZeroDeadline() public {
+        _mintTokensToUser(user);
+
+        vm.prank(user);
+        ammoToken.approve(address(market), 100e18);
+
+        vm.prank(user);
+        uint256 orderId = market.startRedeem(100e18, 0);
+        assertTrue(orderId > 0);
+    }
+
+    // ═══════════════════════════════════════════════
+    // ── CNTR-02: Price sanity bounds ───────────────
+    // ═══════════════════════════════════════════════
+
+    function testFinalizeMintRejectsPriceTooLow() public {
+        _startMint(user, 100e6, 10_000, 0); // 100% slippage so slippage check won't interfere
+
+        // Oracle at 21e16, floor = 21e16 * 5000 / 10000 = 10.5e16
+        // 10e16 is below floor
+        vm.prank(keeper);
+        vm.expectRevert(CaliberMarket.PriceTooLow.selector);
+        market.finalizeMint(1, 10e16);
+    }
+
+    function testFinalizeMintRejectsPriceTooHigh() public {
+        _startMint(user, 100e6, 10_000, 0); // 100% slippage
+
+        // Oracle at 21e16, ceiling = 21e16 * 15000 / 10000 = 31.5e16
+        // 50e16 is above ceiling
+        vm.prank(keeper);
+        vm.expectRevert(CaliberMarket.PriceTooHigh.selector);
+        market.finalizeMint(1, 50e16);
+    }
+
+    function testFinalizeMintAllowsPriceWithinBounds() public {
+        _startMint(user, 100e6, 10_000, 0); // 100% slippage
+
+        // Oracle at 21e16, ceiling = 31.5e16
+        // 30e16 is within bounds
+        vm.prank(keeper);
+        market.finalizeMint(1, 30e16);
+
+        uint256 expectedTokens = (uint256(98_500_000) * 1e12 * 1e18) / 30e16;
+        assertEq(ammoToken.balanceOf(user), expectedTokens);
+    }
+
+    function testSetMaxPriceDeviation() public {
+        // Tighten deviation to 10%
+        market.setMaxPriceDeviation(1000);
+        assertEq(market.maxPriceDeviationBps(), 1000);
+
+        _startMint(user, 100e6, 10_000, 0); // 100% slippage
+
+        // Oracle at 21e16, ceiling with 10% = 21e16 * 11000 / 10000 = 23.1e16
+        // 25e16 (~19% above oracle) exceeds 10% ceiling
+        vm.prank(keeper);
+        vm.expectRevert(CaliberMarket.PriceTooHigh.selector);
+        market.finalizeMint(1, 25e16);
+    }
+
     // ── Helpers ─────────────────────────────────────
 
     function _startMint(address who, uint256 usdcAmount, uint256 slippageBps, uint64 deadline) internal {
