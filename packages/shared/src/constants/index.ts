@@ -52,6 +52,16 @@ export const RESTRICTED_STATES = [
   "NJ", // FID card required
 ] as const;
 
+/** All valid US state codes (50 states + DC + territories) */
+export const VALID_US_STATE_CODES: Set<string> = new Set([
+  "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "DC", "FL",
+  "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME",
+  "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH",
+  "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI",
+  "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI",
+  "WY", "AS", "GU", "MP", "PR", "VI",
+]);
+
 // Bidirectional mapping: Prisma Caliber enum <-> shared Caliber type
 // NOTE: Prisma enum values use NINE_MM, FIVE_FIVE_SIX, etc. because Prisma enum
 // identifiers cannot start with a digit (e.g., "9MM" is invalid). This is a Prisma

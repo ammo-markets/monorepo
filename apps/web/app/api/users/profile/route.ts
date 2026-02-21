@@ -1,6 +1,7 @@
 import type { NextRequest } from "next/server";
 import { z } from "zod";
 import { prisma } from "@ammo-exchange/db";
+import { VALID_US_STATE_CODES } from "@ammo-exchange/shared";
 import { requireSession } from "@/lib/auth";
 
 const addressSchema = z.object({
@@ -8,7 +9,13 @@ const addressSchema = z.object({
   defaultShippingLine1: z.string().min(1).max(200),
   defaultShippingLine2: z.string().max(200).optional().nullable(),
   defaultShippingCity: z.string().min(1).max(100),
-  defaultShippingState: z.string().length(2),
+  defaultShippingState: z
+    .string()
+    .length(2)
+    .transform((s) => s.toUpperCase())
+    .refine((s) => VALID_US_STATE_CODES.has(s), {
+      message: "Invalid US state code",
+    }),
   defaultShippingZip: z.string().regex(/^\d{5}(-\d{4})?$/),
 });
 

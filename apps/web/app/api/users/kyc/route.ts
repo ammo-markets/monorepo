@@ -1,6 +1,7 @@
 import type { NextRequest } from "next/server";
 import { z } from "zod";
 import { prisma } from "@ammo-exchange/db";
+import { VALID_US_STATE_CODES } from "@ammo-exchange/shared";
 import { requireSession } from "@/lib/auth";
 
 const kycSchema = z.object({
@@ -18,7 +19,13 @@ const kycSchema = z.object({
     },
     { message: "Must be at least 18 years old" },
   ),
-  state: z.string().length(2),
+  state: z
+    .string()
+    .length(2)
+    .transform((s) => s.toUpperCase())
+    .refine((s) => VALID_US_STATE_CODES.has(s), {
+      message: "Invalid US state code",
+    }),
   govIdType: z.enum(["DRIVERS_LICENSE", "PASSPORT", "STATE_ID"]),
   govIdNumber: z.string().min(5),
 });
@@ -44,13 +51,18 @@ export async function GET() {
       },
     });
 
+    // SEC-01: Never expose full govIdNumber -- mask to last 4 characters
+    const maskedGovId = user?.kycGovIdNumber
+      ? `****${user.kycGovIdNumber.slice(-4)}`
+      : null;
+
     return Response.json({
       kycStatus: user?.kycStatus ?? "NONE",
       kycFullName: user?.kycFullName ?? null,
       kycDateOfBirth: user?.kycDateOfBirth ?? null,
       kycState: user?.kycState ?? null,
       kycGovIdType: user?.kycGovIdType ?? null,
-      kycGovIdNumber: user?.kycGovIdNumber ?? null,
+      kycGovIdNumber: maskedGovId,
     });
   } catch (error) {
     if (error instanceof Response) return error;

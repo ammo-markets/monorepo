@@ -1,7 +1,7 @@
 import type { NextRequest } from "next/server";
 import { z } from "zod";
 import { prisma } from "@ammo-exchange/db";
-import { RESTRICTED_STATES } from "@ammo-exchange/shared";
+import { RESTRICTED_STATES, VALID_US_STATE_CODES } from "@ammo-exchange/shared";
 import { requireSession } from "@/lib/auth";
 
 const shippingSchema = z.object({
@@ -13,6 +13,10 @@ const shippingSchema = z.object({
   state: z
     .string()
     .length(2)
+    .transform((s) => s.toUpperCase())
+    .refine((s) => VALID_US_STATE_CODES.has(s), {
+      message: "Invalid US state code",
+    })
     .refine(
       (s) =>
         !RESTRICTED_STATES.includes(s as (typeof RESTRICTED_STATES)[number]),
