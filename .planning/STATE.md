@@ -5,17 +5,17 @@
 See: .planning/PROJECT.md (updated 2026-02-21)
 
 **Core value:** Anyone worldwide can get price exposure to U.S. ammunition by minting ammo tokens with USDC, while only verified U.S. residents in allowed states can redeem for physical delivery.
-**Current focus:** Phase 30 - Architecture & Contract Hardening (v1.6 Audit Remediation)
+**Current focus:** Phase 31 - Test Suite (v1.6 Audit Remediation)
 
 ## Current Position
 
 Milestone: v1.6 Audit Remediation
-Phase: 30 of 31 (Architecture & Contract Hardening)
-Plan: 03 of 03 (Phase 30) -- COMPLETE
-Status: Phase 30 Complete
-Last activity: 2026-02-21 — Completed 30-03 (ABI Export & Fuji Redeployment)
+Phase: 31 of 31 (Test Suite)
+Plan: 03 of 03 (Phase 31) -- COMPLETE
+Status: Phase 31 Complete
+Last activity: 2026-02-21 — Completed 31-03 (E2E Happy Path Tests)
 
-Progress: [████████░░] 80% (v1.6)
+Progress: [██████████] 100% (v1.6)
 
 ## Performance Metrics
 
@@ -85,6 +85,7 @@ Recent decisions affecting current work:
 - [30-02] Gap backfill uses latest ActivityLog timestamp + skipDuplicates for idempotency
 - [30-03] All 15 Fuji contracts redeployed at block 52030756 with deadline/price guards
 - [30-03] Frontend error parser must be updated alongside ABI exports for new contract errors
+- [31-03] E2E tests deliberately simple and happy-path-only, complementing granular tests
 
 ### Pending Todos
 
@@ -105,5 +106,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 30-03-PLAN.md (ABI Export & Fuji Redeployment)
+Stopped at: Completed 31-03-PLAN.md (E2E Happy Path Tests)
 Resume file: None
