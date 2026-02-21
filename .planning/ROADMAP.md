@@ -8,6 +8,7 @@
 - ✅ **v1.3 UX Restructure & Data Enrichment** -- Phases 12-17 (shipped 2026-02-16)
 - ✅ **v1.4 UI/UX Polish & Accessibility** -- Phases 18-23 (shipped 2026-02-16)
 - 🚧 **v1.5 Pitch Deck** -- Phases 24-26 (in progress)
+- 📋 **v1.6 Audit Remediation** -- Phases 27-31 (planned)
 
 ## Phases
 
@@ -72,13 +73,26 @@ Full details: `.planning/milestones/v1.3-ROADMAP.md`
 
 </details>
 
-### 🚧 v1.5 Pitch Deck (In Progress)
-
-**Milestone Goal:** Build a standalone pitch deck app for Ammo Exchange -- custom React slide system with PDF export, showcasing the DeFi + RWA tokenization narrative for investors and partners.
+<details>
+<summary>v1.5 Pitch Deck (Phases 24-26) -- IN PROGRESS</summary>
 
 - [x] **Phase 24: Foundation & Setup** - Scaffold pitchdeck app with hex-only brass/dark theme and Turborepo integration (completed 2026-02-17)
 - [ ] **Phase 25: Slide Content & Navigation** - All 13 slides with keyboard navigation, transitions, and progress indicator
 - [ ] **Phase 26: PDF Export & Deployment** - Client-side PDF generation and static deploy to shareable investor URL
+
+Full details in Phase Details below.
+
+</details>
+
+### 📋 v1.6 Audit Remediation (Planned)
+
+**Milestone Goal:** Fix all audit findings -- data correctness, security hardening, architecture gaps, and contract guards -- to bring the protocol to production-grade integrity before mainnet.
+
+- [ ] **Phase 27: Data Model Migration** - Prisma schema migration for composite order uniqueness and normalized amount fields, plus worker handlers populating the new model
+- [ ] **Phase 28: Data Flow Completion** - APIs and UI render correct amount fields, activity feed sorts by updatedAt, redeem flow persists shipping, BigInt-safe formatting
+- [ ] **Phase 29: Security Hardening** - KYC endpoint masking, mutation error handling, rate limiter IP trust, state code validation, SIWE policy enforcement
+- [ ] **Phase 30: Architecture & Contract Hardening** - Dynamic caliber registry, worker backfill self-healing, contract deadline validation, price sanity bounds, Fuji redeployment
+- [ ] **Phase 31: Test Suite** - Automated tests for worker idempotency, API auth/compliance, and E2E mint/redeem/finalize flows
 
 ## Phase Details
 
@@ -127,10 +141,69 @@ Plans:
 - [ ] 26-01: PDF export with html2canvas-pro + jsPDF (off-screen rendering, progress indicator)
 - [ ] 26-02: Static deployment to Vercel
 
+### Phase 27: Data Model Migration
+**Goal**: Order records use composite uniqueness and store normalized amount fields so each on-chain event maps to exactly one unambiguous database record
+**Depends on**: Nothing (first phase of v1.6, independent of v1.5)
+**Requirements**: DATA-01, DATA-02, DATA-03
+**Success Criteria** (what must be TRUE):
+  1. Prisma schema defines a unique constraint on (txHash, logIndex) for the Order model, and running `pnpm db:migrate` applies the migration without data loss
+  2. Order model has separate `usdcAmount` and `tokenAmount` columns (both BigInt/Decimal), and existing orders are backfill-migrated with amounts in the correct field
+  3. Worker MintStarted handler creates an order with `usdcAmount` populated from the event's USDC-wei value and `tokenAmount` left null until finalization
+  4. Worker RedeemRequested handler creates an order with `tokenAmount` populated from the event's token-wei value and `usdcAmount` left null until finalization
+  5. Two events emitted in the same transaction (different logIndex) each produce their own distinct order record (no silent overwrite)
+**Plans**: TBD
+
+### Phase 28: Data Flow Completion
+**Goal**: All user-facing surfaces display the correct amount for context (USDC cost vs token rounds), activity feeds sort by latest state change, and the redeem flow saves shipping before confirmation
+**Depends on**: Phase 27
+**Requirements**: DATA-04, DATA-05, DATA-06, ARCH-01
+**Success Criteria** (what must be TRUE):
+  1. Mint order displays show the USDC amount paid (from `usdcAmount` field) and redeem order displays show the token amount burned (from `tokenAmount` field) -- no field confusion
+  2. Activity API response includes `updatedAt` timestamp and the activity feed sorts entries by most recent state change, not creation time
+  3. When a user submits a redeem order, the shipping address is persisted to the database via the shipping API before the confirmation step renders
+  4. Stats API and supply API return all BigInt-derived values as string-formatted numbers (no JavaScript Number conversion that silently truncates values above 2^53)
+**Plans**: TBD
+
+### Phase 29: Security Hardening
+**Goal**: All user-facing endpoints enforce proper data masking, input validation, and authentication policy so sensitive data never leaks and invalid inputs are rejected
+**Depends on**: Phase 27 (needs updated schema for state validation context)
+**Requirements**: SEC-01, SEC-02, SEC-03, SEC-04, SEC-05
+**Success Criteria** (what must be TRUE):
+  1. GET /api/kyc returns KYC status and masked identity info (last 4 of gov ID only) -- full gov ID number is never included in any API response
+  2. KYC mutation hook surfaces non-2xx responses as thrown errors so React error boundaries and toast notifications activate on failure
+  3. Rate limiter extracts client IP from the last entry in x-forwarded-for (trusted proxy) or falls back to socket address -- never trusts the first/raw header value from an untrusted client
+  4. State code input is uppercased and validated against the set of valid US state/territory codes server-side before any restricted-state comparison runs
+  5. SIWE message verification checks that the domain matches the app domain, the URI matches the expected callback, and the chain ID matches the configured network -- not just nonce validity
+**Plans**: TBD
+
+### Phase 30: Architecture & Contract Hardening
+**Goal**: The system self-heals gaps in activity history, discovers new caliber markets automatically, and smart contracts reject obviously invalid keeper inputs
+**Depends on**: Phase 28 (needs BigInt-safe APIs), Phase 29 (security fixes should land before contract changes)
+**Requirements**: ARCH-02, ARCH-03, CNTR-01, CNTR-02
+**Success Criteria** (what must be TRUE):
+  1. Caliber registry is sourced from AmmoFactory MarketCreated events (or shared config) so a newly deployed CaliberMarket is automatically indexed and surfaced in the UI without code changes
+  2. Worker stats backfill detects gaps in ActivityLog history (missing time windows) and fills them on startup instead of skipping when any rows exist
+  3. CaliberMarket.startMint and CaliberMarket.startRedeem revert with a descriptive error when called with a deadline timestamp that is already in the past
+  4. CaliberMarket.finalizeMint reverts when the keeper-supplied actualPriceX18 falls outside a configurable sanity range (e.g., not zero, within reasonable bounds of last known price)
+  5. Modified contracts are redeployed to Fuji testnet and all contract addresses in shared config are updated to the new deployment
+**Plans**: TBD
+
+### Phase 31: Test Suite
+**Goal**: Automated tests verify that audit remediation changes work correctly -- worker idempotency, API auth and compliance, and end-to-end mint/redeem flows
+**Depends on**: Phase 27, Phase 28, Phase 29, Phase 30 (tests exercise code from all prior phases)
+**Requirements**: TEST-01, TEST-02, TEST-03, TEST-04, TEST-05
+**Success Criteria** (what must be TRUE):
+  1. Running worker event handler tests shows that processing the same event twice (identical txHash + logIndex) results in exactly one order record (idempotent replay)
+  2. Running worker event handler tests shows that two events with the same txHash but different logIndex values produce two distinct order records
+  3. API auth tests confirm that unauthenticated requests to protected routes return 401/403, and non-keeper requests to admin routes return 404
+  4. API compliance tests confirm that a user in a restricted state is rejected for redemption, state codes are normalized (e.g., "ca" treated as "CA"), and KYC GET response contains no raw gov ID
+  5. E2E flow tests cover the happy path for mint initiation (USDC approval + startMint), redeem initiation (token approval + startRedeem), and keeper finalization (finalizeMint with valid price)
+**Plans**: TBD
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 24 -> 25 -> 26
+Phases execute in numeric order: 27 -> 28 -> 29 -> 30 -> 31
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
@@ -157,11 +230,16 @@ Phases execute in numeric order: 24 -> 25 -> 26
 | 21. User Flow Improvements | v1.4 | 2/2 | Complete | 2026-02-16 |
 | 22. Admin Enhancements | v1.4 | 2/2 | Complete | 2026-02-16 |
 | 23. Landing Page & Cleanup | v1.4 | 2/2 | Complete | 2026-02-16 |
-| 24. Foundation & Setup | v1.5 | Complete    | 2026-02-17 | - |
+| 24. Foundation & Setup | v1.5 | 1/1 | Complete | 2026-02-17 |
 | 25. Slide Content & Navigation | v1.5 | 0/2 | Not started | - |
 | 26. PDF Export & Deployment | v1.5 | 0/2 | Not started | - |
+| 27. Data Model Migration | v1.6 | 0/? | Not started | - |
+| 28. Data Flow Completion | v1.6 | 0/? | Not started | - |
+| 29. Security Hardening | v1.6 | 0/? | Not started | - |
+| 30. Architecture & Contract Hardening | v1.6 | 0/? | Not started | - |
+| 31. Test Suite | v1.6 | 0/? | Not started | - |
 
 ---
 
 _Roadmap created: 2026-02-10_
-_Last updated: 2026-02-17 (v1.5 Pitch Deck roadmap added)_
+_Last updated: 2026-02-21 (v1.6 Audit Remediation roadmap added)_

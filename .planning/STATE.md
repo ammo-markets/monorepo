@@ -5,15 +5,17 @@
 See: .planning/PROJECT.md (updated 2026-02-21)
 
 **Core value:** Anyone worldwide can get price exposure to U.S. ammunition by minting ammo tokens with USDC, while only verified U.S. residents in allowed states can redeem for physical delivery.
-**Current focus:** Defining requirements (v1.6 Audit Remediation)
+**Current focus:** Phase 27 - Data Model Migration (v1.6 Audit Remediation)
 
 ## Current Position
 
 Milestone: v1.6 Audit Remediation
-Phase: Not started (defining requirements)
+Phase: 27 of 31 (Data Model Migration)
 Plan: —
-Status: Defining requirements
-Last activity: 2026-02-21 — Milestone v1.6 started
+Status: Ready to plan
+Last activity: 2026-02-21 — Roadmap created for v1.6
+
+Progress: [░░░░░░░░░░] 0% (v1.6)
 
 ## Performance Metrics
 
@@ -54,18 +56,10 @@ Last activity: 2026-02-21 — Milestone v1.6 started
 All decisions logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
-- [v1.5] Standalone pitchdeck app at apps/pitchdeck (no DB, wallet, or server deps)
-- [v1.5] Hex-only CSS colors to prevent oklch crash in html2canvas PDF export
-- [v1.5] Static export (output: "export") -- no API routes, pure client-side
-- [v1.5] html2canvas-pro (not html2canvas) for Tailwind v4 CSS compatibility
-- [24-01] Hex-only theme uses --color-*: initial to wipe Tailwind oklch defaults
-- [24-01] Minimal pitchdeck deps: no wagmi, prisma, shadcn, or iron-session
-- [24-01] CALIBER_SPECS import validates workspace transpilation at build time
-- [25-01] Non-null assertion for SLIDES array access (useDeck guarantees bounds)
-- [25-01] overflow:hidden on PitchDeck container to prevent Space key page scrolling
-- [25-02] SlideLayout thin wrapper (flex col, p-12) for consistent slide styling
-- [25-02] All Recharts colors as hex literals (no CSS variables) for oklch-free guarantee
-- [25-02] CALIBER_SPECS and RESTRICTED_STATES imported from shared for data consistency
+- [v1.6] Composite uniqueness (txHash + logIndex) replaces txHash-only order dedup
+- [v1.6] Separate usdcAmount/tokenAmount fields replace single ambiguous amount column
+- [v1.6] Contract changes (CNTR-01, CNTR-02) require Fuji redeployment in Phase 30
+- [v1.6] Tests (Phase 31) come last since they exercise code from all prior phases
 
 ### Pending Todos
 
@@ -86,5 +80,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Starting v1.6 Audit Remediation milestone
+Stopped at: Created v1.6 Audit Remediation roadmap (Phases 27-31)
 Resume file: None
