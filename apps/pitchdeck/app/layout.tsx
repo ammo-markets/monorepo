@@ -1,10 +1,16 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Manrope, Rajdhani, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
+const manrope = Manrope({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-manrope",
+});
+
+const rajdhani = Rajdhani({
+  weight: ["300", "400", "500", "600", "700"],
+  subsets: ["latin"],
+  variable: "--font-rajdhani",
 });
 
 const jetbrainsMono = JetBrains_Mono({
@@ -30,7 +36,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased`}
+        className={`${manrope.variable} ${rajdhani.variable} ${jetbrainsMono.variable} font-sans antialiased bg-background text-text`}
       >
         {children}
       </body>

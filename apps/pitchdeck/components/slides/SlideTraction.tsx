@@ -31,7 +31,7 @@ const CAPABILITIES = [
 export function SlideTraction() {
   return (
     <SlideLayout>
-      <h2 className="mb-2 text-5xl font-bold text-text">
+      <h2 className="mb-2 font-display text-5xl font-bold uppercase tracking-tight text-text">
         Built &amp; Ready
       </h2>
       <p className="mb-10 text-lg text-text-muted">
@@ -41,8 +41,8 @@ export function SlideTraction() {
       <StaggerContainer preset="firing-sequence" className="mb-8 grid flex-1 grid-cols-4 gap-6">
         {CAPABILITIES.map((cap) => (
           <StaggerItem key={cap.label} preset="firing-sequence">
-            <div className="card-hover flex h-full flex-col items-center justify-center rounded-xl border border-surface-elevated bg-surface p-6 text-center">
-              <p className={`text-3xl font-bold text-brass ${cap.isLive ? "live-dot" : ""}`}>
+            <div className="card-hover flex h-full flex-col items-center justify-center rounded-none border border-surface-elevated bg-surface p-6 text-center">
+              <p className={`font-display text-3xl font-bold uppercase text-brass ${cap.isLive ? "live-dot" : ""}`}>
                 {cap.value}
               </p>
               <p className="mt-1 font-semibold text-text">{cap.label}</p>
@@ -53,7 +53,7 @@ export function SlideTraction() {
       </StaggerContainer>
 
       <div className="flex justify-center">
-        <div className="card-hover rounded-xl border-2 border-brass bg-surface px-10 py-4 text-center">
+        <div className="card-hover rounded-none border-2 border-brass bg-surface px-10 py-4 text-center">
           <p className="text-xl font-bold text-brass">Try the Live Demo</p>
           <p className="mt-1 text-sm text-text-muted">
             Testnet Demo &middot; Coming Soon

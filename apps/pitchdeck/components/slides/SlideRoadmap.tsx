@@ -8,7 +8,7 @@ import { ROADMAP_PHASES } from "@/lib/slideData";
 export function SlideRoadmap() {
   return (
     <SlideLayout>
-      <h2 className="mb-2 text-5xl font-bold text-text">Roadmap</h2>
+      <h2 className="mb-2 font-display text-5xl font-bold uppercase tracking-tight text-text">Roadmap</h2>
       <p className="mb-10 text-lg text-text-muted">
         Four-phase plan from testnet to institutional scale
       </p>
@@ -18,7 +18,7 @@ export function SlideRoadmap() {
           {ROADMAP_PHASES.map((phase) => (
             <StaggerItem key={phase.phase} preset="firing-sequence">
               <div
-                className={`card-hover flex h-full flex-col rounded-xl border p-6 ${
+                className={`card-hover flex h-full flex-col rounded-none border p-6 ${
                   phase.current
                     ? "border-brass bg-brass/10"
                     : "border-surface-elevated bg-surface"

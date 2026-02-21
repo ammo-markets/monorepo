@@ -40,7 +40,7 @@ const TIERS = [
 export function SlideMarket() {
   return (
     <SlideLayout>
-      <h2 className="mb-2 text-5xl font-bold text-text">Market Opportunity</h2>
+      <h2 className="mb-2 font-display text-5xl font-bold uppercase tracking-tight text-text">Market Opportunity</h2>
       <p className="mb-10 text-lg text-text-muted">
         US ammunition -- a massive, underserved commodity market
       </p>
@@ -55,7 +55,7 @@ export function SlideMarket() {
               width: { duration: tier.duration, delay: tier.delay, ease: "easeOut" },
               opacity: { duration: 0.3, delay: tier.delay },
             }}
-            className={`rounded-xl border border-brass bg-brass ${tier.opacity} flex items-center justify-between px-8 py-5`}
+            className={`rounded-none border border-brass bg-brass ${tier.opacity} flex items-center justify-between px-8 py-5`}
           >
             <div>
               <span className="text-sm font-bold text-background">
@@ -65,7 +65,7 @@ export function SlideMarket() {
                 {tier.detail}
               </span>
             </div>
-            <span className="text-3xl font-bold text-background">
+            <span className="font-display text-3xl font-bold uppercase text-background">
               {tier.value}
             </span>
           </motion.div>
@@ -78,7 +78,7 @@ export function SlideMarket() {
 
       <div className="flex items-center justify-center gap-12">
         <div className="text-center">
-          <p className="text-4xl font-bold text-brass">
+          <p className="font-display text-4xl font-bold uppercase text-brass">
             {MARKET_STATS.gunOwnership}
           </p>
           <p className="mt-1 text-sm text-text-muted">
@@ -86,7 +86,7 @@ export function SlideMarket() {
           </p>
         </div>
         <div className="text-center">
-          <p className="text-4xl font-bold text-brass">
+          <p className="font-display text-4xl font-bold uppercase text-brass">
             {MARKET_STATS.regularBuyers}
           </p>
           <p className="mt-1 text-sm text-text-muted">

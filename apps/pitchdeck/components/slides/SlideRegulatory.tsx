@@ -28,7 +28,7 @@ const POINTS = [
 export function SlideRegulatory() {
   return (
     <SlideLayout>
-      <h2 className="mb-2 text-5xl font-bold text-text">
+      <h2 className="mb-2 font-display text-5xl font-bold uppercase tracking-tight text-text">
         Regulatory Positioning
       </h2>
       <p className="mb-10 text-lg text-text-muted">
@@ -38,7 +38,7 @@ export function SlideRegulatory() {
       <StaggerContainer preset="magazine-load" className="grid flex-1 grid-cols-2 gap-6">
         {POINTS.map((point) => (
           <StaggerItem key={point.title}>
-            <div className="card-hover flex gap-4 rounded-xl border border-surface-elevated bg-surface p-6">
+            <div className="card-hover flex gap-4 rounded-none border border-surface-elevated bg-surface p-6">
               <span className="mt-1 shrink-0 text-2xl text-green">&#10003;</span>
               <div>
                 <h3 className="text-lg font-semibold text-text">{point.title}</h3>

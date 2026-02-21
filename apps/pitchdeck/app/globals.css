@@ -4,19 +4,19 @@
   --color-*: initial;
 
   /* Background colors */
-  --color-background: #0a0a0f;
-  --color-surface: #12121a;
-  --color-surface-elevated: #1a1a25;
+  --color-background: #000000;
+  --color-surface: #050505;
+  --color-surface-elevated: #0a0a0a;
 
   /* Brass palette */
   --color-brass: #c6a44e;
   --color-brass-light: #d4b76a;
-  --color-brass-dark: #a8893f;
+  --color-brass-dark: #1c1606;
 
   /* Text colors */
-  --color-text: #e8e8ed;
-  --color-text-secondary: #8a8a9a;
-  --color-text-muted: #8585a0;
+  --color-text: #ffffff;
+  --color-text-secondary: #a0a0a0;
+  --color-text-muted: #666666;
 
   /* Base colors */
   --color-white: #ffffff;
@@ -29,7 +29,8 @@
   --color-blue: #3498db;
 
   /* Font families */
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-rajdhani), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains), ui-monospace, monospace;
 }
 
@@ -110,8 +111,9 @@
 
 .card-hover:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(198, 164, 78, 0.08);
-  border-color: #a8893f;
+  box-shadow: none;
+  border-color: var(--color-brass);
+  background-color: var(--color-surface-elevated);
 }
 
 /* ── Ambient background glow ──────────────────── */
@@ -119,17 +121,17 @@
 @keyframes ambient-breathe {
   0%,
   100% {
-    opacity: 0.3;
+    opacity: 0.1;
   }
   50% {
-    opacity: 0.5;
+    opacity: 0.2;
   }
 }
 
 .ambient-glow {
   background: radial-gradient(
     circle at center,
-    rgba(198, 164, 78, 0.04) 0%,
+    rgba(255, 255, 255, 0.02) 0%,
     transparent 70%
   );
   animation: ambient-breathe 8s ease-in-out infinite;

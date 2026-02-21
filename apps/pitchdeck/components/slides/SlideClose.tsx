@@ -24,7 +24,7 @@ export function SlideClose() {
       >
         <motion.h1
           variants={fadeUp}
-          className="brass-shimmer mb-6 text-7xl font-bold tracking-tight text-brass"
+          className="font-display mb-6 text-7xl font-bold uppercase tracking-tight text-brass"
         >
           Make Your Ammo Liquid
         </motion.h1>
@@ -35,7 +35,7 @@ export function SlideClose() {
           Global price exposure &middot; Tokenized trading &middot; Optional physical
           delivery
         </motion.p>
-        <motion.div variants={fadeUp} className="rounded-lg bg-surface-elevated px-8 py-4">
+        <motion.div variants={fadeUp} className="rounded-none bg-surface-elevated px-8 py-4">
           <p className="text-text-muted">
             <span className="font-semibold text-brass">hello@ammo.exchange</span>
           </p>

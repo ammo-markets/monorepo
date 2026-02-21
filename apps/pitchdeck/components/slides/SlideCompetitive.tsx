@@ -25,7 +25,7 @@ export function SlideCompetitive() {
 
   return (
     <SlideLayout>
-      <h2 className="mb-2 text-5xl font-bold text-text">
+      <h2 className="mb-2 font-display text-5xl font-bold uppercase tracking-tight text-text">
         Competitive Landscape
       </h2>
       <p className="mb-10 text-lg text-text-muted">

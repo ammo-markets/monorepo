@@ -5,7 +5,7 @@ import { FEE_TABLE, REVENUE_PROJECTION } from "@/lib/slideData";
 export function SlideRevenue() {
   return (
     <SlideLayout>
-      <h2 className="mb-2 text-5xl font-bold text-text">Revenue Model</h2>
+      <h2 className="mb-2 font-display text-5xl font-bold uppercase tracking-tight text-text">Revenue Model</h2>
       <p className="mb-10 text-lg text-text-muted">
         Protocol fees on every mint and redeem, plus wholesale procurement
         margins
@@ -13,7 +13,7 @@ export function SlideRevenue() {
 
       <StaggerContainer preset="magazine-load" className="grid grid-cols-2 gap-8">
         <StaggerItem>
-          <div className="card-hover rounded-xl border border-surface-elevated bg-surface p-6">
+          <div className="card-hover rounded-none border border-surface-elevated bg-surface p-6">
             <h3 className="mb-4 text-xl font-semibold text-brass">
               Fee Structure
             </h3>
@@ -27,7 +27,7 @@ export function SlideRevenue() {
                     <p className="font-semibold text-text">{fee.label}</p>
                     <p className="text-sm text-text-muted">{fee.description}</p>
                   </div>
-                  <span className="ml-4 shrink-0 text-2xl font-bold text-brass">
+                  <span className="ml-4 shrink-0 font-display text-2xl font-bold uppercase text-brass">
                     {fee.value}
                   </span>
                 </div>
@@ -38,7 +38,7 @@ export function SlideRevenue() {
 
         <StaggerItem>
           <div className="flex h-full flex-col gap-6">
-            <div className="card-hover flex flex-1 flex-col items-center justify-center rounded-xl border border-brass/30 bg-surface p-8 text-center">
+            <div className="card-hover flex flex-1 flex-col items-center justify-center rounded-none border border-brass/30 bg-surface p-8 text-center">
               <p className="mb-2 text-sm font-semibold text-text-muted">
                 Revenue Projection
               </p>
@@ -61,8 +61,8 @@ export function SlideRevenue() {
               </p>
             </div>
 
-            <div className="card-hover rounded-xl border border-brass/30 bg-surface p-6 text-center">
-              <p className="text-3xl font-bold text-brass">3% round-trip</p>
+            <div className="card-hover rounded-none border border-brass/30 bg-surface p-6 text-center">
+              <p className="font-display text-3xl font-bold uppercase text-brass">3% round-trip</p>
               <p className="mt-2 text-sm text-text-muted">
                 1.5% mint + 1.5% redeem &middot; Max 5% hard cap on-chain
               </p>

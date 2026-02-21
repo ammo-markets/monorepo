@@ -20,7 +20,7 @@ export function SlideControls({
       <button
         onClick={onPrev}
         disabled={isFirst}
-        className="btn-recoil-prev rounded-lg bg-surface px-4 py-2 text-text disabled:opacity-30"
+        className="btn-recoil-prev rounded-none bg-surface px-4 py-2 text-text disabled:opacity-30"
       >
         &#8592; Prev
       </button>
@@ -32,7 +32,7 @@ export function SlideControls({
       <button
         onClick={onNext}
         disabled={isLast}
-        className="btn-recoil-next rounded-lg bg-surface px-4 py-2 text-text disabled:opacity-30"
+        className="btn-recoil-next rounded-none bg-surface px-4 py-2 text-text disabled:opacity-30"
       >
         Next &#8594;
       </button>

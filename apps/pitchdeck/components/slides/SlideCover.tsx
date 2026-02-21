@@ -24,17 +24,17 @@ export function SlideCover() {
       >
         <motion.h1
           variants={fadeUp}
-          className="brass-shimmer mb-6 text-8xl font-bold text-brass"
+          className="font-display text-8xl font-bold uppercase tracking-tighter text-brass"
           initial={{ letterSpacing: "0.2em", opacity: 0, y: 20 }}
           animate={{ letterSpacing: "-0.02em", opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
         >
           Ammo Exchange
         </motion.h1>
-        <motion.p variants={fadeUp} className="mb-4 text-3xl font-light text-text">
+        <motion.p variants={fadeUp} className="mb-4 font-display text-4xl uppercase tracking-widest text-text">
           Make Your Ammo Liquid
         </motion.p>
-        <motion.p variants={fadeUp} className="text-xl text-text-secondary">
+        <motion.p variants={fadeUp} className="font-mono text-xl uppercase tracking-widest text-text-secondary">
           Tokenized ammunition trading
         </motion.p>
       </motion.div>

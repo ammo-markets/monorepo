@@ -27,7 +27,7 @@ const STEPS = [
 export function SlideSolution() {
   return (
     <SlideLayout>
-      <h2 className="mb-2 text-5xl font-bold text-text">The Solution</h2>
+      <h2 className="mb-2 font-display text-5xl font-bold uppercase tracking-tight text-text">The Solution</h2>
       <p className="mb-10 text-lg text-text-muted">
         Anyone on earth can trade ammo prices. Only verified Americans take
         delivery.
@@ -36,7 +36,7 @@ export function SlideSolution() {
       <StaggerContainer preset="firing-sequence" className="grid flex-1 grid-cols-3 gap-8">
         {STEPS.map((step) => (
           <StaggerItem key={step.step} preset="firing-sequence">
-            <div className="card-hover flex h-full flex-col items-center rounded-xl border border-surface-elevated bg-surface p-8 text-center">
+            <div className="card-hover flex h-full flex-col items-center rounded-none border border-surface-elevated bg-surface p-8 text-center">
               <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-surface-elevated text-xl font-bold text-brass">
                 {step.icon}
               </div>
