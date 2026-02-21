@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Copy, ExternalLink, LogOut, Wallet } from "lucide-react";
 import { useWallet } from "@/hooks/use-wallet";
+import { useConnectDialog } from "@/contexts/connect-dialog-context";
 import { useSiwe } from "@/hooks/use-siwe";
 import { useTokenBalances } from "@/hooks/use-token-balances";
 import { truncateAddress } from "@/lib/utils";
@@ -43,7 +44,7 @@ function formatUsdc(raw: bigint): string {
 
 export function WalletButton() {
   const [showDisconnectDialog, setShowDisconnectDialog] = useState(false);
-  const [showConnectDialog, setShowConnectDialog] = useState(false);
+  const connectDialog = useConnectDialog();
 
   const {
     address,
@@ -68,14 +69,14 @@ export function WalletButton() {
         <button
           type="button"
           className="flex items-center gap-2 rounded-lg border border-border-hover bg-transparent px-4 py-2 text-sm font-medium text-text-primary transition-all duration-150 hover:border-brass-border hover:bg-ax-tertiary"
-          onClick={() => setShowConnectDialog(true)}
+          onClick={connectDialog.open}
           aria-label="Connect wallet"
         >
           <Wallet size={16} />
           <span className="hidden sm:inline">Connect Wallet</span>
         </button>
 
-        <Dialog open={showConnectDialog} onOpenChange={setShowConnectDialog}>
+        <Dialog open={connectDialog.isOpen} onOpenChange={(open) => open ? connectDialog.open() : connectDialog.close()}>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Connect Wallet</DialogTitle>
@@ -91,7 +92,7 @@ export function WalletButton() {
                   className="flex items-center gap-3 rounded-lg border border-border-hover px-4 py-3 text-sm font-medium text-text-primary transition-all duration-150 hover:border-brass-border hover:bg-ax-tertiary disabled:opacity-50"
                   onClick={() => {
                     connectWith(connector);
-                    setShowConnectDialog(false);
+                    connectDialog.close();
                   }}
                   disabled={isConnecting}
                 >
@@ -115,20 +116,30 @@ export function WalletButton() {
   // State B: Wrong network
   if (isWrongNetwork) {
     return (
-      <button
-        type="button"
-        className="flex items-center gap-2 rounded-lg border border-ammo-amber bg-transparent px-4 py-2 text-sm font-medium text-ammo-amber transition-all duration-150 hover:bg-ammo-amber/10"
-        onClick={switchToFuji}
-        disabled={isSwitching}
-        aria-label={
-          isSwitching ? "Switching network" : "Switch to Fuji network"
-        }
-      >
-        <Wallet size={16} />
-        <span className="hidden sm:inline">
-          {isSwitching ? "Switching..." : "Switch to Fuji"}
-        </span>
-      </button>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          className="flex items-center gap-2 rounded-lg border border-ammo-amber bg-transparent px-4 py-2 text-sm font-medium text-ammo-amber transition-all duration-150 hover:bg-ammo-amber/10"
+          onClick={switchToFuji}
+          disabled={isSwitching}
+          aria-label={
+            isSwitching ? "Switching network" : "Switch to Fuji network"
+          }
+        >
+          <Wallet size={16} />
+          <span className="hidden sm:inline">
+            {isSwitching ? "Switching..." : "Switch to Fuji"}
+          </span>
+        </button>
+        <button
+          type="button"
+          className="flex items-center gap-2 rounded-lg border border-border-hover bg-transparent px-3 py-2 text-sm font-medium text-text-secondary transition-all duration-150 hover:border-red-500/50 hover:text-red-400"
+          onClick={() => disconnect()}
+          aria-label="Disconnect wallet"
+        >
+          <LogOut size={16} />
+        </button>
+      </div>
     );
   }
 

@@ -40,10 +40,7 @@ export function useWallet() {
     connectors,
     connectWith: (connector: Connector) => connect({ connector }),
 
-    // Actions — connect() uses first available connector as fallback for simple call-sites
-    connect: () => {
-      if (connectors[0]) connect({ connector: connectors[0] });
-    },
+    // Actions
     disconnect: () => disconnect(),
     switchToFuji: () => switchChain({ chainId: avalancheFuji.id }),
 

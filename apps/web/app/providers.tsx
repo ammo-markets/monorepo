@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
 import { wagmiConfig } from "@/lib/wagmi";
 import { AuthProvider } from "@/contexts/auth-context";
+import { ConnectDialogProvider } from "@/contexts/connect-dialog-context";
 
 function makeQueryClient() {
   return new QueryClient({
@@ -37,7 +38,9 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
-        <AuthProvider>{children}</AuthProvider>
+        <ConnectDialogProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </ConnectDialogProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );

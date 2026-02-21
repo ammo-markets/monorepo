@@ -3,6 +3,7 @@
 import { createContext, useContext } from "react";
 import type { ReactNode } from "react";
 import { useWallet } from "@/hooks/use-wallet";
+import { useConnectDialog } from "@/contexts/connect-dialog-context";
 import { useSiwe } from "@/hooks/use-siwe";
 
 interface AuthContextValue {
@@ -28,6 +29,7 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const wallet = useWallet();
+  const connectDialog = useConnectDialog();
   const siwe = useSiwe();
 
   const value: AuthContextValue = {
@@ -36,7 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isConnected: wallet.isConnected,
     isReconnecting: wallet.isReconnecting,
     isWrongNetwork: wallet.isWrongNetwork,
-    connect: wallet.connect,
+    connect: connectDialog.open,
     disconnect: wallet.disconnect,
     switchToFuji: wallet.switchToFuji,
     isConnecting: wallet.isConnecting,

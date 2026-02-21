@@ -30,6 +30,7 @@ import { KycForm } from "./kyc-form";
 import type { KycFormData } from "./kyc-form";
 
 import { useWallet } from "@/hooks/use-wallet";
+import { useConnectDialog } from "@/contexts/connect-dialog-context";
 import { useRedeemTransaction } from "@/hooks/use-redeem-transaction";
 import { useAllowance } from "@/hooks/use-allowance";
 import { useTokenBalances } from "@/hooks/use-token-balances";
@@ -1616,6 +1617,7 @@ export function RedeemFlow({
   // ── Real hooks ──
   const activeCaliber: Caliber = selectedCaliber ?? "9MM";
   const wallet = useWallet();
+  const connectDialog = useConnectDialog();
   const balances = useTokenBalances();
   const redeemTx = useRedeemTransaction(activeCaliber);
 
@@ -1824,7 +1826,7 @@ export function RedeemFlow({
           }}
           isEmbedded={isEmbedded}
           isConnected={wallet.isConnected}
-          onConnect={wallet.connect}
+          onConnect={connectDialog.open}
         />
       )}
 
@@ -1865,7 +1867,7 @@ export function RedeemFlow({
           errorMessage={errorMessage}
           isConnected={wallet.isConnected}
           hasEnoughAllowance={hasEnoughAllowance}
-          onConnect={wallet.connect}
+          onConnect={connectDialog.open}
           onApprove={handleApprove}
           onConfirm={handleConfirm}
           onRetry={handleRetry}
