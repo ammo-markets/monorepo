@@ -30,7 +30,8 @@ export async function backfillActivityLog(): Promise<void> {
       select: {
         type: true,
         caliber: true,
-        amount: true,
+        usdcAmount: true,
+        tokenAmount: true,
         txHash: true,
         walletAddress: true,
         updatedAt: true,
@@ -46,7 +47,7 @@ export async function backfillActivityLog(): Promise<void> {
       data: orders.map((order) => ({
         type: order.type,
         caliber: order.caliber,
-        amount: order.amount,
+        amount: order.usdcAmount ?? order.tokenAmount ?? "0",
         txHash: order.txHash,
         walletAddress: order.walletAddress ?? "",
         createdAt: order.updatedAt,
@@ -73,7 +74,7 @@ export async function computeStats(): Promise<void> {
         where: { caliber, status: "COMPLETED" },
         select: {
           type: true,
-          amount: true,
+          usdcAmount: true,
           tokenAmount: true,
           walletAddress: true,
         },
