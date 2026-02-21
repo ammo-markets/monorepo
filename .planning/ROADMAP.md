@@ -217,7 +217,12 @@ Plans:
 3. CaliberMarket.startMint and CaliberMarket.startRedeem revert with a descriptive error when called with a deadline timestamp that is already in the past
 4. CaliberMarket.finalizeMint reverts when the keeper-supplied actualPriceX18 falls outside a configurable sanity range (e.g., not zero, within reasonable bounds of last known price)
 5. Modified contracts are redeployed to Fuji testnet and all contract addresses in shared config are updated to the new deployment
-   **Plans**: TBD
+   **Plans**: 3 plans
+
+Plans:
+- [ ] 30-01-PLAN.md -- Contract guards: deadline validation (CNTR-01) and price sanity bounds (CNTR-02) with Foundry tests
+- [ ] 30-02-PLAN.md -- Architecture fixes: config-driven caliber registry (ARCH-02) and gap-aware ActivityLog backfill (ARCH-03)
+- [ ] 30-03-PLAN.md -- ABI export, Fuji redeployment, and shared config address update
 
 ### Phase 31: Test Suite
 
@@ -269,7 +274,7 @@ Phases execute in numeric order: 27 -> 28 -> 29 -> 30 -> 31
 | 27. Data Model Migration                 | v1.6      | Complete       | 2026-02-21  | -          |
 | 28. Data Flow Completion                 | v1.6      | Complete       | 2026-02-21  | -          |
 | 29. Security Hardening                   | v1.6      | Complete    | 2026-02-21 | -          |
-| 30. Architecture & Contract Hardening    | v1.6      | 0/?            | Not started | -          |
+| 30. Architecture & Contract Hardening    | v1.6      | 0/3            | Not started | -          |
 | 31. Test Suite                           | v1.6      | 0/?            | Not started | -          |
 
 ---
