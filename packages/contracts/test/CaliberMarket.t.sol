@@ -725,6 +725,117 @@ contract CaliberMarketTest is Test {
         market.finalizeMint(1, 25e16);
     }
 
+    // ===============================================
+    // -- TEST-05: E2E Happy Path Flows
+    // ===============================================
+
+    function testE2EMintInitiationHappyPath() public {
+        // User starts with 1000 USDC
+        assertEq(usdc.balanceOf(user), 1_000e6);
+
+        // User approves market for 200 USDC
+        vm.prank(user);
+        usdc.approve(address(market), 200e6);
+
+        // User calls startMint(200e6, 500, 0) -- 5% slippage, no deadline
+        vm.prank(user);
+        uint256 orderId = market.startMint(200e6, 500, 0);
+
+        // Assert: user USDC balance decreased by 200e6
+        assertEq(usdc.balanceOf(user), 800e6);
+
+        // Assert: market USDC balance is 200e6
+        assertEq(usdc.balanceOf(address(market)), 200e6);
+
+        // Assert: mint order status is Started
+        (
+            address orderUser,
+            uint256 usdcAmt,
+            ,
+            uint256 reqPrice,
+            ,
+            ,
+            ,
+            ,
+            ,
+            CaliberMarket.MintStatus status
+        ) = market.mintOrders(orderId);
+
+        assertEq(uint256(status), uint256(CaliberMarket.MintStatus.Started));
+
+        // Assert: order stores correct usdcAmount, user address, requestPrice
+        assertEq(orderUser, user);
+        assertEq(usdcAmt, 200e6);
+        assertEq(reqPrice, ORACLE_PRICE);
+    }
+
+    function testE2ERedeemInitiationHappyPath() public {
+        // Mint tokens to user first (using _mintTokensToUser helper)
+        _mintTokensToUser(user);
+        uint256 userBalanceBefore = ammoToken.balanceOf(user);
+        assertTrue(userBalanceBefore > 0);
+
+        // User approves market for 200e18 tokens
+        uint256 redeemAmount = 200e18;
+        vm.prank(user);
+        ammoToken.approve(address(market), redeemAmount);
+
+        // User calls startRedeem(200e18, 0) -- no deadline
+        vm.prank(user);
+        uint256 orderId = market.startRedeem(redeemAmount, 0);
+
+        // Assert: tokens transferred from user to market
+        assertEq(ammoToken.balanceOf(user), userBalanceBefore - redeemAmount);
+        assertEq(ammoToken.balanceOf(address(market)), redeemAmount);
+
+        // Assert: redeem order status is Requested
+        (
+            address orderUser,
+            uint256 tokenAmount,
+            ,
+            ,
+            ,
+            ,
+            CaliberMarket.RedeemStatus status
+        ) = market.redeemOrders(orderId);
+
+        assertEq(uint256(status), uint256(CaliberMarket.RedeemStatus.Requested));
+
+        // Assert: order stores correct tokenAmount and user address
+        assertEq(orderUser, user);
+        assertEq(tokenAmount, redeemAmount);
+    }
+
+    function testE2EKeeperFinalizationHappyPath() public {
+        // Create a mint order end-to-end
+        vm.prank(user);
+        usdc.approve(address(market), 200e6);
+        vm.prank(user);
+        uint256 orderId = market.startMint(200e6, 1000, 0); // 10% slippage
+
+        // Finalize the mint order
+        vm.prank(keeper);
+        market.finalizeMint(orderId, ORACLE_PRICE);
+
+        // Assert: user received minted tokens (balance > 0)
+        assertTrue(ammoToken.balanceOf(user) > 0);
+
+        // Assert: fee recipient received fee USDC
+        // fee = 200e6 * 150 / 10_000 = 3_000_000
+        assertEq(usdc.balanceOf(feeRecipient), 3_000_000);
+
+        // Assert: treasury received net USDC
+        // netUsdc = 200e6 - 3_000_000 = 197_000_000
+        assertEq(usdc.balanceOf(treasury), 197_000_000);
+
+        // Assert: market USDC balance is 0 (all distributed)
+        assertEq(usdc.balanceOf(address(market)), 0);
+
+        // Assert: mint order status is Finalized
+        (,,,,,,,,, CaliberMarket.MintStatus status) = market.mintOrders(orderId);
+        assertEq(uint256(status), uint256(CaliberMarket.MintStatus.Finalized));
+    }
+
     // ── Helpers ─────────────────────────────────────
 
     function _startMint(address who, uint256 usdcAmount, uint256 slippageBps, uint64 deadline) internal {
