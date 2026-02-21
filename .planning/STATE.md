@@ -83,9 +83,10 @@ None.
 |---|-------------|------|--------|-----------|
 | 1 | Refactor manual fetch mutations to use TanStack Query useMutation hooks | 2026-02-15 | 94bf174 | [1-refactor-manual-fetch-mutations-to-use-t](./quick/1-refactor-manual-fetch-mutations-to-use-t/) |
 | 2 | Add Get Test USDC faucet button to dashboard for Fuji testnet | 2026-02-16 | 91292a6 | [2-add-get-test-usdc-faucet-button-to-ui-fo](./quick/2-add-get-test-usdc-faucet-button-to-ui-fo/) |
+| 3 | Fix wallet connection UX -- connector selection dialog instead of Phantom auto-open | 2026-02-21 | ef192cd | [3-fix-wallet-connection-ux-switch-to-fuji-](./quick/3-fix-wallet-connection-ux-switch-to-fuji-/) |
 
 ## Session Continuity
 
-Last session: 2026-02-17
-Stopped at: Completed 25-02-PLAN.md (all 13 slide content components)
+Last session: 2026-02-21
+Stopped at: Completed quick task 3 (wallet connection UX fix)
 Resume file: None
