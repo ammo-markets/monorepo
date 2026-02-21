@@ -66,21 +66,25 @@ Anyone worldwide can get price exposure to U.S. ammunition by minting ammo token
 
 ### Active
 
-## Current Milestone: v1.5 Pitch Deck
+## Current Milestone: v1.6 Audit Remediation
 
-**Goal:** Build a standalone pitch deck app for Ammo Exchange — custom React slide system with PDF export, showcasing the DeFi + RWA tokenization narrative and democratized global ammunition price exposure.
+**Goal:** Fix all 12 findings from the protocol audit — data correctness, security hardening, and architecture gaps — to bring the protocol to production-grade integrity before mainnet.
 
 **Target features:**
 
-- Standalone Next.js app at `apps/pitchdeck` within the monorepo
-- Custom slide system with keyboard navigation (arrow keys) and slide counter
-- PDF export via html2canvas + jsPDF with progress tracking
-- Ammo Exchange brand (brass/dark theme, Tailwind v4)
-- ~10-12 slides: Title, Problem, Solution, How It Works, RWA Advantage, Market, Product, Roadmap, Team, CTA
-- Narrative: DeFi + RWA tokenization wave + democratized global access to ammunition price exposure
-- Audience: Investors, partners, and general (versatile)
-- Responsive slide layout with fluid typography (clamp-based)
-- Reuse packages/shared for caliber specs, chain config, and protocol constants
+- Order idempotency keyed by txHash+logIndex (not txHash alone) with DB migration
+- Redeem shipping persistence wired into the main flow (currently skipped)
+- Normalized order amount data model (separate usdcAmount vs tokenAmount fields)
+- Activity API timestamp alignment (updatedAt consistency)
+- KYC endpoint hardening: no gov ID leak, proper mutation error handling
+- Rate limiter identity extraction hardened against x-forwarded-for spoofing
+- State code normalization and validation for compliance checks
+- SIWE verification with domain/URI/chain policy enforcement
+- BigInt-safe formatting in stats and supply APIs (no Number conversion)
+- Contract operational guards: deadline validation, price sanity bounds on finalizeMint
+- Worker backfill self-healing for partial activity history
+- Dynamic caliber registry sourced from factory events (not hardcoded)
+- Automated test suite for worker event replay, API auth/compliance, and E2E flows
 
 ### Out of Scope
 
@@ -166,4 +170,4 @@ The full DeFi protocol is functional on Avalanche Fuji testnet with production-g
 
 ---
 
-_Last updated: 2026-02-17 after v1.5 milestone started_
+_Last updated: 2026-02-21 after v1.6 milestone started_
