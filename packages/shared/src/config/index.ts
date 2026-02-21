@@ -41,25 +41,25 @@ export const CONTRACT_ADDRESSES: {
   mainnet: NetworkAddresses;
 } = {
   fuji: {
-    manager: "0x5dB292eade6BEa9D710C54C5504d8400639dec25",
-    factory: "0xA802FE22E85461131Ca94C8bB85C1a36815aDe8D",
-    usdc: "0x270D06E53f943C6Dd69a2e51FEB07c420B3Ab146",
+    manager: "0x3C018b0e99AFAF5A21a282A525266Bb4827224fC",
+    factory: "0x3073558D5cb2f7cab18f09d343ad8f6E90312FeD",
+    usdc: "0xC71865F5A4D87dF4c6f7DEEB5a66819df8863aa3",
     calibers: {
       "9MM": {
-        market: "0x5aFFA4CfF4920627C2061D211C44B1100E3a8Fe1",
-        token: "0x6a9753ffDbF5036991294Ce439a042dF834aCa62",
+        market: "0x17Cfd46d792f200693CCEaB8576617566396DC2c",
+        token: "0xdf57f8F78Cc519e083C0C0B7f05Ff35eB58dd52B",
       },
       "556": {
-        market: "0xe082bDd7139eF03E8db1B9155f53aB60E5EF7e03",
-        token: "0x46951A49a4d73C70ba9A12bF82f4c4686a8b60E8",
+        market: "0x5769846911A5A80536a1AF6E3Ea6CA52B44A2663",
+        token: "0xf60f4836409E64CFBa8cF0DAEc0Ce0093721B298",
       },
       "22LR": {
-        market: "0xF1B4a75C77b8a9bFB52F9B800C3f26547eDD442b",
-        token: "0xFE10A09895Ab1AF20E5613c2e0715Aac56837ff5",
+        market: "0xD5c83631aEa3590d2273bA9648954Ce986223840",
+        token: "0x37e1a3a438BC5D31B33397d95446fe104a409b5E",
       },
       "308": {
-        market: "0x326b5AAc6C97918716264E307923c6D2c95cA440",
-        token: "0xa8685b36384b13d823bDeF75B96Ee83B6BF647A7",
+        market: "0x8f765405Bc17Ab8045cfEB4f48C8762c61CD2705",
+        token: "0xb9e30B8B5ee33e9Ac1E71aE7d7d445068B5A384b",
       },
     },
   },
@@ -94,6 +94,6 @@ export const CONTRACT_ADDRESSES: {
  * to avoid scanning millions of empty blocks.
  */
 export const DEPLOYMENT_BLOCKS = {
-  fuji: BigInt(51699730),
+  fuji: BigInt(52030756),
   mainnet: BigInt(0), // Not yet deployed
 } as const;
