@@ -84,7 +84,7 @@ Full details in Phase Details below.
 
 </details>
 
-### 📋 v1.6 Audit Remediation (Planned)
+### v1.6 Audit Remediation (Planned)
 
 **Milestone Goal:** Fix all audit findings -- data correctness, security hardening, architecture gaps, and contract guards -- to bring the protocol to production-grade integrity before mainnet.
 
@@ -237,7 +237,13 @@ Plans:
 3. API auth tests confirm that unauthenticated requests to protected routes return 401/403, and non-keeper requests to admin routes return 404
 4. API compliance tests confirm that a user in a restricted state is rejected for redemption, state codes are normalized (e.g., "ca" treated as "CA"), and KYC GET response contains no raw gov ID
 5. E2E flow tests cover the happy path for mint initiation (USDC approval + startMint), redeem initiation (token approval + startRedeem), and keeper finalization (finalizeMint with valid price)
-   **Plans**: TBD
+   **Plans**: 3 plans
+
+Plans:
+
+- [ ] 31-01-PLAN.md -- Worker handler unit tests: idempotent replay and composite uniqueness (TEST-01, TEST-02)
+- [ ] 31-02-PLAN.md -- API auth and compliance tests: session enforcement, keeper gating, state validation, KYC masking (TEST-03, TEST-04)
+- [ ] 31-03-PLAN.md -- E2E contract flow tests: mint initiation, redeem initiation, keeper finalization happy paths (TEST-05)
 
 ## Progress
 
@@ -276,7 +282,7 @@ Phases execute in numeric order: 27 -> 28 -> 29 -> 30 -> 31
 | 28. Data Flow Completion                 | v1.6      | Complete       | 2026-02-21  | -          |
 | 29. Security Hardening                   | v1.6      | Complete       | 2026-02-21  | -          |
 | 30. Architecture & Contract Hardening    | v1.6      | Complete    | 2026-02-21 | -          |
-| 31. Test Suite                           | v1.6      | 0/?            | Not started | -          |
+| 31. Test Suite                           | v1.6      | 0/3            | Not started | -          |
 
 ---
 
