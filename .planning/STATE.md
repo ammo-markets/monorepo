@@ -78,6 +78,9 @@ Recent decisions affecting current work:
 - [28-02] Portfolio/dashboard display USDC for MINT, rounds for REDEEM (not raw coalesced value)
 - [29-01] VALID_US_STATE_CODES typed as Set<string> for Zod transform compatibility
 - [29-01] SIWE chainId checked post-verify (siwe library verify() does not accept chainId option)
+- [30-01] Price sanity check queries oracle at finalization time, not order creation
+- [30-01] maxPriceDeviationBps defaults to 5000 (50%), configurable by owner
+- [30-01] Oracle returning 0 skips sanity check (graceful degradation)
 - [30-02] CALIBERS derived from CONTRACT_ADDRESSES.fuji.calibers keys via CALIBER_TO_PRISMA mapping
 - [30-02] Gap backfill uses latest ActivityLog timestamp + skipDuplicates for idempotency
 
