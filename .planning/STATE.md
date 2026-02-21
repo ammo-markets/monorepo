@@ -85,6 +85,8 @@ Recent decisions affecting current work:
 - [30-02] Gap backfill uses latest ActivityLog timestamp + skipDuplicates for idempotency
 - [30-03] All 15 Fuji contracts redeployed at block 52030756 with deadline/price guards
 - [30-03] Frontend error parser must be updated alongside ABI exports for new contract errors
+- [31-01] Mock PrismaTx uses in-memory Map keyed by composite txHash_logIndex to simulate upsert
+- [31-01] No external test deps needed -- bun:test built-in runner sufficient for worker tests
 - [31-03] E2E tests deliberately simple and happy-path-only, complementing granular tests
 
 ### Pending Todos
