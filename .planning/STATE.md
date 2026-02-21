@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-21)
 
 Milestone: v1.6 Audit Remediation
 Phase: 28 of 31 (Data Flow Completion)
-Plan: 01 of 02 (Phase 28)
-Status: Plan 28-01 Complete
-Last activity: 2026-02-21 — Completed 28-01 (API and Type Fixes)
+Plan: 02 of 02 (Phase 28) -- PHASE COMPLETE
+Status: Phase 28 Complete
+Last activity: 2026-02-21 — Completed 28-02 (UI Amount Display and Shipping Persistence)
 
-Progress: [██░░░░░░░░] 20% (v1.6)
+Progress: [████░░░░░░] 40% (v1.6)
 
 ## Performance Metrics
 
@@ -67,6 +67,9 @@ Recent decisions affecting current work:
 - [28-01] Use BigInt() constructor (not n suffix) for ES2017 target compatibility
 - [28-01] Activity updatedAt aliases createdAt (ActivityLog creation IS state change time)
 - [28-01] totalSupply returned as integer string via BigInt division, not formatUnits
+- [28-02] Activity feed amount is type-aware: MINT divides by 1e6 (USDC-wei), REDEEM divides by 1e18 (token-wei)
+- [28-02] Shipping persistence uses PATCH /api/users/profile defaultShipping fields (no orderId at step 1)
+- [28-02] Portfolio/dashboard display USDC for MINT, rounds for REDEEM (not raw coalesced value)
 
 ### Pending Todos
 
@@ -87,5 +90,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 28-01-PLAN.md (API and Type Fixes)
+Stopped at: Completed 28-02-PLAN.md (UI Amount Display and Shipping Persistence) -- Phase 28 complete
 Resume file: None
