@@ -15,7 +15,12 @@ affects: [28-web-migration, worker-deployment]
 
 tech-stack:
   added: []
-  patterns: [composite-upsert-idempotency, self-healing-finalization, coalesce-amount-fallback]
+  patterns:
+    [
+      composite-upsert-idempotency,
+      self-healing-finalization,
+      coalesce-amount-fallback,
+    ]
 
 key-files:
   created: []
@@ -51,6 +56,7 @@ completed: 2026-02-21
 - **Files modified:** 3
 
 ## Accomplishments
+
 - MintStarted and RedeemRequested handlers use composite (txHash, logIndex) upsert, populating usdcAmount and tokenAmount respectively
 - MintFinalized and RedeemFinalized handlers gain self-healing: create order from finalization event if no pending order found
 - All worker-side references to deleted `amount` column replaced with `usdcAmount`/`tokenAmount` across handlers and stats.ts
@@ -64,11 +70,13 @@ Each task was committed atomically:
 2. **Task 2: Update refund handlers, stats.ts, and fix remaining amount references** - `d043957` (fix)
 
 ## Files Created/Modified
+
 - `apps/worker/src/handlers/mint.ts` - Composite upsert in MintStarted, self-healing in MintFinalized, ActivityLog uses usdcAmount/tokenAmount
 - `apps/worker/src/handlers/redeem.ts` - Composite upsert in RedeemRequested, self-healing in RedeemFinalized, ActivityLog uses usdcAmount/tokenAmount
 - `apps/worker/src/stats.ts` - backfillActivityLog and computeStats select usdcAmount/tokenAmount instead of deleted amount column
 
 ## Decisions Made
+
 - Self-healing finalization creates orders with tokenAmount only since usdcAmount is not available from MintFinalized/RedeemFinalized event args (partial data is better than no data)
 - ActivityLog amount field uses coalesce pattern `usdcAmount ?? tokenAmount ?? "0"` for consistent fallback
 - RedeemFinalized sets tokenAmount to args.burnedTokens (final burned amount, which may differ from initial request)
@@ -79,16 +87,20 @@ Each task was committed atomically:
 None - plan executed exactly as written.
 
 ## Issues Encountered
+
 None.
 
 ## User Setup Required
+
 None - no external service configuration required.
 
 ## Next Phase Readiness
+
 - Worker handlers fully migrated to new schema; ready for deployment
 - apps/web still references old `order.amount` field -- Phase 28 must update those references
 - No blockers for Phase 28 (web migration)
 
 ---
-*Phase: 27-data-model-migration*
-*Completed: 2026-02-21*
+
+_Phase: 27-data-model-migration_
+_Completed: 2026-02-21_

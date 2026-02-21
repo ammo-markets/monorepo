@@ -57,6 +57,7 @@ completed: 2026-02-17
 - **Files modified:** 9
 
 ## Accomplishments
+
 - Scaffolded complete pitchdeck app with package.json, next.config.ts, postcss, tsconfig, layout, page, and globals.css
 - Hex-only color palette confirmed zero oklch values in both source CSS and build output
 - Static export produces out/index.html -- verified with successful build
@@ -70,6 +71,7 @@ Each task was committed atomically:
 2. **Task 2: Install dependencies and verify build** - `d28a4e2` (chore)
 
 ## Files Created/Modified
+
 - `apps/pitchdeck/package.json` - App package with port 3001, shared workspace dep
 - `apps/pitchdeck/next.config.ts` - Static export, transpilePackages, extensionAlias
 - `apps/pitchdeck/postcss.config.mjs` - Tailwind v4 PostCSS plugin
@@ -77,9 +79,10 @@ Each task was committed atomically:
 - `apps/pitchdeck/app/globals.css` - Hex-only Tailwind v4 theme with brass/dark palette
 - `apps/pitchdeck/app/layout.tsx` - Root layout with Inter + JetBrains Mono fonts
 - `apps/pitchdeck/app/page.tsx` - Test slide with color validation squares
-- `turbo.json` - Added out/** to build outputs
+- `turbo.json` - Added out/\*\* to build outputs
 
 ## Decisions Made
+
 - Used `--color-*: initial` as first line in `@theme inline` to wipe all Tailwind oklch defaults
 - Minimal dependencies: only next, react, react-dom, shared, and tailwind tooling
 - Imported CALIBER_SPECS (not a type) from shared to prove runtime workspace import works
@@ -97,6 +100,7 @@ None.
 None - no external service configuration required.
 
 ## Next Phase Readiness
+
 - Pitchdeck app scaffold complete and building successfully
 - Ready for slide components, content, and PDF export implementation
 - Dev server runs on port 3001 (no conflict with web on 3000)
@@ -106,5 +110,6 @@ None - no external service configuration required.
 All 8 key files verified on disk. Both task commits (646010c, d28a4e2) found in git log.
 
 ---
-*Phase: 24-foundation-setup*
-*Completed: 2026-02-17*
+
+_Phase: 24-foundation-setup_
+_Completed: 2026-02-17_

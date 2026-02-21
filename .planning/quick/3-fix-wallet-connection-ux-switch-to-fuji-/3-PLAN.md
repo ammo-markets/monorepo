@@ -72,10 +72,10 @@ Output: Proper wallet selection dialog using existing Dialog UI component and wa
      - `connectWith: (connector) => connect({ connector })` — connect using a specific connector
    - Remove the old `connect` function
    - Keep all other hook state and actions the same
-  </action>
-  <verify>Run `pnpm --filter @ammo-exchange/web check` — no type errors</verify>
-  <done>wagmi config declares explicit connectors; useWallet exposes connector list and connectWith function instead of hardcoded injected connect</done>
-</task>
+     </action>
+     <verify>Run `pnpm --filter @ammo-exchange/web check` — no type errors</verify>
+     <done>wagmi config declares explicit connectors; useWallet exposes connector list and connectWith function instead of hardcoded injected connect</done>
+     </task>
 
 <task type="auto">
   <name>Task 2: Replace direct connect button with wallet selection dialog in WalletButton</name>
@@ -92,6 +92,7 @@ Output: Proper wallet selection dialog using existing Dialog UI component and wa
    - Remove `disabled={isConnecting}` from the trigger button (dialog handles state)
 
 5. Add a Dialog after the button (use existing Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription from `@/components/ui/dialog`):
+
    ```
    <Dialog open={showConnectDialog} onOpenChange={setShowConnectDialog}>
      <DialogContent>
@@ -125,15 +126,15 @@ Output: Proper wallet selection dialog using existing Dialog UI component and wa
 6. The "Switch to Fuji" state (State B, lines 74-91) is CORRECT as-is — it only shows when `isWrongNetwork` is true, which already checks `account.isConnected && account.chainId !== avalancheFuji.id`. No change needed here.
 
 7. Make sure imports are updated: add Dialog components, remove old `connect` destructure, add `connectors` and `connectWith`.
-  </action>
-  <verify>
-Run `pnpm --filter @ammo-exchange/web check` — no type errors.
-Run `pnpm --filter @ammo-exchange/web build` — build succeeds.
-  </verify>
-  <done>
-Clicking "Connect Wallet" opens a dialog listing available wallet connectors with their names and icons. Each connector button connects with that specific wallet and closes the dialog. Phantom no longer auto-opens. Switch to Fuji only shows when connected to wrong network.
-  </done>
-</task>
+   </action>
+   <verify>
+   Run `pnpm --filter @ammo-exchange/web check` — no type errors.
+   Run `pnpm --filter @ammo-exchange/web build` — build succeeds.
+   </verify>
+   <done>
+   Clicking "Connect Wallet" opens a dialog listing available wallet connectors with their names and icons. Each connector button connects with that specific wallet and closes the dialog. Phantom no longer auto-opens. Switch to Fuji only shows when connected to wrong network.
+   </done>
+   </task>
 
 </tasks>
 
@@ -148,12 +149,13 @@ Clicking "Connect Wallet" opens a dialog listing available wallet connectors wit
 </verification>
 
 <success_criteria>
+
 - Connect Wallet shows a selection dialog with available wallets
 - No wallet auto-opens on page load or button click
 - Users can pick MetaMask, Coinbase Wallet, or any injected wallet
 - Network switch flow only triggers after wallet is connected
 - All existing states (wrong network, sign-in, connected dropdown) still work
-</success_criteria>
+  </success_criteria>
 
 <output>
 After completion, create `.planning/quick/3-fix-wallet-connection-ux-switch-to-fuji-/3-SUMMARY.md`

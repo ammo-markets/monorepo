@@ -24,6 +24,7 @@ The stack is minimal and almost entirely inherited from the existing monorepo. T
 The deck is explicitly scoped to `apps/pitchdeck/` on port 3001 with no dependency on `@ammo-exchange/db`, `@ammo-exchange/contracts`, wagmi, viem, iron-session, Prisma, or TanStack Query. Build dependency graph: `packages/shared (no build step) → apps/pitchdeck`. Turbo handles this correctly with zero config changes to the monorepo root.
 
 **Core technologies:**
+
 - `html2canvas-pro ^1.6.7`: DOM-to-canvas rendering — only fork supporting Tailwind v4's modern CSS color functions
 - `jsPDF ^4.1.0`: PDF assembly — industry standard, v4 includes security patches (CVE-2025-68428)
 - `next-themes ^0.4.6`: Dark/light mode — React 19 compatible, handles SSR FOUC, 15KB footprint
@@ -35,6 +36,7 @@ The deck is explicitly scoped to `apps/pitchdeck/` on port 3001 with no dependen
 The feature landscape divides into 10 table-stakes slides (the actual deck content), 7 differentiators, and 6 anti-features to explicitly avoid. All 10 table-stakes slides are independent of each other and can be built in parallel. The investor-optimized narrative flow: Cover → Problem → Price Volatility → Solution → How It Works → Market Opportunity → Competitive Landscape → Revenue Model → Traction/Demo → Regulatory → Roadmap → Team → Ask (13 slides, ~4 minute read time).
 
 **Must have (table stakes):**
+
 - Cover slide — brand identity, tagline ("Make Your Ammo Liquid"), 5-second hook
 - Problem slide — $8B market, no liquid secondary exchange, price volatility data
 - Price Volatility chart — interactive 9mm prices 2019-2025, 4x swing, the single most compelling visual
@@ -47,17 +49,20 @@ The feature landscape divides into 10 table-stakes slides (the actual deck conte
 - Team and The Ask — fundraising strategy, use-of-funds breakdown, milestones unlocked
 
 **Should have (competitive differentiators):**
+
 - Interactive 9mm price volatility chart — the "wow" slide; hardcoded historical data, built with Recharts
 - Live testnet demo link — existing Fuji dashboard, link with CTA costs near zero to add
 - PDF export — practical necessity for investor email distribution
 - URL-param personalization ("Prepared for [Investor Name]") — low effort, high perceived value
 
 **Defer to v2+:**
+
 - Animated protocol flow visualization — Medium-High complexity; static diagram covers 90% of value
 - Live on-chain metrics feed — API work required; "as of [date]" static numbers work initially
 - Custom view analytics — use Plausible/PostHog initially instead of building custom event tracking
 
 **Explicit anti-features (do not build):**
+
 - Presentation editor or CMS — content changes quarterly, edit the code
 - Presenter mode, speaker notes, slide transitions beyond CSS opacity+translateX
 - Full dApp embedded inside deck — link out to Fuji dashboard instead
@@ -71,6 +76,7 @@ The pitch deck uses a thin custom slide system: a `PitchDeck` orchestrator compo
 No new shared packages are needed. The CSS theme variables from `apps/web` (~20 lines of custom properties) and the `cn()` utility (3 lines) are copied directly into the pitch deck — creating a `packages/ui/` shared package for this overlap adds build complexity for near-zero benefit. The overlap is intentionally minimal.
 
 **Major components:**
+
 1. `PitchDeck` orchestrator — owns `currentSlide` state, keyboard event listener, slides array definition
 2. `SlideRenderer` — CSS transition wrapper (opacity + translateX, no external animation library)
 3. `Slide` base — full-viewport layout wrapper (consistent padding, max-width, brass/dark background)
@@ -98,12 +104,14 @@ No new shared packages are needed. The CSS theme variables from `apps/web` (~20 
 Based on research, the pitch deck builds naturally in three phases following a foundation → content → export/deploy progression:
 
 ### Phase 1: Foundation and Setup
+
 **Rationale:** The CSS color strategy is foundational — changing from oklch to hex after slides are built means touching every color reference across 13 components. All four setup traps (#4 port collision, #5 Tailwind scanning, #7 transpilePackages, #13 Turbo deps) must be resolved before any slide content can be written or tested. The `output: "export"` deployment choice must be made upfront because adding API routes later is incompatible with static export.
 **Delivers:** Working `apps/pitchdeck` scaffold — Next.js 15 app running on port 3001, Tailwind v4 with hex-only brass/dark theme, PostCSS config, TypeScript config extending root, `next.config.ts` with `transpilePackages` and `output: "export"`, first blank slide renders correctly in browser and exports a non-blank page to PDF.
 **Addresses:** Prerequisites for all slide and PDF work; validates that html2canvas-pro renders the brass/dark color palette without errors.
 **Avoids:** oklch crash (#1), port collision (#4), Tailwind silent failure (#5), transpilePackages build error (#7), unnecessary Turbo build deps (#13)
 
 ### Phase 2: Core Slide Content and Navigation
+
 **Rationale:** All 13 slides are independent of each other and can be built in parallel once the scaffold exists. Slide content is drawn entirely from existing whitepaper sections — no new research or decisions needed except team bios and fundraising figures (which can use placeholders). The custom slide navigation system (keyboard arrows, progress bar, slide counter, CSS transitions) also belongs here as it is purely presentational with no PDF coupling.
 **Delivers:** Complete 13-slide investor deck visible in browser with keyboard navigation (ArrowLeft/Right/Space/Home/End), progress indicator, and CSS slide transitions; interactive 9mm price volatility chart; live testnet demo link CTA; URL parameter personalization for investor-specific cover slides.
 **Uses:** Next.js 15, React 19, Tailwind v4, lucide-react, Recharts (for price chart), whitepaper content
@@ -111,6 +119,7 @@ Based on research, the pitch deck builds naturally in three phases following a f
 **Avoids:** Keyboard conflicts with browser defaults (#8) via `tabIndex` container and `preventDefault` on captured keys
 
 ### Phase 3: PDF Export and Deployment
+
 **Rationale:** PDF export depends on all slides being finalized in Phase 2. The off-screen rendering architecture, animation reset handling, font loading synchronization, and file size optimization are all PDF-specific concerns that belong together after slide content stabilizes.
 **Delivers:** Working PDF export (all 13 slides, `scale: 2`, JPEG compression targeting 10-15MB output); "Export PDF" button in SlideControls; animation reset injected via `onclone` callback; `document.fonts.ready` await before capture; deployment to Vercel static host at shareable investor URL.
 **Avoids:** Blurry text (#2), UI artifacts in PDF (#3), CSS clamp rendering failure (#6), animation mid-state capture (#9), font loading race condition (#10), oversized PDF files (#11), static export incompatibility (#12)
@@ -136,12 +145,12 @@ None of the three phases require additional `/gsd:research-phase` work. The rese
 
 ## Confidence Assessment
 
-| Area | Confidence | Notes |
-|------|------------|-------|
-| Stack | HIGH | All versions npm-verified 2026-02-17. Peer dependencies confirmed. Monorepo compatibility verified via direct codebase inspection of `apps/web` patterns. |
-| Features | HIGH | Slide structure derived from multiple funded DeFi/RWA pitch deck analyses. Narrative flow validated across investor psychology research. Slide content sourced from existing whitepaper. |
-| Architecture | HIGH | Derived directly from existing `apps/web` codebase patterns. Component hierarchy is a known, simple pattern with no novel design decisions. Reference code included in ARCHITECTURE.md. |
-| Pitfalls | HIGH | 10 of 13 pitfalls rated HIGH confidence with specific GitHub issue references, npm package inspection, and direct codebase verification. 3 pitfalls rated MEDIUM (logically inferred from library behavior). |
+| Area         | Confidence | Notes                                                                                                                                                                                                        |
+| ------------ | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Stack        | HIGH       | All versions npm-verified 2026-02-17. Peer dependencies confirmed. Monorepo compatibility verified via direct codebase inspection of `apps/web` patterns.                                                    |
+| Features     | HIGH       | Slide structure derived from multiple funded DeFi/RWA pitch deck analyses. Narrative flow validated across investor psychology research. Slide content sourced from existing whitepaper.                     |
+| Architecture | HIGH       | Derived directly from existing `apps/web` codebase patterns. Component hierarchy is a known, simple pattern with no novel design decisions. Reference code included in ARCHITECTURE.md.                      |
+| Pitfalls     | HIGH       | 10 of 13 pitfalls rated HIGH confidence with specific GitHub issue references, npm package inspection, and direct codebase verification. 3 pitfalls rated MEDIUM (logically inferred from library behavior). |
 
 **Overall confidence:** HIGH
 
@@ -157,6 +166,7 @@ None of the three phases require additional `/gsd:research-phase` work. The rese
 ## Sources
 
 ### Primary (HIGH confidence)
+
 - Direct codebase inspection (`turbo.json`, `pnpm-workspace.yaml`, `apps/web/package.json`, `apps/web/next.config.ts`, `apps/web/app/globals.css`) — monorepo compatibility and CSS patterns
 - [html2canvas-pro on npm](https://www.npmjs.com/package/html2canvas-pro) — v1.6.7, modern CSS support verified 2026-02-17
 - [jsPDF on npm](https://www.npmjs.com/package/jspdf) — v4.1.0, CVE-2025-68428 patch confirmed
@@ -168,6 +178,7 @@ None of the three phases require additional `/gsd:research-phase` work. The rese
 - [Turborepo Tailwind CSS guide](https://turborepo.dev/docs/guides/tools/tailwind) — per-app PostCSS config requirement
 
 ### Secondary (MEDIUM confidence)
+
 - [Ink Narrates DeFi Pitch Deck Guide](https://www.inknarrates.com/post/defi-pitch-deck) — slide narrative structure and investor expectations
 - [Storydoc pitch deck engagement data](https://www.storydoc.com/blog/best-pitch-deck-software) — interactive deck 2.3x sharing statistic
 - [Nerdbot pitch deck 2026 rules](https://nerdbot.com/2025/11/07/what-are-the-5-new-rules-for-designing-a-pitch-deck-in-2026/) — live data and mobile-first trend
@@ -175,8 +186,10 @@ None of the three phases require additional `/gsd:research-phase` work. The rese
 - [Tailwind v4 PostCSS base path fix](https://medium.com/@preciousmbaekwe/fixing-tailwind-css-v4-component-styling-issues-in-turborepo-monorepos-the-postcss-base-path-1ceefbdc12b1) — per-app config validation
 
 ### Tertiary (LOW confidence)
+
 - Market size estimates vary significantly ($24B-$80B) depending on scope (civilian vs. military). Use the $26-29B civilian estimate for pitch materials as the more defensible figure. Grand View's $80B estimate includes military; do not lead with it.
 
 ---
-*Research completed: 2026-02-17*
-*Ready for roadmap: yes*
+
+_Research completed: 2026-02-17_
+_Ready for roadmap: yes_

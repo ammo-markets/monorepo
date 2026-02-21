@@ -59,47 +59,49 @@ Requirements for Audit Remediation milestone. Each maps to roadmap phases.
 
 ## Out of Scope
 
-| Feature | Reason |
-|---------|--------|
-| Multi-chain indexing | Finding 1 notes future incompatibility; composite key fixes it but multi-chain support is out of scope for v1.6 |
-| Real KYC provider | Auto-approve on testnet is sufficient; gov ID masking addresses the data leak |
-| Mainnet deployment | Fuji is the target environment for this remediation cycle |
-| Batch keeper operations | Single order finalization sufficient for testnet volume |
-| WebSocket event streaming | Polling indexer is validated and reliable |
+| Feature                   | Reason                                                                                                          |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| Multi-chain indexing      | Finding 1 notes future incompatibility; composite key fixes it but multi-chain support is out of scope for v1.6 |
+| Real KYC provider         | Auto-approve on testnet is sufficient; gov ID masking addresses the data leak                                   |
+| Mainnet deployment        | Fuji is the target environment for this remediation cycle                                                       |
+| Batch keeper operations   | Single order finalization sufficient for testnet volume                                                         |
+| WebSocket event streaming | Polling indexer is validated and reliable                                                                       |
 
 ## Traceability
 
 Which phases cover which requirements. Updated during roadmap creation.
 
-| Requirement | Phase | Status |
-|-------------|-------|--------|
-| DATA-01 | Phase 27 | Pending |
-| DATA-02 | Phase 27 | Pending |
-| DATA-03 | Phase 27 | Pending |
-| DATA-04 | Phase 28 | Pending |
-| DATA-05 | Phase 28 | Pending |
-| DATA-06 | Phase 28 | Pending |
-| SEC-01 | Phase 29 | Pending |
-| SEC-02 | Phase 29 | Pending |
-| SEC-03 | Phase 29 | Pending |
-| SEC-04 | Phase 29 | Pending |
-| SEC-05 | Phase 29 | Pending |
-| ARCH-01 | Phase 28 | Pending |
-| ARCH-02 | Phase 30 | Pending |
-| ARCH-03 | Phase 30 | Pending |
-| CNTR-01 | Phase 30 | Pending |
-| CNTR-02 | Phase 30 | Pending |
-| TEST-01 | Phase 31 | Pending |
-| TEST-02 | Phase 31 | Pending |
-| TEST-03 | Phase 31 | Pending |
-| TEST-04 | Phase 31 | Pending |
-| TEST-05 | Phase 31 | Pending |
+| Requirement | Phase    | Status  |
+| ----------- | -------- | ------- |
+| DATA-01     | Phase 27 | Pending |
+| DATA-02     | Phase 27 | Pending |
+| DATA-03     | Phase 27 | Pending |
+| DATA-04     | Phase 28 | Pending |
+| DATA-05     | Phase 28 | Pending |
+| DATA-06     | Phase 28 | Pending |
+| SEC-01      | Phase 29 | Pending |
+| SEC-02      | Phase 29 | Pending |
+| SEC-03      | Phase 29 | Pending |
+| SEC-04      | Phase 29 | Pending |
+| SEC-05      | Phase 29 | Pending |
+| ARCH-01     | Phase 28 | Pending |
+| ARCH-02     | Phase 30 | Pending |
+| ARCH-03     | Phase 30 | Pending |
+| CNTR-01     | Phase 30 | Pending |
+| CNTR-02     | Phase 30 | Pending |
+| TEST-01     | Phase 31 | Pending |
+| TEST-02     | Phase 31 | Pending |
+| TEST-03     | Phase 31 | Pending |
+| TEST-04     | Phase 31 | Pending |
+| TEST-05     | Phase 31 | Pending |
 
 **Coverage:**
+
 - v1.6 requirements: 21 total
 - Mapped to phases: 21
 - Unmapped: 0
 
 ---
-*Requirements defined: 2026-02-21*
-*Last updated: 2026-02-21 after roadmap creation (traceability populated)*
+
+_Requirements defined: 2026-02-21_
+_Last updated: 2026-02-21 after roadmap creation (traceability populated)_

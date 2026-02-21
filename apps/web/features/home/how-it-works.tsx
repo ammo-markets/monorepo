@@ -252,7 +252,10 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="border-b border-border-default bg-ax-primary">
+    <section
+      id="how-it-works"
+      className="border-b border-border-default bg-ax-primary"
+    >
       <div className="mx-auto w-full max-w-7xl border-x border-border-default">
         {/* Section Header */}
         <div className="px-8 py-12 border-b border-border-default bg-ax-secondary/30">
@@ -267,7 +270,10 @@ export function HowItWorks() {
           {steps.map((step) => {
             const Illustration = step.illustration;
             return (
-              <div key={step.number} className="relative p-8 flex flex-col group hover:bg-ax-secondary/50 transition-colors">
+              <div
+                key={step.number}
+                className="relative p-8 flex flex-col group hover:bg-ax-secondary/50 transition-colors"
+              >
                 {/* Step number */}
                 <div className="mb-12 font-mono text-5xl font-bold tracking-tighter text-border-hover group-hover:text-brass transition-colors">
                   // {step.number}
@@ -280,7 +286,7 @@ export function HowItWorks() {
                 <h3 className="mb-4 font-display text-2xl font-bold uppercase text-text-primary">
                   {step.title}
                 </h3>
-                
+
                 <p className="text-sm leading-relaxed text-text-secondary font-sans">
                   {step.description}
                 </p>

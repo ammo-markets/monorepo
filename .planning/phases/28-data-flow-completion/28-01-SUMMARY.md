@@ -17,7 +17,11 @@ affects: [28-02 UI components, frontend data consumption]
 # Tech tracking
 tech-stack:
   added: []
-  patterns: [BigInt accumulation with BigInt() constructor for ES2017 target, string return for large values]
+  patterns:
+    [
+      BigInt accumulation with BigInt() constructor for ES2017 target,
+      string return for large values,
+    ]
 
 key-files:
   created: []
@@ -56,6 +60,7 @@ completed: 2026-02-21
 - **Files modified:** 12
 
 ## Accomplishments
+
 - Stats API uses usdcAmount (not deleted amount), returns totalVolumeUsd and roundsTokenized as BigInt-safe strings
 - Market and admin stats APIs return totalSupply as string via BigInt division instead of Number truncation
 - Activity API returns updatedAt per item (aliased from createdAt)
@@ -70,6 +75,7 @@ Each task was committed atomically:
 2. **Task 2: Fix activity API, orders APIs, TypeScript types, and hooks** - `98fa9df` (feat)
 
 ## Files Created/Modified
+
 - `apps/web/app/api/stats/route.ts` - BigInt accumulation for volume/rounds, select usdcAmount
 - `apps/web/app/api/market/route.ts` - totalSupply as string via BigInt division, removed unused formatUnits
 - `apps/web/app/api/admin/stats/route.ts` - totalSupply as string via BigInt division
@@ -84,6 +90,7 @@ Each task was committed atomically:
 - `apps/web/features/portfolio/orders-row.tsx` - Use usdcAmount/tokenAmount coalesce
 
 ## Decisions Made
+
 - Used `BigInt()` constructor instead of `n` suffix because tsconfig target is ES2017 (BigInt literals require ES2020+)
 - Activity `updatedAt` aliases `createdAt` since ActivityLog records completed events -- creation IS the state change time
 - Return totalSupply as clean integer string `(supply / BigInt(10) ** BigInt(18)).toString()` rather than formatUnits
@@ -93,6 +100,7 @@ Each task was committed atomically:
 ### Auto-fixed Issues
 
 **1. [Rule 1 - Bug] BigInt literal syntax incompatible with ES2017 target**
+
 - **Found during:** Task 1 (Stats/Market/Admin APIs)
 - **Issue:** Used `0n`, `10n ** 18n` BigInt literals which require ES2020+ target; tsconfig has ES2017
 - **Fix:** Replaced all BigInt literals with `BigInt()` constructor calls
@@ -101,6 +109,7 @@ Each task was committed atomically:
 - **Committed in:** 3c99a95 (Task 1 commit)
 
 **2. [Rule 3 - Blocking] Downstream UI type errors from type changes**
+
 - **Found during:** Task 2 (TypeScript type updates)
 - **Issue:** Changing OrderFromAPI.amount to usdcAmount/tokenAmount and totalSupply to string broke 6 UI components
 - **Fix:** Updated UI components to use coalesce pattern for amounts and Number() parse for totalSupply display
@@ -114,16 +123,20 @@ Each task was committed atomically:
 **Impact on plan:** Both auto-fixes necessary for compilation. No scope creep.
 
 ## Issues Encountered
+
 None beyond the auto-fixed deviations above.
 
 ## User Setup Required
+
 None - no external service configuration required.
 
 ## Next Phase Readiness
+
 - All API routes return correct normalized fields and BigInt-safe values
 - TypeScript types match new API response shapes
 - UI components compile and use the new field names (Plan 02 may refine display formatting)
 
 ---
-*Phase: 28-data-flow-completion*
-*Completed: 2026-02-21*
+
+_Phase: 28-data-flow-completion_
+_Completed: 2026-02-21_

@@ -13,52 +13,52 @@ Adding a standalone pitch deck app to the existing Ammo Exchange monorepo. The a
 
 These are already validated and configured at the monorepo level:
 
-| Technology | Version | Purpose | Notes |
-|------------|---------|---------|-------|
-| Next.js | ^15.1.6 | App framework | Match `apps/web` exactly |
-| React | ^19.0.0 | UI library | Already in monorepo |
-| React DOM | ^19.0.0 | DOM rendering | Already in monorepo |
-| Tailwind CSS | ^4.0.6 | Styling | Use `@tailwindcss/postcss` pattern from `apps/web` |
-| TypeScript | ^5.7.3 | Type safety | Shared tsconfig at root |
-| Turborepo | ^2.4.4 | Build orchestration | Already configured |
-| pnpm | 10.4.1 | Package manager | Workspace protocol |
+| Technology   | Version | Purpose             | Notes                                              |
+| ------------ | ------- | ------------------- | -------------------------------------------------- |
+| Next.js      | ^15.1.6 | App framework       | Match `apps/web` exactly                           |
+| React        | ^19.0.0 | UI library          | Already in monorepo                                |
+| React DOM    | ^19.0.0 | DOM rendering       | Already in monorepo                                |
+| Tailwind CSS | ^4.0.6  | Styling             | Use `@tailwindcss/postcss` pattern from `apps/web` |
+| TypeScript   | ^5.7.3  | Type safety         | Shared tsconfig at root                            |
+| Turborepo    | ^2.4.4  | Build orchestration | Already configured                                 |
+| pnpm         | 10.4.1  | Package manager     | Workspace protocol                                 |
 
 ### NEW Dependencies -- PDF Export
 
-| Technology | Version | Purpose | Why This |
-|------------|---------|---------|----------|
-| html2canvas-pro | ^1.6.7 | DOM-to-canvas rendering | Fork of html2canvas with modern CSS support: `oklch()`, `color()`, `calc()` in background-position, CSS `rotate`. Critical because Tailwind v4 generates modern CSS color functions that original html2canvas cannot render. No peer dependencies. [HIGH confidence -- npm verified 2026-02-17] |
-| jsPDF | ^4.1.0 | Canvas-to-PDF conversion | Industry standard client-side PDF generation. v4.x includes security patches (CVE-2025-68428 path traversal fix). No peer dependencies. [HIGH confidence -- npm verified 2026-02-17] |
+| Technology      | Version | Purpose                  | Why This                                                                                                                                                                                                                                                                                        |
+| --------------- | ------- | ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| html2canvas-pro | ^1.6.7  | DOM-to-canvas rendering  | Fork of html2canvas with modern CSS support: `oklch()`, `color()`, `calc()` in background-position, CSS `rotate`. Critical because Tailwind v4 generates modern CSS color functions that original html2canvas cannot render. No peer dependencies. [HIGH confidence -- npm verified 2026-02-17] |
+| jsPDF           | ^4.1.0  | Canvas-to-PDF conversion | Industry standard client-side PDF generation. v4.x includes security patches (CVE-2025-68428 path traversal fix). No peer dependencies. [HIGH confidence -- npm verified 2026-02-17]                                                                                                            |
 
 ### NEW Dependencies -- Presentation & Theming
 
-| Technology | Version | Purpose | Why This |
-|------------|---------|---------|----------|
-| next-themes | ^0.4.6 | Dark/light mode toggle | Works with Next.js 15 App Router + React 19 (peer deps verified: `react ^16.8 || ^17 || ^18 || ^19`). Adds `class="dark"` to `<html>` which Tailwind v4 `dark:` variant reads natively. Handles SSR flash-of-wrong-theme, system preference detection, localStorage persistence. 15KB. [HIGH confidence -- npm verified, peer deps confirmed] |
-| lucide-react | ^0.563.0 | Icons | ALREADY in `apps/web` at this version (latest is 0.564.0). Use same version range for consistency. Tree-shakeable, consistent stroke-based style. Do NOT add a second icon library. [HIGH confidence -- already validated in monorepo] |
+| Technology   | Version  | Purpose                | Why This                                                                                                                                                                                                                               |
+| ------------ | -------- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | --- | --- | --- | --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| next-themes  | ^0.4.6   | Dark/light mode toggle | Works with Next.js 15 App Router + React 19 (peer deps verified: `react ^16.8                                                                                                                                                          |     | ^17 |     | ^18 |     | ^19`). Adds `class="dark"`to`<html>`which Tailwind v4`dark:` variant reads natively. Handles SSR flash-of-wrong-theme, system preference detection, localStorage persistence. 15KB. [HIGH confidence -- npm verified, peer deps confirmed] |
+| lucide-react | ^0.563.0 | Icons                  | ALREADY in `apps/web` at this version (latest is 0.564.0). Use same version range for consistency. Tree-shakeable, consistent stroke-based style. Do NOT add a second icon library. [HIGH confidence -- already validated in monorepo] |
 
 ### Shared Package Dependencies
 
-| Package | Why Used |
-|---------|----------|
+| Package                 | Why Used                                                                                                                                                      |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `@ammo-exchange/shared` | Caliber specs (names, descriptions, categories), chain config (network details for protocol slides), protocol constants (fee percentages, supported calibers) |
 
 ### NOT Needed (explicitly exclude)
 
-| Technology | Why Exclude |
-|------------|-------------|
-| wagmi / viem | No wallet connection in a pitch deck |
-| iron-session | No auth needed |
-| Prisma / @ammo-exchange/db | No database -- static content |
-| @ammo-exchange/contracts | No on-chain interaction |
-| @tanstack/react-query | No async data fetching |
-| Reveal.js | 300KB+, opinionated CSS that fights Tailwind, PDF export requires separate plugin, no control over slide-to-canvas pipeline |
-| Spectacle | React-based but heavyweight theme system conflicts with Tailwind, custom layout primitives fight against standard HTML/CSS |
-| Slidev | Vue-based, wrong ecosystem entirely |
-| html2pdf.js | Wraps original html2canvas (not -pro) + jsPDF. Locks you into html2canvas without modern CSS support. The abstraction hides configuration we need to control (scale, backgroundColor, format). |
-| jspdf-html2canvas | Convenience wrapper that adds a dependency for ~20 lines of glue code. Not worth the indirection when we need precise control over the render pipeline. |
-| react-to-pdf | Uses html2canvas (not -pro) under the hood. Same modern CSS rendering problem. |
-| @react-pdf/renderer | Requires rewriting all slides in react-pdf primitives (View, Text, Image) instead of HTML/CSS. Defeats the purpose of a visual web deck that doubles as a presentation. |
+| Technology                 | Why Exclude                                                                                                                                                                                    |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| wagmi / viem               | No wallet connection in a pitch deck                                                                                                                                                           |
+| iron-session               | No auth needed                                                                                                                                                                                 |
+| Prisma / @ammo-exchange/db | No database -- static content                                                                                                                                                                  |
+| @ammo-exchange/contracts   | No on-chain interaction                                                                                                                                                                        |
+| @tanstack/react-query      | No async data fetching                                                                                                                                                                         |
+| Reveal.js                  | 300KB+, opinionated CSS that fights Tailwind, PDF export requires separate plugin, no control over slide-to-canvas pipeline                                                                    |
+| Spectacle                  | React-based but heavyweight theme system conflicts with Tailwind, custom layout primitives fight against standard HTML/CSS                                                                     |
+| Slidev                     | Vue-based, wrong ecosystem entirely                                                                                                                                                            |
+| html2pdf.js                | Wraps original html2canvas (not -pro) + jsPDF. Locks you into html2canvas without modern CSS support. The abstraction hides configuration we need to control (scale, backgroundColor, format). |
+| jspdf-html2canvas          | Convenience wrapper that adds a dependency for ~20 lines of glue code. Not worth the indirection when we need precise control over the render pipeline.                                        |
+| react-to-pdf               | Uses html2canvas (not -pro) under the hood. Same modern CSS rendering problem.                                                                                                                 |
+| @react-pdf/renderer        | Requires rewriting all slides in react-pdf primitives (View, Text, Image) instead of HTML/CSS. Defeats the purpose of a visual web deck that doubles as a presentation.                        |
 
 ## PDF Export Architecture
 
@@ -125,7 +125,11 @@ Required configuration for Next.js 15 App Router:
 // app/layout.tsx
 import { ThemeProvider } from "next-themes";
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
@@ -159,7 +163,7 @@ The new app slots into the existing workspace with zero changes to `pnpm-workspa
     "dev": "next dev --port 3001",
     "build": "next build",
     "start": "next start",
-    "check": "tsc --noEmit"
+    "check": "tsc --noEmit",
   },
   "dependencies": {
     "@ammo-exchange/shared": "workspace:*",
@@ -169,7 +173,7 @@ The new app slots into the existing workspace with zero changes to `pnpm-workspa
     "next": "^15.1.6",
     "next-themes": "^0.4.6",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.0.6",
@@ -177,17 +181,17 @@ The new app slots into the existing workspace with zero changes to `pnpm-workspa
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
     "tailwindcss": "^4.0.6",
-    "typescript": "^5.7.3"
-  }
+    "typescript": "^5.7.3",
+  },
 }
 ```
 
 ### Port Assignment
 
-| App | Port | Purpose |
-|-----|------|---------|
-| `apps/web` | 3000 | Main dashboard |
-| `apps/pitchdeck` | 3001 | Pitch deck |
+| App              | Port | Purpose        |
+| ---------------- | ---- | -------------- |
+| `apps/web`       | 3000 | Main dashboard |
+| `apps/pitchdeck` | 3001 | Pitch deck     |
 
 No conflict when running `pnpm dev` (Turbo TUI shows both).
 
@@ -212,29 +216,29 @@ pnpm install
 
 All dependencies resolve through the workspace. Summary of what is NEW to the monorepo:
 
-| Package | New to monorepo? | Unpacked size |
-|---------|-------------------|---------------|
-| html2canvas-pro | YES | ~450KB |
-| jsPDF | YES | ~2.5MB (includes font data) |
-| next-themes | YES | ~15KB |
-| lucide-react | No (shared with apps/web via hoisting) | 0 additional |
-| next, react, react-dom | No (shared with apps/web via hoisting) | 0 additional |
+| Package                | New to monorepo?                       | Unpacked size               |
+| ---------------------- | -------------------------------------- | --------------------------- |
+| html2canvas-pro        | YES                                    | ~450KB                      |
+| jsPDF                  | YES                                    | ~2.5MB (includes font data) |
+| next-themes            | YES                                    | ~15KB                       |
+| lucide-react           | No (shared with apps/web via hoisting) | 0 additional                |
+| next, react, react-dom | No (shared with apps/web via hoisting) | 0 additional                |
 
 **Total new dependency weight:** ~3MB unpacked. Minimal footprint.
 
 ## Alternatives Considered
 
-| Category | Recommended | Alternative | Why Not |
-|----------|-------------|-------------|---------|
-| DOM capture | html2canvas-pro | html2canvas (original) | No modern CSS support -- fails on `oklch()`, `color()`, `calc()` in background-position. Tailwind v4 generates these. |
-| DOM capture | html2canvas-pro | dom-to-image | Less maintained, worse cross-browser, no modern CSS fixes |
-| DOM capture | html2canvas-pro | modern-screenshot | Newer but smaller community, less battle-tested for multi-slide PDF pipelines |
-| PDF generation | jsPDF (client-side) | Puppeteer/Playwright (server-side) | Adds server infrastructure for a static deck. Client-side export is simpler and works offline. |
-| PDF generation | jsPDF | @react-pdf/renderer | Forces rewriting slides in non-HTML primitives. Cannot reuse the web presentation as-is. |
-| Theming | next-themes | Manual CSS variables + script | next-themes handles FOUC prevention, system preference, persistence in 15KB. Reinventing this is error-prone. |
-| Slide system | Custom (CSS scroll-snap + sections) | Reveal.js | 300KB, opinionated CSS conflicts with Tailwind, PDF export is a separate plugin with its own quirks |
-| Slide system | Custom | Spectacle (Formidable) | React-based but has its own theme/layout system that duplicates what Tailwind already provides |
-| Icons | lucide-react | heroicons, react-icons | Already using lucide in `apps/web`. Consistency across the monorepo is more important than marginal preference. |
+| Category       | Recommended                         | Alternative                        | Why Not                                                                                                               |
+| -------------- | ----------------------------------- | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| DOM capture    | html2canvas-pro                     | html2canvas (original)             | No modern CSS support -- fails on `oklch()`, `color()`, `calc()` in background-position. Tailwind v4 generates these. |
+| DOM capture    | html2canvas-pro                     | dom-to-image                       | Less maintained, worse cross-browser, no modern CSS fixes                                                             |
+| DOM capture    | html2canvas-pro                     | modern-screenshot                  | Newer but smaller community, less battle-tested for multi-slide PDF pipelines                                         |
+| PDF generation | jsPDF (client-side)                 | Puppeteer/Playwright (server-side) | Adds server infrastructure for a static deck. Client-side export is simpler and works offline.                        |
+| PDF generation | jsPDF                               | @react-pdf/renderer                | Forces rewriting slides in non-HTML primitives. Cannot reuse the web presentation as-is.                              |
+| Theming        | next-themes                         | Manual CSS variables + script      | next-themes handles FOUC prevention, system preference, persistence in 15KB. Reinventing this is error-prone.         |
+| Slide system   | Custom (CSS scroll-snap + sections) | Reveal.js                          | 300KB, opinionated CSS conflicts with Tailwind, PDF export is a separate plugin with its own quirks                   |
+| Slide system   | Custom                              | Spectacle (Formidable)             | React-based but has its own theme/layout system that duplicates what Tailwind already provides                        |
+| Icons          | lucide-react                        | heroicons, react-icons             | Already using lucide in `apps/web`. Consistency across the monorepo is more important than marginal preference.       |
 
 ## Sources
 

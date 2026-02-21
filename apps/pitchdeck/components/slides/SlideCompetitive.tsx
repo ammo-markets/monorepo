@@ -20,7 +20,9 @@ const COLUMNS = [
 ];
 
 export function SlideCompetitive() {
-  const competitors = COMPETITIVE_DATA.filter((e) => e.name !== "Ammo Exchange");
+  const competitors = COMPETITIVE_DATA.filter(
+    (e) => e.name !== "Ammo Exchange",
+  );
   const us = COMPETITIVE_DATA.find((e) => e.name === "Ammo Exchange")!;
 
   return (
@@ -60,7 +62,11 @@ export function SlideCompetitive() {
                 key={entry.name}
                 initial={{ opacity: 0, x: -15 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.35, delay: i * 0.05, ease: "easeOut" }}
+                transition={{
+                  duration: 0.35,
+                  delay: i * 0.05,
+                  ease: "easeOut",
+                }}
                 className="border-b border-surface-elevated"
               >
                 <td className="px-4 py-4 text-base font-semibold text-text">

@@ -18,6 +18,7 @@ Mistakes that cause rewrites or major issues.
 **Consequences:** PDF export produces blank pages, black backgrounds where colors should be, or crashes entirely. This is a complete blocker for the core feature of the pitch deck app.
 
 **Prevention:**
+
 1. Define ALL colors in the pitch deck's `globals.css` using hex/rgba exclusively. The Ammo Exchange custom tokens (`--brass: #c6a44e`, `--bg-primary: #0a0a0f`, etc.) already use hex and are safe -- replicate this pattern for ALL colors.
 2. Do NOT import shadcn's oklch-based variables. Create a standalone color system for the pitch deck that maps the same visual brass/dark theme using hex values.
 3. Test PDF export on the very first slide before building additional content. Validate that html2canvas-pro renders correctly with your exact color definitions.
@@ -40,6 +41,7 @@ Mistakes that cause rewrites or major issues.
 **Consequences:** Text is fuzzy, gradients show banding, thin borders and lines disappear. The pitch deck looks unprofessional, undermining credibility with investors and partners.
 
 **Prevention:**
+
 1. Set `scale: 2` in html2canvas options. This renders at 2x resolution, producing sharp text on all displays.
 2. When adding the canvas to jsPDF, use the page dimensions (not canvas dimensions) so the high-res image is scaled down to fit: `pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, slideWidth, slideHeight)`.
 3. Do NOT use `scale: 3` or higher -- file sizes balloon (60MB+ reported) with diminishing quality returns. `scale: 2` is the sweet spot for text clarity vs file size.
@@ -62,6 +64,7 @@ Mistakes that cause rewrites or major issues.
 **Consequences:** PDFs look broken or amateur. Navigation buttons appear on every slide. White space at the top pushes content down. Any hover state active at capture time gets frozen into the image.
 
 **Prevention:**
+
 1. **Off-screen clone technique (recommended):** For PDF export, clone each slide's content DOM into a hidden container with fixed dimensions (1280x720), strip all navigation/interactive elements, then capture the clone. Position the clone at `position: fixed; left: -9999px; top: 0;` so it is in the document but off-screen.
 2. Mark ALL navigation UI elements with the `data-html2canvas-ignore` attribute so they are automatically excluded from capture.
 3. Set `scrollX: 0, scrollY: -window.scrollY` in html2canvas options to neutralize scroll offset.
@@ -83,6 +86,7 @@ Mistakes that cause rewrites or major issues.
 **What goes wrong:** Running `pnpm dev` at the monorepo root triggers `turbo dev`, which starts ALL apps in parallel. Both `apps/web` (port 3000) and `apps/pitchdeck` will try to bind to port 3000 if the pitch deck has no explicit port configured. One fails silently or Next.js auto-picks a random port, causing confusion.
 
 **Prevention:**
+
 1. Set an explicit, unique port in `apps/pitchdeck/package.json`: `"dev": "next dev --port 3001"`.
 2. Alternatively, during pitch deck development, use `turbo dev --filter=@ammo-exchange/pitchdeck` to run only that app.
 3. Document the port assignment in the monorepo CLAUDE.md.
@@ -102,6 +106,7 @@ Mistakes that cause rewrites or major issues.
 **Why it happens:** Tailwind v4 removed the explicit `content` configuration from `tailwind.config.js` (which no longer exists in v4). Instead, it scans for class usage based on the `@import "tailwindcss"` directive location. If the pitch deck app does not have its own `globals.css` with `@import "tailwindcss"` and its own `postcss.config.mjs`, Tailwind has nothing to scan.
 
 **Prevention:**
+
 1. Create `apps/pitchdeck/postcss.config.mjs` mirroring `apps/web/postcss.config.mjs`:
    ```js
    const config = {
@@ -127,6 +132,7 @@ Mistakes that cause rewrites or major issues.
 **Why it happens:** html2canvas re-parses CSS and resolves viewport-relative units against the browser window dimensions, not the cloned element's dimensions. An off-screen clone at `left: -9999px` still resolves `vw` against the full browser viewport. The `clamp()` function itself may not be fully parsed by html2canvas's CSS engine.
 
 **Prevention:**
+
 1. Use a fixed-dimension slide container (e.g., 1280x720px) with `transform: scale()` for responsive on-screen display. The content uses fixed `px` or `rem` values. Scaling is handled by the container, not the typography.
 2. This means html2canvas captures the unscaled, fixed-dimension slides -- no viewport units to resolve incorrectly.
 3. If clamp() is used for on-screen responsiveness, override with fixed values in the `onclone` callback before capture.
@@ -146,6 +152,7 @@ Mistakes that cause rewrites or major issues.
 **Why it happens:** Next.js does not transpile workspace dependencies by default. The `@ammo-exchange/shared` package has `"type": "module"` and ships `.ts` files directly. Without `transpilePackages`, Next.js treats the import as pre-compiled JavaScript and chokes on TypeScript syntax.
 
 **Prevention:**
+
 1. Copy the relevant `next.config.ts` settings from `apps/web`:
    ```ts
    transpilePackages: ["@ammo-exchange/shared"],
@@ -174,6 +181,7 @@ Mistakes that cause rewrites or major issues.
 **Why it happens:** The browser has default handlers for these keys at the document level. Without explicit `event.preventDefault()`, browser behavior takes priority over custom keyboard handlers.
 
 **Prevention:**
+
 1. Use a focusable slide container with `tabIndex={0}` and an `onKeyDown` handler. Call `event.preventDefault()` for captured keys (ArrowLeft, ArrowRight, Space, Escape).
 2. Only capture keys when the presentation container has focus. Do NOT add a global `window.addEventListener('keydown')` -- this creates conflicts with browser chrome and any overlaid modals (like the PDF export progress dialog).
 3. Ensure Tab key is NOT captured -- it must still move focus out of the presentation for accessibility (WCAG "no keyboard traps" criterion).
@@ -192,9 +200,12 @@ Mistakes that cause rewrites or major issues.
 **What goes wrong:** Slides with entrance animations (fade-in, slide-up, scale) or CSS transitions are captured by html2canvas while the animation is in progress. The resulting PDF slide shows content at partial opacity, shifted position, or mid-transform. Elements that animate on scroll or on intersection may not be visible at all if they are in their initial (pre-animation) state.
 
 **Prevention:**
+
 1. In the off-screen clone or `onclone` callback, inject a style that disables all animations:
    ```css
-   *, *::before, *::after {
+   *,
+   *::before,
+   *::after {
      animation: none !important;
      transition: none !important;
      opacity: 1 !important;
@@ -218,6 +229,7 @@ Mistakes that cause rewrites or major issues.
 **What goes wrong:** When capturing slides for PDF export (especially using off-screen clones), custom fonts (Inter, JetBrains Mono loaded via `next/font`) may not be ready for the cloned elements. The PDF renders with system fallback fonts (Arial, Helvetica) instead of the project's chosen fonts, creating visual inconsistency.
 
 **Prevention:**
+
 1. Await `document.fonts.ready` before starting any html2canvas capture:
    ```ts
    await document.fonts.ready;
@@ -239,6 +251,7 @@ Mistakes that cause rewrites or major issues.
 **What goes wrong:** With `scale: 2` and 15+ slides, each slide generates a ~2-4MB PNG canvas. The full pitch deck PDF can reach 30-60MB -- too large to email (most providers cap at 25MB), attach to investor portals, or share casually.
 
 **Prevention:**
+
 1. Use JPEG format for slides with gradients, photos, or complex backgrounds: `canvas.toDataURL('image/jpeg', 0.85)`.
 2. Use PNG only for slides with text on solid backgrounds where JPEG compression artifacts would be visible.
 3. Target a maximum of 10-15MB for a 15-slide deck. Test with representative content early.
@@ -257,6 +270,7 @@ Mistakes that cause rewrites or major issues.
 **What goes wrong:** If the pitch deck uses `output: "export"` in next.config.ts for static deployment, accidentally adding a Route Handler (`app/api/`), Server Action (`"use server"`), or dynamic route without `generateStaticParams` will cause `next build` to fail with cryptic errors.
 
 **Prevention:**
+
 1. Decide upfront: the pitch deck is a purely static, client-side app. Set `output: "export"` and commit to it.
 2. All logic (PDF generation, keyboard navigation, slide state) is client-side only.
 3. Do not add `app/api/` directories. If analytics or tracking are needed later, use client-side services (PostHog, Plausible script).
@@ -275,6 +289,7 @@ Mistakes that cause rewrites or major issues.
 **What goes wrong:** The existing `turbo.json` configures `build` to depend on `^build` and `^db:generate`. When building the pitch deck, Turbo runs Prisma generation and Foundry contract compilation even though the pitch deck has no database or contract dependencies. This slows builds and introduces failure modes (e.g., missing DATABASE_URL env var fails the build even though the pitch deck does not need it).
 
 **Prevention:**
+
 1. Ensure the pitch deck's `package.json` does NOT list `@ammo-exchange/db` or `@ammo-exchange/contracts` as dependencies. Turbo's `^build` and `^db:generate` only trigger for actual dependency graph edges.
 2. For isolated pitch deck builds, use `turbo build --filter=@ammo-exchange/pitchdeck` which only builds the pitch deck and its actual dependencies.
 3. If `@ammo-exchange/shared` depends on `db` or `contracts`, consider whether the pitch deck actually needs the shared package, or if it only needs a subset (e.g., brand constants). If it only needs types/constants, the dependency is lightweight.
@@ -289,14 +304,14 @@ Mistakes that cause rewrites or major issues.
 
 ## Phase-Specific Warnings
 
-| Phase Topic | Likely Pitfall | Mitigation |
-|-------------|---------------|------------|
-| Project setup (Phase 1) | Port collision (#4), Tailwind scanning (#5), transpilePackages (#7), unnecessary build deps (#13) | Copy proven patterns from apps/web, set unique port, keep deps minimal |
-| CSS/Theme (Phase 1) | oklch() color crash (#1), clamp() rendering (#6) | Hex-only colors in pitchdeck globals.css; use transform: scale() not fluid typography |
-| Component architecture (Phase 1) | UI artifacts in PDF (#3) | Separate SlideContent from SlideControls in component hierarchy from day one |
-| Slide system (Phase 2) | Keyboard conflicts (#8) | tabIndex container, preventDefault on captured keys, no keyboard traps |
-| PDF export (Phase 3) | Blurry text (#2), animations mid-state (#9), font loading (#10), file size (#11) | scale: 2, onclone animation reset, document.fonts.ready, JPEG for image slides |
-| Deployment (Phase 3) | Static export incompatibility (#12) | Commit to output: "export" upfront, all logic client-side |
+| Phase Topic                      | Likely Pitfall                                                                                    | Mitigation                                                                            |
+| -------------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Project setup (Phase 1)          | Port collision (#4), Tailwind scanning (#5), transpilePackages (#7), unnecessary build deps (#13) | Copy proven patterns from apps/web, set unique port, keep deps minimal                |
+| CSS/Theme (Phase 1)              | oklch() color crash (#1), clamp() rendering (#6)                                                  | Hex-only colors in pitchdeck globals.css; use transform: scale() not fluid typography |
+| Component architecture (Phase 1) | UI artifacts in PDF (#3)                                                                          | Separate SlideContent from SlideControls in component hierarchy from day one          |
+| Slide system (Phase 2)           | Keyboard conflicts (#8)                                                                           | tabIndex container, preventDefault on captured keys, no keyboard traps                |
+| PDF export (Phase 3)             | Blurry text (#2), animations mid-state (#9), font loading (#10), file size (#11)                  | scale: 2, onclone animation reset, document.fonts.ready, JPEG for image slides        |
+| Deployment (Phase 3)             | Static export incompatibility (#12)                                                               | Commit to output: "export" upfront, all logic client-side                             |
 
 ---
 

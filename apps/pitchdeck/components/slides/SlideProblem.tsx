@@ -5,12 +5,17 @@ import { PROBLEM_STATS } from "@/lib/slideData";
 export function SlideProblem() {
   return (
     <SlideLayout>
-      <h2 className="mb-2 font-display text-5xl font-bold uppercase tracking-tight text-text">The Problem</h2>
+      <h2 className="mb-2 font-display text-5xl font-bold uppercase tracking-tight text-text">
+        The Problem
+      </h2>
       <p className="mb-10 text-lg text-text-muted">
         A massive commodity market with zero financial infrastructure
       </p>
 
-      <StaggerContainer preset="magazine-load" className="grid flex-1 grid-cols-2 gap-6">
+      <StaggerContainer
+        preset="magazine-load"
+        className="grid flex-1 grid-cols-2 gap-6"
+      >
         {PROBLEM_STATS.map((stat) => (
           <StaggerItem key={stat.icon}>
             <div className="card-hover flex h-full flex-col rounded-none border border-surface-elevated bg-surface p-8">

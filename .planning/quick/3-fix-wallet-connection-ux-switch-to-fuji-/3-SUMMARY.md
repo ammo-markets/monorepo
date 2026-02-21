@@ -44,6 +44,7 @@ completed: 2026-02-21
 - **Files modified:** 3
 
 ## Accomplishments
+
 - Connect Wallet button now opens a Dialog listing all available wallet connectors
 - Users can choose MetaMask, Coinbase Wallet, or any injected wallet
 - Phantom no longer hijacks the connection flow
@@ -57,11 +58,13 @@ Each task was committed atomically:
 2. **Task 2: Replace direct connect with wallet selection dialog in WalletButton** - `ef192cd` (feat)
 
 ## Files Created/Modified
+
 - `apps/web/lib/wagmi.ts` - Added explicit injected() and coinbaseWallet() connectors with Config type annotation
 - `apps/web/hooks/use-wallet.ts` - Added connectors list, connectWith(connector), kept backward-compatible connect()
 - `apps/web/features/layout/wallet-button.tsx` - Replaced direct connect button with Dialog-based connector selector
 
 ## Decisions Made
+
 - Kept backward-compatible `connect()` function that uses the first available connector -- auth-context.tsx, mint-flow.tsx, and redeem-flow.tsx all depend on it
 - Added explicit `Config` type annotation on `wagmiConfig` export to avoid TS2742 deep node_modules portability error from coinbaseWallet connector types
 - Did not add WalletConnect connector since it requires a WalletConnect projectId which is not configured
@@ -71,6 +74,7 @@ Each task was committed atomically:
 ### Auto-fixed Issues
 
 **1. [Rule 3 - Blocking] Kept backward-compatible connect() for existing consumers**
+
 - **Found during:** Task 1 (useWallet hook update)
 - **Issue:** auth-context.tsx, mint-flow.tsx, and redeem-flow.tsx all destructure `connect` from useWallet -- removing it caused 6 type errors
 - **Fix:** Added `connect()` back as a function that uses the first available connector
@@ -79,6 +83,7 @@ Each task was committed atomically:
 - **Committed in:** ea44a81 (Task 1 commit)
 
 **2. [Rule 3 - Blocking] Added Config type annotation to wagmiConfig export**
+
 - **Found during:** Task 1 (wagmi config update)
 - **Issue:** TypeScript TS2742 error -- inferred type cannot be named without reference to deep @coinbase/wallet-sdk node_modules path
 - **Fix:** Added explicit `Config` type annotation on the export
@@ -92,11 +97,14 @@ Each task was committed atomically:
 **Impact on plan:** Both fixes necessary for type safety and backward compatibility. No scope creep.
 
 ## Issues Encountered
+
 None beyond the auto-fixed deviations above.
 
 ## User Setup Required
+
 None - no external service configuration required.
 
 ---
-*Quick Task: 3*
-*Completed: 2026-02-21*
+
+_Quick Task: 3_
+_Completed: 2026-02-21_

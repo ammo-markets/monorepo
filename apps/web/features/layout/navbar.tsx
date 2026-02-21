@@ -34,7 +34,10 @@ export function Navbar() {
 
   // Network badge label and status dot color
   const networkLabel = "Avalanche Fuji";
-  const dotColor = isConnected && !isReconnecting && isWrongNetwork ? "var(--amber)" : "var(--green)";
+  const dotColor =
+    isConnected && !isReconnecting && isWrongNetwork
+      ? "var(--amber)"
+      : "var(--green)";
 
   return (
     <header
@@ -85,11 +88,20 @@ export function Navbar() {
             }}
           >
             {/* Avalanche logo simplified */}
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 14 14"
+              fill="none"
+              aria-hidden="true"
+            >
               <path d="M7 1L13 12H1L7 1Z" fill="#E84142" />
             </svg>
             <span>{networkLabel}</span>
-            <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: dotColor }} />
+            <span
+              className="h-1.5 w-1.5 rounded-full"
+              style={{ backgroundColor: dotColor }}
+            />
           </div>
 
           {/* Wallet button */}
@@ -126,11 +138,20 @@ export function Navbar() {
                 color: "var(--text-muted)",
               }}
             >
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 14 14"
+                fill="none"
+                aria-hidden="true"
+              >
                 <path d="M7 1L13 12H1L7 1Z" fill="#E84142" />
               </svg>
               <span>{networkLabel}</span>
-              <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: dotColor }} />
+              <span
+                className="h-1.5 w-1.5 rounded-full"
+                style={{ backgroundColor: dotColor }}
+              />
             </div>
           </div>
         </div>

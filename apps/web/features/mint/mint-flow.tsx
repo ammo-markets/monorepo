@@ -33,7 +33,10 @@ import { CONTRACT_ADDRESSES } from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
 
 /* ── Build CaliberDetailData from API market data ── */
-function buildCaliberDetail(caliber: Caliber, market: MarketCaliberFromAPI): CaliberDetailData {
+function buildCaliberDetail(
+  caliber: Caliber,
+  market: MarketCaliberFromAPI,
+): CaliberDetailData {
   const spec = CALIBER_SPECS[caliber];
   return {
     id: caliber,
@@ -48,7 +51,9 @@ function buildCaliberDetail(caliber: Caliber, market: MarketCaliberFromAPI): Cal
   };
 }
 
-function buildAllCaliberDetails(marketData: MarketCaliberFromAPI[]): Record<Caliber, CaliberDetailData> {
+function buildAllCaliberDetails(
+  marketData: MarketCaliberFromAPI[],
+): Record<Caliber, CaliberDetailData> {
   const result = {} as Record<Caliber, CaliberDetailData>;
   for (const m of marketData) {
     result[m.caliber] = buildCaliberDetail(m.caliber, m);
@@ -67,7 +72,14 @@ function UsdcIcon({ size = 16 }: { size?: number }) {
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
     >
-      <circle cx="12" cy="12" r="11" stroke="#3498DB" strokeWidth="1.5" fill="rgba(52, 152, 219, 0.1)" />
+      <circle
+        cx="12"
+        cy="12"
+        r="11"
+        stroke="#3498DB"
+        strokeWidth="1.5"
+        fill="rgba(52, 152, 219, 0.1)"
+      />
       <text
         x="12"
         y="16.5"
@@ -141,7 +153,10 @@ function StepSelectCaliber({
 }) {
   return (
     <div>
-      <h2 className="mb-1 font-display text-2xl font-bold uppercase" style={{ color: "var(--text-primary)" }}>
+      <h2
+        className="mb-1 font-display text-2xl font-bold uppercase"
+        style={{ color: "var(--text-primary)" }}
+      >
         Choose Your Caliber
       </h2>
       <p className="mb-6 text-sm" style={{ color: "var(--text-secondary)" }}>
@@ -170,17 +185,27 @@ function StepSelectCaliber({
                   className="absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded-full"
                   style={{ backgroundColor: "var(--brass)" }}
                 >
-                  <Check size={12} strokeWidth={3} style={{ color: "var(--bg-primary)" }} />
+                  <Check
+                    size={12}
+                    strokeWidth={3}
+                    style={{ color: "var(--bg-primary)" }}
+                  />
                 </span>
               )}
 
               <div className="flex items-center gap-3">
                 <Icon size={40} />
                 <div>
-                  <div className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>
+                  <div
+                    className="text-sm font-bold"
+                    style={{ color: "var(--text-primary)" }}
+                  >
                     {cal.symbol}
                   </div>
-                  <div className="text-xs" style={{ color: "var(--text-secondary)" }}>
+                  <div
+                    className="text-xs"
+                    style={{ color: "var(--text-secondary)" }}
+                  >
                     {cal.name}
                   </div>
                 </div>
@@ -191,12 +216,18 @@ function StepSelectCaliber({
                   style={{ color: "var(--text-primary)" }}
                 >
                   ${cal.price.toFixed(2)}
-                  <span className="text-xs font-normal" style={{ color: "var(--text-muted)" }}>
+                  <span
+                    className="text-xs font-normal"
+                    style={{ color: "var(--text-muted)" }}
+                  >
                     {" "}
                     /round
                   </span>
                 </span>
-                <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>
+                <span
+                  className="text-[11px]"
+                  style={{ color: "var(--text-muted)" }}
+                >
                   Min: {cal.minMint} rounds
                 </span>
               </div>
@@ -280,10 +311,17 @@ function StepEnterAmount({
           borderLeft: "3px solid var(--amber)",
         }}
       >
-        <Clock size={16} className="mt-0.5 shrink-0" style={{ color: "var(--amber)" }} />
-        <p className="text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-          Minting takes 24-48 hours. Your USDC is held in the smart contract until an admin verifies and finalizes your
-          order.
+        <Clock
+          size={16}
+          className="mt-0.5 shrink-0"
+          style={{ color: "var(--amber)" }}
+        />
+        <p
+          className="text-xs leading-relaxed"
+          style={{ color: "var(--text-secondary)" }}
+        >
+          Minting takes 24-48 hours. Your USDC is held in the smart contract
+          until an admin verifies and finalizes your order.
         </p>
       </div>
 
@@ -303,17 +341,26 @@ function StepEnterAmount({
           >
             {caliber.symbol}
           </span>
-          <span className="text-xs ml-2" style={{ color: "var(--text-secondary)" }}>
+          <span
+            className="text-xs ml-2"
+            style={{ color: "var(--text-secondary)" }}
+          >
             {caliber.name}
           </span>
         </div>
-        <span className="font-mono text-sm font-medium tabular-nums" style={{ color: "var(--text-primary)" }}>
+        <span
+          className="font-mono text-sm font-medium tabular-nums"
+          style={{ color: "var(--text-primary)" }}
+        >
           ${caliber.price.toFixed(2)}/rd
         </span>
       </div>
 
       {/* Main USDC input */}
-      <label className="mb-2 block text-xs font-medium uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>
+      <label
+        className="mb-2 block text-xs font-medium uppercase tracking-wide"
+        style={{ color: "var(--text-muted)" }}
+      >
         Amount (USDC)
       </label>
       <div
@@ -340,7 +387,10 @@ function StepEnterAmount({
         />
         <div className="flex items-center gap-2">
           <UsdcIcon size={22} />
-          <span className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
+          <span
+            className="text-sm font-medium"
+            style={{ color: "var(--text-secondary)" }}
+          >
             USDC
           </span>
         </div>
@@ -359,7 +409,10 @@ function StepEnterAmount({
             </p>
           )}
           {isValid && (
-            <p className="flex items-center gap-1 text-xs" style={{ color: "var(--green)" }}>
+            <p
+              className="flex items-center gap-1 text-xs"
+              style={{ color: "var(--green)" }}
+            >
               <Check size={12} /> Valid amount
             </p>
           )}
@@ -423,36 +476,62 @@ function StepEnterAmount({
         >
           <div className="flex flex-col gap-2.5 text-sm">
             <div className="flex justify-between">
-              <span style={{ color: "var(--text-muted)" }}>Price per round</span>
-              <span className="font-mono tabular-nums" style={{ color: "var(--text-secondary)" }}>
+              <span style={{ color: "var(--text-muted)" }}>
+                Price per round
+              </span>
+              <span
+                className="font-mono tabular-nums"
+                style={{ color: "var(--text-secondary)" }}
+              >
                 ${caliber.price.toFixed(2)}
               </span>
             </div>
             <div className="flex justify-between">
               <span style={{ color: "var(--text-muted)" }}>Subtotal</span>
-              <span className="font-mono tabular-nums" style={{ color: "var(--text-secondary)" }}>
+              <span
+                className="font-mono tabular-nums"
+                style={{ color: "var(--text-secondary)" }}
+              >
                 {usdcValue.toFixed(2)} USDC
               </span>
             </div>
             <div className="flex justify-between">
-              <span style={{ color: "var(--text-muted)" }}>Mint fee ({caliber.mintFee}%)</span>
-              <span className="font-mono tabular-nums" style={{ color: "var(--text-secondary)" }}>
+              <span style={{ color: "var(--text-muted)" }}>
+                Mint fee ({caliber.mintFee}%)
+              </span>
+              <span
+                className="font-mono tabular-nums"
+                style={{ color: "var(--text-secondary)" }}
+              >
                 -{fee.toFixed(2)} USDC
               </span>
             </div>
             <div className="flex justify-between">
               <span style={{ color: "var(--text-muted)" }}>Net USDC</span>
-              <span className="font-mono tabular-nums" style={{ color: "var(--text-secondary)" }}>
+              <span
+                className="font-mono tabular-nums"
+                style={{ color: "var(--text-secondary)" }}
+              >
                 {netUsdc.toFixed(2)} USDC
               </span>
             </div>
-            <div className="my-0.5" style={{ borderTop: "1px solid var(--border-default)" }} />
+            <div
+              className="my-0.5"
+              style={{ borderTop: "1px solid var(--border-default)" }}
+            />
             <div className="flex justify-between">
-              <span className="font-medium" style={{ color: "var(--text-primary)" }}>
+              <span
+                className="font-medium"
+                style={{ color: "var(--text-primary)" }}
+              >
                 {"You'll receive"}
               </span>
-              <span className="font-mono font-bold tabular-nums" style={{ color: "var(--brass)" }}>
-                ~{estimatedRounds.toLocaleString("en-US")} rounds of {caliber.symbol}
+              <span
+                className="font-mono font-bold tabular-nums"
+                style={{ color: "var(--brass)" }}
+              >
+                ~{estimatedRounds.toLocaleString("en-US")} rounds of{" "}
+                {caliber.symbol}
               </span>
             </div>
           </div>
@@ -535,7 +614,10 @@ function StepReview({
         Back
       </button>
 
-      <h2 className="mb-6 font-display text-2xl font-bold uppercase" style={{ color: "var(--text-primary)" }}>
+      <h2
+        className="mb-6 font-display text-2xl font-bold uppercase"
+        style={{ color: "var(--text-primary)" }}
+      >
         Review Your Mint Order
       </h2>
 
@@ -555,41 +637,69 @@ function StepReview({
           <div className="flex items-center gap-3">
             <Icon size={32} />
             <div>
-              <div className="font-semibold" style={{ color: "var(--text-primary)" }}>
+              <div
+                className="font-semibold"
+                style={{ color: "var(--text-primary)" }}
+              >
                 {caliber.symbol} — {caliber.name}
               </div>
-              <div className="text-xs" style={{ color: "var(--text-secondary)" }}>
+              <div
+                className="text-xs"
+                style={{ color: "var(--text-secondary)" }}
+              >
                 {caliber.specLine}
               </div>
             </div>
           </div>
 
-          <div className="my-0.5" style={{ borderTop: "1px solid var(--border-default)" }} />
+          <div
+            className="my-0.5"
+            style={{ borderTop: "1px solid var(--border-default)" }}
+          />
 
           {/* Details rows */}
           <div className="flex flex-col gap-3 text-sm">
             <div className="flex justify-between">
-              <span style={{ color: "var(--text-muted)" }}>USDC to deposit</span>
-              <span className="font-mono font-medium tabular-nums" style={{ color: "var(--text-primary)" }}>
+              <span style={{ color: "var(--text-muted)" }}>
+                USDC to deposit
+              </span>
+              <span
+                className="font-mono font-medium tabular-nums"
+                style={{ color: "var(--text-primary)" }}
+              >
                 {usdcValue.toFixed(2)} USDC
               </span>
             </div>
             <div className="flex justify-between">
-              <span style={{ color: "var(--text-muted)" }}>Mint fee ({caliber.mintFee}%)</span>
-              <span className="font-mono tabular-nums" style={{ color: "var(--text-secondary)" }}>
+              <span style={{ color: "var(--text-muted)" }}>
+                Mint fee ({caliber.mintFee}%)
+              </span>
+              <span
+                className="font-mono tabular-nums"
+                style={{ color: "var(--text-secondary)" }}
+              >
                 {fee.toFixed(2)} USDC
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="font-medium" style={{ color: "var(--text-primary)" }}>
+              <span
+                className="font-medium"
+                style={{ color: "var(--text-primary)" }}
+              >
                 Tokens to receive
               </span>
-              <span className="font-mono font-bold tabular-nums" style={{ color: "var(--brass)" }}>
+              <span
+                className="font-mono font-bold tabular-nums"
+                style={{ color: "var(--brass)" }}
+              >
                 ~{estimatedRounds.toLocaleString("en-US")} {caliber.symbol}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="flex items-center gap-1.5" style={{ color: "var(--text-muted)" }}>
+              <span
+                className="flex items-center gap-1.5"
+                style={{ color: "var(--text-muted)" }}
+              >
                 <Clock size={14} />
                 Processing time
               </span>
@@ -609,9 +719,13 @@ function StepReview({
           borderLeft: "3px solid var(--amber)",
         }}
       >
-        <p className="text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-          Tokens will be minted after physical ammunition is verified in storage. This typically takes 24-48 hours.{" "}
-          {"You'll"} be able to track your order in your portfolio.
+        <p
+          className="text-xs leading-relaxed"
+          style={{ color: "var(--text-secondary)" }}
+        >
+          Tokens will be minted after physical ammunition is verified in
+          storage. This typically takes 24-48 hours. {"You'll"} be able to track
+          your order in your portfolio.
         </p>
       </div>
 
@@ -624,10 +738,18 @@ function StepReview({
         }}
       >
         <div className="flex items-start gap-2.5">
-          <Info size={14} className="mt-0.5 shrink-0" style={{ color: "var(--text-muted)" }} />
-          <p className="text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-            The final token amount is determined by the admin at fulfillment based on the current market price. The
-            estimate shown above may differ from the actual tokens received.
+          <Info
+            size={14}
+            className="mt-0.5 shrink-0"
+            style={{ color: "var(--text-muted)" }}
+          />
+          <p
+            className="text-xs leading-relaxed"
+            style={{ color: "var(--text-secondary)" }}
+          >
+            The final token amount is determined by the admin at fulfillment
+            based on the current market price. The estimate shown above may
+            differ from the actual tokens received.
           </p>
         </div>
       </div>
@@ -681,9 +803,17 @@ function StepReview({
               Approve USDC Spending
             </button>
             <div className="mt-2 flex items-start gap-2 px-1">
-              <Info size={14} className="mt-0.5 shrink-0" style={{ color: "var(--text-muted)" }} />
-              <p className="text-[11px] leading-relaxed" style={{ color: "var(--text-muted)" }}>
-                This allows the smart contract to use your USDC. You only need to do this once.
+              <Info
+                size={14}
+                className="mt-0.5 shrink-0"
+                style={{ color: "var(--text-muted)" }}
+              />
+              <p
+                className="text-[11px] leading-relaxed"
+                style={{ color: "var(--text-muted)" }}
+              >
+                This allows the smart contract to use your USDC. You only need
+                to do this once.
               </p>
             </div>
           </div>
@@ -778,7 +908,10 @@ function StepConfirmation({
         >
           <XCircle size={32} style={{ color: "var(--red)" }} />
         </div>
-        <h2 className="mb-2 font-display text-2xl font-bold uppercase" style={{ color: "var(--red)" }}>
+        <h2
+          className="mb-2 font-display text-2xl font-bold uppercase"
+          style={{ color: "var(--red)" }}
+        >
           Transaction Failed
         </h2>
         <p className="mb-6 text-sm" style={{ color: "var(--text-secondary)" }}>
@@ -808,11 +941,15 @@ function StepConfirmation({
         <Check size={32} strokeWidth={3} style={{ color: "var(--brass)" }} />
       </div>
 
-      <h2 className="mb-1 font-display text-2xl font-bold uppercase" style={{ color: "var(--brass)" }}>
+      <h2
+        className="mb-1 font-display text-2xl font-bold uppercase"
+        style={{ color: "var(--brass)" }}
+      >
         Mint Order Submitted!
       </h2>
       <p className="mb-6 text-sm" style={{ color: "var(--text-secondary)" }}>
-        Your tokens will be delivered to your wallet once the order is processed.
+        Your tokens will be delivered to your wallet once the order is
+        processed.
       </p>
 
       {/* Order details card */}
@@ -824,13 +961,22 @@ function StepConfirmation({
         }}
       >
         <div className="flex flex-col gap-3 text-sm">
-          <div className="flex items-center gap-3 pb-3" style={{ borderBottom: "1px solid var(--border-default)" }}>
+          <div
+            className="flex items-center gap-3 pb-3"
+            style={{ borderBottom: "1px solid var(--border-default)" }}
+          >
             <Icon size={28} />
             <div>
-              <div className="font-semibold" style={{ color: "var(--text-primary)" }}>
+              <div
+                className="font-semibold"
+                style={{ color: "var(--text-primary)" }}
+              >
                 ~{estimatedRounds.toLocaleString("en-US")} {caliber.symbol}
               </div>
-              <div className="text-xs" style={{ color: "var(--text-secondary)" }}>
+              <div
+                className="text-xs"
+                style={{ color: "var(--text-secondary)" }}
+              >
                 {usdcValue.toFixed(2)} USDC
               </div>
             </div>
@@ -838,7 +984,10 @@ function StepConfirmation({
 
           <div className="flex justify-between">
             <span style={{ color: "var(--text-muted)" }}>Order ID</span>
-            <span className="font-mono text-xs font-medium" style={{ color: "var(--text-secondary)" }}>
+            <span
+              className="font-mono text-xs font-medium"
+              style={{ color: "var(--text-secondary)" }}
+            >
               Pending indexing
             </span>
           </div>
@@ -856,14 +1005,22 @@ function StepConfirmation({
                 <ExternalLink size={12} />
               </a>
             ) : (
-              <span className="font-mono text-xs font-medium" style={{ color: "var(--text-muted)" }}>
+              <span
+                className="font-mono text-xs font-medium"
+                style={{ color: "var(--text-muted)" }}
+              >
                 --
               </span>
             )}
           </div>
           <div className="flex justify-between">
-            <span style={{ color: "var(--text-muted)" }}>Estimated delivery</span>
-            <span className="font-medium" style={{ color: "var(--text-primary)" }}>
+            <span style={{ color: "var(--text-muted)" }}>
+              Estimated delivery
+            </span>
+            <span
+              className="font-medium"
+              style={{ color: "var(--text-primary)" }}
+            >
               24-48 hours
             </span>
           </div>
@@ -899,12 +1056,19 @@ function StepConfirmation({
 /* =====================================================================
    MAIN ORCHESTRATOR
    ===================================================================== */
-export function MintFlow({ selectedCaliber: caliberFromProp }: { selectedCaliber?: Caliber }) {
+export function MintFlow({
+  selectedCaliber: caliberFromProp,
+}: {
+  selectedCaliber?: Caliber;
+}) {
   const searchParams = useSearchParams();
-  const preselected = caliberFromProp ?? (searchParams.get("caliber")?.toUpperCase() as Caliber | null);
+  const preselected =
+    caliberFromProp ??
+    (searchParams.get("caliber")?.toUpperCase() as Caliber | null);
   const isEmbedded = preselected !== null;
 
-  const { data: marketCalibers = [], isLoading: marketLoading } = useMarketData();
+  const { data: marketCalibers = [], isLoading: marketLoading } =
+    useMarketData();
 
   const caliberDetailsMap = useMemo(() => {
     if (marketCalibers.length === 0) return null;
@@ -922,7 +1086,10 @@ export function MintFlow({ selectedCaliber: caliberFromProp }: { selectedCaliber
   const [usdcAmount, setUsdcAmount] = useState("");
 
   const activeCaliber: Caliber = selectedCaliber ?? "9MM";
-  const caliber = selectedCaliber && caliberDetailsMap ? caliberDetailsMap[selectedCaliber] : null;
+  const caliber =
+    selectedCaliber && caliberDetailsMap
+      ? caliberDetailsMap[selectedCaliber]
+      : null;
 
   // ── Real hooks ──
   const wallet = useWallet();
@@ -930,7 +1097,11 @@ export function MintFlow({ selectedCaliber: caliberFromProp }: { selectedCaliber
   const { usdc: usdcBalanceRaw } = useTokenBalances();
   const mintTx = useMintTransaction(activeCaliber);
   const marketAddress = CONTRACT_ADDRESSES.fuji.calibers[activeCaliber].market;
-  const allowance = useAllowance(CONTRACT_ADDRESSES.fuji.usdc, wallet.address, marketAddress);
+  const allowance = useAllowance(
+    CONTRACT_ADDRESSES.fuji.usdc,
+    wallet.address,
+    marketAddress,
+  );
 
   // ── Format real USDC balance (6 decimals -> number) ──
   const usdcBalance = useMemo(() => {
@@ -943,7 +1114,11 @@ export function MintFlow({ selectedCaliber: caliberFromProp }: { selectedCaliber
     if (mintTx.isMintConfirmed) return "confirmed";
     if (mintTx.isMintConfirming) return "mint-confirming";
     if (mintTx.isMintPending) return "minting";
-    if (allowance.hasEnoughAllowance(parseUsdc(usdcAmount || "0")) || mintTx.isApproveConfirmed) return "approved";
+    if (
+      allowance.hasEnoughAllowance(parseUsdc(usdcAmount || "0")) ||
+      mintTx.isApproveConfirmed
+    )
+      return "approved";
     if (mintTx.isApproveConfirming) return "approve-confirming";
     if (mintTx.isApprovePending) return "approving";
     if (mintTx.approveError || mintTx.mintError) return "failed";
@@ -961,7 +1136,9 @@ export function MintFlow({ selectedCaliber: caliberFromProp }: { selectedCaliber
     usdcAmount,
   ]);
 
-  const errorMessage = parseContractError(mintTx.approveError || mintTx.mintError);
+  const errorMessage = parseContractError(
+    mintTx.approveError || mintTx.mintError,
+  );
 
   // ── Auto-advance to confirmation when mint confirmed ──
   useEffect(() => {
@@ -1014,7 +1191,9 @@ export function MintFlow({ selectedCaliber: caliberFromProp }: { selectedCaliber
       {step === 0 && !isEmbedded && !marketLoading && (
         <StepSelectCaliber
           selected={selectedCaliber}
-          allCalibers={caliberDetailsMap ? Object.values(caliberDetailsMap) : []}
+          allCalibers={
+            caliberDetailsMap ? Object.values(caliberDetailsMap) : []
+          }
           onSelect={setSelectedCaliber}
           onNext={() => setStep(1)}
         />

@@ -160,9 +160,7 @@ export async function handleRedeemFinalized(
           createdAt: new Date(),
         },
       });
-      console.log(
-        `[redeem] Created ActivityLog entry for redeem ${order.id}`,
-      );
+      console.log(`[redeem] Created ActivityLog entry for redeem ${order.id}`);
     }
   } catch (error) {
     console.error("[redeem] Failed to create ActivityLog entry:", error);

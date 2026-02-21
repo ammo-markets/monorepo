@@ -5,9 +5,7 @@ import { coinbaseWallet } from "wagmi/connectors";
 
 export const wagmiConfig: Config = createConfig({
   chains: [avalanche, avalancheFuji],
-  connectors: [
-    coinbaseWallet({ appName: "Ammo Exchange" }),
-  ],
+  connectors: [coinbaseWallet({ appName: "Ammo Exchange" })],
   transports: {
     [avalanche.id]: http(),
     [avalancheFuji.id]: http(),

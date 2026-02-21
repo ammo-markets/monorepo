@@ -76,7 +76,12 @@ export function WalletButton() {
           <span className="hidden sm:inline">Connect Wallet</span>
         </button>
 
-        <Dialog open={connectDialog.isOpen} onOpenChange={(open) => open ? connectDialog.open() : connectDialog.close()}>
+        <Dialog
+          open={connectDialog.isOpen}
+          onOpenChange={(open) =>
+            open ? connectDialog.open() : connectDialog.close()
+          }
+        >
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Connect Wallet</DialogTitle>

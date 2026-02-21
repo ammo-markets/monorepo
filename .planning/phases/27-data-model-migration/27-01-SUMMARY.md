@@ -48,6 +48,7 @@ completed: 2026-02-21
 - **Files modified:** 2
 
 ## Accomplishments
+
 - Order model now uses `@@unique([txHash, logIndex])` composite constraint for proper on-chain event deduplication
 - Replaced ambiguous `amount` column with `usdcAmount String?` and `tokenAmount String?` for clear denomination tracking
 - Added required `logIndex Int` column for log-level uniqueness
@@ -60,10 +61,12 @@ Each task was committed atomically:
 1. **Task 1: Migrate Order schema for composite uniqueness and normalized amounts** - `894142f` (feat)
 
 ## Files Created/Modified
+
 - `packages/db/prisma/schema.prisma` - Updated Order model with composite uniqueness, split amount fields, logIndex
 - `packages/db/prisma/migrations/20260221092449_composite_order_uniqueness_and_amounts/migration.sql` - Migration SQL dropping old amount, adding logIndex/usdcAmount, creating composite unique index
 
 ## Decisions Made
+
 - Wiped existing 7 testnet order rows before migration (Fuji testnet data, no preservation needed per plan)
 - Used `prisma migrate diff` + manual migration file + `prisma migrate deploy` workflow to bypass non-interactive TTY requirement of `prisma migrate dev`
 
@@ -72,6 +75,7 @@ Each task was committed atomically:
 ### Auto-fixed Issues
 
 **1. [Rule 3 - Blocking] Non-interactive environment prevented prisma migrate dev**
+
 - **Found during:** Task 1 (migration application)
 - **Issue:** `prisma migrate dev` and `prisma migrate dev --create-only` both failed because Claude Code runs in a non-interactive environment (no TTY)
 - **Fix:** Used `prisma migrate diff --from-config-datasource --to-schema` to generate SQL, manually created migration directory/file, then applied with `prisma migrate deploy`
@@ -85,15 +89,19 @@ Each task was committed atomically:
 **Impact on plan:** Migration result is identical; only the tooling path differed. No scope creep.
 
 ## Issues Encountered
+
 - Existing 7 order rows blocked migration due to non-nullable `logIndex` column. Resolved by wiping order data first (acceptable per plan - Fuji testnet).
 
 ## User Setup Required
+
 None - no external service configuration required.
 
 ## Next Phase Readiness
+
 - Schema is ready for Plan 02 (worker handler updates to populate usdcAmount/tokenAmount/logIndex)
 - Note: apps/web and apps/worker still reference the old `order.amount` field -- Plan 02 must update these references
 
 ---
-*Phase: 27-data-model-migration*
-*Completed: 2026-02-21*
+
+_Phase: 27-data-model-migration_
+_Completed: 2026-02-21_

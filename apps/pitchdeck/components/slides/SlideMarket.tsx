@@ -40,7 +40,9 @@ const TIERS = [
 export function SlideMarket() {
   return (
     <SlideLayout>
-      <h2 className="mb-2 font-display text-5xl font-bold uppercase tracking-tight text-text">Market Opportunity</h2>
+      <h2 className="mb-2 font-display text-5xl font-bold uppercase tracking-tight text-text">
+        Market Opportunity
+      </h2>
       <p className="mb-10 text-lg text-text-muted">
         US ammunition -- a massive, underserved commodity market
       </p>
@@ -52,7 +54,11 @@ export function SlideMarket() {
             initial={{ width: "0%", opacity: 0 }}
             animate={{ width: tier.targetWidth, opacity: 1 }}
             transition={{
-              width: { duration: tier.duration, delay: tier.delay, ease: "easeOut" },
+              width: {
+                duration: tier.duration,
+                delay: tier.delay,
+                ease: "easeOut",
+              },
               opacity: { duration: 0.3, delay: tier.delay },
             }}
             className={`rounded-none border border-brass bg-brass ${tier.opacity} flex items-center justify-between px-8 py-5`}

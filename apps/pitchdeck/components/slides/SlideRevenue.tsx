@@ -5,13 +5,18 @@ import { FEE_TABLE, REVENUE_PROJECTION } from "@/lib/slideData";
 export function SlideRevenue() {
   return (
     <SlideLayout>
-      <h2 className="mb-2 font-display text-5xl font-bold uppercase tracking-tight text-text">Revenue Model</h2>
+      <h2 className="mb-2 font-display text-5xl font-bold uppercase tracking-tight text-text">
+        Revenue Model
+      </h2>
       <p className="mb-10 text-lg text-text-muted">
         Protocol fees on every mint and redeem, plus wholesale procurement
         margins
       </p>
 
-      <StaggerContainer preset="magazine-load" className="grid grid-cols-2 gap-8">
+      <StaggerContainer
+        preset="magazine-load"
+        className="grid grid-cols-2 gap-8"
+      >
         <StaggerItem>
           <div className="card-hover rounded-none border border-surface-elevated bg-surface p-6">
             <h3 className="mb-4 text-xl font-semibold text-brass">
@@ -46,8 +51,7 @@ export function SlideRevenue() {
                 <span className="font-bold text-brass">
                   {REVENUE_PROJECTION.som}
                 </span>{" "}
-                SOM{" "}
-                <span className="text-text-muted">&times;</span>{" "}
+                SOM <span className="text-text-muted">&times;</span>{" "}
                 <span className="font-bold text-brass">
                   {REVENUE_PROJECTION.feeRate}
                 </span>{" "}
@@ -62,7 +66,9 @@ export function SlideRevenue() {
             </div>
 
             <div className="card-hover rounded-none border border-brass/30 bg-surface p-6 text-center">
-              <p className="font-display text-3xl font-bold uppercase text-brass">3% round-trip</p>
+              <p className="font-display text-3xl font-bold uppercase text-brass">
+                3% round-trip
+              </p>
               <p className="mt-2 text-sm text-text-muted">
                 1.5% mint + 1.5% redeem &middot; Max 5% hard cap on-chain
               </p>

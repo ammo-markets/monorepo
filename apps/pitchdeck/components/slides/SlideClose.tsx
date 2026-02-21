@@ -10,7 +10,11 @@ const stagger = {
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: "easeOut" as const } },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.45, ease: "easeOut" as const },
+  },
 };
 
 export function SlideClose() {
@@ -28,16 +32,24 @@ export function SlideClose() {
         >
           Make Your Ammo Liquid
         </motion.h1>
-        <motion.p variants={fadeUp} className="mb-4 text-2xl font-light text-text">
+        <motion.p
+          variants={fadeUp}
+          className="mb-4 text-2xl font-light text-text"
+        >
           The first DeFi protocol for ammunition price exposure
         </motion.p>
         <motion.p variants={fadeUp} className="mb-10 text-lg text-text-muted">
-          Global price exposure &middot; Tokenized trading &middot; Optional physical
-          delivery
+          Global price exposure &middot; Tokenized trading &middot; Optional
+          physical delivery
         </motion.p>
-        <motion.div variants={fadeUp} className="rounded-none bg-surface-elevated px-8 py-4">
+        <motion.div
+          variants={fadeUp}
+          className="rounded-none bg-surface-elevated px-8 py-4"
+        >
           <p className="text-text-muted">
-            <span className="font-semibold text-brass">hello@ammo.exchange</span>
+            <span className="font-semibold text-brass">
+              hello@ammo.exchange
+            </span>
           </p>
         </motion.div>
       </motion.div>

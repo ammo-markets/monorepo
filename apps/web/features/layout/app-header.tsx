@@ -14,9 +14,7 @@ export function AppHeader() {
       : "var(--green)";
 
   return (
-    <header
-      className="fixed top-0 right-0 left-0 z-30 flex h-16 items-center justify-between border-b border-border-default bg-ax-secondary lg:left-60 px-4 sm:px-6"
-    >
+    <header className="fixed top-0 right-0 left-0 z-30 flex h-16 items-center justify-between border-b border-border-default bg-ax-secondary lg:left-60 px-4 sm:px-6">
       {/* Mobile: show logo (sidebar is hidden). Desktop: empty spacer */}
       <div className="lg:hidden">
         <AmmoLogo size="small" />
@@ -26,9 +24,7 @@ export function AppHeader() {
       {/* Right side: network badge + wallet */}
       <div className="flex items-center gap-3">
         {/* Network badge pill */}
-        <div
-          className="flex items-center gap-2 px-3 py-1.5 text-[10px] font-mono font-bold uppercase tracking-widest bg-ax-tertiary border border-border-default text-text-secondary"
-        >
+        <div className="flex items-center gap-2 px-3 py-1.5 text-[10px] font-mono font-bold uppercase tracking-widest bg-ax-tertiary border border-border-default text-text-secondary">
           <svg
             width="12"
             height="12"

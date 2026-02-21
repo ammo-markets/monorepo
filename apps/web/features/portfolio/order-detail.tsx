@@ -628,9 +628,7 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
           </DetailRow>
 
           <DetailRow label="Amount">
-            <span className="font-mono tabular-nums">
-              {amountDisplay}
-            </span>
+            <span className="font-mono tabular-nums">{amountDisplay}</span>
           </DetailRow>
 
           <DetailRow label="Status">

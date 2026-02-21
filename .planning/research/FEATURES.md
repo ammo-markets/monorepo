@@ -199,21 +199,21 @@ Based on research into funded DeFi/RWA protocol decks, the following narrative f
 
 ### Narrative Arc: Problem-first, then Solution, then Why Us, then Why Now, then Ask
 
-| Slide # | Slide Name | Content Focus | Time Budget |
-|---------|-----------|---------------|-------------|
-| 1 | **Cover** | Name, tagline, logo. "The first liquid market for ammunition." | 5 sec |
-| 2 | **The Problem** | $8B market, no secondary exchange, no financial instrument, high friction. Price volatility chart teaser. | 30 sec |
-| 3 | **Price Volatility** | Interactive 9mm price chart 2019-2025. 4x swing. "If you could have traded this..." | 30 sec |
-| 4 | **The Solution** | USDC in, tokens out, trade on DEX, redeem for physical. One visual diagram. | 20 sec |
-| 5 | **How It Works** | Two-step async flow. Per-caliber tokens. Keeper model. Visual flow animation. | 30 sec |
-| 6 | **Market Opportunity** | TAM/SAM/SOM. 26.2M new gun buyers. Political demand drivers. | 20 sec |
-| 7 | **Competitive Landscape** | Comparison table. "PAXG for ammunition." No one else does this. | 20 sec |
-| 8 | **Revenue Model** | Fee structure. Wholesale spread. Conservative projections. Unit economics. | 20 sec |
-| 9 | **Traction / Live Demo** | What is built today (testnet deployment, working app). Link to try it. Protocol stats if available. | 20 sec |
-| 10 | **Regulatory** | No FFL needed. Legal at federal level. KYC at redemption. Token classification rationale. | 15 sec |
-| 11 | **Roadmap** | Phase 1-4 timeline from whitepaper. Where funding accelerates progress. | 15 sec |
-| 12 | **Team** | Founders, key team, relevant credentials. | 15 sec |
-| 13 | **The Ask** | Raise amount, use of funds breakdown, milestones unlocked, contact info. | 15 sec |
+| Slide # | Slide Name                | Content Focus                                                                                             | Time Budget |
+| ------- | ------------------------- | --------------------------------------------------------------------------------------------------------- | ----------- |
+| 1       | **Cover**                 | Name, tagline, logo. "The first liquid market for ammunition."                                            | 5 sec       |
+| 2       | **The Problem**           | $8B market, no secondary exchange, no financial instrument, high friction. Price volatility chart teaser. | 30 sec      |
+| 3       | **Price Volatility**      | Interactive 9mm price chart 2019-2025. 4x swing. "If you could have traded this..."                       | 30 sec      |
+| 4       | **The Solution**          | USDC in, tokens out, trade on DEX, redeem for physical. One visual diagram.                               | 20 sec      |
+| 5       | **How It Works**          | Two-step async flow. Per-caliber tokens. Keeper model. Visual flow animation.                             | 30 sec      |
+| 6       | **Market Opportunity**    | TAM/SAM/SOM. 26.2M new gun buyers. Political demand drivers.                                              | 20 sec      |
+| 7       | **Competitive Landscape** | Comparison table. "PAXG for ammunition." No one else does this.                                           | 20 sec      |
+| 8       | **Revenue Model**         | Fee structure. Wholesale spread. Conservative projections. Unit economics.                                | 20 sec      |
+| 9       | **Traction / Live Demo**  | What is built today (testnet deployment, working app). Link to try it. Protocol stats if available.       | 20 sec      |
+| 10      | **Regulatory**            | No FFL needed. Legal at federal level. KYC at redemption. Token classification rationale.                 | 15 sec      |
+| 11      | **Roadmap**               | Phase 1-4 timeline from whitepaper. Where funding accelerates progress.                                   | 15 sec      |
+| 12      | **Team**                  | Founders, key team, relevant credentials.                                                                 | 15 sec      |
+| 13      | **The Ask**               | Raise amount, use of funds breakdown, milestones unlocked, contact info.                                  | 15 sec      |
 
 **Total estimated read time:** ~4 minutes (within the 3-5 minute range investors typically spend)
 
@@ -275,25 +275,25 @@ Based on research into funded DeFi/RWA protocol decks, the following narrative f
 
 ## 7. Complexity Summary
 
-| Feature | Complexity | New Code | Existing Assets to Leverage |
-|---------|-----------|----------|---------------------------|
-| 1.1 Cover | Low | One component | Logo, brand from landing page |
-| 1.2 Problem | Low | One component | Whitepaper content |
-| 1.3 Solution | Low | One component + diagram | Whitepaper flow diagram |
-| 1.4 Market | Low | One component | Whitepaper TAM data |
-| 1.5 How It Works | Low-Med | 1-2 components + visuals | Whitepaper sections 2-3 |
-| 1.6 Revenue | Low | One component + table | Whitepaper section 5 |
-| 1.7 Competitive | Low | One component + matrix | Whitepaper section 1.3 |
-| 1.8 Team | Low | One component | Team bios (need to collect) |
-| 1.9 The Ask | Low | One component | Fundraising decisions needed |
-| 1.10 Regulatory | Low-Med | One component | Whitepaper section 7 |
-| 2.1 Live Demo Link | Low | CTA button + URL | Existing Fuji dashboard |
-| 2.2 Live Data | Medium | API read + display component | Deployed contracts on Fuji |
-| 2.3 Animated Flow | Med-High | Animation components | Design assets needed |
-| 2.4 Price Chart | Medium | Chart component + data | Historical price data needed |
-| 2.5 PDF Export | Low-Med | Pre-rendered PDF or print CSS | All slide content |
-| 2.6 Personalization | Low | URL param parsing | None |
-| 2.7 Analytics | Medium | Event tracking + API endpoint | None |
+| Feature             | Complexity | New Code                      | Existing Assets to Leverage   |
+| ------------------- | ---------- | ----------------------------- | ----------------------------- |
+| 1.1 Cover           | Low        | One component                 | Logo, brand from landing page |
+| 1.2 Problem         | Low        | One component                 | Whitepaper content            |
+| 1.3 Solution        | Low        | One component + diagram       | Whitepaper flow diagram       |
+| 1.4 Market          | Low        | One component                 | Whitepaper TAM data           |
+| 1.5 How It Works    | Low-Med    | 1-2 components + visuals      | Whitepaper sections 2-3       |
+| 1.6 Revenue         | Low        | One component + table         | Whitepaper section 5          |
+| 1.7 Competitive     | Low        | One component + matrix        | Whitepaper section 1.3        |
+| 1.8 Team            | Low        | One component                 | Team bios (need to collect)   |
+| 1.9 The Ask         | Low        | One component                 | Fundraising decisions needed  |
+| 1.10 Regulatory     | Low-Med    | One component                 | Whitepaper section 7          |
+| 2.1 Live Demo Link  | Low        | CTA button + URL              | Existing Fuji dashboard       |
+| 2.2 Live Data       | Medium     | API read + display component  | Deployed contracts on Fuji    |
+| 2.3 Animated Flow   | Med-High   | Animation components          | Design assets needed          |
+| 2.4 Price Chart     | Medium     | Chart component + data        | Historical price data needed  |
+| 2.5 PDF Export      | Low-Med    | Pre-rendered PDF or print CSS | All slide content             |
+| 2.6 Personalization | Low        | URL param parsing             | None                          |
+| 2.7 Analytics       | Medium     | Event tracking + API endpoint | None                          |
 
 ---
 

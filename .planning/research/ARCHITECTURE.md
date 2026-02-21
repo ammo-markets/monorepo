@@ -12,38 +12,38 @@
 
 **New (create from scratch):**
 
-| Path | Purpose |
-|------|---------|
-| `apps/pitchdeck/` | Next.js 15 app (standalone, no DB/contracts deps) |
-| `apps/pitchdeck/package.json` | `@ammo-exchange/pitchdeck` |
-| `apps/pitchdeck/app/layout.tsx` | Root layout with fonts + theme |
-| `apps/pitchdeck/app/page.tsx` | PitchDeck orchestrator entry |
-| `apps/pitchdeck/app/globals.css` | Tailwind v4 + brass/dark theme vars (copied from web, trimmed) |
-| `apps/pitchdeck/components/` | All slide system components |
-| `apps/pitchdeck/slides/` | Individual slide content components |
-| `apps/pitchdeck/lib/utils.ts` | `cn()` helper (same as web) |
-| `apps/pitchdeck/lib/pdf.ts` | PDF export logic |
-| `apps/pitchdeck/next.config.ts` | Minimal config (no wagmi/prisma concerns) |
-| `apps/pitchdeck/postcss.config.mjs` | `@tailwindcss/postcss` plugin |
-| `apps/pitchdeck/tsconfig.json` | Extends root, `@/*` paths |
+| Path                                | Purpose                                                        |
+| ----------------------------------- | -------------------------------------------------------------- |
+| `apps/pitchdeck/`                   | Next.js 15 app (standalone, no DB/contracts deps)              |
+| `apps/pitchdeck/package.json`       | `@ammo-exchange/pitchdeck`                                     |
+| `apps/pitchdeck/app/layout.tsx`     | Root layout with fonts + theme                                 |
+| `apps/pitchdeck/app/page.tsx`       | PitchDeck orchestrator entry                                   |
+| `apps/pitchdeck/app/globals.css`    | Tailwind v4 + brass/dark theme vars (copied from web, trimmed) |
+| `apps/pitchdeck/components/`        | All slide system components                                    |
+| `apps/pitchdeck/slides/`            | Individual slide content components                            |
+| `apps/pitchdeck/lib/utils.ts`       | `cn()` helper (same as web)                                    |
+| `apps/pitchdeck/lib/pdf.ts`         | PDF export logic                                               |
+| `apps/pitchdeck/next.config.ts`     | Minimal config (no wagmi/prisma concerns)                      |
+| `apps/pitchdeck/postcss.config.mjs` | `@tailwindcss/postcss` plugin                                  |
+| `apps/pitchdeck/tsconfig.json`      | Extends root, `@/*` paths                                      |
 
 **Modified (update existing):**
 
-| Path | Change |
-|------|--------|
-| `turbo.json` | No change needed -- `apps/*` glob already covers new app |
+| Path                  | Change                                                   |
+| --------------------- | -------------------------------------------------------- |
+| `turbo.json`          | No change needed -- `apps/*` glob already covers new app |
 | `pnpm-workspace.yaml` | No change needed -- `apps/*` glob already covers new app |
-| `package.json` (root) | No change needed -- turbo commands run across all apps |
+| `package.json` (root) | No change needed -- turbo commands run across all apps   |
 
 **Not touched:**
 
-| Path | Reason |
-|------|--------|
-| `packages/shared/` | Pitch deck has no shared type dependencies |
-| `packages/db/` | No database needed |
-| `packages/contracts/` | No smart contract interaction |
-| `apps/web/` | Completely independent |
-| `apps/worker/` | Completely independent |
+| Path                  | Reason                                     |
+| --------------------- | ------------------------------------------ |
+| `packages/shared/`    | Pitch deck has no shared type dependencies |
+| `packages/db/`        | No database needed                         |
+| `packages/contracts/` | No smart contract interaction              |
+| `apps/web/`           | Completely independent                     |
+| `apps/worker/`        | Completely independent                     |
 
 ### Why Standalone (Not a Route in apps/web)
 
@@ -68,6 +68,7 @@ The pitch deck app has **no workspace package dependencies**. Its dependency gra
 ```
 
 This means:
+
 - `turbo build` will build it in parallel with other apps
 - `turbo dev` will run its dev server alongside web/worker
 - No `dependsOn: ["^build", "^db:generate"]` applies (those resolve to empty for this app)
@@ -131,15 +132,15 @@ app/page.tsx
 
 ### Component Boundaries
 
-| Component | Responsibility | Communicates With |
-|-----------|---------------|-------------------|
-| `PitchDeck` | Owns `currentSlide` state, keyboard event listener, slide array definition | SlideRenderer, SlideControls, ProgressBar, PDFExporter |
-| `SlideRenderer` | Applies enter/exit transitions based on slide change direction | Slide (renders current slide component) |
-| `Slide` | Provides consistent slide layout (full viewport, centered content, background) | SlideHeader, child content |
-| `SlideHeader` | Renders icon + title + subtitle with consistent typography | None (pure presentational) |
-| `SlideControls` | Previous/next navigation buttons, slide counter display, PDF export trigger | PitchDeck (calls onNext/onPrev/onExport) |
-| `ProgressBar` | Visual indicator of progress through deck | PitchDeck (reads currentSlide/totalSlides) |
-| `PDFExporter` | Renders all slides off-screen, captures with html2canvas, assembles with jsPDF | PitchDeck (triggered by export action) |
+| Component       | Responsibility                                                                 | Communicates With                                      |
+| --------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------ |
+| `PitchDeck`     | Owns `currentSlide` state, keyboard event listener, slide array definition     | SlideRenderer, SlideControls, ProgressBar, PDFExporter |
+| `SlideRenderer` | Applies enter/exit transitions based on slide change direction                 | Slide (renders current slide component)                |
+| `Slide`         | Provides consistent slide layout (full viewport, centered content, background) | SlideHeader, child content                             |
+| `SlideHeader`   | Renders icon + title + subtitle with consistent typography                     | None (pure presentational)                             |
+| `SlideControls` | Previous/next navigation buttons, slide counter display, PDF export trigger    | PitchDeck (calls onNext/onPrev/onExport)               |
+| `ProgressBar`   | Visual indicator of progress through deck                                      | PitchDeck (reads currentSlide/totalSlides)             |
+| `PDFExporter`   | Renders all slides off-screen, captures with html2canvas, assembles with jsPDF | PitchDeck (triggered by export action)                 |
 
 ### State Management
 
@@ -317,14 +318,14 @@ export function SlideHeader({ icon: Icon, title, subtitle }: SlideHeaderProps) {
 
 ### Keyboard Navigation
 
-| Key | Action |
-|-----|--------|
-| `ArrowRight`, `Space` | Next slide |
-| `ArrowLeft` | Previous slide |
-| `Home` | First slide |
-| `End` | Last slide |
-| Number keys `1-9` | Jump to slide N |
-| `Escape` | Reserved for future overview mode |
+| Key                   | Action                            |
+| --------------------- | --------------------------------- |
+| `ArrowRight`, `Space` | Next slide                        |
+| `ArrowLeft`           | Previous slide                    |
+| `Home`                | First slide                       |
+| `End`                 | Last slide                        |
+| Number keys `1-9`     | Jump to slide N                   |
+| `Escape`              | Reserved for future overview mode |
 
 Keyboard handler lives in the PitchDeck orchestrator via `useEffect` on `window.addEventListener("keydown")`. No need for a separate hook -- it is a single effect.
 
@@ -436,13 +437,13 @@ export const PDFExporter = forwardRef<PDFExporterHandle>(function PDFExporter(_,
 
 ### PDF Export Limitations and Mitigations
 
-| Limitation | Mitigation |
-|------------|------------|
+| Limitation                               | Mitigation                                                                     |
+| ---------------------------------------- | ------------------------------------------------------------------------------ |
 | Text becomes rasterized (not selectable) | Acceptable for pitch decks -- visual fidelity matters more than text selection |
-| Large file size with scale: 2 | Use JPEG at 0.95 quality instead of PNG; ~2-4MB for 10 slides |
-| Custom fonts may not render | Ensure fonts are loaded before capture (document.fonts.ready) |
-| CSS gradients may render imperfectly | Test each slide; use solid fallbacks where gradients fail |
-| html2canvas does not support all CSS | Avoid backdrop-filter, clip-path, mix-blend-mode in slide content |
+| Large file size with scale: 2            | Use JPEG at 0.95 quality instead of PNG; ~2-4MB for 10 slides                  |
+| Custom fonts may not render              | Ensure fonts are loaded before capture (document.fonts.ready)                  |
+| CSS gradients may render imperfectly     | Test each slide; use solid fallbacks where gradients fail                      |
+| html2canvas does not support all CSS     | Avoid backdrop-filter, clip-path, mix-blend-mode in slide content              |
 
 ---
 
@@ -562,16 +563,16 @@ Same fonts as the web app: Inter (body) + JetBrains Mono (code/numbers). Loaded 
 
 ## 6. What is Shared vs Standalone
 
-| Concern | Shared with apps/web? | Approach |
-|---------|-----------------------|----------|
-| CSS theme variables | Copy, do not import | Copy the ~20 custom property declarations into pitchdeck's own globals.css |
-| Tailwind v4 + PostCSS config | Same pattern, independent files | Each app has its own postcss.config.mjs and globals.css |
-| `cn()` utility | Duplicate (3 lines) | Not worth creating a shared package for `clsx` + `twMerge` |
-| Fonts (Inter, JetBrains Mono) | Same fonts, independent loading | Each app loads via next/font/google independently |
-| TypeScript config | Extends root `tsconfig.json` | Same as web app pattern |
-| React / Next.js version | Same versions in both apps | pnpm hoists shared versions |
-| shadcn components | NOT shared | Pitch deck does not use shadcn; too heavy |
-| lucide-react icons | Same package, independent imports | Both apps depend on lucide-react |
+| Concern                       | Shared with apps/web?             | Approach                                                                   |
+| ----------------------------- | --------------------------------- | -------------------------------------------------------------------------- |
+| CSS theme variables           | Copy, do not import               | Copy the ~20 custom property declarations into pitchdeck's own globals.css |
+| Tailwind v4 + PostCSS config  | Same pattern, independent files   | Each app has its own postcss.config.mjs and globals.css                    |
+| `cn()` utility                | Duplicate (3 lines)               | Not worth creating a shared package for `clsx` + `twMerge`                 |
+| Fonts (Inter, JetBrains Mono) | Same fonts, independent loading   | Each app loads via next/font/google independently                          |
+| TypeScript config             | Extends root `tsconfig.json`      | Same as web app pattern                                                    |
+| React / Next.js version       | Same versions in both apps        | pnpm hoists shared versions                                                |
+| shadcn components             | NOT shared                        | Pitch deck does not use shadcn; too heavy                                  |
+| lucide-react icons            | Same package, independent imports | Both apps depend on lucide-react                                           |
 
 **Key decision: No new shared package.** The overlap between the web app and pitch deck is limited to CSS variables (20 lines) and the `cn()` utility (3 lines). Creating a shared UI package for this would add build complexity, turborepo dependency edges, and maintenance overhead for near-zero benefit. Copy the small amount of shared code.
 
@@ -596,6 +597,7 @@ export default nextConfig;
 ```
 
 **Static export (`output: "export"`)** is the right choice because:
+
 - The pitch deck is 100% client-side (no API routes, no server components that fetch data)
 - Enables deployment to any static host (Vercel, Netlify, S3, GitHub Pages)
 - Faster builds, simpler deployment
@@ -635,12 +637,12 @@ export default nextConfig;
 
 ## 9. Scalability Considerations
 
-| Concern | Current (10 slides) | If 20+ slides | If multiple decks |
-|---------|---------------------|----------------|-------------------|
-| Bundle size | Negligible (~50KB app code) | Still fine, slides are mostly JSX | Add route-based code splitting per deck |
-| PDF export time | ~3-5 seconds | ~8-12 seconds, add progress indicator | Export per-deck, not all at once |
-| Keyboard nav | Simple array index | Same, no change | Add deck selection before entering nav |
-| Theme customization | Single theme | Same | CSS variable overrides per deck |
+| Concern             | Current (10 slides)         | If 20+ slides                         | If multiple decks                       |
+| ------------------- | --------------------------- | ------------------------------------- | --------------------------------------- |
+| Bundle size         | Negligible (~50KB app code) | Still fine, slides are mostly JSX     | Add route-based code splitting per deck |
+| PDF export time     | ~3-5 seconds                | ~8-12 seconds, add progress indicator | Export per-deck, not all at once        |
+| Keyboard nav        | Simple array index          | Same, no change                       | Add deck selection before entering nav  |
+| Theme customization | Single theme                | Same                                  | CSS variable overrides per deck         |
 
 The current architecture handles the 10-slide pitch deck with no scalability concerns. If multiple decks are needed later, add Next.js routes (`/investor`, `/partner`, `/technical`) each mounting their own `PitchDeck` with a different slides array.
 
@@ -671,6 +673,7 @@ turbo build --filter=@ammo-exchange/pitchdeck
 ### Deployment
 
 With `output: "export"`, the `apps/pitchdeck/out/` directory contains a fully static site. Deploy options:
+
 - **Vercel:** Auto-detects static export from monorepo (set root directory to `apps/pitchdeck`)
 - **Any static host:** Upload the `out/` directory
 

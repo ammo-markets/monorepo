@@ -14,12 +14,14 @@ Prisma schema migration for composite order uniqueness (txHash + logIndex) and n
 ## Implementation Decisions
 
 ### Migration strategy
+
 - Single Prisma migration: add new columns + composite unique constraint in one step
 - Wipe existing order data and start fresh (Fuji testnet — no preservation needed)
 - Drop the old txHash-only unique constraint entirely (no non-unique index kept)
 - logIndex column is required (non-nullable) — every on-chain event has a logIndex, fail loudly if missing
 
 ### Amount field semantics
+
 - Both `usdcAmount` and `tokenAmount` are nullable columns
 - Mint creation: set `usdcAmount`, leave `tokenAmount` null
 - Redeem creation: set `tokenAmount`, leave `usdcAmount` null
@@ -28,18 +30,21 @@ Prisma schema migration for composite order uniqueness (txHash + logIndex) and n
 - Store raw wei values (no conversion at ingestion). Display-time formatting only
 
 ### Worker handler behavior
+
 - Idempotency via silent upsert: if order with same (txHash, logIndex) exists, do nothing (no warning log)
 - Self-healing on finalization: if no matching pending order exists, create from finalization event (don't fail)
 - Extract logIndex directly from viem's event log object (not from receipt)
 - Store amounts as raw wei values from chain events
 
 ### Backfill / re-indexing
+
 - After schema migration and data wipe, worker re-indexes all historical events from a start block
 - Start block sourced from a shared config constant in @ammo-exchange/shared (hardcoded deployment block)
 - Auto re-index on empty DB: if no orders exist at startup, replay from start block; otherwise listen for new events only
 - Batch processing: fetch events in block ranges (e.g., 2000 blocks per query) for speed
 
 ### Claude's Discretion
+
 - Column type choice for amount fields (BigInt vs Decimal) — based on what viem returns and Prisma capabilities
 - Exact batch size for re-indexing block ranges
 - Migration file naming and Prisma migration metadata
@@ -65,5 +70,5 @@ None — discussion stayed within phase scope
 
 ---
 
-*Phase: 27-data-model-migration*
-*Context gathered: 2026-02-21*
+_Phase: 27-data-model-migration_
+_Context gathered: 2026-02-21_

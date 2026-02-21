@@ -10,7 +10,11 @@ const stagger = {
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: "easeOut" as const },
+  },
 };
 
 export function SlideCover() {
@@ -31,10 +35,16 @@ export function SlideCover() {
         >
           Ammo Exchange
         </motion.h1>
-        <motion.p variants={fadeUp} className="mb-4 font-display text-4xl uppercase tracking-widest text-text">
+        <motion.p
+          variants={fadeUp}
+          className="mb-4 font-display text-4xl uppercase tracking-widest text-text"
+        >
           Make Your Ammo Liquid
         </motion.p>
-        <motion.p variants={fadeUp} className="font-mono text-xl uppercase tracking-widest text-text-secondary">
+        <motion.p
+          variants={fadeUp}
+          className="font-mono text-xl uppercase tracking-widest text-text-secondary"
+        >
           Tokenized ammunition trading
         </motion.p>
       </motion.div>

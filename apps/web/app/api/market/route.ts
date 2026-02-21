@@ -3,7 +3,6 @@ import { CaliberMarketAbi, AmmoTokenAbi } from "@ammo-exchange/contracts/abis";
 import { CONTRACT_ADDRESSES, CALIBER_SPECS } from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
 
-
 const CALIBERS: Caliber[] = ["9MM", "556", "22LR", "308"];
 const fuji = CONTRACT_ADDRESSES.fuji;
 

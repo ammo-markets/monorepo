@@ -188,22 +188,26 @@ export const PROBLEM_STATS: ProblemStat[] = [
   {
     icon: "$",
     headline: "$8B market with zero financial instruments",
-    detail: "No futures, no ETFs, no options -- the only major commodity without a derivatives market.",
+    detail:
+      "No futures, no ETFs, no options -- the only major commodity without a derivatives market.",
   },
   {
     icon: "%",
     headline: "355% price spike with no hedge",
-    detail: "9mm surged from $0.17 to $0.82 per round in 2020-2021. No way to hedge.",
+    detail:
+      "9mm surged from $0.17 to $0.82 per round in 2020-2021. No way to hedge.",
   },
   {
     icon: "X",
     headline: "Geographic restrictions limit access",
-    detail: "Physical ammo cannot cross most borders. Import/export bans lock out non-US buyers entirely.",
+    detail:
+      "Physical ammo cannot cross most borders. Import/export bans lock out non-US buyers entirely.",
   },
   {
     icon: "?",
     headline: "Fragmented market, no transparent pricing",
-    detail: "Thousands of retailers, no centralized exchange, no real-time price discovery.",
+    detail:
+      "Thousands of retailers, no centralized exchange, no real-time price discovery.",
   },
 ];
 
@@ -217,7 +221,10 @@ export const WHY_NOW_HOOK =
 
 export const WHY_NOW_POINTS: WhyNowPoint[] = [
   { stat: "$886B", label: "US defense budget (2024) -- record high" },
-  { stat: "2020+", label: "Prolonged ammo shortage -- COVID, Ukraine, global demand" },
+  {
+    stat: "2020+",
+    label: "Prolonged ammo shortage -- COVID, Ukraine, global demand",
+  },
   { stat: "80M+", label: "American gun owners -- all-time record" },
   { stat: "0", label: "Financial instruments for ammunition exposure" },
 ];

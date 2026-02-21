@@ -38,11 +38,16 @@ export function SlideTraction() {
         Live on testnet -- fully functional protocol
       </p>
 
-      <StaggerContainer preset="firing-sequence" className="mb-8 grid flex-1 grid-cols-4 gap-6">
+      <StaggerContainer
+        preset="firing-sequence"
+        className="mb-8 grid flex-1 grid-cols-4 gap-6"
+      >
         {CAPABILITIES.map((cap) => (
           <StaggerItem key={cap.label} preset="firing-sequence">
             <div className="card-hover flex h-full flex-col items-center justify-center rounded-none border border-surface-elevated bg-surface p-6 text-center">
-              <p className={`font-display text-3xl font-bold uppercase text-brass ${cap.isLive ? "live-dot" : ""}`}>
+              <p
+                className={`font-display text-3xl font-bold uppercase text-brass ${cap.isLive ? "live-dot" : ""}`}
+              >
                 {cap.value}
               </p>
               <p className="mt-1 font-semibold text-text">{cap.label}</p>

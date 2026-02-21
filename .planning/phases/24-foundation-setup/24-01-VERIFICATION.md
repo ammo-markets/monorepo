@@ -17,33 +17,33 @@ re_verification: false
 
 ### Observable Truths
 
-| # | Truth | Status | Evidence |
-|---|-------|--------|----------|
-| 1 | `pnpm dev --filter @ammo-exchange/pitchdeck` starts on port 3001 with a visible test slide | VERIFIED | `package.json` scripts.dev = `next dev --port 3001`; `page.tsx` renders heading, subtitle, color squares — not a placeholder |
-| 2 | The pitchdeck `globals.css` contains zero oklch values — all colors are hex | VERIFIED | `grep oklch apps/pitchdeck/app/globals.css` returns nothing; `--color-*: initial` is the first declaration in `@theme inline` block; all 13 color tokens are hex |
-| 3 | `pnpm build --filter @ammo-exchange/pitchdeck` produces an `out/` directory with static HTML/CSS/JS | VERIFIED | `apps/pitchdeck/out/index.html` exists; `out/` contains `_next/`, `404.html`, `index.html`, `index.txt`; `output: "export"` in `next.config.ts`; built index.html contains "Ammo Exchange" text |
-| 4 | The pitchdeck app imports from `@ammo-exchange/shared` without build errors | VERIFIED | `page.tsx` imports `CALIBER_SPECS` from `@ammo-exchange/shared` (a runtime value, not just a type); `next.config.ts` has `transpilePackages: ["@ammo-exchange/shared"]` and `extensionAlias`; build produced `out/` proving the import resolved |
+| #   | Truth                                                                                               | Status   | Evidence                                                                                                                                                                                                                                        |
+| --- | --------------------------------------------------------------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | `pnpm dev --filter @ammo-exchange/pitchdeck` starts on port 3001 with a visible test slide          | VERIFIED | `package.json` scripts.dev = `next dev --port 3001`; `page.tsx` renders heading, subtitle, color squares — not a placeholder                                                                                                                    |
+| 2   | The pitchdeck `globals.css` contains zero oklch values — all colors are hex                         | VERIFIED | `grep oklch apps/pitchdeck/app/globals.css` returns nothing; `--color-*: initial` is the first declaration in `@theme inline` block; all 13 color tokens are hex                                                                                |
+| 3   | `pnpm build --filter @ammo-exchange/pitchdeck` produces an `out/` directory with static HTML/CSS/JS | VERIFIED | `apps/pitchdeck/out/index.html` exists; `out/` contains `_next/`, `404.html`, `index.html`, `index.txt`; `output: "export"` in `next.config.ts`; built index.html contains "Ammo Exchange" text                                                 |
+| 4   | The pitchdeck app imports from `@ammo-exchange/shared` without build errors                         | VERIFIED | `page.tsx` imports `CALIBER_SPECS` from `@ammo-exchange/shared` (a runtime value, not just a type); `next.config.ts` has `transpilePackages: ["@ammo-exchange/shared"]` and `extensionAlias`; build produced `out/` proving the import resolved |
 
 **Score:** 4/4 truths verified
 
 ### Required Artifacts
 
-| Artifact | Expected | Status | Details |
-|----------|----------|--------|---------|
-| `apps/pitchdeck/package.json` | Name `@ammo-exchange/pitchdeck`, port 3001, `workspace:*` shared dep | VERIFIED | All three present: name, dev script with `--port 3001`, `"@ammo-exchange/shared": "workspace:*"` |
-| `apps/pitchdeck/next.config.ts` | `output: "export"`, `transpilePackages`, `extensionAlias` | VERIFIED | All three present; `images: { unoptimized: true }` also correct |
-| `apps/pitchdeck/app/globals.css` | Hex-only theme with `--color-*: initial` | VERIFIED | `--color-*: initial` is first in `@theme inline`; all 13 color variables are hex; no oklch anywhere |
-| `apps/pitchdeck/app/layout.tsx` | Root layout with Inter + JetBrains Mono, `RootLayout` export | VERIFIED | Both fonts imported from `next/font/google`; `RootLayout` default export present; `./globals.css` imported |
-| `apps/pitchdeck/app/page.tsx` | Test slide containing "Ammo Exchange" text | VERIFIED | Heading renders "Ammo Exchange" in `text-brass`; color validation squares; `CALIBER_SPECS` import from shared |
-| `turbo.json` | `out/**` in build outputs | VERIFIED | `"outputs": [".next/**", "!.next/cache/**", "dist/**", "out/**"]` |
+| Artifact                         | Expected                                                             | Status   | Details                                                                                                       |
+| -------------------------------- | -------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------- |
+| `apps/pitchdeck/package.json`    | Name `@ammo-exchange/pitchdeck`, port 3001, `workspace:*` shared dep | VERIFIED | All three present: name, dev script with `--port 3001`, `"@ammo-exchange/shared": "workspace:*"`              |
+| `apps/pitchdeck/next.config.ts`  | `output: "export"`, `transpilePackages`, `extensionAlias`            | VERIFIED | All three present; `images: { unoptimized: true }` also correct                                               |
+| `apps/pitchdeck/app/globals.css` | Hex-only theme with `--color-*: initial`                             | VERIFIED | `--color-*: initial` is first in `@theme inline`; all 13 color variables are hex; no oklch anywhere           |
+| `apps/pitchdeck/app/layout.tsx`  | Root layout with Inter + JetBrains Mono, `RootLayout` export         | VERIFIED | Both fonts imported from `next/font/google`; `RootLayout` default export present; `./globals.css` imported    |
+| `apps/pitchdeck/app/page.tsx`    | Test slide containing "Ammo Exchange" text                           | VERIFIED | Heading renders "Ammo Exchange" in `text-brass`; color validation squares; `CALIBER_SPECS` import from shared |
+| `turbo.json`                     | `out/**` in build outputs                                            | VERIFIED | `"outputs": [".next/**", "!.next/cache/**", "dist/**", "out/**"]`                                             |
 
 ### Key Link Verification
 
-| From | To | Via | Status | Details |
-|------|----|-----|--------|---------|
-| `apps/pitchdeck/next.config.ts` | `@ammo-exchange/shared` | `transpilePackages` + `extensionAlias` | WIRED | `transpilePackages: ["@ammo-exchange/shared"]` present; `config.resolve.extensionAlias = { ".js": [".ts", ".tsx", ".js"] }` present |
-| `apps/pitchdeck/app/globals.css` | `tailwindcss` | `@import "tailwindcss"` | WIRED | Line 1 is `@import "tailwindcss"` |
-| `apps/pitchdeck/package.json` | `turbo.json` | Turborepo workspace discovery | WIRED | Package name `@ammo-exchange/pitchdeck` is registered in pnpm workspace; turbo.json `out/**` caches static export |
+| From                             | To                      | Via                                    | Status | Details                                                                                                                             |
+| -------------------------------- | ----------------------- | -------------------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `apps/pitchdeck/next.config.ts`  | `@ammo-exchange/shared` | `transpilePackages` + `extensionAlias` | WIRED  | `transpilePackages: ["@ammo-exchange/shared"]` present; `config.resolve.extensionAlias = { ".js": [".ts", ".tsx", ".js"] }` present |
+| `apps/pitchdeck/app/globals.css` | `tailwindcss`           | `@import "tailwindcss"`                | WIRED  | Line 1 is `@import "tailwindcss"`                                                                                                   |
+| `apps/pitchdeck/package.json`    | `turbo.json`            | Turborepo workspace discovery          | WIRED  | Package name `@ammo-exchange/pitchdeck` is registered in pnpm workspace; turbo.json `out/**` caches static export                   |
 
 ### Anti-Patterns Found
 

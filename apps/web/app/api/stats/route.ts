@@ -40,7 +40,8 @@ export async function GET() {
       BigInt(0),
     );
     const roundsTokenized = (
-      roundsTokenizedBigInt / BigInt(10) ** BigInt(18)
+      roundsTokenizedBigInt /
+      BigInt(10) ** BigInt(18)
     ).toString();
 
     return Response.json(

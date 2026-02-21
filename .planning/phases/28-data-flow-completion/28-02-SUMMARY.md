@@ -20,7 +20,11 @@ affects: [29-admin-api-hardening, 31-tests]
 # Tech tracking
 tech-stack:
   added: []
-  patterns: [type-aware amount formatting (MINT->USDC divide by 1e6, REDEEM->rounds divide by 1e18)]
+  patterns:
+    [
+      type-aware amount formatting (MINT->USDC divide by 1e6,
+      REDEEM->rounds divide by 1e18),
+    ]
 
 key-files:
   created: []
@@ -63,6 +67,7 @@ completed: 2026-02-21
 - **Files modified:** 10
 
 ## Accomplishments
+
 - Admin components (tables, dialogs, drawer) display usdcAmount for mint and tokenAmount for redeem
 - Portfolio, dashboard, and activity feed show type-appropriate amounts instead of raw coalesced values
 - Redeem flow step 1 persists shipping address to user profile via PATCH /api/users/profile before advancing
@@ -76,6 +81,7 @@ Each task was committed atomically:
 2. **Task 2: Update portfolio, dashboard, activity components and wire redeem shipping persistence** - `2233e38` (feat)
 
 ## Files Created/Modified
+
 - `apps/web/features/admin/finalize-mint-dialog.tsx` - AdminMintOrder interface updated, displays usdcAmount
 - `apps/web/features/admin/finalize-redeem-dialog.tsx` - AdminRedeemOrder interface updated, displays tokenAmount
 - `apps/web/features/admin/mint-orders-table.tsx` - Table cell uses order.usdcAmount
@@ -88,6 +94,7 @@ Each task was committed atomically:
 - `apps/web/features/redeem/redeem-flow.tsx` - PATCH /api/users/profile for shipping persistence
 
 ## Decisions Made
+
 - Activity feed `item.amount` is type-aware: worker stores USDC-wei for MINT and token-wei for REDEEM in ActivityLog.amount, so UI divides by 1e6 or 1e18 respectively
 - Shipping persisted to user profile defaultShipping fields since orderId doesn't exist at step 1
 - Portfolio/dashboard orders now show context-appropriate units (USDC vs rounds) instead of displaying everything as "rounds"
@@ -97,16 +104,20 @@ Each task was committed atomically:
 None - plan executed exactly as written.
 
 ## Issues Encountered
+
 None.
 
 ## User Setup Required
+
 None - no external service configuration required.
 
 ## Next Phase Readiness
+
 - Full data flow from normalized DB fields through APIs to UI is complete
 - All UI components compile with zero type errors
 - Ready for Phase 29 (Admin API Hardening) and Phase 31 (Tests)
 
 ---
-*Phase: 28-data-flow-completion*
-*Completed: 2026-02-21*
+
+_Phase: 28-data-flow-completion_
+_Completed: 2026-02-21_

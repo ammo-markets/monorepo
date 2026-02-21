@@ -15,19 +15,10 @@ export function useDeck(totalSlides: number) {
     [currentSlide, totalSlides],
   );
 
-  const next = useCallback(
-    () => goTo(currentSlide + 1),
-    [currentSlide, goTo],
-  );
-  const prev = useCallback(
-    () => goTo(currentSlide - 1),
-    [currentSlide, goTo],
-  );
+  const next = useCallback(() => goTo(currentSlide + 1), [currentSlide, goTo]);
+  const prev = useCallback(() => goTo(currentSlide - 1), [currentSlide, goTo]);
   const goFirst = useCallback(() => goTo(0), [goTo]);
-  const goLast = useCallback(
-    () => goTo(totalSlides - 1),
-    [goTo, totalSlides],
-  );
+  const goLast = useCallback(() => goTo(totalSlides - 1), [goTo, totalSlides]);
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {

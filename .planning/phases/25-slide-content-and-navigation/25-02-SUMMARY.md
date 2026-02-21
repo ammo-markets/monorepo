@@ -70,6 +70,7 @@ completed: 2026-02-17
 - **Files modified:** 16
 
 ## Accomplishments
+
 - All 13 slide components created with complete investor-ready content
 - SlideVolatility renders interactive Recharts AreaChart with 9mm price history (2018-2025) using hex-only colors
 - SlideHowItWorks displays 4 calibers from CALIBER_SPECS, SlideRegulatory uses RESTRICTED_STATES from shared package
@@ -84,6 +85,7 @@ Each task was committed atomically:
 2. **Task 2: Create slides 8-13 and wire SLIDES barrel export** - `7500811` (feat)
 
 ## Files Created/Modified
+
 - `apps/pitchdeck/components/SlideLayout.tsx` - Reusable slide wrapper with consistent padding and flex layout
 - `apps/pitchdeck/lib/slideData.ts` - Centralized static data constants (price data, market stats, fees, roadmap, team, competitors)
 - `apps/pitchdeck/components/slides/SlideCover.tsx` - Updated with SlideLayout wrapper and enhanced styling
@@ -102,6 +104,7 @@ Each task was committed atomically:
 - `apps/pitchdeck/components/slides/index.ts` - SLIDES barrel export with all 13 components
 
 ## Decisions Made
+
 - SlideLayout is a thin wrapper (flex column, p-12) letting each slide manage its own internal layout
 - All Recharts colors use hex literals directly (no CSS variables) ensuring zero oklch risk
 - Imported CALIBER_SPECS and RESTRICTED_STATES from @ammo-exchange/shared for single-source-of-truth data
@@ -111,12 +114,15 @@ Each task was committed atomically:
 None - plan executed exactly as written.
 
 ## Issues Encountered
+
 None.
 
 ## User Setup Required
+
 None - no external service configuration required.
 
 ## Next Phase Readiness
+
 - All 13 slides complete with investor-ready content
 - Static export builds successfully at 213 kB first load JS
 - Ready for Phase 26 PDF export (html2canvas-pro rendering)
@@ -126,5 +132,6 @@ None - no external service configuration required.
 All 16 files verified on disk. Both task commits (2168b74, 7500811) found in git log.
 
 ---
-*Phase: 25-slide-content-and-navigation*
-*Completed: 2026-02-17*
+
+_Phase: 25-slide-content-and-navigation_
+_Completed: 2026-02-17_

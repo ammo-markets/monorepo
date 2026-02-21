@@ -5,12 +5,17 @@ import { PERSONA_DATA } from "@/lib/slideData";
 export function SlidePersonas() {
   return (
     <SlideLayout>
-      <h2 className="mb-2 font-display text-5xl font-bold uppercase tracking-tight text-text">Who Trades This</h2>
+      <h2 className="mb-2 font-display text-5xl font-bold uppercase tracking-tight text-text">
+        Who Trades This
+      </h2>
       <p className="mb-10 text-lg text-text-muted">
         Three beachhead users who need ammunition price exposure today
       </p>
 
-      <StaggerContainer preset="magazine-load" className="grid flex-1 grid-cols-3 gap-8">
+      <StaggerContainer
+        preset="magazine-load"
+        className="grid flex-1 grid-cols-3 gap-8"
+      >
         {PERSONA_DATA.map((persona) => (
           <StaggerItem key={persona.title}>
             <div className="card-hover flex h-full flex-col rounded-none border border-surface-elevated bg-surface p-8">

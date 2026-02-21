@@ -42,7 +42,10 @@ import { CONTRACT_ADDRESSES } from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
 
 /* ── Build CaliberDetailData from API market data ── */
-function buildCaliberDetail(caliber: Caliber, market: MarketCaliberFromAPI): CaliberDetailData {
+function buildCaliberDetail(
+  caliber: Caliber,
+  market: MarketCaliberFromAPI,
+): CaliberDetailData {
   const spec = CALIBER_SPECS[caliber];
   return {
     id: caliber,
@@ -57,7 +60,9 @@ function buildCaliberDetail(caliber: Caliber, market: MarketCaliberFromAPI): Cal
   };
 }
 
-function buildAllCaliberDetails(marketData: MarketCaliberFromAPI[]): Record<Caliber, CaliberDetailData> {
+function buildAllCaliberDetails(
+  marketData: MarketCaliberFromAPI[],
+): Record<Caliber, CaliberDetailData> {
   const result = {} as Record<Caliber, CaliberDetailData>;
   for (const m of marketData) {
     result[m.caliber] = buildCaliberDetail(m.caliber, m);
@@ -187,7 +192,13 @@ function PrimaryButton({
 }
 
 /* ── Ghost button helper ── */
-function GhostButton({ onClick, children }: { onClick: () => void; children: ReactNode }) {
+function GhostButton({
+  onClick,
+  children,
+}: {
+  onClick: () => void;
+  children: ReactNode;
+}) {
   return (
     <button
       type="button"
@@ -219,7 +230,10 @@ function FormField({
       >
         {label}
         {!required && (
-          <span className="normal-case tracking-normal" style={{ color: "var(--text-muted)", opacity: 0.6 }}>
+          <span
+            className="normal-case tracking-normal"
+            style={{ color: "var(--text-muted)", opacity: 0.6 }}
+          >
             Optional
           </span>
         )}
@@ -260,7 +274,10 @@ function StepSelectCaliberAmount({
   isConnected: boolean;
   onConnect: () => void;
 }) {
-  const caliber = selectedCaliber && caliberDetailsMap ? caliberDetailsMap[selectedCaliber] : null;
+  const caliber =
+    selectedCaliber && caliberDetailsMap
+      ? caliberDetailsMap[selectedCaliber]
+      : null;
   const rounds = Number.parseInt(roundsAmount) || 0;
   const fee = Math.ceil(rounds * 0.015);
   const netRounds = rounds - fee;
@@ -286,10 +303,16 @@ function StepSelectCaliberAmount({
     <div>
       {!isEmbedded && (
         <>
-          <h2 className="mb-1 font-display text-2xl font-bold uppercase" style={{ color: "var(--text-primary)" }}>
+          <h2
+            className="mb-1 font-display text-2xl font-bold uppercase"
+            style={{ color: "var(--text-primary)" }}
+          >
             Select Caliber & Amount
           </h2>
-          <p className="mb-6 text-sm" style={{ color: "var(--text-secondary)" }}>
+          <p
+            className="mb-6 text-sm"
+            style={{ color: "var(--text-secondary)" }}
+          >
             Choose the token to redeem for physical ammunition delivery.
           </p>
 
@@ -302,7 +325,9 @@ function StepSelectCaliberAmount({
               const displayBalance = !isConnected
                 ? "—"
                 : calBalance !== undefined
-                  ? Math.floor(Number(formatUnits(calBalance, 18))).toLocaleString("en-US")
+                  ? Math.floor(
+                      Number(formatUnits(calBalance, 18)),
+                    ).toLocaleString("en-US")
                   : "...";
               return (
                 <button
@@ -320,28 +345,47 @@ function StepSelectCaliberAmount({
                       className="absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded-full"
                       style={{ backgroundColor: "var(--brass)" }}
                     >
-                      <Check size={12} strokeWidth={3} style={{ color: "var(--bg-primary)" }} />
+                      <Check
+                        size={12}
+                        strokeWidth={3}
+                        style={{ color: "var(--bg-primary)" }}
+                      />
                     </span>
                   )}
                   <div className="flex items-center gap-3">
                     <Icon size={40} />
                     <div>
-                      <div className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>
+                      <div
+                        className="text-sm font-bold"
+                        style={{ color: "var(--text-primary)" }}
+                      >
                         {cal.symbol}
                       </div>
-                      <div className="text-xs" style={{ color: "var(--text-secondary)" }}>
+                      <div
+                        className="text-xs"
+                        style={{ color: "var(--text-secondary)" }}
+                      >
                         {cal.name}
                       </div>
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs" style={{ color: "var(--text-muted)" }}>
+                    <span
+                      className="text-xs"
+                      style={{ color: "var(--text-muted)" }}
+                    >
                       Balance:{" "}
-                      <span className="font-mono font-medium" style={{ color: "var(--text-secondary)" }}>
+                      <span
+                        className="font-mono font-medium"
+                        style={{ color: "var(--text-secondary)" }}
+                      >
                         {displayBalance}
                       </span>
                     </span>
-                    <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>
+                    <span
+                      className="text-[11px]"
+                      style={{ color: "var(--text-muted)" }}
+                    >
                       Min: {cal.minMint} rds
                     </span>
                   </div>
@@ -354,10 +398,16 @@ function StepSelectCaliberAmount({
 
       {isEmbedded && (
         <>
-          <h2 className="mb-1 font-display text-2xl font-bold uppercase" style={{ color: "var(--text-primary)" }}>
+          <h2
+            className="mb-1 font-display text-2xl font-bold uppercase"
+            style={{ color: "var(--text-primary)" }}
+          >
             Enter Amount
           </h2>
-          <p className="mb-6 text-sm" style={{ color: "var(--text-secondary)" }}>
+          <p
+            className="mb-6 text-sm"
+            style={{ color: "var(--text-secondary)" }}
+          >
             Enter the number of rounds to redeem.
           </p>
         </>
@@ -399,7 +449,10 @@ function StepSelectCaliberAmount({
                   const Icon = caliberIcons[caliber.id];
                   return <Icon size={22} />;
                 })()}
-                <span className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
+                <span
+                  className="text-sm font-medium"
+                  style={{ color: "var(--text-secondary)" }}
+                >
                   {caliber.symbol}
                 </span>
               </div>
@@ -417,16 +470,22 @@ function StepSelectCaliberAmount({
                   </p>
                 )}
                 {isValid && (
-                  <p className="flex items-center gap-1 text-xs" style={{ color: "var(--green)" }}>
+                  <p
+                    className="flex items-center gap-1 text-xs"
+                    style={{ color: "var(--green)" }}
+                  >
                     <Check size={12} /> Valid amount
                   </p>
                 )}
               </div>
               <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-                Balance: {Math.floor(balance).toLocaleString("en-US")} {caliber.symbol}{" "}
+                Balance: {Math.floor(balance).toLocaleString("en-US")}{" "}
+                {caliber.symbol}{" "}
                 <button
                   type="button"
-                  onClick={() => setRoundsAmount(Math.floor(balance).toString())}
+                  onClick={() =>
+                    setRoundsAmount(Math.floor(balance).toString())
+                  }
                   className="ml-1 font-semibold uppercase transition-none"
                   style={{ color: "var(--brass)" }}
                 >
@@ -447,29 +506,53 @@ function StepSelectCaliberAmount({
             >
               <div className="flex flex-col gap-2.5 text-sm">
                 <div className="flex justify-between">
-                  <span style={{ color: "var(--text-muted)" }}>Tokens to burn</span>
-                  <span className="font-mono tabular-nums" style={{ color: "var(--text-secondary)" }}>
+                  <span style={{ color: "var(--text-muted)" }}>
+                    Tokens to burn
+                  </span>
+                  <span
+                    className="font-mono tabular-nums"
+                    style={{ color: "var(--text-secondary)" }}
+                  >
                     {rounds.toLocaleString("en-US")} {caliber.symbol}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span style={{ color: "var(--text-muted)" }}>Redeem fee (1.5%)</span>
-                  <span className="font-mono tabular-nums" style={{ color: "var(--text-secondary)" }}>
+                  <span style={{ color: "var(--text-muted)" }}>
+                    Redeem fee (1.5%)
+                  </span>
+                  <span
+                    className="font-mono tabular-nums"
+                    style={{ color: "var(--text-secondary)" }}
+                  >
                     -{fee} rounds
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span style={{ color: "var(--text-muted)" }}>Net rounds for shipment</span>
-                  <span className="font-mono font-medium tabular-nums" style={{ color: "var(--text-primary)" }}>
+                  <span style={{ color: "var(--text-muted)" }}>
+                    Net rounds for shipment
+                  </span>
+                  <span
+                    className="font-mono font-medium tabular-nums"
+                    style={{ color: "var(--text-primary)" }}
+                  >
                     {netRounds.toLocaleString("en-US")} rounds
                   </span>
                 </div>
-                <div className="my-0.5" style={{ borderTop: "1px solid var(--border-default)" }} />
+                <div
+                  className="my-0.5"
+                  style={{ borderTop: "1px solid var(--border-default)" }}
+                />
                 <div className="flex justify-between">
-                  <span className="font-medium" style={{ color: "var(--text-primary)" }}>
+                  <span
+                    className="font-medium"
+                    style={{ color: "var(--text-primary)" }}
+                  >
                     Estimated value
                   </span>
-                  <span className="font-mono font-bold tabular-nums" style={{ color: "var(--brass)" }}>
+                  <span
+                    className="font-mono font-bold tabular-nums"
+                    style={{ color: "var(--brass)" }}
+                  >
                     ~${estValue.toFixed(2)}
                   </span>
                 </div>
@@ -521,7 +604,8 @@ function StepShipping({
   const [saveError, setSaveError] = useState<string | null>(null);
 
   const isRestricted = RESTRICTED_STATES.includes(address.state);
-  const restrictedStateName = US_STATES.find((s) => s.value === address.state)?.label ?? address.state;
+  const restrictedStateName =
+    US_STATES.find((s) => s.value === address.state)?.label ?? address.state;
 
   const zipValid = /^\d{5}$/.test(address.zip);
   const formComplete =
@@ -543,13 +627,17 @@ function StepShipping({
     color: "var(--text-primary)",
   });
 
-  const inputClass = "w-full px-3.5 py-2.5 text-sm font-medium outline-none transition-none placeholder:font-normal";
+  const inputClass =
+    "w-full px-3.5 py-2.5 text-sm font-medium outline-none transition-none placeholder:font-normal";
 
   return (
     <div>
       <BackButton onClick={onBack} />
 
-      <h2 className="mb-1 font-display text-2xl font-bold uppercase" style={{ color: "var(--text-primary)" }}>
+      <h2
+        className="mb-1 font-display text-2xl font-bold uppercase"
+        style={{ color: "var(--text-primary)" }}
+      >
         Shipping Information
       </h2>
       <p className="mb-6 text-sm" style={{ color: "var(--text-secondary)" }}>
@@ -565,13 +653,24 @@ function StepShipping({
             borderLeft: "3px solid var(--red)",
           }}
         >
-          <AlertTriangle size={18} className="mt-0.5 shrink-0" style={{ color: "var(--red)" }} />
+          <AlertTriangle
+            size={18}
+            className="mt-0.5 shrink-0"
+            style={{ color: "var(--red)" }}
+          />
           <div>
-            <p className="font-mono text-sm font-bold uppercase tracking-widest" style={{ color: "var(--red)" }}>
+            <p
+              className="font-mono text-sm font-bold uppercase tracking-widest"
+              style={{ color: "var(--red)" }}
+            >
               Direct shipping is not available in {restrictedStateName}.
             </p>
-            <p className="mt-1 text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-              Ammunition must be shipped to a licensed dealer. Contact support for dealer pickup options.
+            <p
+              className="mt-1 text-xs leading-relaxed"
+              style={{ color: "var(--text-secondary)" }}
+            >
+              Ammunition must be shipped to a licensed dealer. Contact support
+              for dealer pickup options.
             </p>
           </div>
         </div>
@@ -583,9 +682,17 @@ function StepShipping({
             borderLeft: "3px solid var(--amber)",
           }}
         >
-          <Truck size={18} className="mt-0.5 shrink-0" style={{ color: "var(--amber)" }} />
-          <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-            Physical ammunition ships via UPS Ground to eligible U.S. addresses only.
+          <Truck
+            size={18}
+            className="mt-0.5 shrink-0"
+            style={{ color: "var(--amber)" }}
+          />
+          <p
+            className="text-sm leading-relaxed"
+            style={{ color: "var(--text-secondary)" }}
+          >
+            Physical ammunition ships via UPS Ground to eligible U.S. addresses
+            only.
           </p>
         </div>
       )}
@@ -644,7 +751,10 @@ function StepShipping({
               className={`${inputClass} appearance-none cursor-pointer`}
               style={{
                 ...inputStyle(address.state !== ""),
-                color: address.state === "" ? "var(--text-muted)" : "var(--text-primary)",
+                color:
+                  address.state === ""
+                    ? "var(--text-muted)"
+                    : "var(--text-primary)",
               }}
             >
               <option value="">Select</option>
@@ -659,7 +769,9 @@ function StepShipping({
           <FormField
             label="ZIP Code"
             required
-            error={address.zip !== "" && !zipValid ? "Enter 5-digit ZIP" : undefined}
+            error={
+              address.zip !== "" && !zipValid ? "Enter 5-digit ZIP" : undefined
+            }
           >
             <input
               type="text"
@@ -694,8 +806,9 @@ function StepShipping({
           className="cursor-pointer text-xs leading-relaxed"
           style={{ color: "var(--text-secondary)" }}
         >
-          I confirm I am 21 years or older (handgun ammunition) / 18 years or older (rifle/shotgun ammunition) and
-          legally eligible to receive ammunition in my state.
+          I confirm I am 21 years or older (handgun ammunition) / 18 years or
+          older (rifle/shotgun ammunition) and legally eligible to receive
+          ammunition in my state.
         </label>
       </div>
 
@@ -747,7 +860,14 @@ function StepShipping({
 /* Shield/ID card SVG illustration */
 function ShieldIdIcon() {
   return (
-    <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <svg
+      width="64"
+      height="64"
+      viewBox="0 0 64 64"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
       {/* Shield outline */}
       <path
         d="M32 4L8 16V32C8 46.36 18.56 59.16 32 62C45.44 59.16 56 46.36 56 32V16L32 4Z"
@@ -756,11 +876,35 @@ function ShieldIdIcon() {
         fill="var(--brass-muted)"
       />
       {/* ID card inside */}
-      <rect x="18" y="22" width="28" height="20" rx="3" stroke="var(--brass)" strokeWidth="1.5" fill="none" />
+      <rect
+        x="18"
+        y="22"
+        width="28"
+        height="20"
+        rx="3"
+        stroke="var(--brass)"
+        strokeWidth="1.5"
+        fill="none"
+      />
       {/* Avatar circle */}
-      <circle cx="26" cy="30" r="3" stroke="var(--brass)" strokeWidth="1.2" fill="none" />
+      <circle
+        cx="26"
+        cy="30"
+        r="3"
+        stroke="var(--brass)"
+        strokeWidth="1.2"
+        fill="none"
+      />
       {/* ID text lines */}
-      <line x1="33" y1="28" x2="42" y2="28" stroke="var(--brass)" strokeWidth="1.5" strokeLinecap="round" />
+      <line
+        x1="33"
+        y1="28"
+        x2="42"
+        y2="28"
+        stroke="var(--brass)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
       <line
         x1="33"
         y1="32"
@@ -772,7 +916,13 @@ function ShieldIdIcon() {
         opacity="0.6"
       />
       {/* Check on shield */}
-      <path d="M27 37L30 40L37 33" stroke="var(--brass)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d="M27 37L30 40L37 33"
+        stroke="var(--brass)"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
@@ -807,14 +957,25 @@ function StepKyc({
         <BackButton onClick={onBack} />
         <div className="flex flex-col items-center text-center">
           <ShieldIdIcon />
-          <h2 className="mt-5 mb-2 font-display text-2xl font-bold uppercase" style={{ color: "var(--text-primary)" }}>
+          <h2
+            className="mt-5 mb-2 font-display text-2xl font-bold uppercase"
+            style={{ color: "var(--text-primary)" }}
+          >
             Identity Verification Required
           </h2>
-          <p className="mb-6 max-w-sm text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-            Federal law requires identity verification for physical ammunition shipment. This is a one-time process.
+          <p
+            className="mb-6 max-w-sm text-sm leading-relaxed"
+            style={{ color: "var(--text-secondary)" }}
+          >
+            Federal law requires identity verification for physical ammunition
+            shipment. This is a one-time process.
           </p>
 
-          <KycForm onSubmit={onSubmit} isSubmitting={kycLoading} prefill={kycPrefill} />
+          <KycForm
+            onSubmit={onSubmit}
+            isSubmitting={kycLoading}
+            prefill={kycPrefill}
+          />
 
           <button
             type="button"
@@ -847,14 +1008,24 @@ function StepKyc({
                 border: "2px solid var(--amber)",
               }}
             >
-              <Loader2 size={24} className="animate-spin" style={{ color: "var(--amber)" }} />
+              <Loader2
+                size={24}
+                className="animate-spin"
+                style={{ color: "var(--amber)" }}
+              />
             </span>
           </div>
 
-          <h2 className="mb-2 font-display text-2xl font-bold uppercase" style={{ color: "var(--text-primary)" }}>
+          <h2
+            className="mb-2 font-display text-2xl font-bold uppercase"
+            style={{ color: "var(--text-primary)" }}
+          >
             Verification In Progress
           </h2>
-          <p className="mb-6 max-w-sm text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+          <p
+            className="mb-6 max-w-sm text-sm leading-relaxed"
+            style={{ color: "var(--text-secondary)" }}
+          >
             {
               "Your identity is being reviewed. This usually takes a few minutes to a few hours. We'll notify you when approved. You can safely leave this page."
             }
@@ -869,9 +1040,17 @@ function StepKyc({
             }}
           >
             <div className="flex items-start gap-3">
-              <Info size={16} className="mt-0.5 shrink-0" style={{ color: "var(--text-muted)" }} />
-              <p className="text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                Your order has been saved as a draft. You can access it anytime from your portfolio at /portfolio.
+              <Info
+                size={16}
+                className="mt-0.5 shrink-0"
+                style={{ color: "var(--text-muted)" }}
+              />
+              <p
+                className="text-xs leading-relaxed"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                Your order has been saved as a draft. You can access it anytime
+                from your portfolio at /portfolio.
               </p>
             </div>
           </div>
@@ -935,13 +1114,17 @@ function StepReview({
   const rounds = Number.parseInt(roundsAmount) || 0;
   const fee = Math.ceil(rounds * 0.015);
   const netRounds = rounds - fee;
-  const stateName = US_STATES.find((s) => s.value === address.state)?.label ?? address.state;
+  const stateName =
+    US_STATES.find((s) => s.value === address.state)?.label ?? address.state;
 
   return (
     <div>
       <BackButton onClick={onBack} />
 
-      <h2 className="mb-6 font-display text-2xl font-bold uppercase" style={{ color: "var(--text-primary)" }}>
+      <h2
+        className="mb-6 font-display text-2xl font-bold uppercase"
+        style={{ color: "var(--text-primary)" }}
+      >
         Review Your Redemption
       </h2>
 
@@ -958,50 +1141,88 @@ function StepReview({
           <div className="flex items-center gap-3">
             <Icon size={32} />
             <div>
-              <div className="font-semibold" style={{ color: "var(--text-primary)" }}>
+              <div
+                className="font-semibold"
+                style={{ color: "var(--text-primary)" }}
+              >
                 {caliber.symbol} -- {caliber.name}
               </div>
-              <div className="text-xs" style={{ color: "var(--text-secondary)" }}>
+              <div
+                className="text-xs"
+                style={{ color: "var(--text-secondary)" }}
+              >
                 {caliber.specLine}
               </div>
             </div>
           </div>
 
-          <div className="my-0.5" style={{ borderTop: "1px solid var(--border-default)" }} />
+          <div
+            className="my-0.5"
+            style={{ borderTop: "1px solid var(--border-default)" }}
+          />
 
           <div className="flex flex-col gap-3 text-sm">
             <div className="flex justify-between">
               <span style={{ color: "var(--text-muted)" }}>Tokens to burn</span>
-              <span className="font-mono font-medium tabular-nums" style={{ color: "var(--text-primary)" }}>
+              <span
+                className="font-mono font-medium tabular-nums"
+                style={{ color: "var(--text-primary)" }}
+              >
                 {rounds.toLocaleString("en-US")} {caliber.symbol}
               </span>
             </div>
             <div className="flex justify-between">
-              <span style={{ color: "var(--text-muted)" }}>Redeem fee (1.5%)</span>
-              <span className="font-mono tabular-nums" style={{ color: "var(--text-secondary)" }}>
+              <span style={{ color: "var(--text-muted)" }}>
+                Redeem fee (1.5%)
+              </span>
+              <span
+                className="font-mono tabular-nums"
+                style={{ color: "var(--text-secondary)" }}
+              >
                 {fee} rounds
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="font-medium" style={{ color: "var(--text-primary)" }}>
+              <span
+                className="font-medium"
+                style={{ color: "var(--text-primary)" }}
+              >
                 Net rounds shipped
               </span>
-              <span className="font-mono font-bold tabular-nums" style={{ color: "var(--brass)" }}>
+              <span
+                className="font-mono font-bold tabular-nums"
+                style={{ color: "var(--brass)" }}
+              >
                 {netRounds.toLocaleString("en-US")} rounds
               </span>
             </div>
 
-            <div className="my-0.5" style={{ borderTop: "1px solid var(--border-default)" }} />
+            <div
+              className="my-0.5"
+              style={{ borderTop: "1px solid var(--border-default)" }}
+            />
 
             {/* Ship to */}
             <div className="flex items-start justify-between">
-              <span className="flex items-center gap-1.5" style={{ color: "var(--text-muted)" }}>
+              <span
+                className="flex items-center gap-1.5"
+                style={{ color: "var(--text-muted)" }}
+              >
                 <MapPin size={14} /> Ship to
               </span>
-              <div className="text-right text-xs leading-relaxed" style={{ color: "var(--text-primary)" }}>
+              <div
+                className="text-right text-xs leading-relaxed"
+                style={{ color: "var(--text-primary)" }}
+              >
                 <div className="font-medium">{address.fullName}</div>
-                <div style={{ color: "var(--text-secondary)" }}>{address.address1}</div>
-                {address.address2 && <div style={{ color: "var(--text-secondary)" }}>{address.address2}</div>}
+                <div style={{ color: "var(--text-secondary)" }}>
+                  {address.address1}
+                </div>
+                {address.address2 && (
+                  <div style={{ color: "var(--text-secondary)" }}>
+                    {address.address2}
+                  </div>
+                )}
                 <div style={{ color: "var(--text-secondary)" }}>
                   {address.city}, {address.state} {address.zip}
                 </div>
@@ -1009,10 +1230,16 @@ function StepReview({
             </div>
 
             <div className="flex items-center justify-between">
-              <span className="flex items-center gap-1.5" style={{ color: "var(--text-muted)" }}>
+              <span
+                className="flex items-center gap-1.5"
+                style={{ color: "var(--text-muted)" }}
+              >
                 <Truck size={14} /> Est. shipping
               </span>
-              <span className="font-medium" style={{ color: "var(--text-secondary)" }}>
+              <span
+                className="font-medium"
+                style={{ color: "var(--text-secondary)" }}
+              >
                 5-10 business days
               </span>
             </div>
@@ -1034,13 +1261,17 @@ function StepReview({
           borderLeft: "3px solid var(--red)",
         }}
       >
-        <p className="text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+        <p
+          className="text-xs leading-relaxed"
+          style={{ color: "var(--text-secondary)" }}
+        >
           Once confirmed,{" "}
           <strong style={{ color: "var(--text-primary)" }}>
-            {rounds.toLocaleString("en-US")} {caliber.symbol} tokens will be permanently burned
+            {rounds.toLocaleString("en-US")} {caliber.symbol} tokens will be
+            permanently burned
           </strong>{" "}
-          and cannot be recovered. Physical ammunition will be shipped to the address above. Please verify all details
-          before confirming.
+          and cannot be recovered. Physical ammunition will be shipped to the
+          address above. Please verify all details before confirming.
         </p>
       </div>
 
@@ -1092,9 +1323,17 @@ function StepReview({
               Approve Token Spending
             </button>
             <div className="mt-2 flex items-start gap-2 px-1">
-              <Info size={14} className="mt-0.5 shrink-0" style={{ color: "var(--text-muted)" }} />
-              <p className="text-[11px] leading-relaxed" style={{ color: "var(--text-muted)" }}>
-                This allows the smart contract to burn your tokens. You only need to do this once per caliber.
+              <Info
+                size={14}
+                className="mt-0.5 shrink-0"
+                style={{ color: "var(--text-muted)" }}
+              />
+              <p
+                className="text-[11px] leading-relaxed"
+                style={{ color: "var(--text-muted)" }}
+              >
+                This allows the smart contract to burn your tokens. You only
+                need to do this once per caliber.
               </p>
             </div>
           </div>
@@ -1197,7 +1436,10 @@ function StepConfirmation({
         >
           <XCircle size={32} style={{ color: "var(--red)" }} />
         </div>
-        <h2 className="mb-2 font-display text-2xl font-bold uppercase" style={{ color: "var(--red)" }}>
+        <h2
+          className="mb-2 font-display text-2xl font-bold uppercase"
+          style={{ color: "var(--red)" }}
+        >
           Transaction Failed
         </h2>
         <p className="mb-6 text-sm" style={{ color: "var(--text-secondary)" }}>
@@ -1221,11 +1463,16 @@ function StepConfirmation({
         <Check size={32} strokeWidth={3} style={{ color: "var(--brass)" }} />
       </div>
 
-      <h2 className="mb-1 font-display text-2xl font-bold uppercase" style={{ color: "var(--brass)" }}>
+      <h2
+        className="mb-1 font-display text-2xl font-bold uppercase"
+        style={{ color: "var(--brass)" }}
+      >
         Redemption Order Submitted!
       </h2>
       <p className="mb-6 text-sm" style={{ color: "var(--text-secondary)" }}>
-        {"Your tokens have been burned. You'll receive a tracking number via email once your order ships."}
+        {
+          "Your tokens have been burned. You'll receive a tracking number via email once your order ships."
+        }
       </p>
 
       {/* Order details card */}
@@ -1237,13 +1484,22 @@ function StepConfirmation({
         }}
       >
         <div className="flex flex-col gap-3 text-sm">
-          <div className="flex items-center gap-3 pb-3" style={{ borderBottom: "1px solid var(--border-default)" }}>
+          <div
+            className="flex items-center gap-3 pb-3"
+            style={{ borderBottom: "1px solid var(--border-default)" }}
+          >
             <Icon size={28} />
             <div>
-              <div className="font-semibold" style={{ color: "var(--text-primary)" }}>
+              <div
+                className="font-semibold"
+                style={{ color: "var(--text-primary)" }}
+              >
                 {netRounds.toLocaleString("en-US")} rounds shipping
               </div>
-              <div className="text-xs" style={{ color: "var(--text-secondary)" }}>
+              <div
+                className="text-xs"
+                style={{ color: "var(--text-secondary)" }}
+              >
                 {rounds.toLocaleString("en-US")} {caliber.symbol} burned
               </div>
             </div>
@@ -1251,7 +1507,10 @@ function StepConfirmation({
 
           <div className="flex justify-between">
             <span style={{ color: "var(--text-muted)" }}>Order ID</span>
-            <span className="font-mono text-xs font-medium" style={{ color: "var(--text-secondary)" }}>
+            <span
+              className="font-mono text-xs font-medium"
+              style={{ color: "var(--text-secondary)" }}
+            >
               Pending indexing
             </span>
           </div>
@@ -1269,26 +1528,40 @@ function StepConfirmation({
                 <ExternalLink size={12} />
               </a>
             ) : (
-              <span className="font-mono text-xs font-medium" style={{ color: "var(--text-muted)" }}>
+              <span
+                className="font-mono text-xs font-medium"
+                style={{ color: "var(--text-muted)" }}
+              >
                 --
               </span>
             )}
           </div>
           <div className="flex justify-between">
             <span style={{ color: "var(--text-muted)" }}>Tokens burned</span>
-            <span className="font-mono text-xs font-medium" style={{ color: "var(--text-primary)" }}>
+            <span
+              className="font-mono text-xs font-medium"
+              style={{ color: "var(--text-primary)" }}
+            >
               {rounds.toLocaleString("en-US")} {caliber.symbol}
             </span>
           </div>
           <div className="flex justify-between">
             <span style={{ color: "var(--text-muted)" }}>Rounds shipping</span>
-            <span className="font-mono text-xs font-medium" style={{ color: "var(--text-primary)" }}>
+            <span
+              className="font-mono text-xs font-medium"
+              style={{ color: "var(--text-primary)" }}
+            >
               {netRounds.toLocaleString("en-US")}
             </span>
           </div>
           <div className="flex justify-between">
-            <span style={{ color: "var(--text-muted)" }}>Estimated delivery</span>
-            <span className="font-medium" style={{ color: "var(--text-primary)" }}>
+            <span style={{ color: "var(--text-muted)" }}>
+              Estimated delivery
+            </span>
+            <span
+              className="font-medium"
+              style={{ color: "var(--text-primary)" }}
+            >
               5-10 business days
             </span>
           </div>
@@ -1318,12 +1591,19 @@ function StepConfirmation({
 /* ======================================================================
    MAIN ORCHESTRATOR
    ====================================================================== */
-export function RedeemFlow({ selectedCaliber: caliberFromProp }: { selectedCaliber?: Caliber }) {
+export function RedeemFlow({
+  selectedCaliber: caliberFromProp,
+}: {
+  selectedCaliber?: Caliber;
+}) {
   const searchParams = useSearchParams();
-  const preselected = caliberFromProp ?? (searchParams.get("caliber")?.toUpperCase() as Caliber | null);
+  const preselected =
+    caliberFromProp ??
+    (searchParams.get("caliber")?.toUpperCase() as Caliber | null);
   const isEmbedded = preselected !== null;
 
-  const { data: marketCalibers = [], isLoading: marketLoading } = useMarketData();
+  const { data: marketCalibers = [], isLoading: marketLoading } =
+    useMarketData();
 
   const caliberDetailsMap = useMemo(() => {
     if (marketCalibers.length === 0) return null;
@@ -1347,7 +1627,10 @@ export function RedeemFlow({ selectedCaliber: caliberFromProp }: { selectedCalib
   });
   const [ageVerified, setAgeVerified] = useState(false);
 
-  const caliber = selectedCaliber && caliberDetailsMap ? caliberDetailsMap[selectedCaliber] : null;
+  const caliber =
+    selectedCaliber && caliberDetailsMap
+      ? caliberDetailsMap[selectedCaliber]
+      : null;
 
   // ── Real hooks ──
   const activeCaliber: Caliber = selectedCaliber ?? "9MM";
@@ -1363,7 +1646,12 @@ export function RedeemFlow({ selectedCaliber: caliberFromProp }: { selectedCalib
   const { mutateAsync: submitKyc, isPending: kycSubmitting } = useKycSubmit();
   // Show KYC prompt upfront for unverified users once data loads
   useEffect(() => {
-    if (wallet.isConnected && !kycLoading && kycData && (kycStatus === "NONE" || kycStatus === "REJECTED")) {
+    if (
+      wallet.isConnected &&
+      !kycLoading &&
+      kycData &&
+      (kycStatus === "NONE" || kycStatus === "REJECTED")
+    ) {
       setShowKycPrompt(true);
     }
   }, [wallet.isConnected, kycLoading, kycData, kycStatus]);
@@ -1377,7 +1665,10 @@ export function RedeemFlow({ selectedCaliber: caliberFromProp }: { selectedCalib
     if (redeemTx.isRedeemConfirmed) return "confirmed";
     if (redeemTx.isRedeemConfirming) return "redeem-confirming";
     if (redeemTx.isRedeemPending) return "redeeming";
-    if (allowance.hasEnoughAllowance(parseTokenAmount(roundsAmount || "0")) || redeemTx.isApproveConfirmed)
+    if (
+      allowance.hasEnoughAllowance(parseTokenAmount(roundsAmount || "0")) ||
+      redeemTx.isApproveConfirmed
+    )
       return "approved";
     if (redeemTx.isApproveConfirming) return "approve-confirming";
     if (redeemTx.isApprovePending) return "approving";
@@ -1396,7 +1687,9 @@ export function RedeemFlow({ selectedCaliber: caliberFromProp }: { selectedCalib
     roundsAmount,
   ]);
 
-  const errorMessage = parseContractError(redeemTx.approveError || redeemTx.redeemError);
+  const errorMessage = parseContractError(
+    redeemTx.approveError || redeemTx.redeemError,
+  );
 
   // Check if user already has enough allowance (skip approve step)
   const hasEnoughAllowance = useMemo(() => {
@@ -1492,14 +1785,25 @@ export function RedeemFlow({ selectedCaliber: caliberFromProp }: { selectedCalib
           }}
         >
           <div className="flex gap-3">
-            <Shield size={20} className="mt-0.5 shrink-0" style={{ color: "var(--amber)" }} />
+            <Shield
+              size={20}
+              className="mt-0.5 shrink-0"
+              style={{ color: "var(--amber)" }}
+            />
             <div className="flex-1">
-              <h3 className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>
+              <h3
+                className="text-sm font-bold"
+                style={{ color: "var(--text-primary)" }}
+              >
                 Identity Verification Required
               </h3>
-              <p className="mt-1.5 text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                You must complete KYC verification before redeeming tokens for physical delivery. This is a one-time
-                process required by federal law.
+              <p
+                className="mt-1.5 text-xs leading-relaxed"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                You must complete KYC verification before redeeming tokens for
+                physical delivery. This is a one-time process required by
+                federal law.
               </p>
               <div className="mt-4 flex flex-wrap gap-3">
                 <a
