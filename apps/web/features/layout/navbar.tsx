@@ -34,20 +34,16 @@ export function Navbar() {
 
   // Network badge label and status dot color
   const networkLabel = "Avalanche Fuji";
-  const dotColor =
-    isConnected && !isReconnecting && isWrongNetwork
-      ? "var(--amber)"
-      : "var(--green)";
+  const dotColor = isConnected && !isReconnecting && isWrongNetwork ? "var(--amber)" : "var(--green)";
 
   return (
     <header
-      className="sticky top-0 z-50 w-full backdrop-blur-xl"
+      className="sticky top-0 z-50 w-full backdrop-blur-xl border-b border-border-default"
       style={{
         backgroundColor: "rgba(10, 10, 15, 0.85)",
-        borderBottom: "1px solid var(--border-default)",
       }}
     >
-      <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 lg:px-8">
+      <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 lg:px-12">
         {/* Mobile hamburger */}
         <button
           type="button"
@@ -60,7 +56,7 @@ export function Navbar() {
         </button>
 
         {/* Logo */}
-        <div className="flex-shrink-0">
+        <div className="shrink-0">
           <AmmoLogo />
         </div>
 
@@ -89,20 +85,11 @@ export function Navbar() {
             }}
           >
             {/* Avalanche logo simplified */}
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 14 14"
-              fill="none"
-              aria-hidden="true"
-            >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
               <path d="M7 1L13 12H1L7 1Z" fill="#E84142" />
             </svg>
             <span>{networkLabel}</span>
-            <span
-              className="h-1.5 w-1.5 rounded-full"
-              style={{ backgroundColor: dotColor }}
-            />
+            <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: dotColor }} />
           </div>
 
           {/* Wallet button */}
@@ -139,20 +126,11 @@ export function Navbar() {
                 color: "var(--text-muted)",
               }}
             >
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 14 14"
-                fill="none"
-                aria-hidden="true"
-              >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
                 <path d="M7 1L13 12H1L7 1Z" fill="#E84142" />
               </svg>
               <span>{networkLabel}</span>
-              <span
-                className="h-1.5 w-1.5 rounded-full"
-                style={{ backgroundColor: dotColor }}
-              />
+              <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: dotColor }} />
             </div>
           </div>
         </div>

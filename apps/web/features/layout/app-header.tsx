@@ -15,14 +15,7 @@ export function AppHeader() {
 
   return (
     <header
-      className="fixed top-0 right-0 left-0 z-30 flex h-14 items-center justify-between px-4 lg:left-60"
-      style={{
-        backgroundColor:
-          "color-mix(in srgb, var(--bg-secondary) 80%, transparent)",
-        borderBottom: "1px solid var(--border-default)",
-        backdropFilter: "blur(12px)",
-        WebkitBackdropFilter: "blur(12px)",
-      }}
+      className="fixed top-0 right-0 left-0 z-30 flex h-16 items-center justify-between border-b border-border-default bg-ax-secondary lg:left-60 px-4 sm:px-6"
     >
       {/* Mobile: show logo (sidebar is hidden). Desktop: empty spacer */}
       <div className="lg:hidden">
@@ -34,12 +27,7 @@ export function AppHeader() {
       <div className="flex items-center gap-3">
         {/* Network badge pill */}
         <div
-          className="flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium"
-          style={{
-            backgroundColor: "var(--bg-primary)",
-            border: "1px solid var(--border-default)",
-            color: "var(--text-secondary)",
-          }}
+          className="flex items-center gap-2 px-3 py-1.5 text-[10px] font-mono font-bold uppercase tracking-widest bg-ax-tertiary border border-border-default text-text-secondary"
         >
           <svg
             width="12"

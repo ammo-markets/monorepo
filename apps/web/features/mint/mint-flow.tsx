@@ -33,10 +33,7 @@ import { CONTRACT_ADDRESSES } from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
 
 /* ── Build CaliberDetailData from API market data ── */
-function buildCaliberDetail(
-  caliber: Caliber,
-  market: MarketCaliberFromAPI,
-): CaliberDetailData {
+function buildCaliberDetail(caliber: Caliber, market: MarketCaliberFromAPI): CaliberDetailData {
   const spec = CALIBER_SPECS[caliber];
   return {
     id: caliber,
@@ -51,9 +48,7 @@ function buildCaliberDetail(
   };
 }
 
-function buildAllCaliberDetails(
-  marketData: MarketCaliberFromAPI[],
-): Record<Caliber, CaliberDetailData> {
+function buildAllCaliberDetails(marketData: MarketCaliberFromAPI[]): Record<Caliber, CaliberDetailData> {
   const result = {} as Record<Caliber, CaliberDetailData>;
   for (const m of marketData) {
     result[m.caliber] = buildCaliberDetail(m.caliber, m);
@@ -72,14 +67,7 @@ function UsdcIcon({ size = 16 }: { size?: number }) {
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
     >
-      <circle
-        cx="12"
-        cy="12"
-        r="11"
-        stroke="#3498DB"
-        strokeWidth="1.5"
-        fill="rgba(52, 152, 219, 0.1)"
-      />
+      <circle cx="12" cy="12" r="11" stroke="#3498DB" strokeWidth="1.5" fill="rgba(52, 152, 219, 0.1)" />
       <text
         x="12"
         y="16.5"
@@ -110,7 +98,7 @@ type TxStatus =
 function WrongNetworkBanner({ onSwitch }: { onSwitch: () => void }) {
   return (
     <div
-      className="mb-6 flex flex-col gap-3 rounded-xl px-4 py-4 sm:flex-row sm:items-center sm:justify-between"
+      className="mb-6 flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between"
       style={{
         backgroundColor: "rgba(231, 76, 60, 0.1)",
         border: "1px solid rgba(231, 76, 60, 0.3)",
@@ -125,7 +113,7 @@ function WrongNetworkBanner({ onSwitch }: { onSwitch: () => void }) {
       <button
         type="button"
         onClick={onSwitch}
-        className="rounded-lg px-4 py-2 text-sm font-semibold transition-colors duration-150"
+        className="rounded-lg px-4 py-2 font-mono text-sm font-bold uppercase tracking-widest transition-none"
         style={{
           backgroundColor: "var(--red)",
           color: "#fff",
@@ -153,10 +141,7 @@ function StepSelectCaliber({
 }) {
   return (
     <div>
-      <h2
-        className="mb-1 text-xl font-bold"
-        style={{ color: "var(--text-primary)" }}
-      >
+      <h2 className="mb-1 font-display text-2xl font-bold uppercase" style={{ color: "var(--text-primary)" }}>
         Choose Your Caliber
       </h2>
       <p className="mb-6 text-sm" style={{ color: "var(--text-secondary)" }}>
@@ -173,10 +158,10 @@ function StepSelectCaliber({
               key={cal.id}
               type="button"
               onClick={() => onSelect(cal.id)}
-              className={`group relative flex flex-col gap-3 rounded-xl p-4 text-left transition-all duration-150 ${
+              className={`group relative flex flex-col gap-3 p-4 text-left transition-none ${
                 isSelected
-                  ? "bg-brass-muted border-[1.5px] border-brass"
-                  : "bg-ax-secondary border-[1.5px] border-border-default hover:border-border-hover"
+                  ? "bg-brass-muted border-2 border-brass"
+                  : "bg-ax-secondary border-2 border-border-default hover:border-border-hover"
               }`}
             >
               {/* Selected check */}
@@ -185,49 +170,33 @@ function StepSelectCaliber({
                   className="absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded-full"
                   style={{ backgroundColor: "var(--brass)" }}
                 >
-                  <Check
-                    size={12}
-                    strokeWidth={3}
-                    style={{ color: "var(--bg-primary)" }}
-                  />
+                  <Check size={12} strokeWidth={3} style={{ color: "var(--bg-primary)" }} />
                 </span>
               )}
 
               <div className="flex items-center gap-3">
                 <Icon size={40} />
                 <div>
-                  <div
-                    className="text-sm font-bold"
-                    style={{ color: "var(--text-primary)" }}
-                  >
+                  <div className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>
                     {cal.symbol}
                   </div>
-                  <div
-                    className="text-xs"
-                    style={{ color: "var(--text-secondary)" }}
-                  >
+                  <div className="text-xs" style={{ color: "var(--text-secondary)" }}>
                     {cal.name}
                   </div>
                 </div>
               </div>
               <div className="flex items-center justify-between">
                 <span
-                  className="font-mono text-sm font-semibold tabular-nums"
+                  className="font-mono text-sm font-bold uppercase tracking-widest tabular-nums"
                   style={{ color: "var(--text-primary)" }}
                 >
                   ${cal.price.toFixed(2)}
-                  <span
-                    className="text-xs font-normal"
-                    style={{ color: "var(--text-muted)" }}
-                  >
+                  <span className="text-xs font-normal" style={{ color: "var(--text-muted)" }}>
                     {" "}
                     /round
                   </span>
                 </span>
-                <span
-                  className="text-[11px]"
-                  style={{ color: "var(--text-muted)" }}
-                >
+                <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>
                   Min: {cal.minMint} rounds
                 </span>
               </div>
@@ -241,7 +210,7 @@ function StepSelectCaliber({
         type="button"
         disabled={!selected}
         onClick={onNext}
-        className={`mt-6 flex w-full items-center justify-center rounded-xl py-3.5 text-sm font-bold transition-all duration-150 ${
+        className={`mt-6 flex w-full items-center justify-center py-3.5 text-sm font-bold transition-none ${
           selected
             ? "bg-brass text-ax-primary cursor-pointer hover:bg-brass-hover"
             : "bg-ax-tertiary text-text-muted cursor-not-allowed opacity-50"
@@ -296,7 +265,7 @@ function StepEnterAmount({
         <button
           type="button"
           onClick={onBack}
-          className="mb-5 flex items-center gap-1.5 text-sm font-medium transition-colors duration-150 text-text-secondary hover:text-text-primary"
+          className="mb-5 flex items-center gap-1.5 text-sm font-medium transition-none text-text-secondary hover:text-text-primary"
         >
           <ArrowLeft size={16} />
           Back
@@ -305,29 +274,22 @@ function StepEnterAmount({
 
       {/* Processing time disclosure */}
       <div
-        className="mb-5 flex items-start gap-3 rounded-lg px-4 py-3"
+        className="mb-5 flex items-start gap-3 px-4 py-3"
         style={{
           backgroundColor: "rgba(243, 156, 18, 0.08)",
           borderLeft: "3px solid var(--amber)",
         }}
       >
-        <Clock
-          size={16}
-          className="mt-0.5 flex-shrink-0"
-          style={{ color: "var(--amber)" }}
-        />
-        <p
-          className="text-xs leading-relaxed"
-          style={{ color: "var(--text-secondary)" }}
-        >
-          Minting takes 24-48 hours. Your USDC is held in the smart contract
-          until an admin verifies and finalizes your order.
+        <Clock size={16} className="mt-0.5 shrink-0" style={{ color: "var(--amber)" }} />
+        <p className="text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+          Minting takes 24-48 hours. Your USDC is held in the smart contract until an admin verifies and finalizes your
+          order.
         </p>
       </div>
 
       {/* Selected caliber compact card */}
       <div
-        className="mb-6 flex items-center gap-3 rounded-lg px-4 py-3"
+        className="mb-6 flex items-center gap-3 px-4 py-3"
         style={{
           backgroundColor: "var(--bg-secondary)",
           border: "1px solid var(--border-default)",
@@ -336,35 +298,26 @@ function StepEnterAmount({
         <Icon size={28} />
         <div className="flex-1">
           <span
-            className="text-sm font-semibold"
+            className="font-mono text-sm font-bold uppercase tracking-widest"
             style={{ color: "var(--text-primary)" }}
           >
             {caliber.symbol}
           </span>
-          <span
-            className="text-xs ml-2"
-            style={{ color: "var(--text-secondary)" }}
-          >
+          <span className="text-xs ml-2" style={{ color: "var(--text-secondary)" }}>
             {caliber.name}
           </span>
         </div>
-        <span
-          className="font-mono text-sm font-medium tabular-nums"
-          style={{ color: "var(--text-primary)" }}
-        >
+        <span className="font-mono text-sm font-medium tabular-nums" style={{ color: "var(--text-primary)" }}>
           ${caliber.price.toFixed(2)}/rd
         </span>
       </div>
 
       {/* Main USDC input */}
-      <label
-        className="mb-2 block text-xs font-medium uppercase tracking-wide"
-        style={{ color: "var(--text-muted)" }}
-      >
+      <label className="mb-2 block text-xs font-medium uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>
         Amount (USDC)
       </label>
       <div
-        className="flex items-center rounded-lg px-4 py-3 transition-colors duration-150"
+        className="flex items-center px-4 py-3 transition-none"
         style={{
           backgroundColor: "var(--bg-tertiary)",
           border: hasError
@@ -387,10 +340,7 @@ function StepEnterAmount({
         />
         <div className="flex items-center gap-2">
           <UsdcIcon size={22} />
-          <span
-            className="text-sm font-medium"
-            style={{ color: "var(--text-secondary)" }}
-          >
+          <span className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
             USDC
           </span>
         </div>
@@ -409,10 +359,7 @@ function StepEnterAmount({
             </p>
           )}
           {isValid && (
-            <p
-              className="flex items-center gap-1 text-xs"
-              style={{ color: "var(--green)" }}
-            >
+            <p className="flex items-center gap-1 text-xs" style={{ color: "var(--green)" }}>
               <Check size={12} /> Valid amount
             </p>
           )}
@@ -428,7 +375,7 @@ function StepEnterAmount({
               <button
                 type="button"
                 onClick={() => setUsdcAmount(usdcBalance.toFixed(2))}
-                className="ml-1 font-semibold uppercase transition-colors duration-150"
+                className="ml-1 font-semibold uppercase transition-none"
                 style={{ color: "var(--brass)" }}
               >
                 MAX
@@ -438,7 +385,7 @@ function StepEnterAmount({
             <button
               type="button"
               onClick={onConnect}
-              className="font-semibold transition-colors duration-150"
+              className="font-semibold transition-none"
               style={{ color: "var(--brass)" }}
             >
               Connect wallet to see balance
@@ -454,7 +401,7 @@ function StepEnterAmount({
             key={amt}
             type="button"
             onClick={() => setUsdcAmount(amt.toString())}
-            className={`flex-1 rounded-lg py-2 text-sm font-medium transition-all duration-150 ${
+            className={`flex-1 py-2 text-sm font-medium transition-none ${
               usdcAmount === amt.toString()
                 ? "bg-brass-muted border border-brass-border text-brass"
                 : "bg-ax-secondary border border-border-default text-text-secondary hover:border-border-hover"
@@ -468,7 +415,7 @@ function StepEnterAmount({
       {/* Calculation panel */}
       {usdcValue > 0 && (
         <div
-          className="mt-5 rounded-lg px-4 py-4"
+          className="mt-5 px-4 py-4"
           style={{
             backgroundColor: "var(--bg-tertiary)",
             border: "1px solid var(--border-default)",
@@ -476,62 +423,36 @@ function StepEnterAmount({
         >
           <div className="flex flex-col gap-2.5 text-sm">
             <div className="flex justify-between">
-              <span style={{ color: "var(--text-muted)" }}>
-                Price per round
-              </span>
-              <span
-                className="font-mono tabular-nums"
-                style={{ color: "var(--text-secondary)" }}
-              >
+              <span style={{ color: "var(--text-muted)" }}>Price per round</span>
+              <span className="font-mono tabular-nums" style={{ color: "var(--text-secondary)" }}>
                 ${caliber.price.toFixed(2)}
               </span>
             </div>
             <div className="flex justify-between">
               <span style={{ color: "var(--text-muted)" }}>Subtotal</span>
-              <span
-                className="font-mono tabular-nums"
-                style={{ color: "var(--text-secondary)" }}
-              >
+              <span className="font-mono tabular-nums" style={{ color: "var(--text-secondary)" }}>
                 {usdcValue.toFixed(2)} USDC
               </span>
             </div>
             <div className="flex justify-between">
-              <span style={{ color: "var(--text-muted)" }}>
-                Mint fee ({caliber.mintFee}%)
-              </span>
-              <span
-                className="font-mono tabular-nums"
-                style={{ color: "var(--text-secondary)" }}
-              >
+              <span style={{ color: "var(--text-muted)" }}>Mint fee ({caliber.mintFee}%)</span>
+              <span className="font-mono tabular-nums" style={{ color: "var(--text-secondary)" }}>
                 -{fee.toFixed(2)} USDC
               </span>
             </div>
             <div className="flex justify-between">
               <span style={{ color: "var(--text-muted)" }}>Net USDC</span>
-              <span
-                className="font-mono tabular-nums"
-                style={{ color: "var(--text-secondary)" }}
-              >
+              <span className="font-mono tabular-nums" style={{ color: "var(--text-secondary)" }}>
                 {netUsdc.toFixed(2)} USDC
               </span>
             </div>
-            <div
-              className="my-0.5"
-              style={{ borderTop: "1px solid var(--border-default)" }}
-            />
+            <div className="my-0.5" style={{ borderTop: "1px solid var(--border-default)" }} />
             <div className="flex justify-between">
-              <span
-                className="font-medium"
-                style={{ color: "var(--text-primary)" }}
-              >
+              <span className="font-medium" style={{ color: "var(--text-primary)" }}>
                 {"You'll receive"}
               </span>
-              <span
-                className="font-mono font-bold tabular-nums"
-                style={{ color: "var(--brass)" }}
-              >
-                ~{estimatedRounds.toLocaleString("en-US")} rounds of{" "}
-                {caliber.symbol}
+              <span className="font-mono font-bold tabular-nums" style={{ color: "var(--brass)" }}>
+                ~{estimatedRounds.toLocaleString("en-US")} rounds of {caliber.symbol}
               </span>
             </div>
           </div>
@@ -543,7 +464,7 @@ function StepEnterAmount({
         <button
           type="button"
           onClick={onConnect}
-          className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold transition-colors duration-150 bg-brass text-ax-primary hover:bg-brass-hover"
+          className="mt-6 flex w-full items-center justify-center gap-2 py-3.5 text-sm font-bold transition-none bg-brass text-ax-primary hover:bg-brass-hover"
         >
           <Wallet size={16} />
           Connect Wallet to Continue
@@ -553,7 +474,7 @@ function StepEnterAmount({
           type="button"
           disabled={!isValid}
           onClick={onNext}
-          className={`mt-6 flex w-full items-center justify-center rounded-xl py-3.5 text-sm font-bold transition-all duration-150 ${
+          className={`mt-6 flex w-full items-center justify-center py-3.5 text-sm font-bold transition-none ${
             isValid
               ? "bg-brass text-ax-primary cursor-pointer hover:bg-brass-hover"
               : "bg-ax-tertiary text-text-muted cursor-not-allowed opacity-50"
@@ -608,16 +529,13 @@ function StepReview({
       <button
         type="button"
         onClick={onBack}
-        className="mb-5 flex items-center gap-1.5 text-sm font-medium transition-colors duration-150 text-text-secondary hover:text-text-primary"
+        className="mb-5 flex items-center gap-1.5 text-sm font-medium transition-none text-text-secondary hover:text-text-primary"
       >
         <ArrowLeft size={16} />
         Back
       </button>
 
-      <h2
-        className="mb-6 text-xl font-bold"
-        style={{ color: "var(--text-primary)" }}
-      >
+      <h2 className="mb-6 font-display text-2xl font-bold uppercase" style={{ color: "var(--text-primary)" }}>
         Review Your Mint Order
       </h2>
 
@@ -637,69 +555,41 @@ function StepReview({
           <div className="flex items-center gap-3">
             <Icon size={32} />
             <div>
-              <div
-                className="font-semibold"
-                style={{ color: "var(--text-primary)" }}
-              >
+              <div className="font-semibold" style={{ color: "var(--text-primary)" }}>
                 {caliber.symbol} — {caliber.name}
               </div>
-              <div
-                className="text-xs"
-                style={{ color: "var(--text-secondary)" }}
-              >
+              <div className="text-xs" style={{ color: "var(--text-secondary)" }}>
                 {caliber.specLine}
               </div>
             </div>
           </div>
 
-          <div
-            className="my-0.5"
-            style={{ borderTop: "1px solid var(--border-default)" }}
-          />
+          <div className="my-0.5" style={{ borderTop: "1px solid var(--border-default)" }} />
 
           {/* Details rows */}
           <div className="flex flex-col gap-3 text-sm">
             <div className="flex justify-between">
-              <span style={{ color: "var(--text-muted)" }}>
-                USDC to deposit
-              </span>
-              <span
-                className="font-mono font-medium tabular-nums"
-                style={{ color: "var(--text-primary)" }}
-              >
+              <span style={{ color: "var(--text-muted)" }}>USDC to deposit</span>
+              <span className="font-mono font-medium tabular-nums" style={{ color: "var(--text-primary)" }}>
                 {usdcValue.toFixed(2)} USDC
               </span>
             </div>
             <div className="flex justify-between">
-              <span style={{ color: "var(--text-muted)" }}>
-                Mint fee ({caliber.mintFee}%)
-              </span>
-              <span
-                className="font-mono tabular-nums"
-                style={{ color: "var(--text-secondary)" }}
-              >
+              <span style={{ color: "var(--text-muted)" }}>Mint fee ({caliber.mintFee}%)</span>
+              <span className="font-mono tabular-nums" style={{ color: "var(--text-secondary)" }}>
                 {fee.toFixed(2)} USDC
               </span>
             </div>
             <div className="flex justify-between">
-              <span
-                className="font-medium"
-                style={{ color: "var(--text-primary)" }}
-              >
+              <span className="font-medium" style={{ color: "var(--text-primary)" }}>
                 Tokens to receive
               </span>
-              <span
-                className="font-mono font-bold tabular-nums"
-                style={{ color: "var(--brass)" }}
-              >
+              <span className="font-mono font-bold tabular-nums" style={{ color: "var(--brass)" }}>
                 ~{estimatedRounds.toLocaleString("en-US")} {caliber.symbol}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span
-                className="flex items-center gap-1.5"
-                style={{ color: "var(--text-muted)" }}
-              >
+              <span className="flex items-center gap-1.5" style={{ color: "var(--text-muted)" }}>
                 <Clock size={14} />
                 Processing time
               </span>
@@ -713,43 +603,31 @@ function StepReview({
 
       {/* Disclaimer box */}
       <div
-        className="mt-4 rounded-lg px-4 py-3.5"
+        className="mt-4 px-4 py-3.5"
         style={{
           backgroundColor: "var(--bg-tertiary)",
           borderLeft: "3px solid var(--amber)",
         }}
       >
-        <p
-          className="text-xs leading-relaxed"
-          style={{ color: "var(--text-secondary)" }}
-        >
-          Tokens will be minted after physical ammunition is verified in
-          storage. This typically takes 24-48 hours. {"You'll"} be able to track
-          your order in your portfolio.
+        <p className="text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+          Tokens will be minted after physical ammunition is verified in storage. This typically takes 24-48 hours.{" "}
+          {"You'll"} be able to track your order in your portfolio.
         </p>
       </div>
 
       {/* Price disclaimer */}
       <div
-        className="mt-3 rounded-lg px-4 py-3.5"
+        className="mt-3 px-4 py-3.5"
         style={{
           backgroundColor: "var(--bg-tertiary)",
           borderLeft: "3px solid var(--text-muted)",
         }}
       >
         <div className="flex items-start gap-2.5">
-          <Info
-            size={14}
-            className="mt-0.5 flex-shrink-0"
-            style={{ color: "var(--text-muted)" }}
-          />
-          <p
-            className="text-xs leading-relaxed"
-            style={{ color: "var(--text-secondary)" }}
-          >
-            The final token amount is determined by the admin at fulfillment
-            based on the current market price. The estimate shown above may
-            differ from the actual tokens received.
+          <Info size={14} className="mt-0.5 shrink-0" style={{ color: "var(--text-muted)" }} />
+          <p className="text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+            The final token amount is determined by the admin at fulfillment based on the current market price. The
+            estimate shown above may differ from the actual tokens received.
           </p>
         </div>
       </div>
@@ -760,7 +638,7 @@ function StepReview({
         {txStatus === "failed" && (
           <div>
             <div
-              className="mb-4 rounded-lg px-4 py-3"
+              className="mb-4 px-4 py-3"
               style={{
                 backgroundColor: "rgba(231, 76, 60, 0.1)",
                 border: "1px solid rgba(231, 76, 60, 0.3)",
@@ -773,7 +651,7 @@ function StepReview({
             <button
               type="button"
               onClick={onRetry}
-              className="flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold transition-all duration-150 bg-brass text-ax-primary hover:bg-brass-hover"
+              className="flex w-full items-center justify-center gap-2 py-3.5 text-sm font-bold transition-none bg-brass text-ax-primary hover:bg-brass-hover"
             >
               Try Again
             </button>
@@ -785,7 +663,7 @@ function StepReview({
           <button
             type="button"
             onClick={onConnect}
-            className="flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold transition-all duration-150 bg-brass text-ax-primary hover:bg-brass-hover"
+            className="flex w-full items-center justify-center gap-2 py-3.5 text-sm font-bold transition-none bg-brass text-ax-primary hover:bg-brass-hover"
           >
             <Wallet size={16} />
             Connect Wallet
@@ -798,22 +676,14 @@ function StepReview({
             <button
               type="button"
               onClick={onApprove}
-              className="flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold transition-all duration-150 bg-brass text-ax-primary hover:bg-brass-hover"
+              className="flex w-full items-center justify-center gap-2 py-3.5 text-sm font-bold transition-none bg-brass text-ax-primary hover:bg-brass-hover"
             >
               Approve USDC Spending
             </button>
             <div className="mt-2 flex items-start gap-2 px-1">
-              <Info
-                size={14}
-                className="mt-0.5 flex-shrink-0"
-                style={{ color: "var(--text-muted)" }}
-              />
-              <p
-                className="text-[11px] leading-relaxed"
-                style={{ color: "var(--text-muted)" }}
-              >
-                This allows the smart contract to use your USDC. You only need
-                to do this once.
+              <Info size={14} className="mt-0.5 shrink-0" style={{ color: "var(--text-muted)" }} />
+              <p className="text-[11px] leading-relaxed" style={{ color: "var(--text-muted)" }}>
+                This allows the smart contract to use your USDC. You only need to do this once.
               </p>
             </div>
           </div>
@@ -824,7 +694,7 @@ function StepReview({
           <button
             type="button"
             disabled
-            className="flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold"
+            className="flex w-full items-center justify-center gap-2 py-3.5 text-sm font-bold"
             style={{
               backgroundColor: "var(--bg-tertiary)",
               color: "var(--text-muted)",
@@ -841,7 +711,7 @@ function StepReview({
           <button
             type="button"
             onClick={onConfirm}
-            className="flex w-full items-center justify-center gap-2 rounded-xl py-4 text-base font-bold transition-all duration-150 bg-brass text-ax-primary hover:bg-brass-hover"
+            className="flex w-full items-center justify-center gap-2 py-4 text-base font-bold transition-none bg-brass text-ax-primary hover:bg-brass-hover"
           >
             <Lock size={16} />
             Confirm Mint
@@ -853,7 +723,7 @@ function StepReview({
           <button
             type="button"
             disabled
-            className="flex w-full items-center justify-center gap-2 rounded-xl py-4 text-base font-bold"
+            className="flex w-full items-center justify-center gap-2 py-4 text-base font-bold"
             style={{
               backgroundColor: "var(--bg-tertiary)",
               color: "var(--text-muted)",
@@ -908,7 +778,7 @@ function StepConfirmation({
         >
           <XCircle size={32} style={{ color: "var(--red)" }} />
         </div>
-        <h2 className="mb-2 text-xl font-bold" style={{ color: "var(--red)" }}>
+        <h2 className="mb-2 font-display text-2xl font-bold uppercase" style={{ color: "var(--red)" }}>
           Transaction Failed
         </h2>
         <p className="mb-6 text-sm" style={{ color: "var(--text-secondary)" }}>
@@ -917,7 +787,7 @@ function StepConfirmation({
         <button
           type="button"
           onClick={onRetry}
-          className="flex w-full items-center justify-center rounded-xl py-3.5 text-sm font-bold transition-all duration-150 bg-brass text-ax-primary hover:bg-brass-hover"
+          className="flex w-full items-center justify-center py-3.5 text-sm font-bold transition-none bg-brass text-ax-primary hover:bg-brass-hover"
         >
           Try Again
         </button>
@@ -938,39 +808,29 @@ function StepConfirmation({
         <Check size={32} strokeWidth={3} style={{ color: "var(--brass)" }} />
       </div>
 
-      <h2 className="mb-1 text-xl font-bold" style={{ color: "var(--brass)" }}>
+      <h2 className="mb-1 font-display text-2xl font-bold uppercase" style={{ color: "var(--brass)" }}>
         Mint Order Submitted!
       </h2>
       <p className="mb-6 text-sm" style={{ color: "var(--text-secondary)" }}>
-        Your tokens will be delivered to your wallet once the order is
-        processed.
+        Your tokens will be delivered to your wallet once the order is processed.
       </p>
 
       {/* Order details card */}
       <div
-        className="w-full rounded-xl p-5 text-left"
+        className="w-full p-5 text-left"
         style={{
           backgroundColor: "var(--bg-secondary)",
           border: "1px solid var(--border-default)",
         }}
       >
         <div className="flex flex-col gap-3 text-sm">
-          <div
-            className="flex items-center gap-3 pb-3"
-            style={{ borderBottom: "1px solid var(--border-default)" }}
-          >
+          <div className="flex items-center gap-3 pb-3" style={{ borderBottom: "1px solid var(--border-default)" }}>
             <Icon size={28} />
             <div>
-              <div
-                className="font-semibold"
-                style={{ color: "var(--text-primary)" }}
-              >
+              <div className="font-semibold" style={{ color: "var(--text-primary)" }}>
                 ~{estimatedRounds.toLocaleString("en-US")} {caliber.symbol}
               </div>
-              <div
-                className="text-xs"
-                style={{ color: "var(--text-secondary)" }}
-              >
+              <div className="text-xs" style={{ color: "var(--text-secondary)" }}>
                 {usdcValue.toFixed(2)} USDC
               </div>
             </div>
@@ -978,10 +838,7 @@ function StepConfirmation({
 
           <div className="flex justify-between">
             <span style={{ color: "var(--text-muted)" }}>Order ID</span>
-            <span
-              className="font-mono text-xs font-medium"
-              style={{ color: "var(--text-secondary)" }}
-            >
+            <span className="font-mono text-xs font-medium" style={{ color: "var(--text-secondary)" }}>
               Pending indexing
             </span>
           </div>
@@ -992,29 +849,21 @@ function StepConfirmation({
                 href={snowtraceUrl(txHash)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1.5 font-mono text-xs font-medium transition-colors duration-150"
+                className="flex items-center gap-1.5 font-mono text-xs font-medium transition-none"
                 style={{ color: "var(--brass)" }}
               >
                 {truncateAddress(txHash)}
                 <ExternalLink size={12} />
               </a>
             ) : (
-              <span
-                className="font-mono text-xs font-medium"
-                style={{ color: "var(--text-muted)" }}
-              >
+              <span className="font-mono text-xs font-medium" style={{ color: "var(--text-muted)" }}>
                 --
               </span>
             )}
           </div>
           <div className="flex justify-between">
-            <span style={{ color: "var(--text-muted)" }}>
-              Estimated delivery
-            </span>
-            <span
-              className="font-medium"
-              style={{ color: "var(--text-primary)" }}
-            >
+            <span style={{ color: "var(--text-muted)" }}>Estimated delivery</span>
+            <span className="font-medium" style={{ color: "var(--text-primary)" }}>
               24-48 hours
             </span>
           </div>
@@ -1038,7 +887,7 @@ function StepConfirmation({
         <button
           type="button"
           onClick={onMintMore}
-          className="flex w-full items-center justify-center rounded-xl py-3.5 text-sm font-bold transition-all duration-150 bg-brass text-ax-primary hover:bg-brass-hover"
+          className="flex w-full items-center justify-center py-3.5 text-sm font-bold transition-none bg-brass text-ax-primary hover:bg-brass-hover"
         >
           Mint More
         </button>
@@ -1050,19 +899,12 @@ function StepConfirmation({
 /* =====================================================================
    MAIN ORCHESTRATOR
    ===================================================================== */
-export function MintFlow({
-  selectedCaliber: caliberFromProp,
-}: {
-  selectedCaliber?: Caliber;
-}) {
+export function MintFlow({ selectedCaliber: caliberFromProp }: { selectedCaliber?: Caliber }) {
   const searchParams = useSearchParams();
-  const preselected =
-    caliberFromProp ??
-    (searchParams.get("caliber")?.toUpperCase() as Caliber | null);
+  const preselected = caliberFromProp ?? (searchParams.get("caliber")?.toUpperCase() as Caliber | null);
   const isEmbedded = preselected !== null;
 
-  const { data: marketCalibers = [], isLoading: marketLoading } =
-    useMarketData();
+  const { data: marketCalibers = [], isLoading: marketLoading } = useMarketData();
 
   const caliberDetailsMap = useMemo(() => {
     if (marketCalibers.length === 0) return null;
@@ -1080,10 +922,7 @@ export function MintFlow({
   const [usdcAmount, setUsdcAmount] = useState("");
 
   const activeCaliber: Caliber = selectedCaliber ?? "9MM";
-  const caliber =
-    selectedCaliber && caliberDetailsMap
-      ? caliberDetailsMap[selectedCaliber]
-      : null;
+  const caliber = selectedCaliber && caliberDetailsMap ? caliberDetailsMap[selectedCaliber] : null;
 
   // ── Real hooks ──
   const wallet = useWallet();
@@ -1091,11 +930,7 @@ export function MintFlow({
   const { usdc: usdcBalanceRaw } = useTokenBalances();
   const mintTx = useMintTransaction(activeCaliber);
   const marketAddress = CONTRACT_ADDRESSES.fuji.calibers[activeCaliber].market;
-  const allowance = useAllowance(
-    CONTRACT_ADDRESSES.fuji.usdc,
-    wallet.address,
-    marketAddress,
-  );
+  const allowance = useAllowance(CONTRACT_ADDRESSES.fuji.usdc, wallet.address, marketAddress);
 
   // ── Format real USDC balance (6 decimals -> number) ──
   const usdcBalance = useMemo(() => {
@@ -1108,11 +943,7 @@ export function MintFlow({
     if (mintTx.isMintConfirmed) return "confirmed";
     if (mintTx.isMintConfirming) return "mint-confirming";
     if (mintTx.isMintPending) return "minting";
-    if (
-      allowance.hasEnoughAllowance(parseUsdc(usdcAmount || "0")) ||
-      mintTx.isApproveConfirmed
-    )
-      return "approved";
+    if (allowance.hasEnoughAllowance(parseUsdc(usdcAmount || "0")) || mintTx.isApproveConfirmed) return "approved";
     if (mintTx.isApproveConfirming) return "approve-confirming";
     if (mintTx.isApprovePending) return "approving";
     if (mintTx.approveError || mintTx.mintError) return "failed";
@@ -1130,9 +961,7 @@ export function MintFlow({
     usdcAmount,
   ]);
 
-  const errorMessage = parseContractError(
-    mintTx.approveError || mintTx.mintError,
-  );
+  const errorMessage = parseContractError(mintTx.approveError || mintTx.mintError);
 
   // ── Auto-advance to confirmation when mint confirmed ──
   useEffect(() => {
@@ -1176,7 +1005,7 @@ export function MintFlow({
           <div className="mb-6 h-6 w-48 rounded shimmer" />
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {[0, 1, 2, 3].map((i) => (
-              <div key={i} className="h-28 rounded-xl shimmer" />
+              <div key={i} className="h-28 shimmer" />
             ))}
           </div>
         </div>
@@ -1185,9 +1014,7 @@ export function MintFlow({
       {step === 0 && !isEmbedded && !marketLoading && (
         <StepSelectCaliber
           selected={selectedCaliber}
-          allCalibers={
-            caliberDetailsMap ? Object.values(caliberDetailsMap) : []
-          }
+          allCalibers={caliberDetailsMap ? Object.values(caliberDetailsMap) : []}
           onSelect={setSelectedCaliber}
           onNext={() => setStep(1)}
         />

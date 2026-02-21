@@ -4,150 +4,61 @@ import { ArrowRight } from "lucide-react";
 
 export function Hero() {
   return (
-    <section className="relative flex min-h-[calc(100vh-4rem)] items-center justify-center overflow-hidden px-4">
-      {/* Subtle geometric background pattern — concentric primer circles */}
-      <div
-        className="pointer-events-none absolute inset-0 flex items-center justify-center"
-        aria-hidden="true"
-      >
-        <svg
-          width="800"
-          height="800"
-          viewBox="0 0 800 800"
-          fill="none"
-          className="opacity-[0.03]"
-        >
-          <circle
-            cx="400"
-            cy="400"
-            r="100"
-            stroke="#C6A44E"
-            strokeWidth="0.5"
-          />
-          <circle
-            cx="400"
-            cy="400"
-            r="180"
-            stroke="#C6A44E"
-            strokeWidth="0.5"
-          />
-          <circle
-            cx="400"
-            cy="400"
-            r="260"
-            stroke="#C6A44E"
-            strokeWidth="0.5"
-          />
-          <circle
-            cx="400"
-            cy="400"
-            r="340"
-            stroke="#C6A44E"
-            strokeWidth="0.5"
-          />
-          {/* Crosshair lines */}
-          <line
-            x1="400"
-            y1="60"
-            x2="400"
-            y2="740"
-            stroke="#C6A44E"
-            strokeWidth="0.3"
-          />
-          <line
-            x1="60"
-            y1="400"
-            x2="740"
-            y2="400"
-            stroke="#C6A44E"
-            strokeWidth="0.3"
-          />
-        </svg>
-      </div>
-
-      {/* Radial gradient overlay for depth */}
-      <div
-        className="pointer-events-none absolute inset-0"
+    <section className="relative flex min-h-[calc(100vh-4rem)] items-stretch overflow-hidden border-b border-border-default bg-ax-primary">
+      {/* Structural Background Grid */}
+      <div className="absolute inset-0 pointer-events-none opacity-20"
         style={{
-          background:
-            "radial-gradient(ellipse at center, rgba(198, 164, 78, 0.03) 0%, transparent 60%)",
+          backgroundImage: `linear-gradient(var(--border-default) 1px, transparent 1px), linear-gradient(90deg, var(--border-default) 1px, transparent 1px)`,
+          backgroundSize: '4rem 4rem',
         }}
-        aria-hidden="true"
       />
+      
+      {/* Grid container */}
+      <div className="relative z-10 mx-auto w-full max-w-7xl grid grid-cols-1 lg:grid-cols-12 border-x border-border-default">
+        {/* Left Col */}
+        <div className="lg:col-span-8 flex flex-col justify-center px-6 lg:px-12 py-20 border-b lg:border-b-0 lg:border-r border-border-default bg-ax-primary/90">
+          <h1 className="font-display text-6xl sm:text-7xl lg:text-8xl font-bold leading-none tracking-tight text-text-primary uppercase mb-8">
+            Make Your Ammo <br />
+            <span className="text-brass">Liquid.</span>
+          </h1>
 
-      <div className="relative z-10 mx-auto max-w-3xl text-center">
-        {/* Headline */}
-        <h1
-          className="text-balance text-4xl font-bold leading-[1.1] tracking-tight sm:text-5xl lg:text-6xl"
-          style={{ color: "var(--text-primary)" }}
-        >
-          Make Your Ammo <span style={{ color: "var(--brass)" }}>Liquid.</span>
-        </h1>
+          <p className="max-w-xl text-lg sm:text-xl leading-relaxed text-text-secondary font-sans mb-12">
+            Buy, hold, and trade tokenized ammunition backed 1:1 by physical rounds in insured storage. No shipping. No friction. Just USDC in, ammo tokens out.
+          </p>
 
-        {/* Subhead */}
-        <p
-          className="mx-auto mt-6 max-w-xl text-pretty text-base leading-relaxed sm:text-lg"
-          style={{ color: "var(--text-secondary)" }}
-        >
-          Buy, hold, and trade tokenized ammunition backed 1:1 by physical
-          rounds in insured storage. No shipping. No friction. Just USDC in,
-          ammo tokens out.
-        </p>
-
-        {/* CTAs */}
-        <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-          <a
-            href="/dashboard"
-            className="group inline-flex items-center gap-2 rounded-lg bg-brass px-6 py-3 text-sm font-semibold text-ax-primary shadow-[0_0_20px_rgba(198,164,78,0.15)] transition-all duration-150 hover:bg-brass-hover hover:shadow-[0_0_30px_rgba(198,164,78,0.25)]"
-          >
-            Launch App
-            <ArrowRight
-              size={16}
-              className="transition-transform duration-150 group-hover:translate-x-0.5"
-            />
-          </a>
-          <a
-            href="#market"
-            className="inline-flex items-center gap-2 rounded-lg border border-border-hover bg-transparent px-6 py-3 text-sm font-semibold text-text-primary transition-all duration-150 hover:border-brass-border hover:bg-ax-tertiary"
-          >
-            View Market
-          </a>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <a href="/dashboard" className="group inline-flex items-center justify-center gap-3 bg-brass px-8 py-4 text-sm font-bold text-ax-primary uppercase tracking-widest transition-colors hover:bg-ax-primary border border-transparent hover:border-brass hover:text-brass">
+              Launch App
+              <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
+            </a>
+            <a href="#market" className="inline-flex items-center justify-center gap-3 bg-ax-secondary px-8 py-4 text-sm font-bold text-text-primary uppercase tracking-widest border border-border-default transition-colors hover:bg-ax-tertiary hover:border-brass">
+              View Market
+            </a>
+          </div>
         </div>
 
-        {/* Trust strip */}
-        <div
-          className="mt-16 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-[11px] font-medium uppercase tracking-[0.08em] sm:gap-x-6"
-          style={{
-            color: "#FFFFFF",
-            borderTop: "1px solid rgba(255,255,255,0.1)",
-            paddingTop: "1.5rem",
-          }}
-        >
-          <span>Backed by physical inventory</span>
-          <span
-            className="hidden sm:inline"
-            style={{ color: "rgba(255,255,255,0.3)" }}
-            aria-hidden="true"
-          >
-            |
-          </span>
-          <span>Insured storage</span>
-          <span
-            className="hidden sm:inline"
-            style={{ color: "rgba(255,255,255,0.3)" }}
-            aria-hidden="true"
-          >
-            |
-          </span>
-          <span>USDC payments</span>
-          <span
-            className="hidden sm:inline"
-            style={{ color: "rgba(255,255,255,0.3)" }}
-            aria-hidden="true"
-          >
-            |
-          </span>
-          <span>Avalanche blockchain</span>
+        {/* Right Col: Tactical data/hud */}
+        <div className="lg:col-span-4 flex flex-col bg-ax-secondary/50">
+          {/* Trust strip turned into vertical HUD */}
+          <div className="flex-1 flex flex-col justify-center p-8 sm:p-12 lg:p-8 gap-12 border-b border-border-default">
+            <div className="space-y-2">
+              <div className="text-brass font-mono text-xs font-bold tracking-widest uppercase">01 // Asset Backing</div>
+              <div className="text-text-primary font-sans font-medium">Physical Inventory verified 1:1</div>
+            </div>
+            <div className="space-y-2">
+              <div className="text-brass font-mono text-xs font-bold tracking-widest uppercase">02 // Security</div>
+              <div className="text-text-primary font-sans font-medium">Insured storage & audited contracts</div>
+            </div>
+            <div className="space-y-2">
+              <div className="text-brass font-mono text-xs font-bold tracking-widest uppercase">03 // Settlement</div>
+              <div className="text-text-primary font-sans font-medium">Instant USDC settlement on Avalanche</div>
+            </div>
+          </div>
+          
+          <div className="p-8 font-mono text-xs text-text-muted uppercase tracking-widest flex items-center justify-between">
+            <span>System Status</span>
+            <span className="flex items-center gap-2"><span className="w-2 h-2 bg-green block"></span> Online</span>
+          </div>
         </div>
       </div>
     </section>

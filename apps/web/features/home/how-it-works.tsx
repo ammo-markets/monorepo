@@ -1,21 +1,4 @@
 import type { ReactNode } from "react";
-function SectionTitle({ children }: { children: ReactNode }) {
-  return (
-    <div className="mb-12 text-center lg:mb-16">
-      <h2
-        className="text-xs font-semibold uppercase tracking-[0.08em]"
-        style={{ color: "var(--text-secondary)" }}
-      >
-        {children}
-      </h2>
-      <div
-        className="mx-auto mt-3 h-px w-12"
-        style={{ backgroundColor: "var(--brass)" }}
-        aria-hidden="true"
-      />
-    </div>
-  );
-}
 
 /** Mint illustration — USDC coin transforming into ammo tokens */
 function MintIllustration() {
@@ -269,53 +252,36 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section
-      id="how-it-works"
-      className="py-24 px-4 lg:py-32"
-      style={{ backgroundColor: "var(--bg-primary)" }}
-    >
-      <div className="mx-auto max-w-5xl">
-        <SectionTitle>How It Works</SectionTitle>
+    <section id="how-it-works" className="border-b border-border-default bg-ax-primary">
+      <div className="mx-auto w-full max-w-7xl border-x border-border-default">
+        {/* Section Header */}
+        <div className="px-8 py-12 border-b border-border-default bg-ax-secondary/30">
+          <h2 className="font-display text-4xl lg:text-5xl font-bold uppercase tracking-tight text-text-primary">
+            How It Works
+          </h2>
+          <div className="mt-4 h-1 w-16 bg-brass" />
+        </div>
 
-        <div className="relative grid gap-8 md:grid-cols-3 md:gap-6 lg:gap-12">
-          {/* Connecting line on desktop */}
-          <div
-            className="pointer-events-none absolute left-[16.67%] right-[16.67%] top-[52px] hidden h-px md:block"
-            style={{ backgroundColor: "var(--border-default)" }}
-            aria-hidden="true"
-          />
-
+        {/* Steps Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 divide-y lg:divide-y-0 lg:divide-x divide-border-default">
           {steps.map((step) => {
             const Illustration = step.illustration;
             return (
-              <div key={step.number} className="relative text-center">
-                {/* Step number — large, behind illustration */}
-                <span
-                  className="pointer-events-none absolute -top-2 left-1/2 -translate-x-1/2 font-mono text-6xl font-bold tabular-nums select-none lg:text-7xl"
-                  style={{ color: "var(--brass)", opacity: 0.07 }}
-                  aria-hidden="true"
-                >
-                  {step.number}
-                </span>
+              <div key={step.number} className="relative p-8 flex flex-col group hover:bg-ax-secondary/50 transition-colors">
+                {/* Step number */}
+                <div className="mb-12 font-mono text-5xl font-bold tracking-tighter text-border-hover group-hover:text-brass transition-colors">
+                  // {step.number}
+                </div>
 
-                {/* Illustration */}
-                <div className="relative mx-auto mb-6 flex h-24 w-24 items-center justify-center">
+                <div className="mb-8 flex items-center justify-start opacity-70 group-hover:opacity-100 transition-opacity">
                   <Illustration />
                 </div>
 
-                {/* Title */}
-                <h3
-                  className="mb-3 text-base font-semibold tracking-tight"
-                  style={{ color: "var(--text-primary)" }}
-                >
+                <h3 className="mb-4 font-display text-2xl font-bold uppercase text-text-primary">
                   {step.title}
                 </h3>
-
-                {/* Description */}
-                <p
-                  className="mx-auto max-w-xs text-sm leading-relaxed"
-                  style={{ color: "var(--text-secondary)" }}
-                >
+                
+                <p className="text-sm leading-relaxed text-text-secondary font-sans">
                   {step.description}
                 </p>
               </div>

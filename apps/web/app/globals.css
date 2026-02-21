@@ -65,7 +65,8 @@
   --color-text-muted: var(--text-muted);
 
   /* Font families */
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-rajdhani), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains), ui-monospace, monospace;
 }
 
@@ -74,7 +75,7 @@
  * <html className="dark"> in layout.tsx enforces dark mode globally.
  */
 :root {
-  --radius: 0.5rem;
+  --radius: 0rem;
 
   /* === shadcn semantic colors === */
   --background: oklch(0.13 0.01 280);
@@ -110,28 +111,28 @@
   --sidebar-ring: oklch(0.72 0.1 80);
 
   /* === Ammo Exchange tokens === */
-  --bg-primary: #0a0a0f;
-  --bg-secondary: #12121a;
-  --bg-tertiary: #1a1a25;
-  --bg-glass: rgba(26, 26, 37, 0.7);
+  --bg-primary: #000000;
+  --bg-secondary: #050505;
+  --bg-tertiary: #0a0a0a;
+  --bg-glass: rgba(0, 0, 0, 0.9);
 
   --brass: #c6a44e;
   --brass-hover: #d4b76a;
-  --brass-muted: rgba(198, 164, 78, 0.15);
-  --brass-border: rgba(198, 164, 78, 0.3);
+  --brass-muted: #1c1606;
+  --brass-border: #c6a44e;
 
-  --text-primary: #e8e8ed;
-  --text-secondary: #8a8a9a;
-  --text-muted: #8585a0;
+  --text-primary: #ffffff;
+  --text-secondary: #a0a0a0;
+  --text-muted: #666666;
 
   --green: #2ecc71;
   --red: #e74c3c;
   --amber: #f39c12;
   --blue: #3498db;
 
-  --border-default: rgba(255, 255, 255, 0.06);
-  --border-hover: rgba(255, 255, 255, 0.12);
-  --border-active: rgba(198, 164, 78, 0.4);
+  --border-default: #222222;
+  --border-hover: #444444;
+  --border-active: #c6a44e;
 }
 
 @layer base {
