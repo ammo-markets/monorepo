@@ -88,7 +88,7 @@ Full details in Phase Details below.
 
 **Milestone Goal:** Fix all audit findings -- data correctness, security hardening, architecture gaps, and contract guards -- to bring the protocol to production-grade integrity before mainnet.
 
-- [ ] **Phase 27: Data Model Migration** - Prisma schema migration for composite order uniqueness and normalized amount fields, plus worker handlers populating the new model
+- [x] **Phase 27: Data Model Migration** - Prisma schema migration for composite order uniqueness and normalized amount fields, plus worker handlers populating the new model (completed 2026-02-21)
 - [ ] **Phase 28: Data Flow Completion** - APIs and UI render correct amount fields, activity feed sorts by updatedAt, redeem flow persists shipping, BigInt-safe formatting
 - [ ] **Phase 29: Security Hardening** - KYC endpoint masking, mutation error handling, rate limiter IP trust, state code validation, SIWE policy enforcement
 - [ ] **Phase 30: Architecture & Contract Hardening** - Dynamic caliber registry, worker backfill self-healing, contract deadline validation, price sanity bounds, Fuji redeployment
@@ -237,7 +237,7 @@ Phases execute in numeric order: 27 -> 28 -> 29 -> 30 -> 31
 | 24. Foundation & Setup | v1.5 | 1/1 | Complete | 2026-02-17 |
 | 25. Slide Content & Navigation | v1.5 | 0/2 | Not started | - |
 | 26. PDF Export & Deployment | v1.5 | 0/2 | Not started | - |
-| 27. Data Model Migration | v1.6 | 0/2 | Not started | - |
+| 27. Data Model Migration | v1.6 | Complete    | 2026-02-21 | - |
 | 28. Data Flow Completion | v1.6 | 0/? | Not started | - |
 | 29. Security Hardening | v1.6 | 0/? | Not started | - |
 | 30. Architecture & Contract Hardening | v1.6 | 0/? | Not started | - |
