@@ -1,17 +1,32 @@
 "use client";
 
-import { useAccount, useConnect, useDisconnect, useSwitchChain } from "wagmi";
-import { injected } from "wagmi/connectors";
+import {
+  useAccount,
+  useConnect,
+  useConnectors,
+  useDisconnect,
+  useSwitchChain,
+} from "wagmi";
+import type { Connector } from "wagmi";
 import { avalancheFuji } from "wagmi/chains";
 
 export function useWallet() {
   const account = useAccount();
   const { connect, isPending: isConnecting } = useConnect();
+  const allConnectors = useConnectors();
   const { disconnect } = useDisconnect();
   const { switchChain, isPending: isSwitching } = useSwitchChain();
 
   const isWrongNetwork =
     account.isConnected && account.chainId !== avalancheFuji.id;
+
+  // Deduplicate connectors by id
+  const seen = new Set<string>();
+  const connectors = allConnectors.filter((c) => {
+    if (seen.has(c.id)) return false;
+    seen.add(c.id);
+    return true;
+  });
 
   return {
     // State
@@ -21,8 +36,14 @@ export function useWallet() {
     isWrongNetwork,
     chainId: account.chainId,
 
-    // Actions
-    connect: () => connect({ connector: injected() }),
+    // Connectors
+    connectors,
+    connectWith: (connector: Connector) => connect({ connector }),
+
+    // Actions — connect() uses first available connector as fallback for simple call-sites
+    connect: () => {
+      if (connectors[0]) connect({ connector: connectors[0] });
+    },
     disconnect: () => disconnect(),
     switchToFuji: () => switchChain({ chainId: avalancheFuji.id }),
 
