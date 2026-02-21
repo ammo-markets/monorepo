@@ -23,6 +23,9 @@ export const CONTRACT_ERROR_MESSAGES: Record<string, string> = {
   ZeroAddress: "Invalid address configuration.",
   InvalidBps: "Fee configuration error.",
   InvalidStatus: "Order is not in the expected state for this action.",
+  DeadlineInPast: "The deadline has already passed.",
+  PriceTooLow: "Price is below the acceptable range.",
+  PriceTooHigh: "Price exceeds the acceptable range.",
   InsufficientBalance: "Insufficient token balance for this operation.",
   InsufficientAllowance: "Token allowance not set. Please approve first.",
 };

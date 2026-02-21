@@ -1,212 +1,212 @@
 export const AmmoFactoryAbi = [
   {
-    type: "constructor",
-    inputs: [
+    "type": "constructor",
+    "inputs": [
       {
-        name: "manager_",
-        type: "address",
-        internalType: "address",
+        "name": "manager_",
+        "type": "address",
+        "internalType": "address"
       },
       {
-        name: "usdc_",
-        type: "address",
-        internalType: "address",
+        "name": "usdc_",
+        "type": "address",
+        "internalType": "address"
       },
       {
-        name: "usdcDecimals_",
-        type: "uint8",
-        internalType: "uint8",
-      },
+        "name": "usdcDecimals_",
+        "type": "uint8",
+        "internalType": "uint8"
+      }
     ],
-    stateMutability: "nonpayable",
+    "stateMutability": "nonpayable"
   },
   {
-    type: "function",
-    name: "caliberIds",
-    inputs: [
+    "type": "function",
+    "name": "caliberIds",
+    "inputs": [
       {
-        name: "",
-        type: "uint256",
-        internalType: "uint256",
-      },
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
     ],
-    outputs: [
+    "outputs": [
       {
-        name: "",
-        type: "bytes32",
-        internalType: "bytes32",
-      },
+        "name": "",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
     ],
-    stateMutability: "view",
+    "stateMutability": "view"
   },
   {
-    type: "function",
-    name: "calibers",
-    inputs: [
+    "type": "function",
+    "name": "calibers",
+    "inputs": [
       {
-        name: "",
-        type: "bytes32",
-        internalType: "bytes32",
-      },
+        "name": "",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
     ],
-    outputs: [
+    "outputs": [
       {
-        name: "market",
-        type: "address",
-        internalType: "address",
+        "name": "market",
+        "type": "address",
+        "internalType": "address"
       },
       {
-        name: "token",
-        type: "address",
-        internalType: "address",
-      },
+        "name": "token",
+        "type": "address",
+        "internalType": "address"
+      }
     ],
-    stateMutability: "view",
+    "stateMutability": "view"
   },
   {
-    type: "function",
-    name: "createCaliber",
-    inputs: [
+    "type": "function",
+    "name": "createCaliber",
+    "inputs": [
       {
-        name: "caliberId",
-        type: "bytes32",
-        internalType: "bytes32",
+        "name": "caliberId",
+        "type": "bytes32",
+        "internalType": "bytes32"
       },
       {
-        name: "name",
-        type: "string",
-        internalType: "string",
+        "name": "name",
+        "type": "string",
+        "internalType": "string"
       },
       {
-        name: "symbol",
-        type: "string",
-        internalType: "string",
+        "name": "symbol",
+        "type": "string",
+        "internalType": "string"
       },
       {
-        name: "oracle",
-        type: "address",
-        internalType: "address",
+        "name": "oracle",
+        "type": "address",
+        "internalType": "address"
       },
       {
-        name: "mintFeeBps",
-        type: "uint256",
-        internalType: "uint256",
+        "name": "mintFeeBps",
+        "type": "uint256",
+        "internalType": "uint256"
       },
       {
-        name: "redeemFeeBps",
-        type: "uint256",
-        internalType: "uint256",
+        "name": "redeemFeeBps",
+        "type": "uint256",
+        "internalType": "uint256"
       },
       {
-        name: "minMintRounds",
-        type: "uint256",
-        internalType: "uint256",
-      },
+        "name": "minMintRounds",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
     ],
-    outputs: [
+    "outputs": [
       {
-        name: "market",
-        type: "address",
-        internalType: "address",
+        "name": "market",
+        "type": "address",
+        "internalType": "address"
       },
       {
-        name: "token",
-        type: "address",
-        internalType: "address",
-      },
+        "name": "token",
+        "type": "address",
+        "internalType": "address"
+      }
     ],
-    stateMutability: "nonpayable",
+    "stateMutability": "nonpayable"
   },
   {
-    type: "function",
-    name: "getCaliberCount",
-    inputs: [],
-    outputs: [
+    "type": "function",
+    "name": "getCaliberCount",
+    "inputs": [],
+    "outputs": [
       {
-        name: "",
-        type: "uint256",
-        internalType: "uint256",
-      },
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
     ],
-    stateMutability: "view",
+    "stateMutability": "view"
   },
   {
-    type: "function",
-    name: "manager",
-    inputs: [],
-    outputs: [
+    "type": "function",
+    "name": "manager",
+    "inputs": [],
+    "outputs": [
       {
-        name: "",
-        type: "address",
-        internalType: "contract AmmoManager",
-      },
+        "name": "",
+        "type": "address",
+        "internalType": "contract AmmoManager"
+      }
     ],
-    stateMutability: "view",
+    "stateMutability": "view"
   },
   {
-    type: "function",
-    name: "usdc",
-    inputs: [],
-    outputs: [
+    "type": "function",
+    "name": "usdc",
+    "inputs": [],
+    "outputs": [
       {
-        name: "",
-        type: "address",
-        internalType: "address",
-      },
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
     ],
-    stateMutability: "view",
+    "stateMutability": "view"
   },
   {
-    type: "function",
-    name: "usdcDecimals",
-    inputs: [],
-    outputs: [
+    "type": "function",
+    "name": "usdcDecimals",
+    "inputs": [],
+    "outputs": [
       {
-        name: "",
-        type: "uint8",
-        internalType: "uint8",
-      },
+        "name": "",
+        "type": "uint8",
+        "internalType": "uint8"
+      }
     ],
-    stateMutability: "view",
+    "stateMutability": "view"
   },
   {
-    type: "event",
-    name: "CaliberCreated",
-    inputs: [
+    "type": "event",
+    "name": "CaliberCreated",
+    "inputs": [
       {
-        name: "caliberId",
-        type: "bytes32",
-        indexed: true,
-        internalType: "bytes32",
+        "name": "caliberId",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
       },
       {
-        name: "market",
-        type: "address",
-        indexed: true,
-        internalType: "address",
+        "name": "market",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
       },
       {
-        name: "token",
-        type: "address",
-        indexed: true,
-        internalType: "address",
-      },
+        "name": "token",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
     ],
-    anonymous: false,
+    "anonymous": false
   },
   {
-    type: "error",
-    name: "CaliberExists",
-    inputs: [],
+    "type": "error",
+    "name": "CaliberExists",
+    "inputs": []
   },
   {
-    type: "error",
-    name: "NotOwner",
-    inputs: [],
+    "type": "error",
+    "name": "NotOwner",
+    "inputs": []
   },
   {
-    type: "error",
-    name: "ZeroAddress",
-    inputs: [],
-  },
+    "type": "error",
+    "name": "ZeroAddress",
+    "inputs": []
+  }
 ] as const;
