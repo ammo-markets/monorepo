@@ -20,6 +20,9 @@ export function useKycStatus(walletAddress: string | undefined) {
     queryFn: async (): Promise<KycStatusData> => {
       try {
         const res = await fetch("/api/users/kyc");
+        if (!res.ok) {
+          throw new Error(`Failed to fetch KYC status (${res.status})`);
+        }
         const data = await res.json();
         let dateOfBirth: string | null = null;
         if (data.kycDateOfBirth) {
@@ -56,6 +59,13 @@ export function useKycSubmit() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(
+          (errorData as { error?: string }).error ??
+            `KYC submission failed (${res.status})`,
+        );
+      }
       return res.json();
     },
     onSuccess: () => {
