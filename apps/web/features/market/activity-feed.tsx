@@ -124,7 +124,9 @@ export function ActivityFeed() {
                         className="font-mono text-sm tabular-nums"
                         style={{ color: "var(--text-secondary)" }}
                       >
-                        {Number(item.amount).toLocaleString("en-US")} rounds
+                        {item.type === "MINT"
+                          ? `${(Number(item.amount) / 1e6).toFixed(2)} USDC`
+                          : `${Math.floor(Number(item.amount) / 1e18).toLocaleString("en-US")} rounds`}
                       </span>
                     </td>
                     <td className="px-4 py-3">

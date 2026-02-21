@@ -711,9 +711,21 @@ function StepShipping({
           setIsSaving(true);
           setSaveError(null);
           try {
-            // Shipping address is saved for reference; the API requires an orderId
-            // which won't exist until the on-chain tx completes. For now we store
-            // it locally and advance. The worker will associate it post-indexing.
+            const res = await fetch("/api/users/profile", {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                defaultShippingName: address.fullName,
+                defaultShippingLine1: address.address1,
+                defaultShippingLine2: address.address2 || null,
+                defaultShippingCity: address.city,
+                defaultShippingState: address.state,
+                defaultShippingZip: address.zip,
+              }),
+            });
+            if (!res.ok) {
+              throw new Error("Failed to save shipping address");
+            }
             onNext();
           } catch {
             setSaveError("Failed to save shipping address. Please try again.");

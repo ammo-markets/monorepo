@@ -548,9 +548,14 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
     order.type === "MINT" ? buildMintSteps(order) : buildRedeemSteps(order);
   const spec = CALIBER_SPECS[order.caliber as Caliber];
   const Icon = caliberIcons[order.caliber as Caliber];
-  const amount = Math.floor(
-    Number(order.usdcAmount ?? order.tokenAmount ?? "0"),
-  );
+  const amountDisplay =
+    order.type === "MINT"
+      ? order.usdcAmount
+        ? `${(Number(order.usdcAmount) / 1e6).toFixed(2)} USDC`
+        : "\u2014"
+      : order.tokenAmount
+        ? `${Math.floor(Number(order.tokenAmount) / 1e18).toLocaleString()} rounds`
+        : "\u2014";
 
   return (
     <div className="mx-auto max-w-[720px] px-4 py-8 sm:py-12">
@@ -624,7 +629,7 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
 
           <DetailRow label="Amount">
             <span className="font-mono tabular-nums">
-              {amount.toLocaleString()} rounds
+              {amountDisplay}
             </span>
           </DetailRow>
 

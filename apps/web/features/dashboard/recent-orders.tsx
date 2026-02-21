@@ -159,9 +159,14 @@ interface RecentOrdersProps {
 function OrderRow({ order }: { order: OrderFromAPI }) {
   const Icon = caliberIcons[order.caliber as Caliber];
   const displayStatus = mapOrderStatus(order.status);
-  const amount = Math.floor(
-    Number(order.usdcAmount ?? order.tokenAmount ?? "0"),
-  );
+  const amountDisplay =
+    order.type === "MINT"
+      ? order.usdcAmount
+        ? `${(Number(order.usdcAmount) / 1e6).toFixed(2)} USDC`
+        : "\u2014"
+      : order.tokenAmount
+        ? `${Math.floor(Number(order.tokenAmount) / 1e18).toLocaleString()} rds`
+        : "\u2014";
 
   return (
     <div
@@ -179,7 +184,7 @@ function OrderRow({ order }: { order: OrderFromAPI }) {
         className="font-mono text-sm tabular-nums"
         style={{ color: "var(--text-primary)" }}
       >
-        {amount.toLocaleString()} rds
+        {amountDisplay}
       </span>
       <div className="ml-auto flex items-center gap-4">
         <StatusBadge status={displayStatus} />
@@ -196,9 +201,14 @@ function OrderRow({ order }: { order: OrderFromAPI }) {
 function OrderCard({ order }: { order: OrderFromAPI }) {
   const Icon = caliberIcons[order.caliber as Caliber];
   const displayStatus = mapOrderStatus(order.status);
-  const amount = Math.floor(
-    Number(order.usdcAmount ?? order.tokenAmount ?? "0"),
-  );
+  const amountDisplay =
+    order.type === "MINT"
+      ? order.usdcAmount
+        ? `${(Number(order.usdcAmount) / 1e6).toFixed(2)} USDC`
+        : "\u2014"
+      : order.tokenAmount
+        ? `${Math.floor(Number(order.tokenAmount) / 1e18).toLocaleString()} rounds`
+        : "\u2014";
 
   return (
     <div
@@ -223,7 +233,7 @@ function OrderCard({ order }: { order: OrderFromAPI }) {
           className="font-mono text-sm tabular-nums"
           style={{ color: "var(--text-primary)" }}
         >
-          {amount.toLocaleString()} rounds
+          {amountDisplay}
         </span>
         <span className="text-xs" style={{ color: "var(--text-muted)" }}>
           {timeAgo(order.createdAt)}

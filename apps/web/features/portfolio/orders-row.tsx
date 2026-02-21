@@ -24,9 +24,14 @@ export function OrdersDesktopRow({
   const Icon = caliberIcons[order.caliber];
   const router = useRouter();
   const displayStatus = mapOrderStatus(order.status);
-  const amount = Math.floor(
-    Number(order.usdcAmount ?? order.tokenAmount ?? "0"),
-  );
+  const amountDisplay =
+    order.type === "MINT"
+      ? order.usdcAmount
+        ? `${(Number(order.usdcAmount) / 1e6).toFixed(2)} USDC`
+        : "\u2014"
+      : order.tokenAmount
+        ? `${Math.floor(Number(order.tokenAmount) / 1e18).toLocaleString()} rounds`
+        : "\u2014";
   return (
     <tr
       className="cursor-pointer transition-colors duration-100 hover:bg-ax-tertiary"
@@ -63,7 +68,7 @@ export function OrdersDesktopRow({
           className="font-mono text-sm tabular-nums"
           style={{ color: "var(--text-primary)" }}
         >
-          {amount.toLocaleString()} rounds
+          {amountDisplay}
         </span>
       </td>
       {/* Status */}
@@ -84,9 +89,14 @@ export function OrderMobileCard({ order }: { order: OrderFromAPI }) {
   const Icon = caliberIcons[order.caliber];
   const router = useRouter();
   const displayStatus = mapOrderStatus(order.status);
-  const amount = Math.floor(
-    Number(order.usdcAmount ?? order.tokenAmount ?? "0"),
-  );
+  const amountDisplay =
+    order.type === "MINT"
+      ? order.usdcAmount
+        ? `${(Number(order.usdcAmount) / 1e6).toFixed(2)} USDC`
+        : "\u2014"
+      : order.tokenAmount
+        ? `${Math.floor(Number(order.tokenAmount) / 1e18).toLocaleString()} rounds`
+        : "\u2014";
   return (
     <div
       className="cursor-pointer rounded-xl p-4 transition-all duration-150 bg-ax-secondary border border-border-default hover:border-brass-border"
@@ -121,7 +131,7 @@ export function OrderMobileCard({ order }: { order: OrderFromAPI }) {
           className="font-mono text-sm tabular-nums"
           style={{ color: "var(--text-secondary)" }}
         >
-          {amount.toLocaleString()} rounds
+          {amountDisplay}
         </span>
       </div>
       <div className="mt-2 flex items-center justify-between">
