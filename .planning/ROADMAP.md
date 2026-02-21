@@ -151,7 +151,11 @@ Plans:
   3. Worker MintStarted handler creates an order with `usdcAmount` populated from the event's USDC-wei value and `tokenAmount` left null until finalization
   4. Worker RedeemRequested handler creates an order with `tokenAmount` populated from the event's token-wei value and `usdcAmount` left null until finalization
   5. Two events emitted in the same transaction (different logIndex) each produce their own distinct order record (no silent overwrite)
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 27-01-PLAN.md -- Prisma schema migration: composite (txHash, logIndex) uniqueness, normalized usdcAmount/tokenAmount columns, drop old amount field
+- [ ] 27-02-PLAN.md -- Worker handler updates: composite key upserts, normalized amount population, self-healing finalization handlers
 
 ### Phase 28: Data Flow Completion
 **Goal**: All user-facing surfaces display the correct amount for context (USDC cost vs token rounds), activity feeds sort by latest state change, and the redeem flow saves shipping before confirmation
@@ -233,7 +237,7 @@ Phases execute in numeric order: 27 -> 28 -> 29 -> 30 -> 31
 | 24. Foundation & Setup | v1.5 | 1/1 | Complete | 2026-02-17 |
 | 25. Slide Content & Navigation | v1.5 | 0/2 | Not started | - |
 | 26. PDF Export & Deployment | v1.5 | 0/2 | Not started | - |
-| 27. Data Model Migration | v1.6 | 0/? | Not started | - |
+| 27. Data Model Migration | v1.6 | 0/2 | Not started | - |
 | 28. Data Flow Completion | v1.6 | 0/? | Not started | - |
 | 29. Security Hardening | v1.6 | 0/? | Not started | - |
 | 30. Architecture & Contract Hardening | v1.6 | 0/? | Not started | - |
