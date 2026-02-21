@@ -1,78 +1,71 @@
-# Requirements: Ammo Exchange Pitch Deck
+# Requirements: Ammo Exchange
 
-**Defined:** 2026-02-17
+**Defined:** 2026-02-21
 **Core Value:** Anyone worldwide can get price exposure to U.S. ammunition by minting ammo tokens with USDC, while only verified U.S. residents in allowed states can redeem for physical delivery.
 
-## v1.5 Requirements
+## v1.6 Requirements
 
-Requirements for the Pitch Deck milestone. Each maps to roadmap phases.
+Requirements for Audit Remediation milestone. Each maps to roadmap phases.
 
-### Setup & Foundation
+### Data Correctness
 
-- [x] **SETUP-01**: Pitch deck app scaffolded at `apps/pitchdeck` with Next.js 15, Tailwind v4, and static export (`output: "export"`)
-- [x] **SETUP-02**: Hex-only CSS theme matching ammo-exchange brass/dark palette (no oklch colors)
-- [x] **SETUP-03**: Turborepo integration with correct build deps (shared package only, port 3001)
+- [ ] **DATA-01**: Worker indexes orders with composite uniqueness (txHash + logIndex), so multiple events in one transaction each create distinct order records
+- [ ] **DATA-02**: Order schema stores separate `usdcAmount` and `tokenAmount` fields so mint and redeem amounts are unambiguous
+- [ ] **DATA-03**: Worker handlers populate both amount fields correctly (USDC-wei from MintStarted, token-wei from RedeemRequested)
+- [ ] **DATA-04**: All APIs and UI components render amounts using the correct field for context (USDC for cost, token for rounds)
+- [ ] **DATA-05**: Activity API returns `updatedAt` timestamp so activity feed sorts by most recent state change
+- [ ] **DATA-06**: Redeem flow persists shipping address to database via the existing shipping API before advancing to confirmation step
 
-### Slide Content
+### Security Hardening
 
-- [x] **SLIDE-01**: Cover slide with brand identity, tagline, and 5-second hook
-- [x] **SLIDE-02**: Problem slide presenting $8B ammunition market pain points
-- [x] **SLIDE-03**: Why Now slide — market timing narrative with ammunition demand trends and crypto convergence
-- [x] **SLIDE-04**: Market Opportunity — TAM/SAM/SOM with buyer statistics
-- [x] **SLIDE-05**: Buyer Personas — target customer profiles (institutional, retail, international)
-- [x] **SLIDE-06**: Solution slide — USDC in, tokens out, redeem for physical delivery
-- [x] **SLIDE-07**: Revenue Model — fee structure table and unit economics
-- [x] **SLIDE-08**: Competitive Landscape — "PAXG for ammunition" positioning vs AmmoSeek/AmmoSquared
-- [x] **SLIDE-09**: Traction/Demo slide with live testnet link CTA to Fuji dashboard
-- [x] **SLIDE-10**: Regulatory Positioning — no FFL required, KYC at redemption, token classification
-- [x] **SLIDE-11**: Roadmap — protocol development timeline and milestones
-- [x] **SLIDE-12**: Ask/CTA — general call-to-action for investors and partners
-- [x] **SLIDE-13**: Close slide — final brand impression with contact details
+- [ ] **SEC-01**: KYC GET endpoint excludes gov ID number from API response (returns masked or status-only)
+- [ ] **SEC-02**: KYC mutation hook throws on non-2xx responses so error boundaries and toast messages activate
+- [ ] **SEC-03**: Rate limiter extracts client IP from trusted proxy chain only (not raw x-forwarded-for)
+- [ ] **SEC-04**: State code input is uppercased and validated against known US state codes server-side before restricted-state comparison
+- [ ] **SEC-05**: SIWE verification enforces expected domain, URI, and chain ID policy (not just nonce)
 
-### Navigation & Interaction
+### Architecture Integrity
 
-- [x] **NAV-01**: Keyboard navigation (ArrowLeft/Right, Space, Home/End)
-- [x] **NAV-02**: Slide counter and progress indicator
-- [x] **NAV-03**: Slide transitions via framer-motion (opacity + translateX, smooth visual change)
-- [x] **NAV-04**: Prev/Next click controls
+- [ ] **ARCH-01**: Stats and supply APIs format on-chain BigInt values as strings (no Number conversion that loses precision)
+- [ ] **ARCH-02**: Caliber registry is sourced from config or factory events so newly deployed markets are automatically indexed and surfaced
+- [ ] **ARCH-03**: Worker stats backfill detects and fills gaps in activity history instead of skipping when any rows exist
 
-### PDF Export
+### Contract Hardening
 
-- [ ] **PDF-01**: Client-side PDF export via html2canvas-pro + jsPDF (all 13 slides)
-- [ ] **PDF-02**: Off-screen rendering at 1920x1080 with scale:2 for crisp text
-- [ ] **PDF-03**: Export progress indicator during PDF generation
+- [ ] **CNTR-01**: CaliberMarket rejects startMint/startRedeem calls with deadlines in the past
+- [ ] **CNTR-02**: CaliberMarket finalizeMint enforces price sanity bounds on keeper-supplied actualPriceX18 (e.g., within ±50% of last known price or configurable range)
 
-### Deployment
+### Test Coverage
 
-- [ ] **DEPLOY-01**: Static export deployable to Vercel at shareable investor URL
+- [ ] **TEST-01**: Worker event handlers have automated tests verifying idempotent replay (same event processed twice produces one order)
+- [ ] **TEST-02**: Worker event handlers have automated tests verifying composite uniqueness (two events in one tx produce two orders)
+- [ ] **TEST-03**: API auth tests verify unauthenticated requests are rejected, non-keeper requests to admin routes return 404
+- [ ] **TEST-04**: API compliance tests verify restricted-state rejection, state normalization, KYC response masking
+- [ ] **TEST-05**: E2E flow tests cover mint initiation, redeem initiation, and keeper finalization happy paths
 
-## v2 Requirements
+## Future Requirements
 
-Deferred to future release. Tracked but not in current roadmap.
+### Monitoring & Observability
 
-### Personalization
+- **MON-01**: Structured logging with correlation IDs across worker and API
+- **MON-02**: Health check endpoints for worker and API
+- **MON-03**: Alerting on worker lag (BlockCursor falling behind chain head)
 
-- **PERS-01**: URL parameter personalization (?investor=Name shows "Prepared for [Name]" on cover)
+### Production Deployment
 
-### Advanced Visuals
-
-- **VIS-01**: Animated protocol flow visualization on solution slide
-- **VIS-02**: Live on-chain metrics feed from Fuji testnet
-
-### Analytics
-
-- **ANLY-01**: Custom view analytics for tracking investor engagement
+- **PROD-01**: Mainnet deployment with real USDC and verified contracts
+- **PROD-02**: Redis-backed rate limiter for multi-instance deployment
+- **PROD-03**: Real KYC provider integration (Persona or Jumio)
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| Presentation editor/CMS | Content changes quarterly; edit the code directly |
-| Presenter mode / speaker notes | Unnecessary complexity for investor distribution |
-| Embedded dApp in deck | Link out to Fuji dashboard instead — keeps deck lightweight |
-| Multi-language support | English-only for U.S.-focused initial investor outreach |
-| Tokenomics slides | Deferred in whitepaper; including them invites securities scrutiny |
-| Dark mode toggle | Deck is always dark theme (brass/dark brand) |
+| Multi-chain indexing | Finding 1 notes future incompatibility; composite key fixes it but multi-chain support is out of scope for v1.6 |
+| Real KYC provider | Auto-approve on testnet is sufficient; gov ID masking addresses the data leak |
+| Mainnet deployment | Fuji is the target environment for this remediation cycle |
+| Batch keeper operations | Single order finalization sufficient for testnet volume |
+| WebSocket event streaming | Polling indexer is validated and reliable |
 
 ## Traceability
 
@@ -80,37 +73,33 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SETUP-01 | Phase 24 | Satisfied |
-| SETUP-02 | Phase 24 | Satisfied |
-| SETUP-03 | Phase 24 | Satisfied |
-| SLIDE-01 | Phase 25 | Satisfied |
-| SLIDE-02 | Phase 25 | Satisfied |
-| SLIDE-03 | Phase 25 | Satisfied |
-| SLIDE-04 | Phase 25 | Satisfied |
-| SLIDE-05 | Phase 25 | Satisfied |
-| SLIDE-06 | Phase 25 | Satisfied |
-| SLIDE-07 | Phase 25 | Satisfied |
-| SLIDE-08 | Phase 25 | Satisfied |
-| SLIDE-09 | Phase 25 | Satisfied |
-| SLIDE-10 | Phase 25 | Satisfied |
-| SLIDE-11 | Phase 25 | Satisfied |
-| SLIDE-12 | Phase 25 | Satisfied |
-| SLIDE-13 | Phase 25 | Satisfied |
-| NAV-01 | Phase 25 | Satisfied |
-| NAV-02 | Phase 25 | Satisfied |
-| NAV-03 | Phase 25 | Satisfied |
-| NAV-04 | Phase 25 | Satisfied |
-| PDF-01 | Phase 26 | Pending |
-| PDF-02 | Phase 26 | Pending |
-| PDF-03 | Phase 26 | Pending |
-| DEPLOY-01 | Phase 26 | Pending |
+| DATA-01 | — | Pending |
+| DATA-02 | — | Pending |
+| DATA-03 | — | Pending |
+| DATA-04 | — | Pending |
+| DATA-05 | — | Pending |
+| DATA-06 | — | Pending |
+| SEC-01 | — | Pending |
+| SEC-02 | — | Pending |
+| SEC-03 | — | Pending |
+| SEC-04 | — | Pending |
+| SEC-05 | — | Pending |
+| ARCH-01 | — | Pending |
+| ARCH-02 | — | Pending |
+| ARCH-03 | — | Pending |
+| CNTR-01 | — | Pending |
+| CNTR-02 | — | Pending |
+| TEST-01 | — | Pending |
+| TEST-02 | — | Pending |
+| TEST-03 | — | Pending |
+| TEST-04 | — | Pending |
+| TEST-05 | — | Pending |
 
 **Coverage:**
-- v1.5 requirements: 24 total
-- Satisfied: 20 (Phases 24-25 complete)
-- Pending: 4 (Phase 26)
-- Unmapped: 0
+- v1.6 requirements: 21 total
+- Mapped to phases: 0
+- Unmapped: 21 ⚠️
 
 ---
-*Requirements defined: 2026-02-17*
-*Last updated: 2026-02-21 — slide requirements updated to match creative rewrite (WhyNow, Personas, Close replaced Volatility, HowItWorks, Team)*
+*Requirements defined: 2026-02-21*
+*Last updated: 2026-02-21 after initial definition*
