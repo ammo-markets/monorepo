@@ -2,7 +2,7 @@ import { publicClient } from "@/lib/viem";
 import { CaliberMarketAbi, AmmoTokenAbi } from "@ammo-exchange/contracts/abis";
 import { CONTRACT_ADDRESSES, CALIBER_SPECS } from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
-import { formatUnits } from "viem";
+
 
 const CALIBERS: Caliber[] = ["9MM", "556", "22LR", "308"];
 const fuji = CONTRACT_ADDRESSES.fuji;
@@ -71,7 +71,7 @@ export async function GET() {
         name: CALIBER_SPECS[caliber].name,
         pricePerRound: Number(priceX18) / 1e18,
         priceX18: priceX18.toString(),
-        totalSupply: Math.floor(Number(formatUnits(supply, 18))),
+        totalSupply: (supply / BigInt(10) ** BigInt(18)).toString(),
       };
     });
 

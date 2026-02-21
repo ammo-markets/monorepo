@@ -9,7 +9,7 @@ export async function GET() {
       prisma.user.count(),
       prisma.order.findMany({
         where: { type: "MINT", status: "COMPLETED" },
-        select: { amount: true },
+        select: { usdcAmount: true },
       }),
     ]);
 
@@ -23,16 +23,25 @@ export async function GET() {
     }));
 
     // Trading volume: sum USDC-wei from completed MINT orders, convert to USD (6 decimals)
-    const totalVolumeUsd = mintOrders.reduce(
-      (sum, order) => sum + Number(BigInt(order.amount)) / 1e6,
-      0,
+    // Use BigInt accumulation to avoid Number truncation, return as string
+    const totalVolumeUsdBigInt = mintOrders.reduce(
+      (sum, order) =>
+        sum + (order.usdcAmount ? BigInt(order.usdcAmount) : BigInt(0)),
+      BigInt(0),
     );
+    const totalVolumeUsd = (
+      totalVolumeUsdBigInt / BigInt(1_000_000)
+    ).toString();
 
     // Rounds tokenized: sum totalMinted across calibers (now in token-wei), convert to human count (18 decimals)
-    const roundsTokenized = rows.reduce(
-      (sum, row) => sum + Number(BigInt(row.totalMinted)) / 1e18,
-      0,
+    // Use BigInt accumulation, return as string
+    const roundsTokenizedBigInt = rows.reduce(
+      (sum, row) => sum + BigInt(row.totalMinted),
+      BigInt(0),
     );
+    const roundsTokenized = (
+      roundsTokenizedBigInt / BigInt(10) ** BigInt(18)
+    ).toString();
 
     return Response.json(
       {

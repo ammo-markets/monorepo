@@ -59,7 +59,7 @@ export async function GET() {
       calibers: CALIBERS.map((caliber, i) => ({
         caliber,
         name: CALIBER_SPECS[caliber].name,
-        totalSupply: Math.floor(Number(formatUnits(supplies[i]!, 18))),
+        totalSupply: (supplies[i]! / BigInt(10) ** BigInt(18)).toString(),
       })),
     });
   } catch (error) {
