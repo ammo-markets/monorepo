@@ -51,9 +51,6 @@ contract CaliberMarket {
     error MinMintNotMet();
     error Slippage();
     error DeadlineExpired();
-    error DeadlineInPast();
-    error PriceTooLow();
-    error PriceTooHigh();
     error InvalidStatus();
     error Reentrancy();
     error TreasuryNotSet();
@@ -83,7 +80,6 @@ contract CaliberMarket {
     uint256 public mintFeeBps;
     uint256 public redeemFeeBps;
     uint256 public minMintRounds;
-    uint256 public maxPriceDeviationBps = 5000;
     bool public paused;
     uint256 public nextOrderId = 1;
     uint256 private _locked;
@@ -151,7 +147,6 @@ contract CaliberMarket {
     {
         if (usdcAmount == 0) revert InvalidAmount();
         if (maxSlippageBps > 10_000) revert InvalidBps();
-        if (deadline != 0 && deadline <= uint64(block.timestamp)) revert DeadlineInPast();
 
         uint256 requestPrice = oracle.getPrice();
         if (requestPrice == 0) revert InvalidPrice();
@@ -188,7 +183,6 @@ contract CaliberMarket {
         returns (uint256 orderId)
     {
         if (tokenAmount == 0) revert InvalidAmount();
-        if (deadline != 0 && deadline <= uint64(block.timestamp)) revert DeadlineInPast();
         token.transferFrom(msg.sender, address(this), tokenAmount);
 
         orderId = nextOrderId++;
@@ -209,14 +203,6 @@ contract CaliberMarket {
 
     function finalizeMint(uint256 orderId, uint256 actualPriceX18) external onlyKeeper whenNotPaused {
         if (actualPriceX18 == 0) revert InvalidPrice();
-
-        uint256 oraclePrice = oracle.getPrice();
-        if (oraclePrice > 0) {
-            uint256 floor = (oraclePrice * (10_000 - maxPriceDeviationBps)) / 10_000;
-            uint256 ceiling = (oraclePrice * (10_000 + maxPriceDeviationBps)) / 10_000;
-            if (actualPriceX18 < floor) revert PriceTooLow();
-            if (actualPriceX18 > ceiling) revert PriceTooHigh();
-        }
 
         MintOrder storage order = mintOrders[orderId];
         if (order.status != MintStatus.Started) revert InvalidStatus();
@@ -308,11 +294,6 @@ contract CaliberMarket {
         uint256 old = minMintRounds;
         minMintRounds = newMin;
         emit MinMintUpdated(old, newMin);
-    }
-
-    function setMaxPriceDeviation(uint256 bps) external onlyOwner {
-        if (bps == 0 || bps > 10_000) revert InvalidBps();
-        maxPriceDeviationBps = bps;
     }
 
     function pause() external {
