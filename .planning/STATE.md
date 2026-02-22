@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-22)
 
 Milestone: v1.7 Contract Rollback
 Phase: 32 of 32 (Contract Rollback & Cleanup)
-Plan: 0 of 1 in current phase
-Status: Ready to plan
-Last activity: 2026-02-22 -- Roadmap created for v1.7
+Plan: 1 of 1 in current phase
+Status: Phase complete
+Last activity: 2026-02-22 -- Completed 32-01 contract rollback
 
-Progress: [░░░░░░░░░░] 0% (v1.7)
+Progress: [██████████] 100% (v1.7)
 
 ## Performance Metrics
 
@@ -72,6 +72,8 @@ Recent decisions affecting current work:
 - [v1.7] Old contracts at block 51699730 include all audit fixes (63714d1) except 30-01 additions
 - [v1.7] DeadlineInPast check not critical -- frontend can validate deadline client-side
 - [v1.7] Phase 30-02 worker improvements (gap backfill, config-driven calibers) are contract-independent -- KEEP
+- [v1.7] Oracle sanity check removed from finalizeMint -- user slippage guard sufficient for pre-PMF
+- [v1.7] Rolled back to old Fuji deployment (block 51699730) instead of redeploying
 
 ### Pending Todos
 
@@ -92,5 +94,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-22
-Stopped at: Roadmap created for v1.7 Contract Rollback
+Stopped at: Completed 32-01-PLAN.md (Contract Rollback)
 Resume file: None
