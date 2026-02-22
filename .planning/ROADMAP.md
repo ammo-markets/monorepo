@@ -100,7 +100,7 @@ Full details in Phase Details below.
 
 **Milestone Goal:** Remove the oracle sanity check from finalizeMint and roll back to pre-30-01 deployed contracts on Fuji -- the keeper passes actual price directly and the user's slippage guard (minTokensOut) is sufficient protection.
 
-- [ ] **Phase 32: Contract Rollback & Cleanup** - Revert CaliberMarket.sol to pre-30-01 state, roll back Fuji addresses, regenerate ABI, clean up tests and frontend error mappings, purge stale testnet data
+- [x] **Phase 32: Contract Rollback & Cleanup** - Revert CaliberMarket.sol to pre-30-01 state, roll back Fuji addresses, regenerate ABI, clean up tests and frontend error mappings, purge stale testnet data (completed 2026-02-22)
 
 ## Phase Details
 
@@ -214,7 +214,7 @@ Phase 32 is the sole phase in v1.7.
 | 29. Security Hardening                   | v1.6      | 1/1            | Complete    | 2026-02-21 |
 | 30. Architecture & Contract Hardening    | v1.6      | 3/3            | Complete    | 2026-02-21 |
 | 31. Test Suite                           | v1.6      | 3/3            | Complete    | 2026-02-21 |
-| 32. Contract Rollback & Cleanup          | v1.7      | 0/1            | Not started | -          |
+| 32. Contract Rollback & Cleanup          | v1.7      | Complete    | 2026-02-22 | -          |
 
 ---
 
