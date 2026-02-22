@@ -5,15 +5,15 @@
 See: .planning/PROJECT.md (updated 2026-02-22)
 
 **Core value:** Anyone worldwide can get price exposure to U.S. ammunition by minting ammo tokens with USDC, while only verified U.S. residents in allowed states can redeem for physical delivery.
-**Current focus:** v1.7 Contract Rollback
+**Current focus:** v1.7 Contract Rollback -- Phase 32
 
 ## Current Position
 
 Milestone: v1.7 Contract Rollback
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-02-22 — Milestone v1.7 started
+Phase: 32 of 32 (Contract Rollback & Cleanup)
+Plan: 0 of 1 in current phase
+Status: Ready to plan
+Last activity: 2026-02-22 -- Roadmap created for v1.7
 
 Progress: [░░░░░░░░░░] 0% (v1.7)
 
@@ -67,11 +67,11 @@ Progress: [░░░░░░░░░░] 0% (v1.7)
 All decisions logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
-- [v1.7] Oracle sanity check in finalizeMint is incorrect for pre-PMF flow — user's slippage guard (minTokensOut) is sufficient
-- [v1.7] Roll back to old Fuji addresses (pre-30-01) instead of redeploying — zero deployment needed
+- [v1.7] Oracle sanity check in finalizeMint is incorrect for pre-PMF flow -- user's slippage guard (minTokensOut) is sufficient
+- [v1.7] Roll back to old Fuji addresses (pre-30-01) instead of redeploying -- zero deployment needed
 - [v1.7] Old contracts at block 51699730 include all audit fixes (63714d1) except 30-01 additions
-- [v1.7] DeadlineInPast check not critical — frontend can validate deadline client-side
-- [v1.7] Phase 30-02 worker improvements (gap backfill, config-driven calibers) are contract-independent — KEEP
+- [v1.7] DeadlineInPast check not critical -- frontend can validate deadline client-side
+- [v1.7] Phase 30-02 worker improvements (gap backfill, config-driven calibers) are contract-independent -- KEEP
 
 ### Pending Todos
 
@@ -92,5 +92,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-22
-Stopped at: Defining v1.7 requirements
+Stopped at: Roadmap created for v1.7 Contract Rollback
 Resume file: None

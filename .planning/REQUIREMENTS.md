@@ -54,8 +54,8 @@ None — this is a focused rollback milestone.
 **Coverage:**
 - v1.7 requirements: 7 total
 - Mapped to phases: 7
-- Unmapped: 0 ✓
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-22*
-*Last updated: 2026-02-22 after initial definition*
+*Last updated: 2026-02-22 after roadmap creation*
