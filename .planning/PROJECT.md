@@ -66,25 +66,17 @@ Anyone worldwide can get price exposure to U.S. ammunition by minting ammo token
 
 ### Active
 
-## Current Milestone: v1.6 Audit Remediation
+## Current Milestone: v1.7 Contract Rollback
 
-**Goal:** Fix all 12 findings from the protocol audit — data correctness, security hardening, and architecture gaps — to bring the protocol to production-grade integrity before mainnet.
+**Goal:** Remove the oracle sanity check from finalizeMint (keeper passes actual price, user's slippage guard is sufficient) and roll back to pre-30-01 deployed contracts on Fuji — no redeployment needed.
 
 **Target features:**
 
-- Order idempotency keyed by txHash+logIndex (not txHash alone) with DB migration
-- Redeem shipping persistence wired into the main flow (currently skipped)
-- Normalized order amount data model (separate usdcAmount vs tokenAmount fields)
-- Activity API timestamp alignment (updatedAt consistency)
-- KYC endpoint hardening: no gov ID leak, proper mutation error handling
-- Rate limiter identity extraction hardened against x-forwarded-for spoofing
-- State code normalization and validation for compliance checks
-- SIWE verification with domain/URI/chain policy enforcement
-- BigInt-safe formatting in stats and supply APIs (no Number conversion)
-- Contract operational guards: deadline validation, price sanity bounds on finalizeMint
-- Worker backfill self-healing for partial activity history
-- Dynamic caliber registry sourced from factory events (not hardcoded)
-- Automated test suite for worker event replay, API auth/compliance, and E2E flows
+- Revert CaliberMarket.sol to pre-30-01 state (remove DeadlineInPast, oracle sanity check, maxPriceDeviationBps, setMaxPriceDeviation)
+- Roll back Fuji addresses to old deployment (block 51699730)
+- Regenerate ABI from reverted contract source
+- Clean up Foundry tests for removed features
+- Remove orphaned error mappings from frontend
 
 ### Out of Scope
 
@@ -170,4 +162,4 @@ The full DeFi protocol is functional on Avalanche Fuji testnet with production-g
 
 ---
 
-_Last updated: 2026-02-21 after v1.6 milestone started_
+_Last updated: 2026-02-22 after v1.7 milestone started_

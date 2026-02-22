@@ -2,20 +2,20 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-02-21)
+See: .planning/PROJECT.md (updated 2026-02-22)
 
 **Core value:** Anyone worldwide can get price exposure to U.S. ammunition by minting ammo tokens with USDC, while only verified U.S. residents in allowed states can redeem for physical delivery.
-**Current focus:** Phase 31 - Test Suite (v1.6 Audit Remediation)
+**Current focus:** v1.7 Contract Rollback
 
 ## Current Position
 
-Milestone: v1.6 Audit Remediation
-Phase: 31 of 31 (Test Suite)
-Plan: 03 of 03 (Phase 31) -- COMPLETE
-Status: Phase 31 Complete
-Last activity: 2026-02-21 — Completed 31-03 (E2E Happy Path Tests)
+Milestone: v1.7 Contract Rollback
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-02-22 — Milestone v1.7 started
 
-Progress: [██████████] 100% (v1.6)
+Progress: [░░░░░░░░░░] 0% (v1.7)
 
 ## Performance Metrics
 
@@ -55,6 +55,11 @@ Progress: [██████████] 100% (v1.6)
 - Average duration: ~2 min
 - Total execution time: ~6 min
 
+**v1.6 Velocity:**
+
+- Total plans completed: 8
+- Total execution time: ~16 min (estimated)
+
 ## Accumulated Context
 
 ### Decisions
@@ -62,32 +67,11 @@ Progress: [██████████] 100% (v1.6)
 All decisions logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
-- [v1.6] Composite uniqueness (txHash + logIndex) replaces txHash-only order dedup
-- [v1.6] Separate usdcAmount/tokenAmount fields replace single ambiguous amount column
-- [v1.6] Contract changes (CNTR-01, CNTR-02) require Fuji redeployment in Phase 30
-- [v1.6] Tests (Phase 31) come last since they exercise code from all prior phases
-- [27-01] Used prisma migrate diff + deploy workflow for non-interactive migration
-- [27-01] Wiped 7 testnet orders for clean schema migration
-- [27-02] Self-healing finalization creates with tokenAmount only (usdcAmount unavailable from finalization args)
-- [27-02] ActivityLog amount uses coalesce: usdcAmount ?? tokenAmount ?? "0"
-- [28-01] Use BigInt() constructor (not n suffix) for ES2017 target compatibility
-- [28-01] Activity updatedAt aliases createdAt (ActivityLog creation IS state change time)
-- [28-01] totalSupply returned as integer string via BigInt division, not formatUnits
-- [28-02] Activity feed amount is type-aware: MINT divides by 1e6 (USDC-wei), REDEEM divides by 1e18 (token-wei)
-- [28-02] Shipping persistence uses PATCH /api/users/profile defaultShipping fields (no orderId at step 1)
-- [28-02] Portfolio/dashboard display USDC for MINT, rounds for REDEEM (not raw coalesced value)
-- [29-01] VALID_US_STATE_CODES typed as Set<string> for Zod transform compatibility
-- [29-01] SIWE chainId checked post-verify (siwe library verify() does not accept chainId option)
-- [30-01] Price sanity check queries oracle at finalization time, not order creation
-- [30-01] maxPriceDeviationBps defaults to 5000 (50%), configurable by owner
-- [30-01] Oracle returning 0 skips sanity check (graceful degradation)
-- [30-02] CALIBERS derived from CONTRACT_ADDRESSES.fuji.calibers keys via CALIBER_TO_PRISMA mapping
-- [30-02] Gap backfill uses latest ActivityLog timestamp + skipDuplicates for idempotency
-- [30-03] All 15 Fuji contracts redeployed at block 52030756 with deadline/price guards
-- [30-03] Frontend error parser must be updated alongside ABI exports for new contract errors
-- [31-01] Mock PrismaTx uses in-memory Map keyed by composite txHash_logIndex to simulate upsert
-- [31-01] No external test deps needed -- bun:test built-in runner sufficient for worker tests
-- [31-03] E2E tests deliberately simple and happy-path-only, complementing granular tests
+- [v1.7] Oracle sanity check in finalizeMint is incorrect for pre-PMF flow — user's slippage guard (minTokensOut) is sufficient
+- [v1.7] Roll back to old Fuji addresses (pre-30-01) instead of redeploying — zero deployment needed
+- [v1.7] Old contracts at block 51699730 include all audit fixes (63714d1) except 30-01 additions
+- [v1.7] DeadlineInPast check not critical — frontend can validate deadline client-side
+- [v1.7] Phase 30-02 worker improvements (gap backfill, config-driven calibers) are contract-independent — KEEP
 
 ### Pending Todos
 
@@ -107,6 +91,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-21
-Stopped at: Completed 31-03-PLAN.md (E2E Happy Path Tests)
+Last session: 2026-02-22
+Stopped at: Defining v1.7 requirements
 Resume file: None
