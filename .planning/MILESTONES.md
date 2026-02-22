@@ -66,3 +66,21 @@
 **Delivered:** Full UX restructure -- visitors see a polished landing page, authenticated users get a 4-tab app with dashboard, unified trade, and enriched protocol data.
 
 ---
+
+## v1.7 Contract Rollback (Shipped: 2026-02-22)
+
+**Phases completed:** 1 phase (Phase 32), 1 plan, 2 tasks
+**Files changed:** 9 (+200 / -190)
+**Git range:** `8725311` (feat(32-01)) → `1303396` (docs(32-01))
+
+**Key accomplishments:**
+
+- Reverted CaliberMarket.sol to pre-30-01 state (removed oracle sanity check, DeadlineInPast, maxPriceDeviationBps, PriceTooLow/PriceTooHigh)
+- Rolled back Fuji config to old deployment addresses (block 51699730) — no redeployment needed
+- Regenerated ABI matching reverted contract, full monorepo build passes
+- Cleaned up 9 Foundry tests and 3 orphaned frontend error mappings
+
+**Delivered:** Simplified contract — keeper supplies actual price, user's slippage guard (minTokensOut) is the sole protection in finalizeMint.
+
+---
+

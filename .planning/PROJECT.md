@@ -64,19 +64,13 @@ Anyone worldwide can get price exposure to U.S. ammunition by minting ammo token
 - ✓ ProtocolStats wired to /api/stats with real computed data (no hardcoded placeholders) -- v1.3
 - ✓ Single caliber selection flow on Trade page (no duplicate selection) -- v1.3
 
+- ✓ CaliberMarket.sol reverted to pre-30-01 state (no oracle sanity check, no DeadlineInPast, no price deviation bounds) -- v1.7
+- ✓ Fuji config rolled back to old deployment (block 51699730), ABI regenerated -- v1.7
+- ✓ Foundry tests cleaned up (9 tests removed), frontend error mappings cleaned (3 entries removed) -- v1.7
+
 ### Active
 
-## Current Milestone: v1.7 Contract Rollback
-
-**Goal:** Remove the oracle sanity check from finalizeMint (keeper passes actual price, user's slippage guard is sufficient) and roll back to pre-30-01 deployed contracts on Fuji — no redeployment needed.
-
-**Target features:**
-
-- Revert CaliberMarket.sol to pre-30-01 state (remove DeadlineInPast, oracle sanity check, maxPriceDeviationBps, setMaxPriceDeviation)
-- Roll back Fuji addresses to old deployment (block 51699730)
-- Regenerate ABI from reverted contract source
-- Clean up Foundry tests for removed features
-- Remove orphaned error mappings from frontend
+(No active milestone — plan next with `/gsd:new-milestone`)
 
 ### Out of Scope
 
@@ -93,12 +87,12 @@ Anyone worldwide can get price exposure to U.S. ammunition by minting ammo token
 
 ## Current State
 
-**Shipped:** v1.3 UX Restructure & Data Enrichment (2026-02-16)
+**Shipped:** v1.7 Contract Rollback (2026-02-22)
 **Codebase:** ~24,477 LOC TypeScript across apps/web, apps/worker, packages/shared, packages/db, packages/contracts
 
-The full DeFi protocol is functional on Avalanche Fuji testnet with production-grade security, enriched data, and polished UX:
+The full DeFi protocol is functional on Avalanche Fuji testnet with production-grade security, enriched data, polished UX, and simplified contract logic:
 
-- 13 contracts deployed and verified (AmmoManager, AmmoFactory, 4 CaliberMarkets, 4 AmmoTokens, MockUSDC, 4 MockPriceOracles)
+- 13 contracts on Fuji — CaliberMarket reverted to pre-30-01 state (keeper supplies actual price, user's minTokensOut is sole protection)
 - Public landing page with hero, how-it-works, caliber showcase, FAQ, and Launch App CTA
 - Wallet-gated app with responsive 4-tab navigation (sidebar desktop, bottom tabs mobile)
 - Personal dashboard with on-chain token balances, recent orders, quick actions, pending order banner
@@ -108,6 +102,7 @@ The full DeFi protocol is functional on Avalanche Fuji testnet with production-g
 - ProtocolStats, ActivityLog, UserPreference tables with 15-minute stats cron job
 - All frontend components on TanStack Query with error boundaries on every route segment
 - CORS origin whitelist and rate limiting middleware
+- Automated test suite for worker idempotency, API auth/compliance, and E2E flows
 
 ## Context
 
@@ -159,7 +154,10 @@ The full DeFi protocol is functional on Avalanche Fuji testnet with production-g
 | Stats computed from DB only                  | No on-chain reads in cron -- DB already has all order data from indexer                 | ✓ Good -- fast and reliable                      |
 | URL param caliber pre-selection              | CaliberInfoPanel syncs to ?caliber= param, MintFlow/RedeemFlow read it to skip step 0   | ✓ Good -- single selection, smooth UX            |
 | useState FAQ accordion                       | No external library needed for simple expand/collapse behavior                          | ✓ Good -- zero added dependencies                |
+| Remove oracle sanity check from finalizeMint | Keeper passes actual price, user's minTokensOut slippage guard is sufficient for pre-PMF | ✓ Good -- simpler contract, fewer attack surfaces |
+| Roll back to old Fuji deployment             | Old contracts at block 51699730 include all audit fixes except 30-01 additions          | ✓ Good -- zero redeployment needed               |
+| Remove DeadlineInPast from contract          | Frontend can validate deadline client-side; not critical for pre-PMF flow               | ✓ Good -- reduced contract complexity            |
 
 ---
 
-_Last updated: 2026-02-22 after v1.7 milestone started_
+_Last updated: 2026-02-22 after v1.7 milestone_
