@@ -170,11 +170,11 @@ Plans:
 3. The CaliberMarket ABI in packages/contracts/src/abis/ matches the reverted contract source (regenerated via forge build + export-abis), and `pnpm build` compiles without ABI mismatch errors across web and worker
 4. Shared config contract addresses point to the old Fuji deployment (block 51699730) and the app connects to the correct markets/tokens when a user initiates a mint or redeem
 5. The CONTRACT_ERROR_MESSAGES map in apps/web/lib/errors.ts contains no entries for DeadlineInPast, PriceTooLow, or PriceTooHigh
-   **Plans**: TBD
+   **Plans**: 1 plan
 
 Plans:
 
-- [ ] 32-01-PLAN.md -- Revert contract source, clean up tests, regenerate ABI, roll back config addresses, remove frontend error mappings, purge stale data
+- [ ] 32-01-PLAN.md -- Revert contract source, clean up tests, regenerate ABI, roll back config addresses, remove frontend error mappings
 
 ## Progress
 
