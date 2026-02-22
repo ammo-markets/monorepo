@@ -132,19 +132,6 @@ export const CaliberMarketAbi = [
   },
   {
     "type": "function",
-    "name": "maxPriceDeviationBps",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
     "name": "minMintRounds",
     "inputs": [],
     "outputs": [
@@ -354,19 +341,6 @@ export const CaliberMarketAbi = [
         "name": "reasonCode",
         "type": "uint8",
         "internalType": "uint8"
-      }
-    ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "setMaxPriceDeviation",
-    "inputs": [
-      {
-        "name": "bps",
-        "type": "uint256",
-        "internalType": "uint256"
       }
     ],
     "outputs": [],
@@ -798,11 +772,6 @@ export const CaliberMarketAbi = [
   },
   {
     "type": "error",
-    "name": "DeadlineInPast",
-    "inputs": []
-  },
-  {
-    "type": "error",
     "name": "InvalidAmount",
     "inputs": []
   },
@@ -839,16 +808,6 @@ export const CaliberMarketAbi = [
   {
     "type": "error",
     "name": "NotOwner",
-    "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "PriceTooHigh",
-    "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "PriceTooLow",
     "inputs": []
   },
   {
