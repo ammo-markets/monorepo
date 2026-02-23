@@ -16,7 +16,10 @@ affects: [31-testing, apps/web, apps/worker]
 
 tech-stack:
   added: []
-  patterns: ["ABI export pipeline: forge build -> tsx export-abis.ts -> TypeScript const arrays"]
+  patterns:
+    [
+      "ABI export pipeline: forge build -> tsx export-abis.ts -> TypeScript const arrays",
+    ]
 
 key-files:
   created: []
@@ -49,6 +52,7 @@ completed: 2026-02-21
 - **Files modified:** 7
 
 ## Accomplishments
+
 - Regenerated all 5 ABI TypeScript exports with new error types (DeadlineInPast, PriceTooLow, PriceTooHigh) and functions (maxPriceDeviationBps, setMaxPriceDeviation)
 - Added 3 new error messages to frontend parseContractError mapping for user-facing error display
 - Updated all 15 Fuji contract addresses (MockUSDC, AmmoManager, AmmoFactory, 4 calibers x oracle/market/token) to fresh deployment
@@ -64,6 +68,7 @@ Each task was committed atomically:
 3. **Task 3: Update shared config with new Fuji addresses and deployment block** - `685c4a4` (feat)
 
 ## Files Created/Modified
+
 - `packages/contracts/src/abis/CaliberMarket.ts` - Updated ABI with DeadlineInPast, PriceTooLow, PriceTooHigh errors and maxPriceDeviationBps/setMaxPriceDeviation functions
 - `packages/contracts/src/abis/AmmoFactory.ts` - Regenerated ABI export
 - `packages/contracts/src/abis/AmmoManager.ts` - Regenerated ABI export
@@ -73,6 +78,7 @@ Each task was committed atomically:
 - `packages/shared/src/config/index.ts` - Updated all Fuji addresses and deployment block to 52030756
 
 ## Decisions Made
+
 - All 15 Fuji contracts redeployed together (clean deployment includes deadline validation and price sanity bounds from Plan 01)
 - Deployment block 52030756 replaces 51699730 as the new event indexing start point
 - Frontend error parser extended with 3 new error mappings alongside ABI update (Rule 2 - missing critical functionality for user error display)
@@ -82,16 +88,20 @@ Each task was committed atomically:
 None - plan executed exactly as written.
 
 ## Issues Encountered
+
 None
 
 ## User Setup Required
+
 None - deployment was completed by the user as part of the checkpoint flow.
 
 ## Next Phase Readiness
+
 - All contract changes from Phase 30 are deployed and reflected in TypeScript
 - ABI exports, shared config, and frontend error mappings are in sync
 - Ready for Phase 31 (testing) which exercises code from all prior phases
 
 ---
-*Phase: 30-architecture-contract-hardening*
-*Completed: 2026-02-21*
+
+_Phase: 30-architecture-contract-hardening_
+_Completed: 2026-02-21_

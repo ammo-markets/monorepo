@@ -15,7 +15,11 @@ affects: [30-02, 30-03, 31-testing]
 
 tech-stack:
   added: []
-  patterns: ["Oracle-based price sanity check at finalization time", "Configurable deviation bounds via owner setter"]
+  patterns:
+    [
+      "Oracle-based price sanity check at finalization time",
+      "Configurable deviation bounds via owner setter",
+    ]
 
 key-files:
   created: []
@@ -49,6 +53,7 @@ completed: 2026-02-21
 - **Files modified:** 2
 
 ## Accomplishments
+
 - Added DeadlineInPast error and checks in both startMint and startRedeem to prevent wasted gas on expired deadlines
 - Added PriceTooLow/PriceTooHigh errors with oracle-based sanity bounds in finalizeMint to prevent keeper price errors
 - Added configurable maxPriceDeviationBps (default 50%) with owner-only setter
@@ -63,10 +68,12 @@ Each task was committed atomically:
 2. **Task 2: Add Foundry tests for deadline validation and price sanity bounds** - `c3f4633` (test)
 
 ## Files Created/Modified
+
 - `packages/contracts/src/CaliberMarket.sol` - Added DeadlineInPast/PriceTooLow/PriceTooHigh errors, deadline checks in startMint/startRedeem, oracle-based price bounds in finalizeMint, maxPriceDeviationBps state var and setter
 - `packages/contracts/test/CaliberMarket.t.sol` - 9 new tests: 5 CNTR-01 deadline tests, 4 CNTR-02 price sanity tests
 
 ## Decisions Made
+
 - Price sanity check queries oracle at finalization time (current market price), not at order creation time
 - maxPriceDeviationBps defaults to 5000 (50%) -- generous default to avoid false rejections
 - If oracle returns 0 (broken), the sanity check is skipped entirely (graceful degradation)
@@ -77,15 +84,19 @@ Each task was committed atomically:
 None - plan executed exactly as written.
 
 ## Issues Encountered
+
 None
 
 ## User Setup Required
+
 None - no external service configuration required.
 
 ## Next Phase Readiness
+
 - Contract changes complete, ready for ABI export (30-02) and Fuji redeployment (30-03)
 - All existing tests continue to pass with new validation logic
 
 ---
-*Phase: 30-architecture-contract-hardening*
-*Completed: 2026-02-21*
+
+_Phase: 30-architecture-contract-hardening_
+_Completed: 2026-02-21_

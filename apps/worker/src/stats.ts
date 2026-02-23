@@ -125,7 +125,9 @@ export async function computeStats(): Promise<void> {
       });
     }
 
-    console.log(`[stats] Computed protocol stats for ${CALIBERS.length} calibers`);
+    console.log(
+      `[stats] Computed protocol stats for ${CALIBERS.length} calibers`,
+    );
   } catch (error) {
     console.error("[stats] Failed to compute stats:", error);
   }

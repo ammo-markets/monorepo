@@ -47,6 +47,7 @@ completed: 2026-02-21
 - **Files modified:** 2
 
 ## Accomplishments
+
 - Worker CALIBERS list now derived from CONTRACT_ADDRESSES keys via CALIBER_TO_PRISMA mapping -- adding a caliber to shared config auto-includes it in worker
 - backfillActivityLog detects gaps by finding latest ActivityLog timestamp and backfilling only newer completed orders
 - Uses skipDuplicates for idempotent partial-backfill safety
@@ -60,10 +61,12 @@ Each task was committed atomically:
 2. **Task 2: Fix ActivityLog backfill to detect and fill time gaps** - `4bb807c` (fix)
 
 ## Files Created/Modified
+
 - `apps/worker/src/lib/constants.ts` - Added CALIBERS export derived from CONTRACT_ADDRESSES keys via CALIBER_TO_PRISMA
 - `apps/worker/src/stats.ts` - Gap-aware backfill, imported CALIBERS from constants, dynamic log message
 
 ## Decisions Made
+
 - CALIBERS derived from CONTRACT_ADDRESSES.fuji.calibers keys mapped through CALIBER_TO_PRISMA (not from constants directly) -- ensures adding a new market contract auto-includes the caliber
 - Gap backfill queries orders with updatedAt > latestLog.createdAt rather than counting rows -- detects actual temporal gaps
 - skipDuplicates used for createMany to handle partial backfill restarts safely
@@ -73,6 +76,7 @@ Each task was committed atomically:
 ### Auto-fixed Issues
 
 **1. [Rule 1 - Bug] Hardcoded "4 calibers" in stats log message**
+
 - **Found during:** Task 2
 - **Issue:** computeStats logged "Computed protocol stats for 4 calibers" -- hardcoded count contradicts config-driven approach
 - **Fix:** Changed to template literal using CALIBERS.length
@@ -85,16 +89,20 @@ Each task was committed atomically:
 **Impact on plan:** Minor consistency fix. No scope creep.
 
 ## Issues Encountered
+
 None
 
 ## User Setup Required
+
 None - no external service configuration required.
 
 ## Next Phase Readiness
+
 - Worker caliber registry is config-driven, ready for future caliber additions
 - Gap-aware backfill handles downtime recovery automatically
 - Phase 30 Plan 03 can proceed
 
 ---
-*Phase: 30-architecture-contract-hardening*
-*Completed: 2026-02-21*
+
+_Phase: 30-architecture-contract-hardening_
+_Completed: 2026-02-21_

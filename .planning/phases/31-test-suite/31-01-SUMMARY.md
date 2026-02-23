@@ -18,7 +18,11 @@ affects: [31-02, 31-03]
 # Tech tracking
 tech-stack:
   added: []
-  patterns: ["Mock PrismaTx with in-memory Map simulating upsert semantics", "Event builder helpers with override pattern"]
+  patterns:
+    [
+      "Mock PrismaTx with in-memory Map simulating upsert semantics",
+      "Event builder helpers with override pattern",
+    ]
 
 key-files:
   created:
@@ -53,6 +57,7 @@ completed: 2026-02-21
 - **Files modified:** 3
 
 ## Accomplishments
+
 - Mock PrismaTx factory with in-memory Map simulating Prisma upsert semantics and call tracking
 - 9 passing tests covering MintStarted and RedeemRequested handlers
 - TEST-01 proven: replaying identical event produces exactly 1 order record
@@ -67,11 +72,13 @@ Each task was committed atomically:
 2. **Task 2: Write handler tests for idempotency and composite uniqueness** - `9f63c20` (test)
 
 ## Files Created/Modified
+
 - `apps/worker/src/__tests__/helpers.ts` - Mock PrismaTx factory, EventMeta/args builders with override pattern
 - `apps/worker/src/__tests__/handlers.test.ts` - 9 unit tests for handler idempotency and data correctness
-- `apps/worker/tsconfig.json` - Updated include to cover __tests__ directory
+- `apps/worker/tsconfig.json` - Updated include to cover **tests** directory
 
 ## Decisions Made
+
 - Used in-memory Map keyed by composite `txHash_logIndex` string to simulate Prisma upsert semantics -- first call stores create payload, subsequent calls apply update (empty object = no-op)
 - No additional test dependencies -- Bun's built-in test runner provides describe/test/expect
 
@@ -80,10 +87,11 @@ Each task was committed atomically:
 ### Auto-fixed Issues
 
 **1. [Rule 1 - Bug] Fixed TypeScript strict indexing on array access**
+
 - **Found during:** Task 2 (handler tests)
 - **Issue:** `_upsertCalls[0]` flagged as possibly undefined by strict TypeScript
 - **Fix:** Added non-null assertion operator (`!`) on all `_upsertCalls[0]` accesses
-- **Files modified:** apps/worker/src/__tests__/handlers.test.ts
+- **Files modified:** apps/worker/src/**tests**/handlers.test.ts
 - **Verification:** `pnpm --filter @ammo-exchange/worker check` passes clean
 - **Committed in:** 9f63c20 (Task 2 commit)
 
@@ -93,15 +101,19 @@ Each task was committed atomically:
 **Impact on plan:** Minor TypeScript strictness fix. No scope creep.
 
 ## Issues Encountered
+
 None
 
 ## User Setup Required
+
 None - no external service configuration required.
 
 ## Next Phase Readiness
+
 - Test helpers (createMockPrismaTx, event builders) ready for reuse in plans 31-02 and 31-03
 - Worker typecheck clean, all 9 tests passing
 
 ---
-*Phase: 31-test-suite*
-*Completed: 2026-02-21*
+
+_Phase: 31-test-suite_
+_Completed: 2026-02-21_

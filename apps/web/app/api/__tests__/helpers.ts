@@ -35,13 +35,10 @@ export function createUnauthenticatedResponse(): Response {
  * Create a 403 Response matching what requireKeeper() throws for non-keepers.
  */
 export function createForbiddenResponse(): Response {
-  return new Response(
-    JSON.stringify({ error: "Forbidden: not a keeper" }),
-    {
-      status: 403,
-      headers: { "Content-Type": "application/json" },
-    },
-  );
+  return new Response(JSON.stringify({ error: "Forbidden: not a keeper" }), {
+    status: 403,
+    headers: { "Content-Type": "application/json" },
+  });
 }
 
 // ---------- Prisma Mock Helpers ----------

@@ -52,6 +52,7 @@ completed: 2026-02-22
 - **Files modified:** 5
 
 ## Accomplishments
+
 - Removed DeadlineInPast, PriceTooLow, PriceTooHigh errors, maxPriceDeviationBps state, setMaxPriceDeviation function, and oracle query from finalizeMint
 - Removed 9 tests (CNTR-01 and CNTR-02 sections) while keeping all 45 CaliberMarket tests and 63 total tests passing
 - Regenerated ABI from reverted contract source
@@ -67,6 +68,7 @@ Each task was committed atomically:
 2. **Task 2: Regenerate ABI, roll back config, remove error mappings** - `38634b5` (feat)
 
 ## Files Created/Modified
+
 - `packages/contracts/src/CaliberMarket.sol` - Removed 30-01 additions (errors, state, oracle check, function)
 - `packages/contracts/test/CaliberMarket.t.sol` - Removed CNTR-01 and CNTR-02 test sections (9 tests)
 - `packages/contracts/src/abis/CaliberMarket.ts` - Regenerated ABI from reverted contract
@@ -74,6 +76,7 @@ Each task was committed atomically:
 - `apps/web/lib/errors.ts` - Removed DeadlineInPast, PriceTooLow, PriceTooHigh entries
 
 ## Decisions Made
+
 - Oracle sanity check removed from finalizeMint -- user slippage guard (minTokensOut) is sufficient for pre-PMF flow
 - DeadlineInPast validation removed from contract -- frontend can validate client-side
 - Rolled back to old Fuji deployment (block 51699730) instead of redeploying
@@ -85,16 +88,20 @@ None - plan executed exactly as written.
 **DATA-01 Note:** Database check for stale testnet orders (blockNumber >= 52030756) could not be performed locally due to no DATABASE_URL configured in the development environment. This should be verified in the production/staging environment. Given no new deployment was actively used in production, stale orders are unlikely to exist.
 
 ## Issues Encountered
+
 None
 
 ## User Setup Required
+
 None - no external service configuration required.
 
 ## Next Phase Readiness
+
 - Contract rollback complete, all changes are source-level only (no redeployment needed)
 - Old Fuji contracts at block 51699730 are live and include all audit fixes except 30-01 additions
 - Phase 30-02 worker improvements (gap backfill, config-driven calibers) remain intact as they are contract-independent
 
 ---
-*Phase: 32-contract-rollback-cleanup*
-*Completed: 2026-02-22*
+
+_Phase: 32-contract-rollback-cleanup_
+_Completed: 2026-02-22_

@@ -47,10 +47,7 @@ export function Providers({ children }: { children: ReactNode }) {
     useState<AuthenticationStatus>("unauthenticated");
   const checkSessionRef = useRef<(() => void) | null>(null);
 
-  const siweAdapter = useMemo(
-    () => createSiweAdapter(checkSessionRef),
-    [],
-  );
+  const siweAdapter = useMemo(() => createSiweAdapter(checkSessionRef), []);
 
   return (
     <WagmiProvider config={wagmiConfig}>
@@ -59,11 +56,11 @@ export function Providers({ children }: { children: ReactNode }) {
           adapter={siweAdapter}
           status={authStatus}
         >
-          <RainbowKitProvider
-            theme={ammoTheme}
-            initialChain={avalancheFuji}
-          >
-            <AuthProvider onAuthStatusChange={setAuthStatus} checkSessionRef={checkSessionRef}>
+          <RainbowKitProvider theme={ammoTheme} initialChain={avalancheFuji}>
+            <AuthProvider
+              onAuthStatusChange={setAuthStatus}
+              checkSessionRef={checkSessionRef}
+            >
               {children}
             </AuthProvider>
           </RainbowKitProvider>

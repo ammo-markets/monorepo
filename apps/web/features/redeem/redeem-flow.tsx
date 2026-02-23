@@ -24,7 +24,12 @@ import {
 import { caliberIcons } from "@/features/shared/caliber-icons";
 import type { CaliberDetailData } from "@/lib/types";
 import { buildAllCaliberDetails } from "@/lib/caliber-utils";
-import { BackButton, PrimaryButton, GhostButton, SpinnerButton } from "@/features/shared";
+import {
+  BackButton,
+  PrimaryButton,
+  GhostButton,
+  SpinnerButton,
+} from "@/features/shared";
 import { RedeemProgress } from "./redeem-progress";
 import type { RedeemTxStatus } from "@/hooks/use-tx-status";
 import { useTxStatus } from "@/hooks/use-tx-status";

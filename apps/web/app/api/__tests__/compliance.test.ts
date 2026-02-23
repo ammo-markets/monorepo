@@ -112,13 +112,16 @@ describe("State code validation (TEST-04)", () => {
     mockPrisma.user.upsert.mockResolvedValue({ kycStatus: "APPROVED" });
 
     const { POST } = await import("../users/kyc/route");
-    const request = buildJsonPostRequest("http://localhost:3000/api/users/kyc", {
-      fullName: "Jane Doe",
-      dateOfBirth: "1990-06-15",
-      state: "ca",
-      govIdType: "DRIVERS_LICENSE",
-      govIdNumber: "DL987654321",
-    });
+    const request = buildJsonPostRequest(
+      "http://localhost:3000/api/users/kyc",
+      {
+        fullName: "Jane Doe",
+        dateOfBirth: "1990-06-15",
+        state: "ca",
+        govIdType: "DRIVERS_LICENSE",
+        govIdNumber: "DL987654321",
+      },
+    );
     const response = await POST(request as never);
 
     expect(response.status).toBe(200);

@@ -7,7 +7,10 @@
 
 import type { EventMeta } from "../lib/constants";
 import type { MintStartedArgs, MintFinalizedArgs } from "../handlers/mint";
-import type { RedeemRequestedArgs, RedeemFinalizedArgs } from "../handlers/redeem";
+import type {
+  RedeemRequestedArgs,
+  RedeemFinalizedArgs,
+} from "../handlers/redeem";
 import { CONTRACT_ADDRESSES } from "@ammo-exchange/shared";
 
 // ── Default Values ──────────────────────────────────────────────────
@@ -15,8 +18,7 @@ import { CONTRACT_ADDRESSES } from "@ammo-exchange/shared";
 const DEFAULT_TX_HASH =
   "0xabc0000000000000000000000000000000000000000000000000000000000001" as const;
 
-const DEFAULT_USER =
-  "0x1234567890abcdef1234567890abcdef12345678" as const;
+const DEFAULT_USER = "0x1234567890abcdef1234567890abcdef12345678" as const;
 
 /** First caliber market address (9MM on Fuji) */
 const DEFAULT_MARKET_ADDRESS = CONTRACT_ADDRESSES.fuji.calibers["9MM"].market;
@@ -33,7 +35,9 @@ export interface MockPrismaTx {
   order: {
     upsert: (args: UpsertCall) => Promise<Record<string, unknown>>;
     updateMany: (args: Record<string, unknown>) => Promise<{ count: number }>;
-    findFirst: (args: Record<string, unknown>) => Promise<Record<string, unknown> | null>;
+    findFirst: (
+      args: Record<string, unknown>,
+    ) => Promise<Record<string, unknown> | null>;
     /** All upsert calls made during the test */
     _upsertCalls: UpsertCall[];
     /** In-memory store keyed by composite "txHash_logIndex" */
@@ -73,10 +77,14 @@ export function createMockPrismaTx(): MockPrismaTx {
         upsertCalls.push(args);
 
         // Extract composite key from where clause
-        const whereKey = args.where as { txHash_logIndex?: { txHash: string; logIndex: number } };
+        const whereKey = args.where as {
+          txHash_logIndex?: { txHash: string; logIndex: number };
+        };
         const composite = whereKey.txHash_logIndex;
         if (!composite) {
-          throw new Error("Mock upsert expects txHash_logIndex in where clause");
+          throw new Error(
+            "Mock upsert expects txHash_logIndex in where clause",
+          );
         }
 
         const key = `${composite.txHash}_${composite.logIndex}`;
@@ -130,9 +138,7 @@ export function createMockPrismaTx(): MockPrismaTx {
 /**
  * Build an EventMeta with sensible defaults. All fields are overridable.
  */
-export function buildEventMeta(
-  overrides: Partial<EventMeta> = {},
-): EventMeta {
+export function buildEventMeta(overrides: Partial<EventMeta> = {}): EventMeta {
   return {
     address: DEFAULT_MARKET_ADDRESS,
     transactionHash: DEFAULT_TX_HASH,
