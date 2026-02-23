@@ -16,7 +16,8 @@
     "contracts:build": "pnpm --filter @ammo-exchange/contracts build",
     "contracts:test": "pnpm --filter @ammo-exchange/contracts test",
     "contracts:fuji:check": "make -C packages/contracts fuji_check",
-    "contracts:fuji:deploy": "make -C packages/contracts fuji_deploy"
+    "contracts:fuji:deploy": "make -C packages/contracts fuji_deploy",
+    "worker:reset": "pnpm --filter @ammo-exchange/worker reset"
   },
   "devDependencies": {
     "prettier": "^3.5.3",
