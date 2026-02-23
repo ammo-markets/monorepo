@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useAuth } from "@/contexts/auth-context";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { ChevronDown, ChevronUp, ArrowDownUp } from "lucide-react";
 import type { TokenId, Token } from "./swap-types";
 import { getToken } from "./swap-types";
@@ -11,7 +12,8 @@ import { UniswapLogo } from "./token-icons";
 /* ── Swap Tab Content ── */
 
 export function SwapTab({ tokens }: { tokens: Token[] }) {
-  const { isConnected, connect } = useAuth();
+  const { isConnected } = useAuth();
+  const { openConnectModal } = useConnectModal();
   const [payToken, setPayToken] = useState<TokenId>("USDC");
   const [receiveToken, setReceiveToken] = useState<TokenId>("9MM");
   const [payAmount, setPayAmount] = useState("");
@@ -239,7 +241,7 @@ export function SwapTab({ tokens }: { tokens: Token[] }) {
         <button
           type="button"
           className="flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-semibold transition-colors duration-150 bg-brass text-ax-primary hover:bg-brass-hover"
-          onClick={connect}
+          onClick={openConnectModal}
         >
           Connect Wallet to Swap
         </button>

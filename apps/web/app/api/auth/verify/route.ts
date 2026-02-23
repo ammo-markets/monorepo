@@ -46,7 +46,6 @@ export async function POST(request: Request) {
       signature: body.signature,
       nonce: session.nonce,
       domain: expectedDomain,
-      scheme: expectedUri.startsWith("https") ? "https" : "http",
     });
 
     if (!result.success) {

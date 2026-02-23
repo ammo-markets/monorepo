@@ -22,7 +22,7 @@ import { CALIBER_SPECS, FEES } from "@ammo-exchange/shared";
 import { MintProgress } from "./mint-progress";
 
 import { useWallet } from "@/hooks/use-wallet";
-import { useConnectDialog } from "@/contexts/connect-dialog-context";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useMintTransaction } from "@/hooks/use-mint-transaction";
 import { useAllowance } from "@/hooks/use-allowance";
 import { useTokenBalances } from "@/hooks/use-token-balances";
@@ -1093,7 +1093,7 @@ export function MintFlow({
 
   // ── Real hooks ──
   const wallet = useWallet();
-  const connectDialog = useConnectDialog();
+  const { openConnectModal } = useConnectModal();
   const { usdc: usdcBalanceRaw } = useTokenBalances();
   const mintTx = useMintTransaction(activeCaliber);
   const marketAddress = CONTRACT_ADDRESSES.fuji.calibers[activeCaliber].market;
@@ -1209,7 +1209,7 @@ export function MintFlow({
           onBack={() => setStep(0)}
           hideBack={isEmbedded}
           isConnected={wallet.isConnected}
-          onConnect={connectDialog.open}
+          onConnect={() => openConnectModal?.()}
         />
       )}
 
@@ -1221,7 +1221,7 @@ export function MintFlow({
           errorMessage={errorMessage}
           isConnected={wallet.isConnected}
           isWrongNetwork={wallet.isWrongNetwork}
-          onConnect={connectDialog.open}
+          onConnect={() => openConnectModal?.()}
           onSwitchNetwork={wallet.switchToFuji}
           onApprove={handleApprove}
           onConfirm={handleConfirm}

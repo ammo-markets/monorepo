@@ -61,13 +61,14 @@ AVALANCHE_RPC_URL=https://...      # Avalanche C-Chain RPC
 FUJI_RPC_URL=https://...           # Avalanche Fuji testnet RPC
 SESSION_SECRET=xxxxxxxx...        # 32+ character secret for iron-session cookie encryption (required)
 ALLOWED_ORIGINS=https://...       # Comma-separated allowed origins for CORS (optional, defaults to http://localhost:3000)
+NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=xxx  # WalletConnect Cloud project ID (get from cloud.walletconnect.com)
 ```
 
 ## Tech Stack
 
 - **Package manager**: pnpm (workspaces) + Turborepo
 - **Language**: TypeScript (strict mode) + Solidity 0.8.24
-- **Frontend**: Next.js 15, React 19, Tailwind CSS v4, wagmi/viem
+- **Frontend**: Next.js 15, React 19, Tailwind CSS v4, wagmi/viem, RainbowKit
 - **Worker**: Bun runtime, viem for chain interaction
 - **Database**: PostgreSQL (Neon) via Prisma ORM
 - **Smart contracts**: Foundry (forge, cast, anvil)

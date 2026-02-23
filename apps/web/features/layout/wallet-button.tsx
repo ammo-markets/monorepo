@@ -2,9 +2,8 @@
 
 import { useState } from "react";
 import { Copy, ExternalLink, LogOut, Wallet } from "lucide-react";
-import { useWallet } from "@/hooks/use-wallet";
-import { useConnectDialog } from "@/contexts/connect-dialog-context";
-import { useSiwe } from "@/hooks/use-siwe";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { useAuth } from "@/contexts/auth-context";
 import { useTokenBalances } from "@/hooks/use-token-balances";
 import { truncateAddress } from "@/lib/utils";
 import {
@@ -24,13 +23,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { AVALANCHE_FUJI } from "@ammo-exchange/shared";
 
 const USDC_DECIMALS = BigInt(1_000_000);
@@ -44,81 +36,37 @@ function formatUsdc(raw: bigint): string {
 
 export function WalletButton() {
   const [showDisconnectDialog, setShowDisconnectDialog] = useState(false);
-  const connectDialog = useConnectDialog();
+  const { openConnectModal } = useConnectModal();
 
   const {
     address,
     isConnected,
     isReconnecting,
     isWrongNetwork,
-    connectors,
-    connectWith,
     disconnect,
     switchToFuji,
-    isConnecting,
     isSwitching,
-  } = useWallet();
-
-  const { isSignedIn, isSigningIn, signIn, signOut } = useSiwe();
+    isSignedIn,
+    signOut,
+  } = useAuth();
   const { usdc } = useTokenBalances();
 
   // During reconnection, render disconnected state to match SSR (prevents hydration mismatch)
   if (isReconnecting || !isConnected) {
     return (
-      <>
-        <button
-          type="button"
-          className="flex items-center gap-2 rounded-lg border border-border-hover bg-transparent px-4 py-2 text-sm font-medium text-text-primary transition-all duration-150 hover:border-brass-border hover:bg-ax-tertiary"
-          onClick={connectDialog.open}
-          aria-label="Connect wallet"
-        >
-          <Wallet size={16} />
-          <span className="hidden sm:inline">Connect Wallet</span>
-        </button>
-
-        <Dialog
-          open={connectDialog.isOpen}
-          onOpenChange={(open) =>
-            open ? connectDialog.open() : connectDialog.close()
-          }
-        >
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Connect Wallet</DialogTitle>
-              <DialogDescription>
-                Choose a wallet to connect with Ammo Exchange
-              </DialogDescription>
-            </DialogHeader>
-            <div className="flex flex-col gap-2">
-              {connectors.map((connector) => (
-                <button
-                  key={connector.uid}
-                  type="button"
-                  className="flex items-center gap-3 rounded-lg border border-border-hover px-4 py-3 text-sm font-medium text-text-primary transition-all duration-150 hover:border-brass-border hover:bg-ax-tertiary disabled:opacity-50"
-                  onClick={() => {
-                    connectWith(connector);
-                    connectDialog.close();
-                  }}
-                  disabled={isConnecting}
-                >
-                  {connector.icon && (
-                    <img
-                      src={connector.icon}
-                      alt=""
-                      className="h-6 w-6 rounded"
-                    />
-                  )}
-                  <span>{connector.name}</span>
-                </button>
-              ))}
-            </div>
-          </DialogContent>
-        </Dialog>
-      </>
+      <button
+        type="button"
+        className="flex items-center gap-2 rounded-lg border border-border-hover bg-transparent px-4 py-2 text-sm font-medium text-text-primary transition-all duration-150 hover:border-brass-border hover:bg-ax-tertiary"
+        onClick={openConnectModal}
+        aria-label="Connect wallet"
+      >
+        <Wallet size={16} />
+        <span className="hidden sm:inline">Connect Wallet</span>
+      </button>
     );
   }
 
-  // State B: Wrong network
+  // Wrong network
   if (isWrongNetwork) {
     return (
       <div className="flex items-center gap-2">
@@ -148,25 +96,22 @@ export function WalletButton() {
     );
   }
 
-  // State C: Connected but not signed in — prompt SIWE
+  // Connected but not signed in — prompt handled by RainbowKit adapter
   if (!isSignedIn) {
     return (
       <button
         type="button"
         className="flex items-center gap-2 rounded-lg border border-brass-border bg-transparent px-4 py-2 text-sm font-medium text-brass transition-all duration-150 hover:bg-brass-muted"
-        onClick={signIn}
-        disabled={isSigningIn}
-        aria-label={isSigningIn ? "Signing in" : "Sign in with wallet"}
+        onClick={openConnectModal}
+        aria-label="Sign in with wallet"
       >
         <Wallet size={16} />
-        <span className="hidden sm:inline">
-          {isSigningIn ? "Signing..." : "Sign In"}
-        </span>
+        <span className="hidden sm:inline">Sign In</span>
       </button>
     );
   }
 
-  // State D: Connected, correct network, and signed in
+  // Connected, correct network, and signed in
   return (
     <>
       <DropdownMenu>
@@ -181,7 +126,6 @@ export function WalletButton() {
             }}
             aria-label="Wallet menu"
           >
-            {/* Identicon placeholder */}
             <span
               className="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold"
               style={{

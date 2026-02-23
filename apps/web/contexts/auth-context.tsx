@@ -1,53 +1,56 @@
 "use client";
 
-import { createContext, useContext } from "react";
-import type { ReactNode } from "react";
+import { createContext, useContext, useEffect } from "react";
+import type { ReactNode, RefObject } from "react";
+import type { AuthenticationStatus } from "@rainbow-me/rainbowkit";
 import { useWallet } from "@/hooks/use-wallet";
-import { useConnectDialog } from "@/contexts/connect-dialog-context";
 import { useSiwe } from "@/hooks/use-siwe";
 
 interface AuthContextValue {
-  // Wallet state
   address: `0x${string}` | undefined;
   isConnected: boolean;
   isReconnecting: boolean;
   isWrongNetwork: boolean;
-  connect: () => void;
   disconnect: () => void;
   switchToFuji: () => void;
-  isConnecting: boolean;
   isSwitching: boolean;
-  // SIWE state
   isSignedIn: boolean;
   isSessionLoading: boolean;
-  isSigningIn: boolean;
-  signIn: () => void;
   signOut: () => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({
+  children,
+  onAuthStatusChange,
+  checkSessionRef,
+}: {
+  children: ReactNode;
+  onAuthStatusChange: (status: AuthenticationStatus) => void;
+  checkSessionRef: RefObject<(() => void) | null>;
+}) {
   const wallet = useWallet();
-  const connectDialog = useConnectDialog();
-  const siwe = useSiwe();
+  const siwe = useSiwe(onAuthStatusChange);
+
+  // Wire the ref so the SIWE adapter can trigger a session re-check
+  useEffect(() => {
+    checkSessionRef.current = siwe.checkSession;
+    return () => {
+      checkSessionRef.current = null;
+    };
+  }, [checkSessionRef, siwe.checkSession]);
 
   const value: AuthContextValue = {
-    // Wallet
     address: wallet.address,
     isConnected: wallet.isConnected,
     isReconnecting: wallet.isReconnecting,
     isWrongNetwork: wallet.isWrongNetwork,
-    connect: connectDialog.open,
     disconnect: wallet.disconnect,
     switchToFuji: wallet.switchToFuji,
-    isConnecting: wallet.isConnecting,
     isSwitching: wallet.isSwitching,
-    // SIWE
     isSignedIn: siwe.isSignedIn,
     isSessionLoading: siwe.isSessionLoading,
-    isSigningIn: siwe.isSigningIn,
-    signIn: siwe.signIn,
     signOut: siwe.signOut,
   };
 

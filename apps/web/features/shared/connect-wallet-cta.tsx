@@ -1,7 +1,7 @@
 "use client";
 
 import { Lock, Wallet } from "lucide-react";
-import { useAuth } from "@/contexts/auth-context";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 
 /* ── Full-page centered card variant ── */
 
@@ -14,7 +14,7 @@ export function ConnectWalletCTA({
   title = "Connect your wallet",
   description = "Link your wallet to access this feature.",
 }: ConnectWalletCTAProps) {
-  const { connect } = useAuth();
+  const { openConnectModal } = useConnectModal();
 
   return (
     <div className="flex min-h-[60vh] items-center justify-center px-4">
@@ -43,7 +43,7 @@ export function ConnectWalletCTA({
         <button
           type="button"
           className="inline-flex items-center gap-2.5 rounded-lg bg-brass px-6 py-3 text-sm font-semibold text-ax-primary transition-colors duration-150 hover:bg-brass-hover"
-          onClick={connect}
+          onClick={openConnectModal}
         >
           <Wallet size={18} />
           Connect Wallet
@@ -62,13 +62,13 @@ interface ConnectWalletInlineProps {
 export function ConnectWalletInline({
   label = "Connect Wallet",
 }: ConnectWalletInlineProps) {
-  const { connect } = useAuth();
+  const { openConnectModal } = useConnectModal();
 
   return (
     <button
       type="button"
       className="flex w-full items-center justify-center gap-2 rounded-xl bg-brass py-3.5 text-sm font-semibold text-ax-primary transition-colors duration-150 hover:bg-brass-hover"
-      onClick={connect}
+      onClick={openConnectModal}
     >
       <Wallet size={16} />
       {label}
