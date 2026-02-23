@@ -11,9 +11,8 @@ import {
   ActionPanelMobile,
 } from "@/features/market";
 import { useMarketData } from "@/hooks/use-market-data";
-import type { CaliberDetailData, MarketCaliberFromAPI } from "@/lib/types";
-import { CALIBER_SPECS, FEES } from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
+import { buildCaliberDetail } from "@/lib/caliber-utils";
 
 const validCalibers = ["9mm", "556", "22lr", "308"];
 
@@ -25,24 +24,6 @@ function resolveCaliberId(slug: string): Caliber | null {
     "308": "308",
   };
   return map[slug.toLowerCase()] ?? null;
-}
-
-function buildCaliberDetail(
-  caliber: Caliber,
-  market: MarketCaliberFromAPI,
-): CaliberDetailData {
-  const spec = CALIBER_SPECS[caliber];
-  return {
-    id: caliber,
-    symbol: caliber,
-    name: spec.name,
-    specLine: spec.description,
-    price: market.pricePerRound,
-    totalSupply: market.totalSupply,
-    mintFee: FEES.MINT_FEE_BPS / 100,
-    redeemFee: FEES.REDEEM_FEE_BPS / 100,
-    minMint: spec.minMintRounds,
-  };
 }
 
 export default function CaliberDetailPage({

@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { Plus, ArrowDownToLine, ArrowDownUp } from "lucide-react";
 import { MintFlow } from "@/features/mint";
 import { RedeemFlow } from "@/features/redeem";
+import { ErrorBoundary } from "@/components/error-boundary";
 
 import { CaliberInfoPanel } from "@/features/trade/caliber-info-panel";
 import type { Caliber } from "@ammo-exchange/shared";
@@ -103,21 +104,23 @@ export function TradeTabs({
       <div>
         {activeTab === "mint" &&
           (selectedCaliber ? (
-            <Suspense
-              fallback={
-                <div
-                  className="py-12 text-center text-sm"
-                  style={{ color: "var(--text-muted)" }}
-                >
-                  Loading...
-                </div>
-              }
-            >
-              <MintFlow
-                key={selectedCaliber}
-                selectedCaliber={selectedCaliber!}
-              />
-            </Suspense>
+            <ErrorBoundary>
+              <Suspense
+                fallback={
+                  <div
+                    className="py-12 text-center text-sm"
+                    style={{ color: "var(--text-muted)" }}
+                  >
+                    Loading...
+                  </div>
+                }
+              >
+                <MintFlow
+                  key={selectedCaliber}
+                  selectedCaliber={selectedCaliber!}
+                />
+              </Suspense>
+            </ErrorBoundary>
           ) : (
             <div
               className="py-12 text-center text-sm"
@@ -129,21 +132,23 @@ export function TradeTabs({
 
         {activeTab === "redeem" &&
           (selectedCaliber ? (
-            <Suspense
-              fallback={
-                <div
-                  className="py-12 text-center text-sm"
-                  style={{ color: "var(--text-muted)" }}
-                >
-                  Loading...
-                </div>
-              }
-            >
-              <RedeemFlow
-                key={selectedCaliber}
-                selectedCaliber={selectedCaliber!}
-              />
-            </Suspense>
+            <ErrorBoundary>
+              <Suspense
+                fallback={
+                  <div
+                    className="py-12 text-center text-sm"
+                    style={{ color: "var(--text-muted)" }}
+                  >
+                    Loading...
+                  </div>
+                }
+              >
+                <RedeemFlow
+                  key={selectedCaliber}
+                  selectedCaliber={selectedCaliber!}
+                />
+              </Suspense>
+            </ErrorBoundary>
           ) : (
             <div
               className="py-12 text-center text-sm"

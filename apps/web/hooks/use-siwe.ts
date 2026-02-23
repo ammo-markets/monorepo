@@ -22,6 +22,12 @@ export function useSiwe(
   const { address: walletAddress } = useAccount();
   const prevAddressRef = useRef<string | undefined>(walletAddress);
 
+  // Stabilize callback ref to prevent infinite re-render loops
+  const onAuthStatusChangeRef = useRef(onAuthStatusChange);
+  useEffect(() => {
+    onAuthStatusChangeRef.current = onAuthStatusChange;
+  });
+
   const checkSession = useCallback(async () => {
     try {
       const res = await fetch("/api/auth/session");
@@ -33,14 +39,14 @@ export function useSiwe(
           isSessionLoading: false,
           address: data.address,
         });
-        onAuthStatusChange?.("authenticated");
+        onAuthStatusChangeRef.current?.("authenticated");
       } else {
         setState({
           isSignedIn: false,
           isSessionLoading: false,
           address: null,
         });
-        onAuthStatusChange?.("unauthenticated");
+        onAuthStatusChangeRef.current?.("unauthenticated");
       }
     } catch {
       setState({
@@ -48,9 +54,9 @@ export function useSiwe(
         isSessionLoading: false,
         address: null,
       });
-      onAuthStatusChange?.("unauthenticated");
+      onAuthStatusChangeRef.current?.("unauthenticated");
     }
-  }, [onAuthStatusChange]);
+  }, []);
 
   const signOut = useCallback(async () => {
     try {
@@ -63,8 +69,8 @@ export function useSiwe(
       isSessionLoading: false,
       address: null,
     });
-    onAuthStatusChange?.("unauthenticated");
-  }, [onAuthStatusChange]);
+    onAuthStatusChangeRef.current?.("unauthenticated");
+  }, []);
 
   // Restore session from cookie on mount
   useEffect(() => {

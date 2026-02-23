@@ -23,15 +23,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { formatUnits } from "viem";
 import { AVALANCHE_FUJI } from "@ammo-exchange/shared";
 
-const USDC_DECIMALS = BigInt(1_000_000);
-
 function formatUsdc(raw: bigint): string {
-  const whole = raw / USDC_DECIMALS;
-  const frac = raw % USDC_DECIMALS;
-  const fracStr = frac.toString().padStart(6, "0").slice(0, 2);
-  return `${whole.toLocaleString()}.${fracStr}`;
+  return Number(formatUnits(raw, 6)).toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
 }
 
 export function WalletButton() {

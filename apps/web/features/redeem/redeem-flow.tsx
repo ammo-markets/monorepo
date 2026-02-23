@@ -6,7 +6,6 @@ import { useMarketData } from "@/hooks/use-market-data";
 import { useSearchParams } from "next/navigation";
 import { formatUnits } from "viem";
 import {
-  ArrowLeft,
   Check,
   Lock,
   Wallet,
@@ -23,9 +22,12 @@ import {
   Truck,
 } from "lucide-react";
 import { caliberIcons } from "@/features/shared/caliber-icons";
-import type { CaliberDetailData, MarketCaliberFromAPI } from "@/lib/types";
-import { CALIBER_SPECS, FEES } from "@ammo-exchange/shared";
+import type { CaliberDetailData } from "@/lib/types";
+import { buildAllCaliberDetails } from "@/lib/caliber-utils";
+import { BackButton, PrimaryButton, GhostButton, SpinnerButton } from "@/features/shared";
 import { RedeemProgress } from "./redeem-progress";
+import type { RedeemTxStatus } from "@/hooks/use-tx-status";
+import { useTxStatus } from "@/hooks/use-tx-status";
 import { KycForm } from "./kyc-form";
 import type { KycFormData } from "./kyc-form";
 
@@ -40,35 +42,6 @@ import { getDeadline, parseTokenAmount } from "@/lib/tx-utils";
 import { snowtraceUrl, truncateAddress } from "@/lib/utils";
 import { CONTRACT_ADDRESSES } from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
-
-/* ── Build CaliberDetailData from API market data ── */
-function buildCaliberDetail(
-  caliber: Caliber,
-  market: MarketCaliberFromAPI,
-): CaliberDetailData {
-  const spec = CALIBER_SPECS[caliber];
-  return {
-    id: caliber,
-    symbol: caliber,
-    name: spec.name,
-    specLine: spec.description,
-    price: market.pricePerRound,
-    totalSupply: market.totalSupply,
-    mintFee: FEES.MINT_FEE_BPS / 100,
-    redeemFee: FEES.REDEEM_FEE_BPS / 100,
-    minMint: spec.minMintRounds,
-  };
-}
-
-function buildAllCaliberDetails(
-  marketData: MarketCaliberFromAPI[],
-): Record<Caliber, CaliberDetailData> {
-  const result = {} as Record<Caliber, CaliberDetailData>;
-  for (const m of marketData) {
-    result[m.caliber] = buildCaliberDetail(m.caliber, m);
-  }
-  return result;
-}
 
 /* ── US States ── */
 const US_STATES = [
@@ -135,79 +108,6 @@ interface ShippingAddress {
   city: string;
   state: string;
   zip: string;
-}
-
-/* ── Transaction Status ── */
-type TxStatus =
-  | "idle"
-  | "approving"
-  | "approve-confirming"
-  | "approved"
-  | "redeeming"
-  | "redeem-confirming"
-  | "confirmed"
-  | "failed";
-
-/* ── Shared back button ── */
-function BackButton({ onClick }: { onClick: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="mb-5 flex items-center gap-1.5 text-sm font-medium transition-none text-text-secondary hover:text-text-primary"
-    >
-      <ArrowLeft size={16} />
-      Back
-    </button>
-  );
-}
-
-/* ── Primary button helper ── */
-function PrimaryButton({
-  disabled,
-  onClick,
-  children,
-  icon,
-}: {
-  disabled?: boolean;
-  onClick: () => void;
-  children: ReactNode;
-  icon?: ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      disabled={disabled}
-      onClick={onClick}
-      className={`mt-6 flex w-full items-center justify-center gap-2 py-3.5 text-sm font-bold transition-none ${
-        disabled
-          ? "bg-ax-tertiary text-text-muted cursor-not-allowed opacity-50"
-          : "bg-brass text-ax-primary cursor-pointer hover:bg-brass-hover"
-      }`}
-    >
-      {icon}
-      {children}
-    </button>
-  );
-}
-
-/* ── Ghost button helper ── */
-function GhostButton({
-  onClick,
-  children,
-}: {
-  onClick: () => void;
-  children: ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="flex w-full items-center justify-center py-3.5 text-sm font-bold transition-none bg-transparent text-text-primary border border-border-hover hover:bg-ax-tertiary hover:border-brass-border"
-    >
-      {children}
-    </button>
-  );
 }
 
 /* ── Form field ── */
@@ -1100,7 +1000,7 @@ function StepReview({
   caliber: CaliberDetailData;
   roundsAmount: string;
   address: ShippingAddress;
-  txStatus: TxStatus;
+  txStatus: RedeemTxStatus;
   errorMessage: string;
   isConnected: boolean;
   hasEnoughAllowance: boolean;
@@ -1352,19 +1252,7 @@ function StepReview({
 
         {/* Approving / waiting for approval confirmation */}
         {(txStatus === "approving" || txStatus === "approve-confirming") && (
-          <button
-            type="button"
-            disabled
-            className="flex w-full items-center justify-center gap-2 py-3.5 text-sm font-bold"
-            style={{
-              backgroundColor: "var(--bg-tertiary)",
-              color: "var(--text-muted)",
-              cursor: "not-allowed",
-            }}
-          >
-            <Loader2 size={16} className="animate-spin" />
-            Approving...
-          </button>
+          <SpinnerButton label="Approving..." />
         )}
 
         {/* Approved -- confirm redemption */}
@@ -1380,19 +1268,7 @@ function StepReview({
 
         {/* Redeeming / waiting for confirmation */}
         {(txStatus === "redeeming" || txStatus === "redeem-confirming") && (
-          <button
-            type="button"
-            disabled
-            className="flex w-full items-center justify-center gap-2 py-4 text-base font-bold"
-            style={{
-              backgroundColor: "var(--bg-tertiary)",
-              color: "var(--text-muted)",
-              cursor: "not-allowed",
-            }}
-          >
-            <Loader2 size={16} className="animate-spin" />
-            Burning tokens...
-          </button>
+          <SpinnerButton label="Burning tokens..." size="large" />
         )}
       </div>
     </div>
@@ -1661,41 +1537,28 @@ export function RedeemFlow({
   const allowance = useAllowance(tokenAddress, wallet.address, marketAddress);
 
   // ── Derive TxStatus from hook states ──
-  const txStatus: TxStatus = useMemo(() => {
-    if (redeemTx.isRedeemConfirmed) return "confirmed";
-    if (redeemTx.isRedeemConfirming) return "redeem-confirming";
-    if (redeemTx.isRedeemPending) return "redeeming";
-    if (
-      allowance.hasEnoughAllowance(parseTokenAmount(roundsAmount || "0")) ||
-      redeemTx.isApproveConfirmed
-    )
-      return "approved";
-    if (redeemTx.isApproveConfirming) return "approve-confirming";
-    if (redeemTx.isApprovePending) return "approving";
-    if (redeemTx.approveError || redeemTx.redeemError) return "failed";
-    return "idle";
-  }, [
-    redeemTx.isRedeemConfirmed,
-    redeemTx.isRedeemConfirming,
-    redeemTx.isRedeemPending,
-    redeemTx.isApproveConfirmed,
-    redeemTx.isApproveConfirming,
-    redeemTx.isApprovePending,
-    redeemTx.approveError,
-    redeemTx.redeemError,
-    allowance,
-    roundsAmount,
-  ]);
+  const hasEnoughAllowance = roundsAmount
+    ? allowance.hasEnoughAllowance(parseTokenAmount(roundsAmount))
+    : false;
+  const txStatus: RedeemTxStatus = useTxStatus({
+    flags: {
+      isActionConfirmed: redeemTx.isRedeemConfirmed,
+      isActionConfirming: redeemTx.isRedeemConfirming,
+      isActionPending: redeemTx.isRedeemPending,
+      isApproveConfirmed: redeemTx.isApproveConfirmed,
+      isApproveConfirming: redeemTx.isApproveConfirming,
+      isApprovePending: redeemTx.isApprovePending,
+      approveError: redeemTx.approveError,
+      actionError: redeemTx.redeemError,
+    },
+    actionStatus: "redeeming",
+    actionConfirmingStatus: "redeem-confirming",
+    hasEnoughAllowance,
+  });
 
   const errorMessage = parseContractError(
     redeemTx.approveError || redeemTx.redeemError,
   );
-
-  // Check if user already has enough allowance (skip approve step)
-  const hasEnoughAllowance = useMemo(() => {
-    if (!roundsAmount) return false;
-    return allowance.hasEnoughAllowance(parseTokenAmount(roundsAmount));
-  }, [allowance, roundsAmount]);
 
   // ── Auto-advance to confirmation when redeem confirmed ──
   useEffect(() => {

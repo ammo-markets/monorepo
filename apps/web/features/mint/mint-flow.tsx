@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useMarketData } from "@/hooks/use-market-data";
 import { useSearchParams } from "next/navigation";
 import { formatUnits } from "viem";
@@ -9,17 +9,18 @@ import {
   Check,
   Lock,
   Wallet,
-  Loader2,
   Clock,
   ExternalLink,
-  AlertTriangle,
   XCircle,
   Info,
 } from "lucide-react";
 import { caliberIcons } from "@/features/shared/caliber-icons";
-import type { CaliberDetailData, MarketCaliberFromAPI } from "@/lib/types";
-import { CALIBER_SPECS, FEES } from "@ammo-exchange/shared";
+import type { CaliberDetailData } from "@/lib/types";
+import { buildAllCaliberDetails } from "@/lib/caliber-utils";
+import { WrongNetworkBanner, SpinnerButton } from "@/features/shared";
 import { MintProgress } from "./mint-progress";
+import type { MintTxStatus } from "@/hooks/use-tx-status";
+import { useTxStatus } from "@/hooks/use-tx-status";
 
 import { useWallet } from "@/hooks/use-wallet";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
@@ -31,35 +32,6 @@ import { getDeadline, DEFAULT_SLIPPAGE_BPS, parseUsdc } from "@/lib/tx-utils";
 import { snowtraceUrl, truncateAddress } from "@/lib/utils";
 import { CONTRACT_ADDRESSES } from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
-
-/* ── Build CaliberDetailData from API market data ── */
-function buildCaliberDetail(
-  caliber: Caliber,
-  market: MarketCaliberFromAPI,
-): CaliberDetailData {
-  const spec = CALIBER_SPECS[caliber];
-  return {
-    id: caliber,
-    symbol: caliber,
-    name: spec.name,
-    specLine: spec.description,
-    price: market.pricePerRound,
-    totalSupply: market.totalSupply,
-    mintFee: FEES.MINT_FEE_BPS / 100,
-    redeemFee: FEES.REDEEM_FEE_BPS / 100,
-    minMint: spec.minMintRounds,
-  };
-}
-
-function buildAllCaliberDetails(
-  marketData: MarketCaliberFromAPI[],
-): Record<Caliber, CaliberDetailData> {
-  const result = {} as Record<Caliber, CaliberDetailData>;
-  for (const m of marketData) {
-    result[m.caliber] = buildCaliberDetail(m.caliber, m);
-  }
-  return result;
-}
 
 /* ── USDC Icon ── */
 function UsdcIcon({ size = 16 }: { size?: number }) {
@@ -95,47 +67,6 @@ function UsdcIcon({ size = 16 }: { size?: number }) {
   );
 }
 
-/* ── Transaction Status ── */
-type TxStatus =
-  | "idle"
-  | "approving"
-  | "approve-confirming"
-  | "approved"
-  | "minting"
-  | "mint-confirming"
-  | "confirmed"
-  | "failed";
-
-/* ── Wrong Network Banner ── */
-function WrongNetworkBanner({ onSwitch }: { onSwitch: () => void }) {
-  return (
-    <div
-      className="mb-6 flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between"
-      style={{
-        backgroundColor: "rgba(231, 76, 60, 0.1)",
-        border: "1px solid rgba(231, 76, 60, 0.3)",
-      }}
-    >
-      <div className="flex items-center gap-3">
-        <AlertTriangle size={18} style={{ color: "var(--red)" }} />
-        <span className="text-sm font-medium" style={{ color: "var(--red)" }}>
-          Please switch to Avalanche to continue
-        </span>
-      </div>
-      <button
-        type="button"
-        onClick={onSwitch}
-        className="rounded-lg px-4 py-2 font-mono text-sm font-bold uppercase tracking-widest transition-none"
-        style={{
-          backgroundColor: "var(--red)",
-          color: "#fff",
-        }}
-      >
-        Switch Network
-      </button>
-    </div>
-  );
-}
 
 /* =====================================================================
    STEP 1 -- SELECT CALIBER
@@ -585,7 +516,7 @@ function StepReview({
 }: {
   caliber: CaliberDetailData;
   usdcAmount: string;
-  txStatus: TxStatus;
+  txStatus: MintTxStatus;
   errorMessage: string;
   isConnected: boolean;
   isWrongNetwork: boolean;
@@ -821,19 +752,7 @@ function StepReview({
 
         {/* Approving / waiting for approval confirmation */}
         {(txStatus === "approving" || txStatus === "approve-confirming") && (
-          <button
-            type="button"
-            disabled
-            className="flex w-full items-center justify-center gap-2 py-3.5 text-sm font-bold"
-            style={{
-              backgroundColor: "var(--bg-tertiary)",
-              color: "var(--text-muted)",
-              cursor: "not-allowed",
-            }}
-          >
-            <Loader2 size={16} className="animate-spin" />
-            Approving...
-          </button>
+          <SpinnerButton label="Approving..." />
         )}
 
         {/* Approved -- confirm mint */}
@@ -850,19 +769,7 @@ function StepReview({
 
         {/* Minting / waiting for mint confirmation */}
         {(txStatus === "minting" || txStatus === "mint-confirming") && (
-          <button
-            type="button"
-            disabled
-            className="flex w-full items-center justify-center gap-2 py-4 text-base font-bold"
-            style={{
-              backgroundColor: "var(--bg-tertiary)",
-              color: "var(--text-muted)",
-              cursor: "not-allowed",
-            }}
-          >
-            <Loader2 size={16} className="animate-spin" />
-            {"Confirming..."}
-          </button>
+          <SpinnerButton label="Confirming..." size="large" />
         )}
       </div>
     </div>
@@ -1110,31 +1017,24 @@ export function MintFlow({
   }, [usdcBalanceRaw]);
 
   // ── Derive TxStatus from hook states ──
-  const txStatus: TxStatus = useMemo(() => {
-    if (mintTx.isMintConfirmed) return "confirmed";
-    if (mintTx.isMintConfirming) return "mint-confirming";
-    if (mintTx.isMintPending) return "minting";
-    if (
-      allowance.hasEnoughAllowance(parseUsdc(usdcAmount || "0")) ||
-      mintTx.isApproveConfirmed
-    )
-      return "approved";
-    if (mintTx.isApproveConfirming) return "approve-confirming";
-    if (mintTx.isApprovePending) return "approving";
-    if (mintTx.approveError || mintTx.mintError) return "failed";
-    return "idle";
-  }, [
-    mintTx.isMintConfirmed,
-    mintTx.isMintConfirming,
-    mintTx.isMintPending,
-    mintTx.isApproveConfirmed,
-    mintTx.isApproveConfirming,
-    mintTx.isApprovePending,
-    mintTx.approveError,
-    mintTx.mintError,
-    allowance,
-    usdcAmount,
-  ]);
+  const hasEnoughAllowance = allowance.hasEnoughAllowance(
+    parseUsdc(usdcAmount || "0"),
+  );
+  const txStatus: MintTxStatus = useTxStatus({
+    flags: {
+      isActionConfirmed: mintTx.isMintConfirmed,
+      isActionConfirming: mintTx.isMintConfirming,
+      isActionPending: mintTx.isMintPending,
+      isApproveConfirmed: mintTx.isApproveConfirmed,
+      isApproveConfirming: mintTx.isApproveConfirming,
+      isApprovePending: mintTx.isApprovePending,
+      approveError: mintTx.approveError,
+      actionError: mintTx.mintError,
+    },
+    actionStatus: "minting",
+    actionConfirmingStatus: "mint-confirming",
+    hasEnoughAllowance,
+  });
 
   const errorMessage = parseContractError(
     mintTx.approveError || mintTx.mintError,
@@ -1148,19 +1048,19 @@ export function MintFlow({
   }, [mintTx.isMintConfirmed]);
 
   // ── Handlers ──
-  function handleApprove() {
+  const handleApprove = useCallback(() => {
     mintTx.approve(usdcAmount);
-  }
+  }, [mintTx, usdcAmount]);
 
-  function handleConfirm() {
+  const handleConfirm = useCallback(() => {
     mintTx.startMint(usdcAmount, DEFAULT_SLIPPAGE_BPS, getDeadline());
-  }
+  }, [mintTx, usdcAmount]);
 
-  function handleRetry() {
+  const handleRetry = useCallback(() => {
     mintTx.reset();
-  }
+  }, [mintTx]);
 
-  function handleMintMore() {
+  const handleMintMore = useCallback(() => {
     mintTx.reset();
     if (isEmbedded) {
       setStep(1);
@@ -1170,7 +1070,7 @@ export function MintFlow({
       setSelectedCaliber(null);
     }
     setUsdcAmount("");
-  }
+  }, [mintTx, isEmbedded, preselected]);
 
   return (
     <div className="mx-auto w-full max-w-[560px] px-4 py-8 md:py-12">
