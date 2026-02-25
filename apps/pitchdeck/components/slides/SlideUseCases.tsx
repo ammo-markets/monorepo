@@ -6,15 +6,16 @@ export function SlideUseCases() {
   return (
     <SlideLayout>
       <h2 className="mb-2 font-display text-2xl font-bold uppercase tracking-tight text-text sm:text-4xl lg:text-5xl">
-        Put Your Ammo to Work
+        DeFi Composability
       </h2>
       <p className="mb-4 text-sm text-text-muted sm:mb-6 sm:text-base lg:mb-10 lg:text-lg">
-        Three ways tokenized ammunition unlocks real value
+        Once tokenized, ammo tokens work within the DeFi ecosystem like any
+        other token — with limitless potential.
       </p>
 
       <StaggerContainer
         preset="magazine-load"
-        className="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-8"
+        className="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4 lg:gap-8"
       >
         {USE_CASE_DATA.map((useCase) => (
           <StaggerItem key={useCase.title}>
@@ -22,14 +23,9 @@ export function SlideUseCases() {
               <h3 className="mb-4 font-display text-2xl font-bold uppercase tracking-tight text-brass">
                 {useCase.title}
               </h3>
-              <p className="mb-6 text-base leading-relaxed text-text-secondary">
+              <p className="text-base leading-relaxed text-text-secondary">
                 {useCase.description}
               </p>
-              <div className="mt-auto rounded-none border border-brass/30 bg-surface-elevated px-4 py-3">
-                <p className="text-sm text-text-secondary">
-                  {useCase.highlight}
-                </p>
-              </div>
             </div>
           </StaggerItem>
         ))}

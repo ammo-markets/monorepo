@@ -81,25 +81,6 @@ export function SlideMarket() {
       <p className="mb-6 text-center text-base text-text-muted">
         {MARKET_STATS.globalDimension}
       </p>
-
-      <div className="flex items-center justify-center gap-4 sm:gap-8 lg:gap-12">
-        <div className="text-center">
-          <p className="font-display text-2xl font-bold uppercase text-brass sm:text-3xl lg:text-4xl">
-            {MARKET_STATS.gunOwnership}
-          </p>
-          <p className="mt-1 text-sm text-text-muted">
-            of US households own firearms (Gallup)
-          </p>
-        </div>
-        <div className="text-center">
-          <p className="font-display text-2xl font-bold uppercase text-brass sm:text-3xl lg:text-4xl">
-            {MARKET_STATS.regularBuyers}
-          </p>
-          <p className="mt-1 text-sm text-text-muted">
-            of gun owners fire rounds annually (NSSF)
-          </p>
-        </div>
-      </div>
     </SlideLayout>
   );
 }

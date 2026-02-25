@@ -16,8 +16,6 @@ export interface MarketStats {
   somValue: string;
   somPercent: string;
   somDetail: string;
-  gunOwnership: string;
-  regularBuyers: string;
   globalDimension: string;
 }
 
@@ -35,7 +33,6 @@ export interface WhyNowPoint {
 export interface UseCase {
   title: string;
   description: string;
-  highlight: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -55,8 +52,6 @@ export const MARKET_STATS: MarketStats = {
   somValue: "$80M",
   somPercent: "1%",
   somDetail: "Initial target — online-accessible segment",
-  gunOwnership: "42%",
-  regularBuyers: "60%",
   globalDimension:
     "Tokenization removes borders. Anyone on earth gets price exposure.",
 };
@@ -100,24 +95,26 @@ export const WHY_NOW_POINTS: WhyNowPoint[] = [
   { stat: "0", label: "Financial instruments for ammunition" },
 ];
 
-/** Use Cases slide -- 3 concrete examples */
+/** Use Cases slide -- DeFi composability */
 export const USE_CASE_DATA: UseCase[] = [
   {
     title: "Collateral",
     description:
-      "Use 20,000 rounds of 9mm as collateral to borrow money for a car.",
-    highlight: "Unlock the value sitting in your ammo stockpile.",
+      "Post ammo tokens as collateral on lending protocols to borrow stablecoins — unlocking liquidity without selling.",
   },
   {
-    title: "Yield",
+    title: "Lending",
     description:
-      "Provide liquidity to earn yield on 10,000 rounds of 5.56.",
-    highlight: "Your ammo works for you while you hold it.",
+      "Lend your ammo tokens to earn interest. Borrowers get price exposure; lenders earn yield on idle inventory.",
   },
   {
-    title: "Global Access",
+    title: "Liquidity",
     description:
-      "Invest in a million rounds from halfway around the world at the click of a button.",
-    highlight: "No borders, no import restrictions, no storage.",
+      "Provide liquidity in AMM pools (e.g. 9mm/USDC) and earn trading fees from every swap.",
+  },
+  {
+    title: "Leverage",
+    description:
+      "Go long or short on ammunition prices using DeFi perpetuals and options — no physical storage required.",
   },
 ];

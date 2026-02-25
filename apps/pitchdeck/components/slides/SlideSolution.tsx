@@ -4,24 +4,31 @@ import { StaggerContainer, StaggerItem } from "../StaggerContainer";
 const STEPS = [
   {
     step: "1",
-    icon: "$",
+    icon: "💵",
     title: "Users Pay Us",
     description:
       "Deposit USDC to purchase ammunition tokens for any supported caliber and type.",
   },
   {
     step: "2",
-    icon: "AX",
+    icon: "🪙",
     title: "We Mint Tokens",
     description:
       "ERC-20 tokens are minted by caliber + type. 1 token = 1 round, fully backed.",
   },
   {
     step: "3",
-    icon: "PKG",
+    icon: "📦",
     title: "We Buy the Underlying",
     description:
       "Physical ammunition is purchased and stored via our AmmoSquared partnership.",
+  },
+  {
+    step: "4",
+    icon: "🔥",
+    title: "Redeem for Physical",
+    description:
+      "Verified US residents burn tokens and receive physical ammunition shipped to their door.",
   },
 ];
 
@@ -38,12 +45,12 @@ export function SlideSolution() {
 
       <StaggerContainer
         preset="firing-sequence"
-        className="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-8"
+        className="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4 lg:gap-8"
       >
         {STEPS.map((step) => (
           <StaggerItem key={step.step} preset="firing-sequence">
             <div className="card-hover flex h-full flex-col items-center rounded-none border border-surface-elevated bg-surface p-4 text-center sm:p-6 lg:p-8">
-              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-surface-elevated text-xl font-bold text-brass">
+              <div className="mb-4 flex h-40 w-40 items-center justify-center rounded-full bg-surface-elevated text-7xl font-bold text-brass">
                 {step.icon}
               </div>
               <h3 className="mb-3 text-xl font-semibold text-text">

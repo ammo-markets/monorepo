@@ -5,7 +5,6 @@ import { SlideWhyNow } from "./SlideWhyNow";
 import { SlideMarket } from "./SlideMarket";
 import { SlideSolution } from "./SlideSolution";
 import { SlideUseCases } from "./SlideUseCases";
-import { SlideTraction } from "./SlideTraction";
 import { SlideRegulatory } from "./SlideRegulatory";
 import { SlideClose } from "./SlideClose";
 
@@ -16,7 +15,6 @@ export const SLIDES: ComponentType[] = [
   SlideMarket,
   SlideSolution,
   SlideUseCases,
-  SlideTraction,
   SlideRegulatory,
   SlideClose,
 ];
