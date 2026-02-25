@@ -39,7 +39,7 @@ export function SlideCover() {
           variants={fadeUp}
           className="mb-4 font-display text-xl uppercase tracking-widest text-text sm:text-3xl lg:text-4xl"
         >
-          Bullets Are the New Barrels
+          Ammunition as an Asset
         </motion.p>
         <motion.p
           variants={fadeUp}
