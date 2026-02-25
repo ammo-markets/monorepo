@@ -4,22 +4,24 @@ import { StaggerContainer, StaggerItem } from "../StaggerContainer";
 const STEPS = [
   {
     step: "1",
-    icon: "USDC",
-    title: "Deposit USDC",
-    description: "Deposit stablecoins to mint any supported caliber token.",
+    icon: "$",
+    title: "Users Pay Us",
+    description:
+      "Deposit USDC to purchase ammunition tokens for any supported caliber and type.",
   },
   {
     step: "2",
     icon: "AX",
-    title: "Receive Ammo Tokens",
-    description: "ERC-20 tokens are minted to your wallet. 1 token = 1 round.",
+    title: "We Mint Tokens",
+    description:
+      "ERC-20 tokens are minted by caliber + type. 1 token = 1 round, fully backed.",
   },
   {
     step: "3",
     icon: "PKG",
-    title: "Redeem for Physical",
+    title: "We Buy the Underlying",
     description:
-      "Verified US residents burn tokens and receive ammo shipped to their door.",
+      "Physical ammunition is purchased and stored via our AmmoSquared partnership.",
   },
 ];
 
@@ -27,11 +29,11 @@ export function SlideSolution() {
   return (
     <SlideLayout>
       <h2 className="mb-2 font-display text-2xl font-bold uppercase tracking-tight text-text sm:text-4xl lg:text-5xl">
-        The Solution
+        How It Works
       </h2>
       <p className="mb-4 text-sm text-text-muted sm:mb-6 sm:text-base lg:mb-10 lg:text-lg">
-        Anyone on earth can trade ammo prices. Only verified Americans take
-        delivery.
+        Works like Tether USD or PAX Gold — redeem tokens for the underlying
+        asset at any time.
       </p>
 
       <StaggerContainer

@@ -33,7 +33,7 @@ export function SlideCover() {
           animate={{ letterSpacing: "-0.02em", opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
         >
-          Ammo Exchange
+          Ammo Markets
         </motion.h1>
         <motion.p
           variants={fadeUp}
@@ -45,7 +45,7 @@ export function SlideCover() {
           variants={fadeUp}
           className="font-mono text-sm uppercase tracking-widest text-text-secondary sm:text-lg lg:text-xl"
         >
-          Tokenized ammunition trading
+          Tokenization of small arms ammunition as a Real World Asset
         </motion.p>
       </motion.div>
     </SlideLayout>

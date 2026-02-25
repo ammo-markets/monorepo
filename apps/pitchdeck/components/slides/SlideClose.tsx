@@ -45,16 +45,6 @@ export function SlideClose() {
           Global price exposure &middot; Tokenized trading &middot; Optional
           physical delivery
         </motion.p>
-        <motion.div
-          variants={fadeUp}
-          className="rounded-none bg-surface-elevated px-4 py-3 sm:px-6 sm:py-4 lg:px-8"
-        >
-          <p className="text-text-muted">
-            <span className="font-semibold text-brass">
-              hello@ammo.exchange
-            </span>
-          </p>
-        </motion.div>
       </motion.div>
     </SlideLayout>
   );

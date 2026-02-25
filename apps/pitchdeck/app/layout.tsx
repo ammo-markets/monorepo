@@ -19,7 +19,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Ammo Exchange | Pitch Deck",
+  title: "Ammo Markets | Pitch Deck",
   description: "Tokenized ammunition trading - investor pitch deck.",
 };
 

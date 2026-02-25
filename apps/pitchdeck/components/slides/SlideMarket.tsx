@@ -9,7 +9,7 @@ const TIERS = [
     label: "TAM",
     name: MARKET_STATS.tam,
     value: MARKET_STATS.tamValue,
-    detail: "US ammunition market (annual)",
+    detail: MARKET_STATS.tamDetail,
     targetWidth: "100%",
     opacity: "opacity-30",
     delay: 0,
@@ -19,7 +19,7 @@ const TIERS = [
     label: "SAM",
     name: MARKET_STATS.sam,
     value: MARKET_STATS.samValue,
-    detail: `Online / accessible segment (${MARKET_STATS.samPercent})`,
+    detail: `${MARKET_STATS.samDetail} (${MARKET_STATS.samPercent})`,
     targetWidth: "75%",
     opacity: "opacity-50",
     delay: 0.2,
@@ -29,7 +29,7 @@ const TIERS = [
     label: "SOM",
     name: MARKET_STATS.som,
     value: MARKET_STATS.somValue,
-    detail: `Initial target (${MARKET_STATS.somPercent})`,
+    detail: `${MARKET_STATS.somDetail} (${MARKET_STATS.somPercent})`,
     targetWidth: "50%",
     opacity: "opacity-100",
     delay: 0.4,
@@ -44,7 +44,7 @@ export function SlideMarket() {
         Market Opportunity
       </h2>
       <p className="mb-4 text-sm text-text-muted sm:mb-6 sm:text-base lg:mb-10 lg:text-lg">
-        US ammunition -- a massive, underserved commodity market
+        Global small arms ammunition — a massive, underserved commodity market
       </p>
 
       <div className="mb-6 flex flex-1 flex-col items-center justify-center gap-4">
