@@ -27,25 +27,25 @@ export interface UseCase {
 /** Problem slide statistics */
 export const PROBLEM_STATS: ProblemStat[] = [
   {
-    icon: "$",
+    icon: "💰",
     headline: "$8B market with zero financial instruments",
     detail:
       "No futures, no ETFs, no options — the only major commodity without a derivatives market.",
   },
   {
-    icon: "%",
+    icon: "📈",
     headline: "300%+ price spike with no hedge",
     detail:
       "9mm surged from $0.17 to $0.82 per round in 2020–2021. No way to hedge or profit from the move.",
   },
   {
-    icon: "X",
+    icon: "🌍",
     headline: "Geographic restrictions lock out investors",
     detail:
       "Physical ammo cannot cross most borders. Import/export bans lock out non-US buyers entirely.",
   },
   {
-    icon: "?",
+    icon: "🚫",
     headline: "No way to invest in ammunition",
     detail:
       "Ammo is an asset with wild price swings, yet there's no way to gain exposure in the financial ecosystem.",
