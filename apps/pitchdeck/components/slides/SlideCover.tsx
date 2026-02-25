@@ -39,13 +39,13 @@ export function SlideCover() {
           variants={fadeUp}
           className="mb-4 font-display text-xl uppercase tracking-widest text-text sm:text-3xl lg:text-4xl"
         >
-          Make Your Ammo Liquid
+          Bullets Are the New Barrels
         </motion.p>
         <motion.p
           variants={fadeUp}
           className="font-mono text-sm uppercase tracking-widest text-text-secondary sm:text-lg lg:text-xl"
         >
-          Tokenization of small arms ammunition as a Real World Asset
+          Oil got futures. Gold got ETFs. Ammunition gets tokenized.
         </motion.p>
       </motion.div>
     </SlideLayout>

@@ -30,7 +30,7 @@ export function SlideClose() {
           variants={fadeUp}
           className="font-display mb-6 text-3xl font-bold uppercase tracking-tight text-brass sm:text-5xl lg:text-7xl"
         >
-          Make Your Ammo Liquid
+          Bullets Are the New Barrels
         </motion.h1>
         <motion.p
           variants={fadeUp}
