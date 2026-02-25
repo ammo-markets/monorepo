@@ -41,12 +41,6 @@ export function SlideCover() {
         >
           Ammunition as an Asset
         </motion.p>
-        <motion.p
-          variants={fadeUp}
-          className="font-mono text-sm uppercase tracking-widest text-text-secondary sm:text-lg lg:text-xl"
-        >
-          Oil got futures. Gold got ETFs. Ammunition gets tokenized.
-        </motion.p>
       </motion.div>
     </SlideLayout>
   );
