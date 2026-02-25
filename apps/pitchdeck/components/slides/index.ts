@@ -2,7 +2,6 @@ import type { ComponentType } from "react";
 import { SlideCover } from "./SlideCover";
 import { SlideProblem } from "./SlideProblem";
 import { SlideWhyNow } from "./SlideWhyNow";
-import { SlideMarket } from "./SlideMarket";
 import { SlideSolution } from "./SlideSolution";
 import { SlideUseCases } from "./SlideUseCases";
 import { SlideRegulatory } from "./SlideRegulatory";
@@ -12,7 +11,6 @@ export const SLIDES: ComponentType[] = [
   SlideCover,
   SlideProblem,
   SlideWhyNow,
-  SlideMarket,
   SlideSolution,
   SlideUseCases,
   SlideRegulatory,

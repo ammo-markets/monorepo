@@ -4,21 +4,6 @@
 // Types
 // ---------------------------------------------------------------------------
 
-export interface MarketStats {
-  tam: string;
-  tamValue: string;
-  tamDetail: string;
-  sam: string;
-  samValue: string;
-  samPercent: string;
-  samDetail: string;
-  som: string;
-  somValue: string;
-  somPercent: string;
-  somDetail: string;
-  globalDimension: string;
-}
-
 export interface ProblemStat {
   icon: string;
   headline: string;
@@ -38,23 +23,6 @@ export interface UseCase {
 // ---------------------------------------------------------------------------
 // Data
 // ---------------------------------------------------------------------------
-
-/** TAM / SAM / SOM market sizing */
-export const MARKET_STATS: MarketStats = {
-  tam: "Total Addressable Market",
-  tamValue: "$13B",
-  tamDetail: "Global small arms ammunition market (annual)",
-  sam: "Serviceable Addressable Market",
-  samValue: "$8B",
-  samPercent: "62%",
-  samDetail: "US civilian ammunition market",
-  som: "Serviceable Obtainable Market",
-  somValue: "$80M",
-  somPercent: "1%",
-  somDetail: "Initial target — online-accessible segment",
-  globalDimension:
-    "Tokenization removes borders. Anyone on earth gets price exposure.",
-};
 
 /** Problem slide statistics */
 export const PROBLEM_STATS: ProblemStat[] = [
