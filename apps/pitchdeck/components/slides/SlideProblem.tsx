@@ -19,7 +19,7 @@ export function SlideProblem() {
         {PROBLEM_STATS.map((stat) => (
           <StaggerItem key={stat.icon}>
             <div className="card-hover flex h-full flex-col rounded-none border border-surface-elevated bg-surface p-4 sm:p-6 lg:p-8">
-              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-surface-elevated text-4xl font-bold text-brass">
+              <div className="mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-surface-elevated text-5xl font-bold text-brass">
                 {stat.icon}
               </div>
               <h3 className="mb-3 text-xl font-semibold text-text">
