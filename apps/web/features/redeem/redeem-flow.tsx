@@ -1629,6 +1629,13 @@ export function RedeemFlow({
       redeemTx.approveReceiptError,
   );
 
+  // ── Refetch allowance after approval so simulation can run ──
+  useEffect(() => {
+    if (redeemTx.isApproveConfirmed) {
+      allowance.refetch();
+    }
+  }, [redeemTx.isApproveConfirmed, allowance.refetch]);
+
   // ── Auto-advance to confirmation when redeem confirmed ──
   useEffect(() => {
     if (redeemTx.isRedeemConfirmed) {

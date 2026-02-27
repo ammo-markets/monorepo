@@ -1037,6 +1037,13 @@ export function MintFlow({
       mintTx.approveReceiptError,
   );
 
+  // ── Refetch allowance after approval so simulation can run ──
+  useEffect(() => {
+    if (mintTx.isApproveConfirmed) {
+      allowance.refetch();
+    }
+  }, [mintTx.isApproveConfirmed, allowance.refetch]);
+
   // ── Auto-advance to confirmation when mint confirmed ──
   useEffect(() => {
     if (mintTx.isMintConfirmed) {
