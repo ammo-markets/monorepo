@@ -20,6 +20,9 @@ import {
   MapPin,
   Flame,
   Truck,
+  Settings2,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { caliberIcons } from "@/features/shared/caliber-icons";
 import type { CaliberDetailData } from "@/lib/types";
@@ -184,6 +187,7 @@ function StepSelectCaliberAmount({
   isConnected: boolean;
   onConnect: () => void;
 }) {
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const caliber =
     selectedCaliber && caliberDetailsMap
       ? caliberDetailsMap[selectedCaliber]
@@ -408,13 +412,13 @@ function StepSelectCaliberAmount({
           {/* Calculation panel */}
           {rounds > 0 && (
             <div
-              className="mt-5 px-4 py-4"
+              className="mt-3 px-4 py-3"
               style={{
                 backgroundColor: "var(--bg-tertiary)",
                 border: "1px solid var(--border-default)",
               }}
             >
-              <div className="flex flex-col gap-2.5 text-sm">
+              <div className="flex flex-col gap-2 text-sm">
                 <div className="flex justify-between">
                   <span style={{ color: "var(--text-muted)" }}>
                     Tokens to burn
@@ -472,12 +476,28 @@ function StepSelectCaliberAmount({
         </>
       )}
 
-      {/* Deadline picker — visible once a caliber is selected */}
+      {/* Advanced Settings — visible once a caliber is selected */}
       {caliber && (
-        <DeadlinePicker
-          deadlineHours={deadlineHours}
-          onDeadlineChange={onDeadlineChange}
-        />
+        <div className="mt-6">
+          <button
+            type="button"
+            onClick={() => setShowAdvanced(!showAdvanced)}
+            className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide transition-none hover:opacity-80"
+            style={{ color: "var(--text-muted)" }}
+          >
+            <Settings2 size={14} />
+            Advanced Settings
+            {showAdvanced ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+          </button>
+          {showAdvanced && (
+            <div className="mt-4">
+              <DeadlinePicker
+                deadlineHours={deadlineHours}
+                onDeadlineChange={onDeadlineChange}
+              />
+            </div>
+          )}
+        </div>
       )}
 
       {!isConnected ? (
@@ -1499,6 +1519,7 @@ export function RedeemFlow({
   selectedCaliber?: Caliber;
 }) {
   const searchParams = useSearchParams();
+  const containerRef = useRef<HTMLDivElement>(null);
   const preselected =
     caliberFromProp ??
     (searchParams.get("caliber")?.toUpperCase() as Caliber | null);
@@ -1615,6 +1636,19 @@ export function RedeemFlow({
     }
   }, [redeemTx.isRedeemConfirmed]);
 
+  // ── Scroll to top on step change (focus on active step) ──
+  useEffect(() => {
+    if (step > 0 && containerRef.current) {
+      // Small timeout to allow render before scrolling
+      setTimeout(() => {
+        containerRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 50);
+    }
+  }, [step]);
+
   // Handle KYC auto-skip for verified users
   const kycAutoSkipRef = useRef(false);
   useEffect(() => {
@@ -1671,8 +1705,8 @@ export function RedeemFlow({
   }, [redeemTx, isEmbedded, preselected]);
 
   return (
-    <div className="mx-auto w-full max-w-[560px] px-4 py-8 md:py-12">
-      <RedeemProgress currentStep={step} />
+    <div ref={containerRef} className="mx-auto w-full max-w-[560px] px-4 py-8 md:py-12">
+      <RedeemProgress currentStep={step} isEmbedded={isEmbedded} />
 
       {/* Loading skeleton while market data fetches */}
       {marketLoading && (

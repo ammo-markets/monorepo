@@ -11,15 +11,19 @@ const steps = [
 
 interface MintProgressProps {
   currentStep: number; // 0-indexed
+  isEmbedded?: boolean;
 }
 
-export function MintProgress({ currentStep }: MintProgressProps) {
+export function MintProgress({ currentStep, isEmbedded }: MintProgressProps) {
+  const displaySteps = isEmbedded ? steps.slice(1) : steps;
+  const adjustedStep = isEmbedded ? currentStep - 1 : currentStep;
+
   return (
     <nav aria-label="Mint progress" className="mb-8 md:mb-10">
       <ol className="flex items-center justify-between">
-        {steps.map((step, i) => {
-          const isCompleted = i < currentStep;
-          const isCurrent = i === currentStep;
+        {displaySteps.map((step, i) => {
+          const isCompleted = i < adjustedStep;
+          const isCurrent = i === adjustedStep;
           const isFuture = i > currentStep;
 
           return (
@@ -74,7 +78,7 @@ export function MintProgress({ currentStep }: MintProgressProps) {
               </div>
 
               {/* Connector line */}
-              {i < steps.length - 1 && (
+              {i < displaySteps.length - 1 && (
                 <div
                   className="mx-2 h-[2px] flex-1 rounded-full transition-colors duration-300"
                   style={{

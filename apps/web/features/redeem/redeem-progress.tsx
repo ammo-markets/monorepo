@@ -12,13 +12,21 @@ const steps = [
 
 interface RedeemProgressProps {
   currentStep: number;
+  isEmbedded?: boolean;
 }
 
-export function RedeemProgress({ currentStep }: RedeemProgressProps) {
+export function RedeemProgress({ currentStep, isEmbedded }: RedeemProgressProps) {
+  const displaySteps = steps.map((step, i) => {
+    if (i === 0 && isEmbedded) {
+      return { ...step, label: "Amount" };
+    }
+    return step;
+  });
+
   return (
     <nav aria-label="Redeem progress" className="mb-8 md:mb-10">
       <ol className="flex items-center justify-between">
-        {steps.map((step, i) => {
+        {displaySteps.map((step, i) => {
           const isCompleted = i < currentStep;
           const isCurrent = i === currentStep;
 
@@ -68,7 +76,7 @@ export function RedeemProgress({ currentStep }: RedeemProgressProps) {
                 </span>
               </div>
 
-              {i < steps.length - 1 && (
+              {i < displaySteps.length - 1 && (
                 <div
                   className="mx-1.5 h-[2px] flex-1 rounded-full transition-colors duration-300 sm:mx-2"
                   style={{

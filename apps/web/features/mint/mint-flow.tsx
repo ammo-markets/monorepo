@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useMarketData } from "@/hooks/use-market-data";
 import { useSearchParams } from "next/navigation";
 import { formatUnits } from "viem";
@@ -13,6 +13,9 @@ import {
   ExternalLink,
   XCircle,
   Info,
+  Settings2,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { caliberIcons } from "@/features/shared/caliber-icons";
 import type { CaliberDetailData } from "@/lib/types";
@@ -215,6 +218,7 @@ function StepEnterAmount({
   isConnected: boolean;
   onConnect: () => void;
 }) {
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const Icon = caliberIcons[caliber.id];
   const quickAmounts = [50, 100, 250, 500];
   const usdcValue = Number.parseFloat(usdcAmount) || 0;
@@ -242,35 +246,37 @@ function StepEnterAmount({
       )}
 
       {/* Selected caliber compact card */}
-      <div
-        className="mb-6 flex items-center gap-3 px-4 py-3"
-        style={{
-          backgroundColor: "var(--bg-secondary)",
-          border: "1px solid var(--border-default)",
-        }}
-      >
-        <Icon size={28} />
-        <div className="flex-1">
+      {!hideBack && (
+        <div
+          className="mb-6 flex items-center gap-3 px-4 py-3"
+          style={{
+            backgroundColor: "var(--bg-secondary)",
+            border: "1px solid var(--border-default)",
+          }}
+        >
+          <Icon size={28} />
+          <div className="flex-1">
+            <span
+              className="font-mono text-sm font-bold uppercase tracking-widest"
+              style={{ color: "var(--text-primary)" }}
+            >
+              {caliber.symbol}
+            </span>
+            <span
+              className="text-xs ml-2"
+              style={{ color: "var(--text-secondary)" }}
+            >
+              {caliber.name}
+            </span>
+          </div>
           <span
-            className="font-mono text-sm font-bold uppercase tracking-widest"
+            className="font-mono text-sm font-medium tabular-nums"
             style={{ color: "var(--text-primary)" }}
           >
-            {caliber.symbol}
-          </span>
-          <span
-            className="text-xs ml-2"
-            style={{ color: "var(--text-secondary)" }}
-          >
-            {caliber.name}
+            ${caliber.price.toFixed(2)}/rd
           </span>
         </div>
-        <span
-          className="font-mono text-sm font-medium tabular-nums"
-          style={{ color: "var(--text-primary)" }}
-        >
-          ${caliber.price.toFixed(2)}/rd
-        </span>
-      </div>
+      )}
 
       {/* Main USDC input */}
       <label
@@ -384,13 +390,13 @@ function StepEnterAmount({
       {/* Calculation panel */}
       {usdcValue > 0 && (
         <div
-          className="mt-5 px-4 py-4"
+          className="mt-3 px-4 py-3"
           style={{
             backgroundColor: "var(--bg-tertiary)",
             border: "1px solid var(--border-default)",
           }}
         >
-          <div className="flex flex-col gap-2.5 text-sm">
+          <div className="flex flex-col gap-2 text-sm">
             <div className="flex justify-between">
               <span style={{ color: "var(--text-muted)" }}>
                 Mint fee ({caliber.mintFee}%)
@@ -434,11 +440,27 @@ function StepEnterAmount({
         </div>
       )}
 
-      {/* Deadline picker */}
-      <DeadlinePicker
-        deadlineHours={deadlineHours}
-        onDeadlineChange={onDeadlineChange}
-      />
+      {/* Advanced Settings */}
+      <div className="mt-6">
+        <button
+          type="button"
+          onClick={() => setShowAdvanced(!showAdvanced)}
+          className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide transition-none hover:opacity-80"
+          style={{ color: "var(--text-muted)" }}
+        >
+          <Settings2 size={14} />
+          Advanced Settings
+          {showAdvanced ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+        </button>
+        {showAdvanced && (
+          <div className="mt-4">
+            <DeadlinePicker
+              deadlineHours={deadlineHours}
+              onDeadlineChange={onDeadlineChange}
+            />
+          </div>
+        )}
+      </div>
 
       {/* CTA */}
       {!isConnected ? (
@@ -923,6 +945,7 @@ export function MintFlow({
   selectedCaliber?: Caliber;
 }) {
   const searchParams = useSearchParams();
+  const containerRef = useRef<HTMLDivElement>(null);
   const preselected =
     caliberFromProp ??
     (searchParams.get("caliber")?.toUpperCase() as Caliber | null);
@@ -1021,6 +1044,20 @@ export function MintFlow({
     }
   }, [mintTx.isMintConfirmed]);
 
+  // ── Scroll to top on step change (focus on active step) ──
+  useEffect(() => {
+    const baseStep = isEmbedded ? 1 : 0;
+    if (step > baseStep && containerRef.current) {
+      // Small timeout to allow render before scrolling
+      setTimeout(() => {
+        containerRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 50);
+    }
+  }, [step, isEmbedded]);
+
   // ── Handlers ──
   const handleApprove = useCallback(() => {
     mintTx.approve(usdcAmount);
@@ -1048,8 +1085,8 @@ export function MintFlow({
   }, [mintTx, isEmbedded, preselected]);
 
   return (
-    <div className="mx-auto w-full max-w-[560px] px-4 py-8 md:py-12">
-      <MintProgress currentStep={step} />
+    <div ref={containerRef} className="mx-auto w-full max-w-[560px] px-4 py-8 md:py-12">
+      <MintProgress currentStep={step} isEmbedded={isEmbedded} />
 
       {/* Loading skeleton while market data fetches */}
       {marketLoading && (
