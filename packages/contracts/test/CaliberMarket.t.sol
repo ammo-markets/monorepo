@@ -366,10 +366,11 @@ contract CaliberMarketTest is Test {
 
     // ── Access control parity ─────────────────────
 
-    function testRefundMintOnlyKeeper() public {
+    function testRefundMintRejectsRandomCaller() public {
         _startMint(user, 100e6, 1000, 0);
 
-        vm.prank(user);
+        address random = address(0xDEAD);
+        vm.prank(random);
         vm.expectRevert(CaliberMarket.NotKeeper.selector);
         market.refundMint(1, 1);
     }
@@ -387,7 +388,7 @@ contract CaliberMarketTest is Test {
         market.finalizeRedeem(orderId);
     }
 
-    function testCancelRedeemOnlyKeeper() public {
+    function testCancelRedeemRejectsRandomCaller() public {
         _mintTokensToUser(user);
 
         vm.prank(user);
@@ -395,7 +396,8 @@ contract CaliberMarketTest is Test {
         vm.prank(user);
         uint256 orderId = market.startRedeem(100e18, 0);
 
-        vm.prank(user);
+        address random = address(0xDEAD);
+        vm.prank(random);
         vm.expectRevert(CaliberMarket.NotKeeper.selector);
         market.cancelRedeem(orderId, 1);
     }
@@ -726,6 +728,124 @@ contract CaliberMarketTest is Test {
         // Assert: mint order status is Finalized
         (,,,,,,,,, CaliberMarket.MintStatus status) = market.mintOrders(orderId);
         assertEq(uint256(status), uint256(CaliberMarket.MintStatus.Finalized));
+    }
+
+    // ═══════════════════════════════════════════════
+    // ── User self-rescue after deadline ─────────
+    // ═══════════════════════════════════════════════
+
+    function testUserCanRefundMintAfterDeadline() public {
+        uint64 deadline = uint64(block.timestamp + 60);
+        _startMint(user, 100e6, 1000, deadline);
+
+        vm.warp(deadline + 1);
+
+        vm.prank(user);
+        market.refundMint(1, 0);
+
+        assertEq(usdc.balanceOf(user), 1_000e6);
+        (,,,,,,,,, CaliberMarket.MintStatus status) = market.mintOrders(1);
+        assertEq(uint256(status), uint256(CaliberMarket.MintStatus.Refunded));
+    }
+
+    function testUserCannotRefundMintBeforeDeadline() public {
+        uint64 deadline = uint64(block.timestamp + 60);
+        _startMint(user, 100e6, 1000, deadline);
+
+        vm.prank(user);
+        vm.expectRevert(CaliberMarket.DeadlineExpired.selector);
+        market.refundMint(1, 0);
+    }
+
+    function testUserCannotRefundMintWithZeroDeadline() public {
+        _startMint(user, 100e6, 1000, 0);
+
+        vm.warp(block.timestamp + 9999);
+
+        vm.prank(user);
+        vm.expectRevert(CaliberMarket.DeadlineNotSet.selector);
+        market.refundMint(1, 0);
+    }
+
+    function testUserCanCancelRedeemAfterDeadline() public {
+        _mintTokensToUser(user);
+        uint256 balBefore = ammoToken.balanceOf(user);
+
+        uint64 deadline = uint64(block.timestamp + 60);
+        vm.prank(user);
+        ammoToken.approve(address(market), 100e18);
+        vm.prank(user);
+        uint256 orderId = market.startRedeem(100e18, deadline);
+
+        vm.warp(deadline + 1);
+
+        vm.prank(user);
+        market.cancelRedeem(orderId, 0);
+
+        assertEq(ammoToken.balanceOf(user), balBefore);
+        (,,,,,, CaliberMarket.RedeemStatus status) = market.redeemOrders(orderId);
+        assertEq(uint256(status), uint256(CaliberMarket.RedeemStatus.Canceled));
+    }
+
+    function testUserCannotCancelRedeemBeforeDeadline() public {
+        _mintTokensToUser(user);
+
+        uint64 deadline = uint64(block.timestamp + 60);
+        vm.prank(user);
+        ammoToken.approve(address(market), 100e18);
+        vm.prank(user);
+        uint256 orderId = market.startRedeem(100e18, deadline);
+
+        vm.prank(user);
+        vm.expectRevert(CaliberMarket.DeadlineExpired.selector);
+        market.cancelRedeem(orderId, 0);
+    }
+
+    function testUserCannotCancelRedeemWithZeroDeadline() public {
+        _mintTokensToUser(user);
+
+        vm.prank(user);
+        ammoToken.approve(address(market), 100e18);
+        vm.prank(user);
+        uint256 orderId = market.startRedeem(100e18, 0);
+
+        vm.warp(block.timestamp + 9999);
+
+        vm.prank(user);
+        vm.expectRevert(CaliberMarket.DeadlineNotSet.selector);
+        market.cancelRedeem(orderId, 0);
+    }
+
+    function testUserSelfRescueMintWorksWhenPaused() public {
+        uint64 deadline = uint64(block.timestamp + 60);
+        _startMint(user, 100e6, 1000, deadline);
+
+        market.pause();
+        vm.warp(deadline + 1);
+
+        vm.prank(user);
+        market.refundMint(1, 0);
+
+        assertEq(usdc.balanceOf(user), 1_000e6);
+    }
+
+    function testUserSelfRescueRedeemWorksWhenPaused() public {
+        _mintTokensToUser(user);
+        uint256 balBefore = ammoToken.balanceOf(user);
+
+        uint64 deadline = uint64(block.timestamp + 60);
+        vm.prank(user);
+        ammoToken.approve(address(market), 100e18);
+        vm.prank(user);
+        uint256 orderId = market.startRedeem(100e18, deadline);
+
+        market.pause();
+        vm.warp(deadline + 1);
+
+        vm.prank(user);
+        market.cancelRedeem(orderId, 0);
+
+        assertEq(ammoToken.balanceOf(user), balBefore);
     }
 
     // ── Helpers ─────────────────────────────────────

@@ -47,6 +47,7 @@ interface ICaliberMarket {
     error MinMintNotMet();
     error Slippage();
     error DeadlineExpired();
+    error DeadlineNotSet();
     error InvalidStatus();
     error Reentrancy();
     error TreasuryNotSet();

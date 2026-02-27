@@ -51,6 +51,7 @@ contract CaliberMarket {
     error MinMintNotMet();
     error Slippage();
     error DeadlineExpired();
+    error DeadlineNotSet();
     error InvalidStatus();
     error Reentrancy();
     error TreasuryNotSet();
@@ -231,9 +232,16 @@ contract CaliberMarket {
         emit MintFinalized(orderId, order.user, tokenAmount, actualPriceX18);
     }
 
-    function refundMint(uint256 orderId, uint8 reasonCode) external onlyKeeper {
+    function refundMint(uint256 orderId, uint8 reasonCode) external {
         MintOrder storage order = mintOrders[orderId];
         if (order.status != MintStatus.Started) revert InvalidStatus();
+
+        // Keeper can refund anytime; user can self-rescue after deadline
+        if (!manager.isKeeper(msg.sender)) {
+            if (msg.sender != order.user) revert NotKeeper();
+            if (order.deadline == 0) revert DeadlineNotSet();
+            if (block.timestamp <= order.deadline) revert DeadlineExpired();
+        }
 
         order.status = MintStatus.Refunded;
         order.finalizedAt = uint64(block.timestamp);
@@ -262,9 +270,16 @@ contract CaliberMarket {
         emit RedeemFinalized(orderId, order.user, netTokens, feeAmount);
     }
 
-    function cancelRedeem(uint256 orderId, uint8 reasonCode) external onlyKeeper {
+    function cancelRedeem(uint256 orderId, uint8 reasonCode) external {
         RedeemOrder storage order = redeemOrders[orderId];
         if (order.status != RedeemStatus.Requested) revert InvalidStatus();
+
+        // Keeper can cancel anytime; user can self-rescue after deadline
+        if (!manager.isKeeper(msg.sender)) {
+            if (msg.sender != order.user) revert NotKeeper();
+            if (order.deadline == 0) revert DeadlineNotSet();
+            if (block.timestamp <= order.deadline) revert DeadlineExpired();
+        }
 
         order.status = RedeemStatus.Canceled;
         order.finalizedAt = uint64(block.timestamp);
