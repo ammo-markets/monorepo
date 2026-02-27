@@ -26,7 +26,7 @@ import {
 import { formatUnits } from "viem";
 import { AVALANCHE_FUJI } from "@ammo-exchange/shared";
 
-function formatUsdc(raw: bigint): string {
+export function formatUsdc(raw: bigint): string {
   return Number(formatUnits(raw, 6)).toLocaleString("en-US", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
@@ -137,14 +137,6 @@ export function WalletButton() {
             <span className="font-mono text-xs">
               {address ? truncateAddress(address) : ""}
             </span>
-            {usdc !== undefined && (
-              <span
-                className="hidden text-xs sm:inline"
-                style={{ color: "var(--text-muted)" }}
-              >
-                {formatUsdc(usdc)} USDC
-              </span>
-            )}
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">

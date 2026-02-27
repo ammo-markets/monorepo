@@ -36,14 +36,17 @@ export function RejectMintDialog({
   const [reasonError, setReasonError] = useState("");
 
   const {
-    refundMint,
+    write,
     hash,
     error,
     isPending,
     isConfirming,
     isConfirmed,
+    isReady,
     reset,
-  } = useRefundMint(order.caliber as Caliber);
+  } = useRefundMint(order.caliber as Caliber, {
+    orderId: order.onChainOrderId ? BigInt(order.onChainOrderId) : undefined,
+  });
 
   // React to confirmation
   useEffect(() => {
@@ -80,7 +83,7 @@ export function RejectMintDialog({
     }
     setReasonError("");
 
-    refundMint(BigInt(order.onChainOrderId!));
+    write();
   }
 
   const buttonLabel = isPending
@@ -141,7 +144,7 @@ export function RejectMintDialog({
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
             variant="destructive"
-            disabled={isPending || isConfirming}
+            disabled={isPending || isConfirming || !isReady}
             onClick={handleConfirm}
           >
             {buttonLabel}

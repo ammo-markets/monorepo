@@ -1001,7 +1001,6 @@ export function MintFlow({
   const wallet = useWallet();
   const { openConnectModal } = useConnectModal();
   const { usdc: usdcBalanceRaw } = useTokenBalances();
-  const mintTx = useMintTransaction(activeCaliber);
   const marketAddress = CONTRACT_ADDRESSES.fuji.calibers[activeCaliber].market;
   const allowance = useAllowance(
     CONTRACT_ADDRESSES.fuji.usdc,
@@ -1015,10 +1014,24 @@ export function MintFlow({
     return Number(formatUnits(usdcBalanceRaw, 6));
   }, [usdcBalanceRaw]);
 
-  // ── Derive TxStatus from hook states ──
-  const hasEnoughAllowance = allowance.hasEnoughAllowance(
-    parseUsdc(usdcAmount || "0"),
+  // ── Derive allowance check ──
+  const parsedUsdcAmount = useMemo(
+    () => parseUsdc(usdcAmount || "0"),
+    [usdcAmount],
   );
+  const hasEnoughAllowance = allowance.hasEnoughAllowance(parsedUsdcAmount);
+
+  const mintTx = useMintTransaction(
+    activeCaliber,
+    {
+      usdcAmount: parsedUsdcAmount > BigInt(0) ? parsedUsdcAmount : undefined,
+      slippageBps: DEFAULT_SLIPPAGE_BPS,
+      deadline: getDeadline(),
+    },
+    { hasEnoughAllowance },
+  );
+
+  // ── Derive TxStatus from hook states ──
   const txStatus: MintTxStatus = useTxStatus({
     flags: {
       isActionConfirmed: mintTx.isMintConfirmed,
@@ -1029,6 +1042,8 @@ export function MintFlow({
       isApprovePending: mintTx.isApprovePending,
       approveError: mintTx.approveError,
       actionError: mintTx.mintError,
+      receiptError: mintTx.mintReceiptError ?? mintTx.approveReceiptError,
+      simulationError: mintTx.simulationError,
     },
     actionStatus: "minting",
     actionConfirmingStatus: "mint-confirming",
@@ -1036,7 +1051,11 @@ export function MintFlow({
   });
 
   const errorMessage = parseContractError(
-    mintTx.approveError || mintTx.mintError,
+    mintTx.approveError ||
+      mintTx.mintError ||
+      mintTx.simulationError ||
+      mintTx.mintReceiptError ||
+      mintTx.approveReceiptError,
   );
 
   // ── Auto-advance to confirmation when mint confirmed ──
@@ -1052,8 +1071,8 @@ export function MintFlow({
   }, [mintTx, usdcAmount]);
 
   const handleConfirm = useCallback(() => {
-    mintTx.startMint(usdcAmount, DEFAULT_SLIPPAGE_BPS, getDeadline());
-  }, [mintTx, usdcAmount]);
+    mintTx.startMint();
+  }, [mintTx]);
 
   const handleRetry = useCallback(() => {
     mintTx.reset();

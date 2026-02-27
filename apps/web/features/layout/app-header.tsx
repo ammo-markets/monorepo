@@ -1,11 +1,14 @@
 "use client";
 
 import { useWallet } from "@/hooks/use-wallet";
+import { useTokenBalances } from "@/hooks/use-token-balances";
 import { AmmoLogo } from "./logo";
-import { WalletButton } from "./wallet-button";
+import { WalletButton, formatUsdc } from "./wallet-button";
+import { UsdcIcon } from "./usdc-icon";
 
 export function AppHeader() {
   const { isConnected, isReconnecting, isWrongNetwork } = useWallet();
+  const { usdc } = useTokenBalances();
 
   const networkLabel = "Avalanche Fuji";
   const dotColor =
@@ -23,6 +26,14 @@ export function AppHeader() {
 
       {/* Right side: network badge + wallet */}
       <div className="flex items-center gap-3">
+        {/* USDC balance */}
+        {isConnected && !isReconnecting && usdc !== undefined && (
+          <div className="hidden items-center gap-1.5 text-xs font-medium sm:flex" style={{ color: "var(--text-secondary)" }}>
+            <UsdcIcon size={16} />
+            <span>${formatUsdc(usdc)}</span>
+          </div>
+        )}
+
         {/* Network badge pill */}
         <div className="flex items-center gap-2 px-3 py-1.5 text-[10px] font-mono font-bold uppercase tracking-widest bg-ax-tertiary border border-border-default text-text-secondary">
           <svg

@@ -772,6 +772,11 @@ export const CaliberMarketAbi = [
   },
   {
     "type": "error",
+    "name": "DeadlineNotSet",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "InvalidAmount",
     "inputs": []
   },

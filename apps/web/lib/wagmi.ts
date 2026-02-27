@@ -1,6 +1,6 @@
 import { getDefaultConfig } from "@rainbow-me/rainbowkit";
 import { avalanche, avalancheFuji } from "wagmi/chains";
-import { http } from "wagmi";
+import { http, createStorage, cookieStorage } from "wagmi";
 
 export const wagmiConfig = getDefaultConfig({
   appName: "Ammo Exchange",
@@ -11,4 +11,5 @@ export const wagmiConfig = getDefaultConfig({
     [avalancheFuji.id]: http(),
   },
   ssr: true,
+  storage: createStorage({ storage: cookieStorage }),
 });

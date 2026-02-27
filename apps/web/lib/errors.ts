@@ -1,6 +1,6 @@
 "use client";
 
-import type { BaseError } from "wagmi";
+import { BaseError, ContractFunctionRevertedError } from "viem";
 
 /**
  * Map of CaliberMarket (and common ERC20) custom error names to
@@ -30,6 +30,9 @@ export const CONTRACT_ERROR_MESSAGES: Record<string, string> = {
 /**
  * Parse a wagmi / viem contract error into a user-friendly message.
  *
+ * Uses viem's BaseError.walk() to recursively traverse the error cause chain,
+ * which reliably finds ContractFunctionRevertedError regardless of nesting depth.
+ *
  * Priority:
  * 1. User rejection  (wallet popup dismissed)
  * 2. Known custom error name from CaliberMarket / ERC20
@@ -39,29 +42,25 @@ export const CONTRACT_ERROR_MESSAGES: Record<string, string> = {
 export function parseContractError(error: Error | null): string {
   if (!error) return "";
 
-  const baseError = error as BaseError;
+  if (error instanceof BaseError) {
+    const short = error.shortMessage ?? "";
+    if (short.includes("User rejected") || short.includes("User denied")) {
+      return "Transaction cancelled. You rejected the request in your wallet.";
+    }
 
-  // 1. User rejected the transaction in their wallet
-  const short = baseError.shortMessage ?? "";
-  if (short.includes("User rejected") || short.includes("User denied")) {
-    return "Transaction cancelled. You rejected the request in your wallet.";
+    const revertError = error.walk(
+      (e) => e instanceof ContractFunctionRevertedError,
+    ) as ContractFunctionRevertedError | null;
+
+    if (revertError?.data?.errorName) {
+      return (
+        CONTRACT_ERROR_MESSAGES[revertError.data.errorName] ??
+        `Contract error: ${revertError.data.errorName}`
+      );
+    }
+
+    if (short) return short;
   }
 
-  // 2. Custom contract error name (e.g. CaliberMarket revert)
-  interface ContractErrorCause {
-    data?: { errorName?: string };
-    reason?: string;
-  }
-  const cause: ContractErrorCause | undefined =
-    "cause" in error ? (error.cause as ContractErrorCause) : undefined;
-  const errorName: string | undefined = cause?.data?.errorName ?? cause?.reason;
-  if (errorName && CONTRACT_ERROR_MESSAGES[errorName]) {
-    return CONTRACT_ERROR_MESSAGES[errorName];
-  }
-
-  // 3. shortMessage from viem BaseError
-  if (short) return short;
-
-  // 4. Fallback
-  return "An unexpected error occurred. Please try again.";
+  return error.message || "An unexpected error occurred. Please try again.";
 }

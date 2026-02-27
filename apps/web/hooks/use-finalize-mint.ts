@@ -1,52 +1,77 @@
 "use client";
 
-import { useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import {
+  useWriteContract,
+  useWaitForTransactionReceipt,
+  useSimulateContract,
+} from "wagmi";
 import { CaliberMarketAbi } from "@ammo-exchange/contracts/abis";
 import { CONTRACT_ADDRESSES } from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
 
-/**
- * Hook for keeper finalizeMint call.
- * Single useWriteContract instance (no approve step needed for keeper calls).
- */
-export function useFinalizeMint(caliber: Caliber): {
-  finalizeMint: (orderId: bigint, actualPriceX18: bigint) => void;
+export function useFinalizeMint(
+  caliber: Caliber,
+  args: { orderId: bigint | undefined; actualPriceX18: bigint | undefined },
+): {
+  write: () => void;
   hash: `0x${string}` | undefined;
+  writeError: Error | null;
+  simulationError: Error | null;
+  receiptError: Error | null;
   error: Error | null;
   isPending: boolean;
   isConfirming: boolean;
   isConfirmed: boolean;
+  isSimulating: boolean;
+  isReady: boolean;
   reset: () => void;
 } {
   const marketAddress = CONTRACT_ADDRESSES.fuji.calibers[caliber].market;
+  const argsReady =
+    args.orderId !== undefined && args.actualPriceX18 !== undefined;
+
+  const {
+    data: simData,
+    error: simulationError,
+    isLoading: isSimulating,
+  } = useSimulateContract({
+    address: marketAddress,
+    abi: CaliberMarketAbi,
+    functionName: "finalizeMint",
+    args: argsReady ? [args.orderId!, args.actualPriceX18!] : undefined,
+    query: { enabled: argsReady },
+  });
 
   const {
     data: hash,
-    error,
+    error: writeError,
     isPending,
     writeContract,
     reset,
   } = useWriteContract();
 
-  const { isLoading: isConfirming, isSuccess: isConfirmed } =
-    useWaitForTransactionReceipt({ hash });
+  const {
+    isLoading: isConfirming,
+    isSuccess: isConfirmed,
+    error: receiptError,
+  } = useWaitForTransactionReceipt({ hash });
 
-  function finalizeMint(orderId: bigint, actualPriceX18: bigint) {
-    writeContract({
-      address: marketAddress,
-      abi: CaliberMarketAbi,
-      functionName: "finalizeMint",
-      args: [orderId, actualPriceX18],
-    });
+  function write() {
+    if (simData?.request) writeContract(simData.request);
   }
 
   return {
-    finalizeMint,
+    write,
     hash,
-    error,
+    writeError,
+    simulationError,
+    receiptError,
+    error: receiptError ?? writeError ?? simulationError ?? null,
     isPending,
     isConfirming,
     isConfirmed,
+    isSimulating,
+    isReady: !!simData?.request,
     reset,
   };
 }

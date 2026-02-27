@@ -22,6 +22,8 @@ export interface TxStateFlags {
   isApprovePending: boolean;
   approveError: Error | null;
   actionError: Error | null;
+  receiptError?: Error | null;
+  simulationError?: Error | null;
 }
 
 export function useTxStatus<
@@ -45,7 +47,13 @@ export function useTxStatus<
     if (hasEnoughAllowance || flags.isApproveConfirmed) return "approved";
     if (flags.isApproveConfirming) return "approve-confirming";
     if (flags.isApprovePending) return "approving";
-    if (flags.approveError || flags.actionError) return "failed";
+    if (
+      flags.approveError ||
+      flags.actionError ||
+      flags.receiptError ||
+      flags.simulationError
+    )
+      return "failed";
     return "idle";
   }, [
     flags.isActionConfirmed,
@@ -56,6 +64,8 @@ export function useTxStatus<
     flags.isApprovePending,
     flags.approveError,
     flags.actionError,
+    flags.receiptError,
+    flags.simulationError,
     hasEnoughAllowance,
     actionStatus,
     actionConfirmingStatus,

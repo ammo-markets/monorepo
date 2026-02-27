@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { parseUnits } from "viem";
 import { toast } from "sonner";
 import { X } from "lucide-react";
@@ -43,15 +43,25 @@ export function FinalizeMintDialog({
   const [price, setPrice] = useState("");
   const [priceError, setPriceError] = useState("");
 
+  const actualPriceX18 = useMemo(() => {
+    const priceNum = Number(price);
+    if (!price || isNaN(priceNum) || priceNum <= 0) return undefined;
+    return parseUnits(price, 18);
+  }, [price]);
+
   const {
-    finalizeMint,
+    write,
     hash,
     error,
     isPending,
     isConfirming,
     isConfirmed,
+    isReady,
     reset,
-  } = useFinalizeMint(order.caliber as Caliber);
+  } = useFinalizeMint(order.caliber as Caliber, {
+    orderId: order.onChainOrderId ? BigInt(order.onChainOrderId) : undefined,
+    actualPriceX18,
+  });
 
   // React to confirmation
   useEffect(() => {
@@ -86,9 +96,7 @@ export function FinalizeMintDialog({
       return;
     }
     setPriceError("");
-
-    const actualPriceX18 = parseUnits(price, 18);
-    finalizeMint(BigInt(order.onChainOrderId!), actualPriceX18);
+    write();
   }
 
   if (!open) return null;
@@ -225,7 +233,7 @@ export function FinalizeMintDialog({
           <button
             type="button"
             onClick={handleConfirm}
-            disabled={isPending || isConfirming}
+            disabled={isPending || isConfirming || !isReady}
             className="flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors hover:bg-[var(--brass-hover)] disabled:cursor-not-allowed disabled:opacity-50"
             style={{
               backgroundColor: "var(--brass)",

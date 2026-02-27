@@ -1,6 +1,10 @@
 "use client";
 
-import { useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import {
+  useWriteContract,
+  useWaitForTransactionReceipt,
+  useSimulateContract,
+} from "wagmi";
 import { erc20Abi, parseUnits } from "viem";
 import { CaliberMarketAbi } from "@ammo-exchange/contracts/abis";
 import { CONTRACT_ADDRESSES } from "@ammo-exchange/shared";
@@ -11,27 +15,57 @@ import type { Caliber } from "@ammo-exchange/shared";
  *
  * Uses two separate `useWriteContract` instances (one for USDC approval,
  * one for CaliberMarket.startMint) so their state never collides.
+ *
+ * The startMint step is simulated via `useSimulateContract`, gated on
+ * `hasEnoughAllowance` to avoid spurious InsufficientAllowance errors.
  */
-export function useMintTransaction(caliber: Caliber): {
+export function useMintTransaction(
+  caliber: Caliber,
+  actionArgs: {
+    usdcAmount: bigint | undefined;
+    slippageBps: bigint;
+    deadline: bigint;
+  },
+  options: { hasEnoughAllowance: boolean },
+): {
   approve: (usdcAmount: string) => void;
   approveHash: `0x${string}` | undefined;
   approveError: Error | null;
+  approveReceiptError: Error | null;
   isApprovePending: boolean;
   isApproveConfirming: boolean;
   isApproveConfirmed: boolean;
-  startMint: (
-    usdcAmount: string,
-    slippageBps: bigint,
-    deadline: bigint,
-  ) => void;
+  startMint: () => void;
   mintHash: `0x${string}` | undefined;
   mintError: Error | null;
+  mintReceiptError: Error | null;
   isMintPending: boolean;
   isMintConfirming: boolean;
   isMintConfirmed: boolean;
+  simulationError: Error | null;
+  isSimulating: boolean;
+  isReady: boolean;
   reset: () => void;
 } {
   const marketAddress = CONTRACT_ADDRESSES.fuji.calibers[caliber].market;
+  const simulationEnabled =
+    options.hasEnoughAllowance && actionArgs.usdcAmount !== undefined;
+
+  // ── Simulate startMint ──
+  const {
+    data: simData,
+    error: simulationError,
+    isLoading: isSimulating,
+  } = useSimulateContract({
+    address: marketAddress,
+    abi: CaliberMarketAbi,
+    functionName: "startMint",
+    args:
+      actionArgs.usdcAmount !== undefined
+        ? [actionArgs.usdcAmount, actionArgs.slippageBps, actionArgs.deadline]
+        : undefined,
+    query: { enabled: simulationEnabled },
+  });
 
   // ── Approve (targets USDC contract, spender = market) ──
   const {
@@ -42,8 +76,11 @@ export function useMintTransaction(caliber: Caliber): {
     reset: resetApprove,
   } = useWriteContract();
 
-  const { isLoading: isApproveConfirming, isSuccess: isApproveConfirmed } =
-    useWaitForTransactionReceipt({ hash: approveHash });
+  const {
+    isLoading: isApproveConfirming,
+    isSuccess: isApproveConfirmed,
+    error: approveReceiptError,
+  } = useWaitForTransactionReceipt({ hash: approveHash });
 
   // ── Mint (targets CaliberMarket contract) ──
   const {
@@ -54,8 +91,11 @@ export function useMintTransaction(caliber: Caliber): {
     reset: resetMint,
   } = useWriteContract();
 
-  const { isLoading: isMintConfirming, isSuccess: isMintConfirmed } =
-    useWaitForTransactionReceipt({ hash: mintHash });
+  const {
+    isLoading: isMintConfirming,
+    isSuccess: isMintConfirmed,
+    error: mintReceiptError,
+  } = useWaitForTransactionReceipt({ hash: mintHash });
 
   // ── Actions ──
 
@@ -68,17 +108,8 @@ export function useMintTransaction(caliber: Caliber): {
     });
   }
 
-  function startMint(
-    usdcAmount: string,
-    slippageBps: bigint,
-    deadline: bigint,
-  ) {
-    writeMint({
-      address: marketAddress,
-      abi: CaliberMarketAbi,
-      functionName: "startMint",
-      args: [parseUnits(usdcAmount, 6), slippageBps, deadline],
-    });
+  function startMint() {
+    if (simData?.request) writeMint(simData.request);
   }
 
   function reset() {
@@ -91,6 +122,7 @@ export function useMintTransaction(caliber: Caliber): {
     approve,
     approveHash,
     approveError,
+    approveReceiptError,
     isApprovePending,
     isApproveConfirming,
     isApproveConfirmed,
@@ -98,9 +130,14 @@ export function useMintTransaction(caliber: Caliber): {
     startMint,
     mintHash,
     mintError,
+    mintReceiptError,
     isMintPending,
     isMintConfirming,
     isMintConfirmed,
+    // Simulation
+    simulationError,
+    isSimulating,
+    isReady: !!simData?.request,
     // Reset
     reset,
   };

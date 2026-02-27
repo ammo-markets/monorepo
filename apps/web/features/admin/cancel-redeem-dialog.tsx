@@ -36,14 +36,17 @@ export function CancelRedeemDialog({
   const [reasonError, setReasonError] = useState("");
 
   const {
-    cancelRedeem,
+    write,
     hash,
     error,
     isPending,
     isConfirming,
     isConfirmed,
+    isReady,
     reset,
-  } = useCancelRedeem(order.caliber as Caliber);
+  } = useCancelRedeem(order.caliber as Caliber, {
+    orderId: order.onChainOrderId ? BigInt(order.onChainOrderId) : undefined,
+  });
 
   // React to confirmation
   useEffect(() => {
@@ -80,7 +83,7 @@ export function CancelRedeemDialog({
     }
     setReasonError("");
 
-    cancelRedeem(BigInt(order.onChainOrderId!));
+    write();
   }
 
   const buttonLabel = isPending
@@ -142,7 +145,7 @@ export function CancelRedeemDialog({
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
             variant="destructive"
-            disabled={isPending || isConfirming}
+            disabled={isPending || isConfirming || !isReady}
             onClick={handleConfirm}
           >
             {buttonLabel}

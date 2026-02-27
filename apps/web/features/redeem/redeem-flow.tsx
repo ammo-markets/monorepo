@@ -1518,7 +1518,6 @@ export function RedeemFlow({
   const wallet = useWallet();
   const { openConnectModal } = useConnectModal();
   const balances = useTokenBalances();
-  const redeemTx = useRedeemTransaction(activeCaliber);
 
   // ── KYC hooks ──
   const { data: kycData, isLoading: kycLoading } = useKycStatus(wallet.address);
@@ -1541,10 +1540,26 @@ export function RedeemFlow({
   const marketAddress = CONTRACT_ADDRESSES.fuji.calibers[activeCaliber].market;
   const allowance = useAllowance(tokenAddress, wallet.address, marketAddress);
 
-  // ── Derive TxStatus from hook states ──
+  // ── Derive allowance check ──
+  const parsedTokenAmount = useMemo(
+    () => (roundsAmount ? parseTokenAmount(roundsAmount) : BigInt(0)),
+    [roundsAmount],
+  );
   const hasEnoughAllowance = roundsAmount
-    ? allowance.hasEnoughAllowance(parseTokenAmount(roundsAmount))
+    ? allowance.hasEnoughAllowance(parsedTokenAmount)
     : false;
+
+  const redeemTx = useRedeemTransaction(
+    activeCaliber,
+    {
+      tokenAmount:
+        parsedTokenAmount > BigInt(0) ? parsedTokenAmount : undefined,
+      deadline: getDeadline(),
+    },
+    { hasEnoughAllowance },
+  );
+
+  // ── Derive TxStatus from hook states ──
   const txStatus: RedeemTxStatus = useTxStatus({
     flags: {
       isActionConfirmed: redeemTx.isRedeemConfirmed,
@@ -1555,6 +1570,8 @@ export function RedeemFlow({
       isApprovePending: redeemTx.isApprovePending,
       approveError: redeemTx.approveError,
       actionError: redeemTx.redeemError,
+      receiptError: redeemTx.redeemReceiptError ?? redeemTx.approveReceiptError,
+      simulationError: redeemTx.simulationError,
     },
     actionStatus: "redeeming",
     actionConfirmingStatus: "redeem-confirming",
@@ -1562,7 +1579,11 @@ export function RedeemFlow({
   });
 
   const errorMessage = parseContractError(
-    redeemTx.approveError || redeemTx.redeemError,
+    redeemTx.approveError ||
+      redeemTx.redeemError ||
+      redeemTx.simulationError ||
+      redeemTx.redeemReceiptError ||
+      redeemTx.approveReceiptError,
   );
 
   // ── Auto-advance to confirmation when redeem confirmed ──
@@ -1597,7 +1618,7 @@ export function RedeemFlow({
   }
 
   function handleConfirm() {
-    redeemTx.startRedeem(roundsAmount, getDeadline());
+    redeemTx.startRedeem();
   }
 
   function handleRetry() {

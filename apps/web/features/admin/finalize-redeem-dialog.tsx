@@ -51,14 +51,17 @@ export function FinalizeRedeemDialog({
 }: FinalizeRedeemDialogProps) {
   const queryClient = useQueryClient();
   const {
-    finalizeRedeem,
+    write,
     hash,
     error,
     isPending,
     isConfirming,
     isConfirmed,
+    isReady,
     reset,
-  } = useFinalizeRedeem(order.caliber as Caliber);
+  } = useFinalizeRedeem(order.caliber as Caliber, {
+    orderId: order.onChainOrderId ? BigInt(order.onChainOrderId) : undefined,
+  });
 
   // React to confirmation
   useEffect(() => {
@@ -84,7 +87,7 @@ export function FinalizeRedeemDialog({
   }, [error]);
 
   function handleConfirm() {
-    finalizeRedeem(BigInt(order.onChainOrderId!));
+    write();
   }
 
   if (!open) return null;
@@ -203,7 +206,7 @@ export function FinalizeRedeemDialog({
           <button
             type="button"
             onClick={handleConfirm}
-            disabled={isPending || isConfirming}
+            disabled={isPending || isConfirming || !isReady}
             className="flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors hover:bg-[var(--brass-hover)] disabled:cursor-not-allowed disabled:opacity-50"
             style={{
               backgroundColor: "var(--brass)",

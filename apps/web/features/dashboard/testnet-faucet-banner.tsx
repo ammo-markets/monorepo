@@ -1,8 +1,11 @@
 "use client";
 
+import { useEffect } from "react";
+import { toast } from "sonner";
 import { Coins } from "lucide-react";
 import { useChainId } from "wagmi";
 import { useUsdcFaucet } from "@/hooks/use-usdc-faucet";
+import { parseContractError } from "@/lib/errors";
 
 interface TestnetFaucetBannerProps {
   onSuccess?: () => void;
@@ -10,8 +13,14 @@ interface TestnetFaucetBannerProps {
 
 export function TestnetFaucetBanner({ onSuccess }: TestnetFaucetBannerProps) {
   const chainId = useChainId();
-  const { faucet, isPending, isConfirming, isConfirmed } =
+  const { faucet, error, isPending, isConfirming, isConfirmed, isSimulating } =
     useUsdcFaucet(onSuccess);
+
+  useEffect(() => {
+    if (error) {
+      toast.error(parseContractError(error));
+    }
+  }, [error]);
 
   if (chainId !== 43113) return null;
 
@@ -38,7 +47,7 @@ export function TestnetFaucetBanner({ onSuccess }: TestnetFaucetBannerProps) {
       <button
         type="button"
         onClick={faucet}
-        disabled={isPending || isConfirming}
+        disabled={isPending || isConfirming || isSimulating}
         className="shrink-0 rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors duration-150 disabled:opacity-50"
         style={{
           backgroundColor: "color-mix(in srgb, var(--blue) 20%, transparent)",

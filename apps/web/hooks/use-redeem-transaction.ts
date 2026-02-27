@@ -1,6 +1,10 @@
 "use client";
 
-import { useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import {
+  useWriteContract,
+  useWaitForTransactionReceipt,
+  useSimulateContract,
+} from "wagmi";
 import { parseUnits } from "viem";
 import { CaliberMarketAbi, AmmoTokenAbi } from "@ammo-exchange/contracts/abis";
 import { CONTRACT_ADDRESSES } from "@ammo-exchange/shared";
@@ -11,24 +15,57 @@ import type { Caliber } from "@ammo-exchange/shared";
  *
  * Uses two separate `useWriteContract` instances (one for AmmoToken approval,
  * one for CaliberMarket.startRedeem) so their state never collides.
+ *
+ * The startRedeem step is simulated via `useSimulateContract`, gated on
+ * `hasEnoughAllowance` to avoid spurious InsufficientAllowance errors.
  */
-export function useRedeemTransaction(caliber: Caliber): {
+export function useRedeemTransaction(
+  caliber: Caliber,
+  actionArgs: {
+    tokenAmount: bigint | undefined;
+    deadline: bigint;
+  },
+  options: { hasEnoughAllowance: boolean },
+): {
   approve: (tokenAmount: string) => void;
   approveHash: `0x${string}` | undefined;
   approveError: Error | null;
+  approveReceiptError: Error | null;
   isApprovePending: boolean;
   isApproveConfirming: boolean;
   isApproveConfirmed: boolean;
-  startRedeem: (tokenAmount: string, deadline: bigint) => void;
+  startRedeem: () => void;
   redeemHash: `0x${string}` | undefined;
   redeemError: Error | null;
+  redeemReceiptError: Error | null;
   isRedeemPending: boolean;
   isRedeemConfirming: boolean;
   isRedeemConfirmed: boolean;
+  simulationError: Error | null;
+  isSimulating: boolean;
+  isReady: boolean;
   reset: () => void;
 } {
   const marketAddress = CONTRACT_ADDRESSES.fuji.calibers[caliber].market;
   const tokenAddress = CONTRACT_ADDRESSES.fuji.calibers[caliber].token;
+  const simulationEnabled =
+    options.hasEnoughAllowance && actionArgs.tokenAmount !== undefined;
+
+  // ── Simulate startRedeem ──
+  const {
+    data: simData,
+    error: simulationError,
+    isLoading: isSimulating,
+  } = useSimulateContract({
+    address: marketAddress,
+    abi: CaliberMarketAbi,
+    functionName: "startRedeem",
+    args:
+      actionArgs.tokenAmount !== undefined
+        ? [actionArgs.tokenAmount, actionArgs.deadline]
+        : undefined,
+    query: { enabled: simulationEnabled },
+  });
 
   // ── Approve (targets AmmoToken contract, spender = market) ──
   const {
@@ -39,8 +76,11 @@ export function useRedeemTransaction(caliber: Caliber): {
     reset: resetApprove,
   } = useWriteContract();
 
-  const { isLoading: isApproveConfirming, isSuccess: isApproveConfirmed } =
-    useWaitForTransactionReceipt({ hash: approveHash });
+  const {
+    isLoading: isApproveConfirming,
+    isSuccess: isApproveConfirmed,
+    error: approveReceiptError,
+  } = useWaitForTransactionReceipt({ hash: approveHash });
 
   // ── Redeem (targets CaliberMarket contract) ──
   const {
@@ -51,8 +91,11 @@ export function useRedeemTransaction(caliber: Caliber): {
     reset: resetRedeem,
   } = useWriteContract();
 
-  const { isLoading: isRedeemConfirming, isSuccess: isRedeemConfirmed } =
-    useWaitForTransactionReceipt({ hash: redeemHash });
+  const {
+    isLoading: isRedeemConfirming,
+    isSuccess: isRedeemConfirmed,
+    error: redeemReceiptError,
+  } = useWaitForTransactionReceipt({ hash: redeemHash });
 
   // ── Actions ──
 
@@ -65,13 +108,8 @@ export function useRedeemTransaction(caliber: Caliber): {
     });
   }
 
-  function startRedeem(tokenAmount: string, deadline: bigint) {
-    writeRedeem({
-      address: marketAddress,
-      abi: CaliberMarketAbi,
-      functionName: "startRedeem",
-      args: [parseUnits(tokenAmount, 18), deadline],
-    });
+  function startRedeem() {
+    if (simData?.request) writeRedeem(simData.request);
   }
 
   function reset() {
@@ -84,6 +122,7 @@ export function useRedeemTransaction(caliber: Caliber): {
     approve,
     approveHash,
     approveError,
+    approveReceiptError,
     isApprovePending,
     isApproveConfirming,
     isApproveConfirmed,
@@ -91,9 +130,14 @@ export function useRedeemTransaction(caliber: Caliber): {
     startRedeem,
     redeemHash,
     redeemError,
+    redeemReceiptError,
     isRedeemPending,
     isRedeemConfirming,
     isRedeemConfirmed,
+    // Simulation
+    simulationError,
+    isSimulating,
+    isReady: !!simData?.request,
     // Reset
     reset,
   };
