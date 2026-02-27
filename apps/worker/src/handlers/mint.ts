@@ -56,6 +56,7 @@ export async function handleMintStarted(
       txHash: meta.transactionHash,
       logIndex: meta.logIndex,
       chainId: CHAIN_ID,
+      createdAt: meta.blockTimestamp,
       user: {
         connectOrCreate: {
           where: { walletAddress: userAddress },
@@ -90,7 +91,7 @@ export async function handleMintFinalized(
       onChainOrderId: args.orderId.toString(),
       caliber: prismaCaliber,
       type: "MINT",
-      status: "PENDING",
+      status: { in: ["PENDING", "COMPLETED"] },
     },
     data: {
       status: "COMPLETED",
@@ -119,6 +120,7 @@ export async function handleMintFinalized(
         txHash: meta.transactionHash,
         logIndex: meta.logIndex,
         chainId: CHAIN_ID,
+        createdAt: meta.blockTimestamp,
         user: {
           connectOrCreate: {
             where: { walletAddress: userAddress },
@@ -156,7 +158,7 @@ export async function handleMintFinalized(
           amount: order.usdcAmount ?? order.tokenAmount ?? "0",
           txHash: meta.transactionHash,
           walletAddress: order.walletAddress ?? "",
-          createdAt: new Date(),
+          createdAt: meta.blockTimestamp,
         },
       });
       console.log(`[mint] Created ActivityLog entry for mint ${order.id}`);

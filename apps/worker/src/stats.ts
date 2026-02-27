@@ -20,7 +20,7 @@ export async function backfillActivityLog(): Promise<void> {
     // If no log entries exist, backfill ALL completed orders
     const where: Record<string, unknown> = { status: "COMPLETED" };
     if (latestLog) {
-      where.updatedAt = { gt: latestLog.createdAt };
+      where.createdAt = { gt: latestLog.createdAt };
     }
 
     const orders = await prisma.order.findMany({
@@ -32,7 +32,7 @@ export async function backfillActivityLog(): Promise<void> {
         tokenAmount: true,
         txHash: true,
         walletAddress: true,
-        updatedAt: true,
+        createdAt: true,
       },
     });
 
@@ -54,7 +54,7 @@ export async function backfillActivityLog(): Promise<void> {
         amount: order.usdcAmount ?? order.tokenAmount ?? "0",
         txHash: order.txHash,
         walletAddress: order.walletAddress ?? "",
-        createdAt: order.updatedAt,
+        createdAt: order.createdAt,
       })),
       skipDuplicates: true,
     });

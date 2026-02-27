@@ -18,7 +18,7 @@ async function reset() {
   console.log(`[reset] Deleted ${stats.count} protocol stats`);
   console.log(`[reset] Deleted ${cursors.count} block cursors`);
   console.log(
-    "[reset] Done. Restart the worker to resync from DEPLOYMENT_BLOCK."
+    "[reset] Done. Restart the worker to resync from DEPLOYMENT_BLOCK.",
   );
 
   await prisma.$disconnect();

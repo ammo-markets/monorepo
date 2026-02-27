@@ -42,7 +42,7 @@ export async function handleMintRefunded(
       onChainOrderId: args.orderId.toString(),
       caliber: prismaCaliber,
       type: "MINT",
-      status: "PENDING",
+      status: { in: ["PENDING", "FAILED"] },
     },
     data: {
       status: "FAILED",
@@ -74,7 +74,7 @@ export async function handleRedeemCanceled(
       onChainOrderId: args.orderId.toString(),
       caliber: prismaCaliber,
       type: "REDEEM",
-      status: "PENDING",
+      status: { in: ["PENDING", "CANCELLED"] },
     },
     data: {
       status: "CANCELLED",

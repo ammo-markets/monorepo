@@ -72,4 +72,5 @@ export interface EventMeta {
   transactionHash: `0x${string}`;
   blockNumber: bigint;
   logIndex: number;
+  blockTimestamp: Date;
 }

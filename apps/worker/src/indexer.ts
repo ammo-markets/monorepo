@@ -217,6 +217,17 @@ async function processAndCommit(
     return a.logIndex - b.logIndex;
   });
 
+  // Batch-fetch block timestamps for all unique blocks with events
+  const uniqueBlockNumbers = [
+    ...new Set(allEvents.map((e) => e.blockNumber)),
+  ];
+  const blocks = await Promise.all(
+    uniqueBlockNumbers.map((bn) => client.getBlock({ blockNumber: bn })),
+  );
+  const blockTimestamps = new Map<bigint, Date>(
+    blocks.map((b) => [b.number, new Date(Number(b.timestamp) * 1000)]),
+  );
+
   await prisma.$transaction(
     async (tx) => {
       for (const event of allEvents) {
@@ -225,6 +236,7 @@ async function processAndCommit(
           transactionHash: event.transactionHash!,
           blockNumber: event.blockNumber,
           logIndex: event.logIndex,
+          blockTimestamp: blockTimestamps.get(event.blockNumber)!,
         };
 
         switch (event.eventName) {

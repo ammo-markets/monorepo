@@ -144,6 +144,7 @@ export function buildEventMeta(overrides: Partial<EventMeta> = {}): EventMeta {
     transactionHash: DEFAULT_TX_HASH,
     blockNumber: 100n,
     logIndex: 0,
+    blockTimestamp: new Date("2025-01-01T00:00:00Z"),
     ...overrides,
   };
 }

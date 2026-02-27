@@ -57,6 +57,7 @@ export async function handleRedeemRequested(
       txHash: meta.transactionHash,
       logIndex: meta.logIndex,
       chainId: CHAIN_ID,
+      createdAt: meta.blockTimestamp,
       user: {
         connectOrCreate: {
           where: { walletAddress: userAddress },
@@ -91,7 +92,7 @@ export async function handleRedeemFinalized(
       onChainOrderId: args.orderId.toString(),
       caliber: prismaCaliber,
       type: "REDEEM",
-      status: "PENDING",
+      status: { in: ["PENDING", "COMPLETED"] },
     },
     data: {
       status: "COMPLETED",
@@ -120,6 +121,7 @@ export async function handleRedeemFinalized(
         txHash: meta.transactionHash,
         logIndex: meta.logIndex,
         chainId: CHAIN_ID,
+        createdAt: meta.blockTimestamp,
         user: {
           connectOrCreate: {
             where: { walletAddress: userAddress },
@@ -157,7 +159,7 @@ export async function handleRedeemFinalized(
           amount: order.usdcAmount ?? order.tokenAmount ?? "0",
           txHash: meta.transactionHash,
           walletAddress: order.walletAddress ?? "",
-          createdAt: new Date(),
+          createdAt: meta.blockTimestamp,
         },
       });
       console.log(`[redeem] Created ActivityLog entry for redeem ${order.id}`);
