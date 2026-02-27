@@ -29,6 +29,7 @@ import {
   PrimaryButton,
   GhostButton,
   SpinnerButton,
+  DeadlinePicker,
 } from "@/features/shared";
 import { RedeemProgress } from "./redeem-progress";
 import type { RedeemTxStatus } from "@/hooks/use-tx-status";
@@ -161,6 +162,8 @@ function StepSelectCaliberAmount({
   roundsAmount,
   tokenBalances,
   caliberDetailsMap,
+  deadlineHours,
+  onDeadlineChange,
   onSelectCaliber,
   setRoundsAmount,
   onNext,
@@ -172,6 +175,8 @@ function StepSelectCaliberAmount({
   roundsAmount: string;
   tokenBalances: Record<Caliber, bigint | undefined>;
   caliberDetailsMap: Record<Caliber, CaliberDetailData> | null;
+  deadlineHours: number;
+  onDeadlineChange: (hours: number) => void;
   onSelectCaliber: (id: Caliber) => void;
   setRoundsAmount: (v: string) => void;
   onNext: () => void;
@@ -465,6 +470,14 @@ function StepSelectCaliberAmount({
             </div>
           )}
         </>
+      )}
+
+      {/* Deadline picker — visible once a caliber is selected */}
+      {caliber && (
+        <DeadlinePicker
+          deadlineHours={deadlineHours}
+          onDeadlineChange={onDeadlineChange}
+        />
       )}
 
       {!isConnected ? (
@@ -992,6 +1005,7 @@ function StepReview({
   caliber,
   roundsAmount,
   address,
+  deadlineHours,
   txStatus,
   errorMessage,
   isConnected,
@@ -1005,6 +1019,7 @@ function StepReview({
   caliber: CaliberDetailData;
   roundsAmount: string;
   address: ShippingAddress;
+  deadlineHours: number;
   txStatus: RedeemTxStatus;
   errorMessage: string;
   isConnected: boolean;
@@ -1099,6 +1114,15 @@ function StepReview({
                 style={{ color: "var(--brass)" }}
               >
                 {netRounds.toLocaleString("en-US")} rounds
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span style={{ color: "var(--text-muted)" }}>Order deadline</span>
+              <span
+                className="font-mono tabular-nums"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                {deadlineHours === 0 ? "None" : `${deadlineHours} hours`}
               </span>
             </div>
 
@@ -1219,7 +1243,7 @@ function StepReview({
 
         {/* Connected, idle, allowance NOT sufficient -- approve step */}
         {txStatus === "idle" && isConnected && !hasEnoughAllowance && (
-          <div>
+          <div className="group relative">
             <button
               type="button"
               onClick={onApprove}
@@ -1227,19 +1251,16 @@ function StepReview({
             >
               Approve Token Spending
             </button>
-            <div className="mt-2 flex items-start gap-2 px-1">
-              <Info
-                size={14}
-                className="mt-0.5 shrink-0"
-                style={{ color: "var(--text-muted)" }}
-              />
-              <p
-                className="text-[11px] leading-relaxed"
-                style={{ color: "var(--text-muted)" }}
-              >
-                This allows the smart contract to burn your tokens. You only
-                need to do this once per caliber.
-              </p>
+            <div
+              className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 w-56 -translate-x-1/2 px-3 py-2 text-xs leading-relaxed opacity-0 transition-opacity group-hover:opacity-100"
+              style={{
+                backgroundColor: "var(--bg-tertiary)",
+                border: "1px solid var(--border-default)",
+                color: "var(--text-secondary)",
+              }}
+            >
+              Allows the smart contract to burn your tokens. You only need to do
+              this once per caliber.
             </div>
           </div>
         )}
@@ -1498,6 +1519,7 @@ export function RedeemFlow({
     return null;
   });
   const [roundsAmount, setRoundsAmount] = useState("");
+  const [deadlineHours, setDeadlineHours] = useState(24);
   const [address, setAddress] = useState<ShippingAddress>({
     fullName: "",
     address1: "",
@@ -1554,7 +1576,7 @@ export function RedeemFlow({
     {
       tokenAmount:
         parsedTokenAmount > BigInt(0) ? parsedTokenAmount : undefined,
-      deadline: getDeadline(),
+      deadline: getDeadline(deadlineHours),
     },
     { hasEnoughAllowance },
   );
@@ -1634,6 +1656,7 @@ export function RedeemFlow({
       setSelectedCaliber(null);
     }
     setRoundsAmount("");
+    setDeadlineHours(24);
     setAddress({
       fullName: "",
       address1: "",
@@ -1721,6 +1744,8 @@ export function RedeemFlow({
           roundsAmount={roundsAmount}
           tokenBalances={balances.tokens}
           caliberDetailsMap={caliberDetailsMap}
+          deadlineHours={deadlineHours}
+          onDeadlineChange={setDeadlineHours}
           onSelectCaliber={setSelectedCaliber}
           setRoundsAmount={setRoundsAmount}
           onNext={() => {
@@ -1770,6 +1795,7 @@ export function RedeemFlow({
           caliber={caliber}
           roundsAmount={roundsAmount}
           address={address}
+          deadlineHours={deadlineHours}
           txStatus={txStatus}
           errorMessage={errorMessage}
           isConnected={wallet.isConnected}

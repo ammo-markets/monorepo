@@ -17,7 +17,11 @@ import {
 import { caliberIcons } from "@/features/shared/caliber-icons";
 import type { CaliberDetailData } from "@/lib/types";
 import { buildAllCaliberDetails } from "@/lib/caliber-utils";
-import { WrongNetworkBanner, SpinnerButton } from "@/features/shared";
+import {
+  WrongNetworkBanner,
+  SpinnerButton,
+  DeadlinePicker,
+} from "@/features/shared";
 import { MintProgress } from "./mint-progress";
 import type { MintTxStatus } from "@/hooks/use-tx-status";
 import { useTxStatus } from "@/hooks/use-tx-status";
@@ -191,6 +195,8 @@ function StepEnterAmount({
   usdcAmount,
   setUsdcAmount,
   usdcBalance,
+  deadlineHours,
+  onDeadlineChange,
   onNext,
   onBack,
   hideBack,
@@ -201,6 +207,8 @@ function StepEnterAmount({
   usdcAmount: string;
   setUsdcAmount: (val: string) => void;
   usdcBalance: number;
+  deadlineHours: number;
+  onDeadlineChange: (hours: number) => void;
   onNext: () => void;
   onBack: () => void;
   hideBack?: boolean;
@@ -232,28 +240,6 @@ function StepEnterAmount({
           Back
         </button>
       )}
-
-      {/* Processing time disclosure */}
-      <div
-        className="mb-5 flex items-start gap-3 px-4 py-3"
-        style={{
-          backgroundColor: "rgba(243, 156, 18, 0.08)",
-          borderLeft: "3px solid var(--amber)",
-        }}
-      >
-        <Clock
-          size={16}
-          className="mt-0.5 shrink-0"
-          style={{ color: "var(--amber)" }}
-        />
-        <p
-          className="text-xs leading-relaxed"
-          style={{ color: "var(--text-secondary)" }}
-        >
-          Minting takes 24-48 hours. Your USDC is held in the smart contract
-          until an admin verifies and finalizes your order.
-        </p>
-      </div>
 
       {/* Selected caliber compact card */}
       <div
@@ -407,26 +393,6 @@ function StepEnterAmount({
           <div className="flex flex-col gap-2.5 text-sm">
             <div className="flex justify-between">
               <span style={{ color: "var(--text-muted)" }}>
-                Price per round
-              </span>
-              <span
-                className="font-mono tabular-nums"
-                style={{ color: "var(--text-secondary)" }}
-              >
-                ${caliber.price.toFixed(2)}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span style={{ color: "var(--text-muted)" }}>Subtotal</span>
-              <span
-                className="font-mono tabular-nums"
-                style={{ color: "var(--text-secondary)" }}
-              >
-                {usdcValue.toFixed(2)} USDC
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span style={{ color: "var(--text-muted)" }}>
                 Mint fee ({caliber.mintFee}%)
               </span>
               <span
@@ -468,6 +434,12 @@ function StepEnterAmount({
         </div>
       )}
 
+      {/* Deadline picker */}
+      <DeadlinePicker
+        deadlineHours={deadlineHours}
+        onDeadlineChange={onDeadlineChange}
+      />
+
       {/* CTA */}
       {!isConnected ? (
         <button
@@ -502,6 +474,7 @@ function StepEnterAmount({
 function StepReview({
   caliber,
   usdcAmount,
+  deadlineHours,
   txStatus,
   errorMessage,
   isConnected,
@@ -515,6 +488,7 @@ function StepReview({
 }: {
   caliber: CaliberDetailData;
   usdcAmount: string;
+  deadlineHours: number;
   txStatus: MintTxStatus;
   errorMessage: string;
   isConnected: boolean;
@@ -613,10 +587,28 @@ function StepReview({
             </div>
             <div className="flex justify-between">
               <span
-                className="font-medium"
+                className="flex items-center gap-1.5 font-medium"
                 style={{ color: "var(--text-primary)" }}
               >
                 Tokens to receive
+                <span className="group relative">
+                  <Info
+                    size={12}
+                    className="cursor-help"
+                    style={{ color: "var(--text-muted)", opacity: 0.6 }}
+                  />
+                  <span
+                    className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 w-48 -translate-x-1/2 px-3 py-2 text-xs font-normal leading-relaxed opacity-0 transition-opacity group-hover:opacity-100"
+                    style={{
+                      backgroundColor: "var(--bg-tertiary)",
+                      border: "1px solid var(--border-default)",
+                      color: "var(--text-secondary)",
+                    }}
+                  >
+                    Final amount determined by admin at fulfillment based on
+                    current market price. Estimate may differ.
+                  </span>
+                </span>
               </span>
               <span
                 className="font-mono font-bold tabular-nums"
@@ -637,50 +629,16 @@ function StepReview({
                 24-48 hours
               </span>
             </div>
+            <div className="flex justify-between">
+              <span style={{ color: "var(--text-muted)" }}>Order deadline</span>
+              <span
+                className="font-mono tabular-nums"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                {deadlineHours === 0 ? "None" : `${deadlineHours} hours`}
+              </span>
+            </div>
           </div>
-        </div>
-      </div>
-
-      {/* Disclaimer box */}
-      <div
-        className="mt-4 px-4 py-3.5"
-        style={{
-          backgroundColor: "var(--bg-tertiary)",
-          borderLeft: "3px solid var(--amber)",
-        }}
-      >
-        <p
-          className="text-xs leading-relaxed"
-          style={{ color: "var(--text-secondary)" }}
-        >
-          Tokens will be minted after physical ammunition is verified in
-          storage. This typically takes 24-48 hours. {"You'll"} be able to track
-          your order in your portfolio.
-        </p>
-      </div>
-
-      {/* Price disclaimer */}
-      <div
-        className="mt-3 px-4 py-3.5"
-        style={{
-          backgroundColor: "var(--bg-tertiary)",
-          borderLeft: "3px solid var(--text-muted)",
-        }}
-      >
-        <div className="flex items-start gap-2.5">
-          <Info
-            size={14}
-            className="mt-0.5 shrink-0"
-            style={{ color: "var(--text-muted)" }}
-          />
-          <p
-            className="text-xs leading-relaxed"
-            style={{ color: "var(--text-secondary)" }}
-          >
-            The final token amount is determined by the admin at fulfillment
-            based on the current market price. The estimate shown above may
-            differ from the actual tokens received.
-          </p>
         </div>
       </div>
 
@@ -724,7 +682,7 @@ function StepReview({
 
         {/* Connected, idle -- approve step */}
         {txStatus === "idle" && isConnected && (
-          <div>
+          <div className="group relative">
             <button
               type="button"
               onClick={onApprove}
@@ -732,19 +690,16 @@ function StepReview({
             >
               Approve USDC Spending
             </button>
-            <div className="mt-2 flex items-start gap-2 px-1">
-              <Info
-                size={14}
-                className="mt-0.5 shrink-0"
-                style={{ color: "var(--text-muted)" }}
-              />
-              <p
-                className="text-[11px] leading-relaxed"
-                style={{ color: "var(--text-muted)" }}
-              >
-                This allows the smart contract to use your USDC. You only need
-                to do this once.
-              </p>
+            <div
+              className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 w-56 -translate-x-1/2 px-3 py-2 text-xs leading-relaxed opacity-0 transition-opacity group-hover:opacity-100"
+              style={{
+                backgroundColor: "var(--bg-tertiary)",
+                border: "1px solid var(--border-default)",
+                color: "var(--text-secondary)",
+              }}
+            >
+              Allows the smart contract to use your USDC. You only need to do
+              this once.
             </div>
           </div>
         )}
@@ -990,6 +945,7 @@ export function MintFlow({
     return null;
   });
   const [usdcAmount, setUsdcAmount] = useState("");
+  const [deadlineHours, setDeadlineHours] = useState(24);
 
   const activeCaliber: Caliber = selectedCaliber ?? "9MM";
   const caliber =
@@ -1026,7 +982,7 @@ export function MintFlow({
     {
       usdcAmount: parsedUsdcAmount > BigInt(0) ? parsedUsdcAmount : undefined,
       slippageBps: DEFAULT_SLIPPAGE_BPS,
-      deadline: getDeadline(),
+      deadline: getDeadline(deadlineHours),
     },
     { hasEnoughAllowance },
   );
@@ -1088,6 +1044,7 @@ export function MintFlow({
       setSelectedCaliber(null);
     }
     setUsdcAmount("");
+    setDeadlineHours(24);
   }, [mintTx, isEmbedded, preselected]);
 
   return (
@@ -1123,6 +1080,8 @@ export function MintFlow({
           usdcAmount={usdcAmount}
           setUsdcAmount={setUsdcAmount}
           usdcBalance={usdcBalance}
+          deadlineHours={deadlineHours}
+          onDeadlineChange={setDeadlineHours}
           onNext={() => setStep(2)}
           onBack={() => setStep(0)}
           hideBack={isEmbedded}
@@ -1135,6 +1094,7 @@ export function MintFlow({
         <StepReview
           caliber={caliber}
           usdcAmount={usdcAmount}
+          deadlineHours={deadlineHours}
           txStatus={txStatus}
           errorMessage={errorMessage}
           isConnected={wallet.isConnected}

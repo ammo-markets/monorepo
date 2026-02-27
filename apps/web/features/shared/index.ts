@@ -13,3 +13,5 @@ export {
   WrongNetworkBanner,
   SpinnerButton,
 } from "./tx-ui";
+
+export { DeadlinePicker } from "./deadline-picker";
