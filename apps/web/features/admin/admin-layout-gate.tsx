@@ -6,10 +6,10 @@ import { useKeeperCheck } from "@/hooks/use-keeper-check";
 import { WalletButton } from "@/features/layout";
 
 export function AdminLayoutGate({ children }: { children: ReactNode }) {
-  const { isKeeper, isLoading, isConnected } = useKeeperCheck();
+  const { isKeeper, isLoading, isConnected, isReconnecting } = useKeeperCheck();
 
-  // Loading state
-  if (isLoading && isConnected) {
+  // Loading or reconnecting state
+  if (isReconnecting || (isLoading && isConnected)) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <div

@@ -8,9 +8,10 @@ export function useKeeperCheck(): {
   isKeeper: boolean;
   isLoading: boolean;
   isConnected: boolean;
+  isReconnecting: boolean;
   address: `0x${string}` | undefined;
 } {
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, isReconnecting } = useAccount();
 
   const { data, isLoading } = useReadContract({
     address: CONTRACT_ADDRESSES.fuji.manager,
@@ -26,6 +27,7 @@ export function useKeeperCheck(): {
     isKeeper: !!data,
     isLoading,
     isConnected,
+    isReconnecting,
     address,
   };
 }
