@@ -9,7 +9,6 @@ import {
   BalanceCards,
   RecentOrders,
   PendingBanner,
-  TestnetFaucetBanner,
 } from "@/features/dashboard";
 import { ConnectWalletCTA } from "@/features/shared/connect-wallet-cta";
 
@@ -19,7 +18,6 @@ export default function DashboardPage() {
     tokens,
     usdc,
     isLoading: balancesLoading,
-    refetch,
   } = useTokenBalances();
   const { data: marketData = [], isLoading: marketLoading } = useMarketData();
   const { data: orders = [], isLoading: ordersLoading } = useOrders(address);
@@ -59,7 +57,6 @@ export default function DashboardPage() {
 
       <div className="flex flex-col gap-6">
         <PendingBanner pendingCount={pendingCount} />
-        <TestnetFaucetBanner onSuccess={refetch} />
 
         <BalanceCards
           balances={tokens}

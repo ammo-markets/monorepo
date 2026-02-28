@@ -1,14 +1,12 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo } from "react";
 import { formatUnits } from "viem";
-import { Copy, ExternalLink, Check } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import { ConnectWalletCTA } from "@/features/shared/connect-wallet-cta";
 import { useTokenBalances } from "@/hooks/use-token-balances";
 import { useMarketData } from "@/hooks/use-market-data";
 import { useOrders } from "@/hooks/use-orders";
-import { truncateAddress, snowtraceAddressUrl } from "@/lib/utils";
 import type { OrderFromAPI } from "@/lib/types";
 import type { Caliber } from "@ammo-exchange/shared";
 import { CALIBER_SPECS } from "@ammo-exchange/shared";
@@ -37,7 +35,6 @@ export function PortfolioDashboard() {
   const { address, isConnected, isReconnecting } = useAuth();
   const { tokens, usdc, isLoading: balancesLoading } = useTokenBalances();
 
-  const [copiedAddress, setCopiedAddress] = useState(false);
   const [orderFilter, setOrderFilter] = useState<OrderFilter>("All");
 
   // Market prices
@@ -91,14 +88,6 @@ export function PortfolioDashboard() {
       (o: OrderFromAPI) => o.status === "FAILED" || o.status === "CANCELLED",
     );
   }, [orderFilter, orders]);
-
-  const handleCopyAddress = useCallback(() => {
-    if (address) {
-      navigator.clipboard.writeText(address).catch(() => {});
-    }
-    setCopiedAddress(true);
-    setTimeout(() => setCopiedAddress(false), 2000);
-  }, [address]);
 
   // Show loading skeleton during reconnection (prevents hydration mismatch)
   if (isReconnecting) {
@@ -173,51 +162,6 @@ export function PortfolioDashboard() {
               </p>
             )}
           </div>
-
-          {/* Wallet address */}
-          {address && (
-            <div
-              className="flex items-center gap-3 rounded-lg px-4 py-2.5"
-              style={{
-                backgroundColor: "var(--bg-secondary)",
-                border: "1px solid var(--border-default)",
-              }}
-            >
-              {/* Identicon */}
-              <span
-                className="flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold"
-                style={{
-                  backgroundColor: "var(--brass-muted)",
-                  color: "var(--brass)",
-                }}
-              >
-                {address.slice(2, 3).toUpperCase()}
-              </span>
-              <span
-                className="font-mono text-sm"
-                style={{ color: "var(--text-secondary)" }}
-              >
-                {truncateAddress(address)}
-              </span>
-              <button
-                type="button"
-                className="flex h-7 w-7 items-center justify-center rounded-md transition-colors duration-150 text-text-muted hover:bg-ax-tertiary hover:text-text-secondary"
-                onClick={handleCopyAddress}
-                aria-label="Copy address"
-              >
-                {copiedAddress ? <Check size={14} /> : <Copy size={14} />}
-              </button>
-              <a
-                href={snowtraceAddressUrl(address)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex h-7 w-7 items-center justify-center rounded-md transition-colors duration-150 text-text-muted hover:bg-ax-tertiary hover:text-text-secondary"
-                aria-label="View on explorer"
-              >
-                <ExternalLink size={14} />
-              </a>
-            </div>
-          )}
         </div>
       )}
 
