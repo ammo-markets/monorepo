@@ -6,8 +6,8 @@ export function getDeadline(hoursFromNow = 24): bigint {
   return BigInt(Math.floor(Date.now() / 1000) + hoursFromNow * 3600);
 }
 
-/** Default slippage tolerance: 5 % (500 basis points). */
-export const DEFAULT_SLIPPAGE_BPS = BigInt(500);
+/** Default slippage tolerance: 1 % (100 basis points). */
+export const DEFAULT_SLIPPAGE_BPS = BigInt(100);
 
 /* ── USDC helpers (6 decimals) ── */
 

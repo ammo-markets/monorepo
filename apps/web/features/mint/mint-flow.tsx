@@ -24,6 +24,7 @@ import {
   WrongNetworkBanner,
   SpinnerButton,
   DeadlinePicker,
+  SlippagePicker,
 } from "@/features/shared";
 import { MintProgress } from "./mint-progress";
 import type { MintTxStatus } from "@/hooks/use-tx-status";
@@ -35,7 +36,7 @@ import { useMintTransaction } from "@/hooks/use-mint-transaction";
 import { useAllowance } from "@/hooks/use-allowance";
 import { useTokenBalances } from "@/hooks/use-token-balances";
 import { parseContractError } from "@/lib/errors";
-import { getDeadline, DEFAULT_SLIPPAGE_BPS, parseUsdc } from "@/lib/tx-utils";
+import { getDeadline, parseUsdc } from "@/lib/tx-utils";
 import { snowtraceUrl, truncateAddress } from "@/lib/utils";
 import { CONTRACT_ADDRESSES } from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
@@ -200,6 +201,8 @@ function StepEnterAmount({
   usdcBalance,
   deadlineHours,
   onDeadlineChange,
+  slippageBps,
+  onSlippageChange,
   onNext,
   onBack,
   hideBack,
@@ -212,6 +215,8 @@ function StepEnterAmount({
   usdcBalance: number;
   deadlineHours: number;
   onDeadlineChange: (hours: number) => void;
+  slippageBps: number;
+  onSlippageChange: (bps: number) => void;
   onNext: () => void;
   onBack: () => void;
   hideBack?: boolean;
@@ -454,6 +459,10 @@ function StepEnterAmount({
         </button>
         {showAdvanced && (
           <div className="mt-4">
+            <SlippagePicker
+              slippageBps={slippageBps}
+              onSlippageChange={onSlippageChange}
+            />
             <DeadlinePicker
               deadlineHours={deadlineHours}
               onDeadlineChange={onDeadlineChange}
@@ -497,6 +506,7 @@ function StepReview({
   caliber,
   usdcAmount,
   deadlineHours,
+  slippageBps,
   txStatus,
   errorMessage,
   isConnected,
@@ -511,6 +521,7 @@ function StepReview({
   caliber: CaliberDetailData;
   usdcAmount: string;
   deadlineHours: number;
+  slippageBps: number;
   txStatus: MintTxStatus;
   errorMessage: string;
   isConnected: boolean;
@@ -658,6 +669,17 @@ function StepReview({
                 style={{ color: "var(--text-secondary)" }}
               >
                 {deadlineHours === 0 ? "None" : `${deadlineHours} hours`}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span style={{ color: "var(--text-muted)" }}>
+                Slippage tolerance
+              </span>
+              <span
+                className="font-mono tabular-nums"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                {slippageBps / 100}%
               </span>
             </div>
           </div>
@@ -969,6 +991,7 @@ export function MintFlow({
   });
   const [usdcAmount, setUsdcAmount] = useState("");
   const [deadlineHours, setDeadlineHours] = useState(24);
+  const [slippageBps, setSlippageBps] = useState(100);
 
   const activeCaliber: Caliber = selectedCaliber ?? "9MM";
   const caliber =
@@ -1004,7 +1027,7 @@ export function MintFlow({
     activeCaliber,
     {
       usdcAmount: parsedUsdcAmount > BigInt(0) ? parsedUsdcAmount : undefined,
-      slippageBps: DEFAULT_SLIPPAGE_BPS,
+      slippageBps: BigInt(slippageBps),
       deadline: getDeadline(deadlineHours),
     },
     { hasEnoughAllowance },
@@ -1126,6 +1149,8 @@ export function MintFlow({
           usdcBalance={usdcBalance}
           deadlineHours={deadlineHours}
           onDeadlineChange={setDeadlineHours}
+          slippageBps={slippageBps}
+          onSlippageChange={setSlippageBps}
           onNext={() => setStep(2)}
           onBack={() => setStep(0)}
           hideBack={isEmbedded}
@@ -1139,6 +1164,7 @@ export function MintFlow({
           caliber={caliber}
           usdcAmount={usdcAmount}
           deadlineHours={deadlineHours}
+          slippageBps={slippageBps}
           txStatus={txStatus}
           errorMessage={errorMessage}
           isConnected={wallet.isConnected}

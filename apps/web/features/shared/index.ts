@@ -15,3 +15,4 @@ export {
 } from "./tx-ui";
 
 export { DeadlinePicker } from "./deadline-picker";
+export { SlippagePicker } from "./slippage-picker";
