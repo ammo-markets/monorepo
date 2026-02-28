@@ -8,7 +8,7 @@
     "./abis": "./src/abis/index.ts"
   },
   "scripts": {
-    "build": "forge build && tsx scripts/export-abis.ts",
+    "build": "command -v forge >/dev/null && forge build && tsx scripts/export-abis.ts || echo 'Skipping forge build (not installed), using committed ABIs'",
     "test": "forge test",
     "check": "tsc --noEmit"
   },
