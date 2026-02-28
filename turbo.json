@@ -3,6 +3,8 @@
   "ui": "tui",
   "globalEnv": [
     "DATABASE_URL",
+    "RPC_URL",
+    "CHAIN",
     "AVALANCHE_RPC_URL",
     "FUJI_RPC_URL",
     "SESSION_SECRET",
