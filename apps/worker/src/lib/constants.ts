@@ -8,8 +8,9 @@ import type { Caliber as PrismaCaliber } from "@ammo-exchange/db";
 
 // ── Polling Configuration ───────────────────────────────────────────
 
-/** Polling interval in milliseconds (~2 Avalanche blocks per tick) */
-export const POLL_INTERVAL_MS = 4_000;
+/** Polling interval in milliseconds. Default: 4s (~2 Avalanche blocks per tick).
+ *  Override with POLL_INTERVAL_MS env var (in milliseconds) to reduce RPC costs. */
+export const POLL_INTERVAL_MS = Number(process.env.POLL_INTERVAL_MS) || 4_000;
 
 /** Stats recomputation interval in milliseconds (15 minutes) */
 export const STATS_INTERVAL_MS = 15 * 60 * 1000;
