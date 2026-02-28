@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { format } from "date-fns";
 import { ExternalLink } from "lucide-react";
 import {
   Sheet,
@@ -11,7 +10,7 @@ import {
   SheetDescription,
   SheetFooter,
 } from "@/components/ui/sheet";
-import { snowtraceUrl, snowtraceAddressUrl } from "@/lib/utils";
+import { snowtraceUrl, snowtraceAddressUrl, formatDate } from "@/lib/utils";
 import { FinalizeMintDialog } from "./finalize-mint-dialog";
 import { FinalizeRedeemDialog } from "./finalize-redeem-dialog";
 import { RejectMintDialog } from "./reject-mint-dialog";
@@ -84,10 +83,6 @@ function formatUsdc(amount: string): string {
 
 function formatTokenAmount(amount: string): string {
   return Math.floor(Number(amount) / 1e18).toLocaleString();
-}
-
-function formatDate(dateStr: string): string {
-  return format(new Date(dateStr), "MMM d, yyyy 'at' h:mm a");
 }
 
 function isRedeemOrder(

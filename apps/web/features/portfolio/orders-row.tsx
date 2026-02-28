@@ -3,16 +3,9 @@
 import { useRouter } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { caliberIcons } from "@/features/shared/caliber-icons";
+import { timeAgo } from "@/lib/utils";
 import { StatusBadge, TypeBadge, mapOrderStatus } from "./portfolio-badges";
 import type { OrderFromAPI } from "@/lib/types";
-
-export function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
 
 export function OrdersDesktopRow({
   order,
@@ -78,7 +71,7 @@ export function OrdersDesktopRow({
       {/* Created */}
       <td className="px-6 py-4 text-right">
         <span className="text-sm" style={{ color: "var(--text-muted)" }}>
-          {formatDate(order.createdAt)}
+          {timeAgo(order.createdAt)}
         </span>
       </td>
     </tr>
@@ -136,7 +129,7 @@ export function OrderMobileCard({ order }: { order: OrderFromAPI }) {
       </div>
       <div className="mt-2 flex items-center justify-between">
         <span className="text-xs" style={{ color: "var(--text-muted)" }}>
-          {formatDate(order.createdAt)}
+          {timeAgo(order.createdAt)}
         </span>
         <ArrowRight size={14} style={{ color: "var(--text-muted)" }} />
       </div>

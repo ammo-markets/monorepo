@@ -14,7 +14,7 @@ import { useOrderDetail } from "@/hooks/use-orders";
 import type { OrderFromAPI, OrderStep, StepStatus } from "@/lib/types";
 import type { Caliber } from "@ammo-exchange/shared";
 import { CALIBER_SPECS } from "@ammo-exchange/shared";
-import { truncateAddress, snowtraceUrl } from "@/lib/utils";
+import { truncateAddress, snowtraceUrl, formatDate } from "@/lib/utils";
 import { caliberIcons } from "@/features/shared/caliber-icons";
 
 /* ────────────── Helpers ────────────── */
@@ -32,16 +32,6 @@ function mapOrderStatus(status: OrderFromAPI["status"]): DisplayStatus {
     case "CANCELLED":
       return "Failed";
   }
-}
-
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
 }
 
 function buildMintSteps(order: OrderFromAPI): OrderStep[] {
