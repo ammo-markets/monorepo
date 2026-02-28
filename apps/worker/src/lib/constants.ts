@@ -1,10 +1,7 @@
-import {
-  CONTRACT_ADDRESSES,
-  DEPLOYMENT_BLOCKS,
-  CALIBER_TO_PRISMA,
-} from "@ammo-exchange/shared";
+import { CALIBER_TO_PRISMA } from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
 import type { Caliber as PrismaCaliber } from "@ammo-exchange/db";
+import { contracts, deploymentBlock, chainId as activeChainId } from "./chain";
 import { env } from "./env";
 
 // ── Polling Configuration ───────────────────────────────────────────
@@ -26,32 +23,30 @@ export const CONFIRMATION_BLOCKS = 5n;
 /** Single cursor key for all 4 CaliberMarket contracts */
 export const CURSOR_KEY = "all-markets";
 
-/** Avalanche Fuji testnet chain ID */
-export const CHAIN_ID = 43113;
+/** Active chain ID */
+export const CHAIN_ID = activeChainId;
 
-/** First block where protocol contracts exist on Fuji -- floor for event scanning */
-export const DEPLOYMENT_BLOCK = DEPLOYMENT_BLOCKS.fuji;
+/** First block where protocol contracts exist -- floor for event scanning */
+export const DEPLOYMENT_BLOCK = deploymentBlock;
 
 // ── Caliber Registry (config-driven) ────────────────────────────────
 
 /** All calibers derived from shared config — adding a new caliber to CONTRACT_ADDRESSES automatically includes it here */
 export const CALIBERS: PrismaCaliber[] = (
-  Object.keys(CONTRACT_ADDRESSES.fuji.calibers) as Caliber[]
+  Object.keys(contracts.calibers) as Caliber[]
 ).map((c) => CALIBER_TO_PRISMA[c]);
 
 // ── Market Addresses (config-driven) ────────────────────────────────
 
 /** All CaliberMarket contract addresses for multi-address event queries — derived from CONTRACT_ADDRESSES */
 export const MARKET_ADDRESSES: `0x${string}`[] = Object.values(
-  CONTRACT_ADDRESSES.fuji.calibers,
+  contracts.calibers,
 ).map((c) => c.market);
 
 // ── Address-to-Caliber Reverse Lookup ───────────────────────────────
 
 const ADDRESS_TO_CALIBER: Record<string, Caliber> = {};
-for (const [caliber, addrs] of Object.entries(
-  CONTRACT_ADDRESSES.fuji.calibers,
-)) {
+for (const [caliber, addrs] of Object.entries(contracts.calibers)) {
   ADDRESS_TO_CALIBER[addrs.market.toLowerCase()] = caliber as Caliber;
 }
 

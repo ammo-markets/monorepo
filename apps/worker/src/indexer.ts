@@ -5,6 +5,7 @@ import {
   MARKET_ADDRESSES,
   CURSOR_KEY,
   DEPLOYMENT_BLOCK,
+  CHAIN_ID,
 } from "./lib/constants";
 import type { EventMeta } from "./lib/constants";
 import { getCursor, upsertCursor } from "./lib/cursor";
@@ -393,7 +394,7 @@ export async function pollOnce(): Promise<void> {
         where: { contractAddress: CURSOR_KEY },
         create: {
           contractAddress: CURSOR_KEY,
-          chainId: 43113,
+          chainId: CHAIN_ID,
           lastBlock: batchEnd,
         },
         update: { lastBlock: batchEnd },

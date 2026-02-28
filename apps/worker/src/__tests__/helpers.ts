@@ -11,7 +11,7 @@ import type {
   RedeemRequestedArgs,
   RedeemFinalizedArgs,
 } from "../handlers/redeem";
-import { CONTRACT_ADDRESSES } from "@ammo-exchange/shared";
+import { contracts } from "../lib/chain";
 
 // ── Default Values ──────────────────────────────────────────────────
 
@@ -20,8 +20,8 @@ const DEFAULT_TX_HASH =
 
 const DEFAULT_USER = "0x1234567890abcdef1234567890abcdef12345678" as const;
 
-/** First caliber market address (9MM on Fuji) */
-const DEFAULT_MARKET_ADDRESS = CONTRACT_ADDRESSES.fuji.calibers["9MM"].market;
+/** First caliber market address (9MM on active chain) */
+const DEFAULT_MARKET_ADDRESS = contracts.calibers["9MM"].market;
 
 // ── Mock PrismaTx ───────────────────────────────────────────────────
 
