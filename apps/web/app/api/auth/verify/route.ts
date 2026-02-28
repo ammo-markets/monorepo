@@ -47,11 +47,6 @@ export async function POST(request: Request) {
       "http://localhost:3000";
     const expectedChainId = avalancheFuji.id; // 43113
 
-    console.log("[SIWE] Expected domain:", expectedDomain);
-    console.log("[SIWE] Message domain:", siweMessage.domain);
-    console.log("[SIWE] Expected URI:", expectedUri);
-    console.log("[SIWE] Message URI:", siweMessage.uri);
-
     const result = await siweMessage.verify({
       signature: body.signature,
       nonce: session.nonce,
@@ -59,7 +54,6 @@ export async function POST(request: Request) {
     });
 
     if (!result.success) {
-      console.error("[SIWE] Verification failed:", result.error);
       return Response.json(
         { error: result.error?.type ?? "Verification failed" },
         { status: 401 },
@@ -68,23 +62,14 @@ export async function POST(request: Request) {
 
     // SEC-05: Verify domain and chainId match expected values
     if (result.data.domain !== expectedDomain) {
-      console.error(
-        `[SIWE] Domain mismatch: got "${result.data.domain}", expected "${expectedDomain}"`,
-      );
       return Response.json({ error: "Invalid domain" }, { status: 401 });
     }
 
     if (result.data.chainId !== expectedChainId) {
-      console.error(
-        `[SIWE] Chain mismatch: got ${result.data.chainId}, expected ${expectedChainId}`,
-      );
       return Response.json({ error: "Invalid chain ID" }, { status: 401 });
     }
 
     if (result.data.uri !== expectedUri) {
-      console.error(
-        `[SIWE] URI mismatch: got "${result.data.uri}", expected "${expectedUri}"`,
-      );
       return Response.json({ error: "Invalid URI" }, { status: 401 });
     }
 
