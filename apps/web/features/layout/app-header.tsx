@@ -1,18 +1,14 @@
 "use client";
 
-import { useEffect } from "react";
-import { toast } from "sonner";
-import { useBalance, useChainId } from "wagmi";
+import { useBalance } from "wagmi";
 import { useWallet } from "@/hooks/use-wallet";
 import { useTokenBalances } from "@/hooks/use-token-balances";
-import { useUsdcFaucet } from "@/hooks/use-usdc-faucet";
-import { useAvaxFaucet } from "@/hooks/use-avax-faucet";
 import { formatUnits } from "viem";
-import { parseContractError } from "@/lib/errors";
 import { isTestnet, activeChain } from "@/lib/chain";
 import { AmmoLogo } from "./logo";
 import { WalletButton, formatUsdc } from "./wallet-button";
 import { UsdcIcon } from "./usdc-icon";
+import { FaucetButtons } from "./faucet-buttons";
 
 function formatAvax(value: bigint): string {
   const formatted = formatUnits(value, 18);
@@ -24,61 +20,12 @@ function formatAvax(value: bigint): string {
 
 export function AppHeader() {
   const { isConnected, isReconnecting, isWrongNetwork, address } = useWallet();
-  const { usdc, refetch } = useTokenBalances();
-  const chainId = useChainId();
-  const { faucet, error, isPending, isConfirming, isConfirmed, isSimulating } =
-    useUsdcFaucet(refetch);
+  const { usdc } = useTokenBalances();
 
-  const { data: avaxBalance, refetch: refetchAvax } = useBalance({
+  const { data: avaxBalance } = useBalance({
     address,
     query: { enabled: isConnected && !!address },
   });
-
-  const {
-    request: requestAvax,
-    status: avaxStatus,
-    error: avaxError,
-  } = useAvaxFaucet(() => {
-    refetchAvax();
-    refetch();
-  });
-
-  useEffect(() => {
-    if (error) {
-      toast.error(parseContractError(error));
-    }
-  }, [error]);
-
-  useEffect(() => {
-    if (avaxError) {
-      toast.error(avaxError);
-    }
-  }, [avaxError]);
-
-  const isFuji = isTestnet && chainId === activeChain.id;
-  const faucetBusy = isPending || isConfirming || isSimulating;
-  const faucetLabel = isConfirmed
-    ? "Minted!"
-    : isConfirming
-      ? "Confirming..."
-      : isPending
-        ? "Requesting..."
-        : "Get Test USDC";
-
-  const showAvaxFaucet =
-    isConnected &&
-    !isReconnecting &&
-    isFuji &&
-    avaxBalance?.value === BigInt(0);
-  const avaxBusy = avaxStatus === "requesting" || avaxStatus === "confirming";
-  const avaxLabel =
-    avaxStatus === "done"
-      ? "Funded!"
-      : avaxStatus === "confirming"
-        ? "Confirming..."
-        : avaxStatus === "requesting"
-          ? "Sending..."
-          : "Get Test AVAX";
 
   const networkLabel = activeChain.name;
   const dotColor =
@@ -126,40 +73,8 @@ export function AppHeader() {
           </div>
         )}
 
-        {/* AVAX faucet button (Fuji only, zero balance) */}
-        {showAvaxFaucet && (
-          <button
-            type="button"
-            onClick={requestAvax}
-            disabled={avaxBusy}
-            className="hidden items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors duration-150 disabled:opacity-50 sm:flex"
-            style={{
-              backgroundColor: "color-mix(in srgb, #E84142 12%, transparent)",
-              color: "#E84142",
-            }}
-          >
-            <span className="hidden md:inline">{avaxLabel}</span>
-            <span className="md:hidden">AVAX</span>
-          </button>
-        )}
-
-        {/* USDC faucet button (Fuji only) */}
-        {isConnected && !isReconnecting && isFuji && (
-          <button
-            type="button"
-            onClick={faucet}
-            disabled={faucetBusy}
-            className="hidden items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors duration-150 disabled:opacity-50 sm:flex"
-            style={{
-              backgroundColor:
-                "color-mix(in srgb, var(--blue) 12%, transparent)",
-              color: "var(--blue)",
-            }}
-          >
-            <span className="hidden md:inline">{faucetLabel}</span>
-            <span className="md:hidden">Faucet</span>
-          </button>
-        )}
+        {/* Faucet buttons (testnet only) */}
+        {isTestnet && isConnected && !isReconnecting && <FaucetButtons />}
 
         {/* Network badge pill */}
         <div className="flex items-center gap-2 px-3 py-1.5 text-[10px] font-mono font-bold uppercase tracking-widest bg-ax-tertiary border border-border-default text-text-secondary">
