@@ -6,7 +6,12 @@
     "AVALANCHE_RPC_URL",
     "FUJI_RPC_URL",
     "SESSION_SECRET",
-    "ALLOWED_ORIGINS"
+    "ALLOWED_ORIGINS",
+    "APP_DOMAIN",
+    "APP_URL",
+    "FAUCET_PRIVATE_KEY",
+    "NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID",
+    "POLL_INTERVAL_MS"
   ],
   "tasks": {
     "build": {
