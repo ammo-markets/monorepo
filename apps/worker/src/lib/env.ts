@@ -1,22 +1,9 @@
-/**
- * Startup environment validation.
- *
- * Import this module at the top of the worker entry point to fail fast
- * with a clear error if any required variable is missing.
- */
+import { z } from "zod";
 
-function requireEnv(name: string): string {
-  const value = process.env[name];
-  if (!value) {
-    console.error(
-      `[worker] FATAL: Missing required environment variable: ${name}`,
-    );
-    process.exit(1);
-  }
-  return value;
-}
+const envSchema = z.object({
+  DATABASE_URL: z.url(),
+  FUJI_RPC_URL: z.url(),
+  POLL_INTERVAL_MS: z.coerce.number().positive().optional(),
+});
 
-export const env = {
-  FUJI_RPC_URL: requireEnv("FUJI_RPC_URL"),
-  DATABASE_URL: requireEnv("DATABASE_URL"),
-} as const;
+export const env = envSchema.parse(process.env);

@@ -1,6 +1,7 @@
 import { SiweMessage } from "siwe";
 import { avalancheFuji } from "viem/chains";
 import { getSession } from "@/lib/auth";
+import { env } from "@/lib/env";
 import { prisma } from "@ammo-exchange/db";
 
 /**
@@ -36,21 +37,12 @@ export async function POST(request: Request) {
     const siweMessage = new SiweMessage(body.message);
 
     // SEC-05: Enforce domain, URI scheme, and chainId policy
-    // Use non-prefixed env vars for server-side, fall back to NEXT_PUBLIC_ variants
-    const expectedDomain =
-      process.env.APP_DOMAIN ??
-      process.env.NEXT_PUBLIC_APP_DOMAIN ??
-      "localhost:3000";
-    const expectedUri =
-      process.env.APP_URL ??
-      process.env.NEXT_PUBLIC_APP_URL ??
-      "http://localhost:3000";
     const expectedChainId = avalancheFuji.id; // 43113
 
     const result = await siweMessage.verify({
       signature: body.signature,
       nonce: session.nonce,
-      domain: expectedDomain,
+      domain: env.APP_DOMAIN,
     });
 
     if (!result.success) {
@@ -61,7 +53,7 @@ export async function POST(request: Request) {
     }
 
     // SEC-05: Verify domain and chainId match expected values
-    if (result.data.domain !== expectedDomain) {
+    if (result.data.domain !== env.APP_DOMAIN) {
       return Response.json({ error: "Invalid domain" }, { status: 401 });
     }
 
@@ -69,7 +61,7 @@ export async function POST(request: Request) {
       return Response.json({ error: "Invalid chain ID" }, { status: 401 });
     }
 
-    if (result.data.uri !== expectedUri) {
+    if (result.data.uri !== env.APP_URL) {
       return Response.json({ error: "Invalid URI" }, { status: 401 });
     }
 

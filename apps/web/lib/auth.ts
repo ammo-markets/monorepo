@@ -2,6 +2,7 @@ import type { IronSession, SessionOptions } from "iron-session";
 import { getIronSession } from "iron-session";
 import { cookies } from "next/headers";
 import { publicClient } from "@/lib/viem";
+import { env } from "@/lib/env";
 import { AmmoManagerAbi } from "@ammo-exchange/contracts/abis";
 import { CONTRACT_ADDRESSES } from "@ammo-exchange/shared";
 
@@ -15,7 +16,7 @@ export interface SessionData {
 
 export const sessionOptions: SessionOptions = {
   cookieName: "ammo_session",
-  password: process.env.SESSION_SECRET as string,
+  password: env.SESSION_SECRET,
   ttl: 86400, // 24 hours
   cookieOptions: {
     httpOnly: true,

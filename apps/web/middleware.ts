@@ -1,11 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { env } from "@/lib/env";
 
 /**
  * Allowed origins for CORS. Read from ALLOWED_ORIGINS env var (comma-separated)
  * or default to localhost for development.
  */
-const ALLOWED_ORIGINS: string[] = process.env.ALLOWED_ORIGINS
-  ? process.env.ALLOWED_ORIGINS.split(",").map((o) => o.trim())
+const ALLOWED_ORIGINS: string[] = env.ALLOWED_ORIGINS
+  ? env.ALLOWED_ORIGINS.split(",").map((o) => o.trim())
   : ["http://localhost:3000"];
 
 /**

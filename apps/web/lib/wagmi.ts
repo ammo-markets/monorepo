@@ -1,10 +1,11 @@
 import { getDefaultConfig } from "@rainbow-me/rainbowkit";
 import { avalanche, avalancheFuji } from "wagmi/chains";
 import { http, createStorage, cookieStorage } from "wagmi";
+import { env } from "@/lib/env";
 
 export const wagmiConfig = getDefaultConfig({
   appName: "Ammo Exchange",
-  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!,
+  projectId: env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
   chains: [avalancheFuji, avalanche],
   transports: {
     [avalanche.id]: http(),
