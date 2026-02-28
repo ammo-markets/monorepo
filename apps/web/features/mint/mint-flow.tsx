@@ -16,8 +16,8 @@ import { useAllowance } from "@/hooks/use-allowance";
 import { useTokenBalances } from "@/hooks/use-token-balances";
 import { parseContractError } from "@/lib/errors";
 import { getDeadline, parseUsdc } from "@/lib/tx-utils";
-import { CONTRACT_ADDRESSES } from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
+import { contracts } from "@/lib/chain";
 
 import { StepSelectCaliber } from "./steps/step-select-caliber";
 import { StepEnterAmount } from "./steps/step-enter-amount";
@@ -66,9 +66,9 @@ export function MintFlow({
   const wallet = useWallet();
   const { openConnectModal } = useConnectModal();
   const { usdc: usdcBalanceRaw } = useTokenBalances();
-  const marketAddress = CONTRACT_ADDRESSES.fuji.calibers[activeCaliber].market;
+  const marketAddress = contracts.calibers[activeCaliber].market;
   const allowance = useAllowance(
-    CONTRACT_ADDRESSES.fuji.usdc,
+    contracts.usdc,
     wallet.address,
     marketAddress,
   );
@@ -240,7 +240,7 @@ export function MintFlow({
           isConnected={wallet.isConnected}
           isWrongNetwork={wallet.isWrongNetwork}
           onConnect={() => openConnectModal?.()}
-          onSwitchNetwork={wallet.switchToFuji}
+          onSwitchNetwork={wallet.switchNetwork}
           onApprove={handleApprove}
           onConfirm={handleConfirm}
           onRetry={handleRetry}

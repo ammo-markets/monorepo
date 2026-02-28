@@ -1,6 +1,6 @@
 import { SiweMessage } from "siwe";
-import { avalancheFuji } from "viem/chains";
 import { getSession } from "@/lib/auth";
+import { chainId as expectedChainId } from "@/lib/chain";
 import { env } from "@/lib/env";
 import { prisma } from "@ammo-exchange/db";
 
@@ -35,9 +35,6 @@ export async function POST(request: Request) {
 
   try {
     const siweMessage = new SiweMessage(body.message);
-
-    // SEC-05: Enforce domain, URI scheme, and chainId policy
-    const expectedChainId = avalancheFuji.id; // 43113
 
     const result = await siweMessage.verify({
       signature: body.signature,

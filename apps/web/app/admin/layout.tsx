@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { publicClient } from "@/lib/viem";
 import { AmmoManagerAbi } from "@ammo-exchange/contracts/abis";
-import { CONTRACT_ADDRESSES } from "@ammo-exchange/shared";
+import { contracts } from "@/lib/chain";
 import { AdminLayoutGate } from "@/features/admin/admin-layout-gate";
 import { AdminSidebar } from "@/features/admin/admin-sidebar";
 
@@ -20,7 +20,7 @@ export default async function AdminLayout({
 
   // Server-side keeper check — non-keepers see 404
   const isKeeper = await publicClient.readContract({
-    address: CONTRACT_ADDRESSES.fuji.manager,
+    address: contracts.manager,
     abi: AmmoManagerAbi,
     functionName: "isKeeper",
     args: [session.siwe.address as `0x${string}`],

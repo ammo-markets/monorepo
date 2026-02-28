@@ -1,11 +1,11 @@
 import { createPublicClient, createWalletClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { avalancheFuji } from "viem/chains";
+import { activeChain } from "@/lib/chain";
 import { env } from "@/lib/env";
 
 export const publicClient = createPublicClient({
-  chain: avalancheFuji,
-  transport: http(env.FUJI_RPC_URL),
+  chain: activeChain,
+  transport: http(env.RPC_URL),
 });
 
 // Server-side faucet wallet — only available when FAUCET_PRIVATE_KEY is set
@@ -16,7 +16,7 @@ export const faucetAccount = env.FAUCET_PRIVATE_KEY
 export const faucetWalletClient = faucetAccount
   ? createWalletClient({
       account: faucetAccount,
-      chain: avalancheFuji,
-      transport: http(env.FUJI_RPC_URL),
+      chain: activeChain,
+      transport: http(env.RPC_URL),
     })
   : null;

@@ -1,10 +1,10 @@
 import { publicClient } from "@/lib/viem";
 import { CaliberMarketAbi, AmmoTokenAbi } from "@ammo-exchange/contracts/abis";
-import { CONTRACT_ADDRESSES, CALIBER_SPECS } from "@ammo-exchange/shared";
+import { CALIBER_SPECS } from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
+import { contracts } from "@/lib/chain";
 
-const CALIBERS = Object.keys(CONTRACT_ADDRESSES.fuji.calibers) as Caliber[];
-const fuji = CONTRACT_ADDRESSES.fuji;
+const CALIBERS = Object.keys(contracts.calibers) as Caliber[];
 
 const priceOracleAbi = [
   {
@@ -26,12 +26,12 @@ export async function GET() {
     const phase1 = await publicClient.multicall({
       contracts: [
         ...CALIBERS.map((caliber) => ({
-          address: fuji.calibers[caliber].market,
+          address: contracts.calibers[caliber].market,
           abi: CaliberMarketAbi,
           functionName: "oracle" as const,
         })),
         ...CALIBERS.map((caliber) => ({
-          address: fuji.calibers[caliber].token,
+          address: contracts.calibers[caliber].token,
           abi: AmmoTokenAbi,
           functionName: "totalSupply" as const,
         })),

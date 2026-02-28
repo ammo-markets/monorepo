@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { publicClient } from "@/lib/viem";
 import { env } from "@/lib/env";
 import { AmmoManagerAbi } from "@ammo-exchange/contracts/abis";
-import { CONTRACT_ADDRESSES } from "@ammo-exchange/shared";
+import { contracts } from "@/lib/chain";
 
 export interface SessionData {
   nonce?: string;
@@ -66,7 +66,7 @@ export async function requireKeeper(): Promise<{
   const siwe = await requireSession();
 
   const isKeeper = await publicClient.readContract({
-    address: CONTRACT_ADDRESSES.fuji.manager,
+    address: contracts.manager,
     abi: AmmoManagerAbi,
     functionName: "isKeeper",
     args: [siwe.address as `0x${string}`],

@@ -6,8 +6,8 @@ import {
   useSimulateContract,
 } from "wagmi";
 import { CaliberMarketAbi } from "@ammo-exchange/contracts/abis";
-import { CONTRACT_ADDRESSES } from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
+import { contracts } from "@/lib/chain";
 
 export function useFinalizeMint(
   caliber: Caliber,
@@ -26,7 +26,7 @@ export function useFinalizeMint(
   isReady: boolean;
   reset: () => void;
 } {
-  const marketAddress = CONTRACT_ADDRESSES.fuji.calibers[caliber].market;
+  const marketAddress = contracts.calibers[caliber].market;
   const argsReady =
     args.orderId !== undefined && args.actualPriceX18 !== undefined;
 

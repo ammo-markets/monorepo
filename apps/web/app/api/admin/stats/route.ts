@@ -1,13 +1,13 @@
 import { publicClient } from "@/lib/viem";
 import { AmmoManagerAbi, AmmoTokenAbi } from "@ammo-exchange/contracts/abis";
-import { CONTRACT_ADDRESSES, CALIBER_SPECS } from "@ammo-exchange/shared";
+import { CALIBER_SPECS } from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
 import { erc20Abi, formatUnits } from "viem";
 import { prisma } from "@ammo-exchange/db";
 import { requireKeeper } from "@/lib/auth";
+import { contracts } from "@/lib/chain";
 
 const CALIBERS: Caliber[] = ["9MM", "556", "22LR", "308"];
-const fuji = CONTRACT_ADDRESSES.fuji;
 
 export async function GET() {
   try {
@@ -15,14 +15,14 @@ export async function GET() {
 
     // 1. Read treasury address
     const treasury = await publicClient.readContract({
-      address: fuji.manager,
+      address: contracts.manager,
       abi: AmmoManagerAbi,
       functionName: "treasury",
     });
 
     // 2. Read USDC balance of treasury
     const usdcBalance = await publicClient.readContract({
-      address: fuji.usdc,
+      address: contracts.usdc,
       abi: erc20Abi,
       functionName: "balanceOf",
       args: [treasury],
@@ -33,7 +33,7 @@ export async function GET() {
       CALIBERS.map((caliber) =>
         publicClient
           .readContract({
-            address: fuji.calibers[caliber].token,
+            address: contracts.calibers[caliber].token,
             abi: AmmoTokenAbi,
             functionName: "totalSupply",
           })

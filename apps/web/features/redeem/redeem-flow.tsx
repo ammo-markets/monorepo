@@ -17,8 +17,8 @@ import { useTokenBalances } from "@/hooks/use-token-balances";
 import { useKycStatus, useKycSubmit } from "@/hooks/use-kyc";
 import { parseContractError } from "@/lib/errors";
 import { getDeadline, parseTokenAmount } from "@/lib/tx-utils";
-import { CONTRACT_ADDRESSES } from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
+import { contracts } from "@/lib/chain";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { StepCompose } from "./steps/step-compose";
@@ -128,8 +128,8 @@ export function RedeemFlow({
     [submitKyc],
   );
 
-  const tokenAddress = CONTRACT_ADDRESSES.fuji.calibers[activeCaliber].token;
-  const marketAddress = CONTRACT_ADDRESSES.fuji.calibers[activeCaliber].market;
+  const tokenAddress = contracts.calibers[activeCaliber].token;
+  const marketAddress = contracts.calibers[activeCaliber].market;
   const allowance = useAllowance(tokenAddress, wallet.address, marketAddress);
 
   // ── Derive allowance check ──

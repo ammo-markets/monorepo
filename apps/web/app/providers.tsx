@@ -9,8 +9,8 @@ import {
   RainbowKitProvider,
 } from "@rainbow-me/rainbowkit";
 import type { AuthenticationStatus } from "@rainbow-me/rainbowkit";
-import { avalancheFuji } from "wagmi/chains";
 import { wagmiConfig } from "@/lib/wagmi";
+import { activeChain } from "@/lib/chain";
 import { ammoTheme } from "@/lib/rainbow-theme";
 import { createSiweAdapter } from "@/lib/siwe-adapter";
 import { AuthProvider } from "@/contexts/auth-context";
@@ -56,7 +56,7 @@ export function Providers({ children }: { children: ReactNode }) {
           adapter={siweAdapter}
           status={authStatus}
         >
-          <RainbowKitProvider theme={ammoTheme} initialChain={avalancheFuji}>
+          <RainbowKitProvider theme={ammoTheme} initialChain={activeChain}>
             <AuthProvider
               onAuthStatusChange={setAuthStatus}
               checkSessionRef={checkSessionRef}

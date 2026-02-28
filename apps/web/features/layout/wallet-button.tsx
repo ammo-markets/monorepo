@@ -24,7 +24,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { formatUnits } from "viem";
-import { AVALANCHE_FUJI } from "@ammo-exchange/shared";
+import { activeChain } from "@/lib/chain";
 
 export function formatUsdc(raw: bigint): string {
   return Number(formatUnits(raw, 6)).toLocaleString("en-US", {
@@ -43,7 +43,7 @@ export function WalletButton() {
     isReconnecting,
     isWrongNetwork,
     disconnect,
-    switchToFuji,
+    switchNetwork,
     isSwitching,
     isSignedIn,
     signOut,
@@ -72,15 +72,15 @@ export function WalletButton() {
         <button
           type="button"
           className="flex items-center gap-2 rounded-lg border border-ammo-amber bg-transparent px-4 py-2 text-sm font-medium text-ammo-amber transition-all duration-150 hover:bg-ammo-amber/10"
-          onClick={switchToFuji}
+          onClick={switchNetwork}
           disabled={isSwitching}
           aria-label={
-            isSwitching ? "Switching network" : "Switch to Fuji network"
+            isSwitching ? "Switching network" : "Switch network"
           }
         >
           <Wallet size={16} />
           <span className="hidden sm:inline">
-            {isSwitching ? "Switching..." : "Switch to Fuji"}
+            {isSwitching ? "Switching..." : "Switch Network"}
           </span>
         </button>
         <button
@@ -153,7 +153,7 @@ export function WalletButton() {
           <DropdownMenuItem
             onClick={() => {
               window.open(
-                `${AVALANCHE_FUJI.blockExplorers.default}/address/${address}`,
+                `${activeChain.blockExplorers.default.url}/address/${address}`,
                 "_blank",
               );
             }}

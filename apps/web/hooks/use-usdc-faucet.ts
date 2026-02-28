@@ -7,7 +7,7 @@ import {
   useSimulateContract,
 } from "wagmi";
 import { MockUSDCAbi } from "@ammo-exchange/contracts/abis";
-import { CONTRACT_ADDRESSES } from "@ammo-exchange/shared";
+import { contracts } from "@/lib/chain";
 
 const FAUCET_AMOUNT = BigInt(10_000e6); // 10,000 USDC (6 decimals)
 
@@ -29,7 +29,7 @@ export function useUsdcFaucet(onSuccess?: () => void): {
     error: simulationError,
     isLoading: isSimulating,
   } = useSimulateContract({
-    address: CONTRACT_ADDRESSES.fuji.usdc,
+    address: contracts.usdc,
     abi: MockUSDCAbi,
     functionName: "faucet",
     args: [FAUCET_AMOUNT],

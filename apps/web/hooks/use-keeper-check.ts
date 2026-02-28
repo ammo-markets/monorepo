@@ -2,7 +2,7 @@
 
 import { useAccount, useReadContract } from "wagmi";
 import { AmmoManagerAbi } from "@ammo-exchange/contracts/abis";
-import { CONTRACT_ADDRESSES } from "@ammo-exchange/shared";
+import { contracts } from "@/lib/chain";
 
 export function useKeeperCheck(): {
   isKeeper: boolean;
@@ -14,7 +14,7 @@ export function useKeeperCheck(): {
   const { address, isConnected, isReconnecting } = useAccount();
 
   const { data, isLoading } = useReadContract({
-    address: CONTRACT_ADDRESSES.fuji.manager,
+    address: contracts.manager,
     abi: AmmoManagerAbi,
     functionName: "isKeeper",
     args: [address!],

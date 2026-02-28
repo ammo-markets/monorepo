@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { explorerTxUrl, explorerAddressUrl } from "@/lib/chain";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -10,11 +11,11 @@ export function truncateAddress(address: string): string {
 }
 
 export function snowtraceUrl(txHash: string): string {
-  return `https://testnet.snowtrace.io/tx/${txHash}`;
+  return explorerTxUrl(txHash);
 }
 
 export function snowtraceAddressUrl(address: string): string {
-  return `https://testnet.snowtrace.io/address/${address}`;
+  return explorerAddressUrl(address);
 }
 
 export function timeAgo(iso: string): string {

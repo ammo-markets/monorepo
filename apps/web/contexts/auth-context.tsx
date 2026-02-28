@@ -12,7 +12,7 @@ interface AuthContextValue {
   isReconnecting: boolean;
   isWrongNetwork: boolean;
   disconnect: () => void;
-  switchToFuji: () => void;
+  switchNetwork: () => void;
   isSwitching: boolean;
   isSignedIn: boolean;
   isSessionLoading: boolean;
@@ -47,7 +47,7 @@ export function AuthProvider({
     isReconnecting: wallet.isReconnecting,
     isWrongNetwork: wallet.isWrongNetwork,
     disconnect: wallet.disconnect,
-    switchToFuji: wallet.switchToFuji,
+    switchNetwork: wallet.switchNetwork,
     isSwitching: wallet.isSwitching,
     isSignedIn: siwe.isSignedIn,
     isSessionLoading: siwe.isSessionLoading,

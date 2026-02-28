@@ -7,8 +7,8 @@ import {
 } from "wagmi";
 import { parseUnits } from "viem";
 import { CaliberMarketAbi, AmmoTokenAbi } from "@ammo-exchange/contracts/abis";
-import { CONTRACT_ADDRESSES } from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
+import { contracts } from "@/lib/chain";
 
 /**
  * Two-step approve AmmoToken + startRedeem hook.
@@ -46,8 +46,8 @@ export function useRedeemTransaction(
   isReady: boolean;
   reset: () => void;
 } {
-  const marketAddress = CONTRACT_ADDRESSES.fuji.calibers[caliber].market;
-  const tokenAddress = CONTRACT_ADDRESSES.fuji.calibers[caliber].token;
+  const marketAddress = contracts.calibers[caliber].market;
+  const tokenAddress = contracts.calibers[caliber].token;
   const simulationEnabled =
     options.hasEnoughAllowance && actionArgs.tokenAmount !== undefined;
 

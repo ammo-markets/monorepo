@@ -9,6 +9,7 @@ import { useUsdcFaucet } from "@/hooks/use-usdc-faucet";
 import { useAvaxFaucet } from "@/hooks/use-avax-faucet";
 import { formatUnits } from "viem";
 import { parseContractError } from "@/lib/errors";
+import { isTestnet, activeChain } from "@/lib/chain";
 import { AmmoLogo } from "./logo";
 import { WalletButton, formatUsdc } from "./wallet-button";
 import { UsdcIcon } from "./usdc-icon";
@@ -54,7 +55,7 @@ export function AppHeader() {
     }
   }, [avaxError]);
 
-  const isFuji = chainId === 43113;
+  const isFuji = isTestnet && chainId === activeChain.id;
   const faucetBusy = isPending || isConfirming || isSimulating;
   const faucetLabel = isConfirmed
     ? "Minted!"
@@ -79,7 +80,7 @@ export function AppHeader() {
           ? "Sending..."
           : "Get Test AVAX";
 
-  const networkLabel = "Avalanche Fuji";
+  const networkLabel = activeChain.name;
   const dotColor =
     isConnected && !isReconnecting && isWrongNetwork
       ? "var(--amber)"

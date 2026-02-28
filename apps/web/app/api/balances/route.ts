@@ -1,12 +1,11 @@
 import { erc20Abi } from "viem";
 import { publicClient } from "@/lib/viem";
 import { AmmoTokenAbi } from "@ammo-exchange/contracts/abis";
-import { CONTRACT_ADDRESSES } from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
 import { requireSession } from "@/lib/auth";
+import { contracts } from "@/lib/chain";
 
-const CALIBERS = Object.keys(CONTRACT_ADDRESSES.fuji.calibers) as Caliber[];
-const fuji = CONTRACT_ADDRESSES.fuji;
+const CALIBERS = Object.keys(contracts.calibers) as Caliber[];
 
 export async function GET() {
   try {
@@ -15,7 +14,7 @@ export async function GET() {
 
     // Use separate multicalls to avoid tuple type inference issues with spread
     const usdcResult = await publicClient.readContract({
-      address: fuji.usdc,
+      address: contracts.usdc,
       abi: erc20Abi,
       functionName: "balanceOf",
       args: [address],
@@ -25,7 +24,7 @@ export async function GET() {
       CALIBERS.map((caliber) =>
         publicClient
           .readContract({
-            address: fuji.calibers[caliber].token,
+            address: contracts.calibers[caliber].token,
             abi: AmmoTokenAbi,
             functionName: "balanceOf",
             args: [address],

@@ -4,11 +4,10 @@ import { useAccount, useReadContracts } from "wagmi";
 import type { Abi, Address } from "viem";
 import { erc20Abi } from "viem";
 import { AmmoTokenAbi } from "@ammo-exchange/contracts/abis";
-import { CONTRACT_ADDRESSES } from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
+import { contracts as chainContracts } from "@/lib/chain";
 
 const CALIBERS: Caliber[] = ["9MM", "556", "22LR", "308"];
-const fuji = CONTRACT_ADDRESSES.fuji;
 
 interface BalanceOfContract {
   address: Address;
@@ -28,14 +27,14 @@ export function useTokenBalances(): {
   const contracts: BalanceOfContract[] = address
     ? [
         {
-          address: fuji.usdc,
+          address: chainContracts.usdc,
           abi: erc20Abi as Abi,
           functionName: "balanceOf",
           args: [address],
         },
         ...CALIBERS.map(
           (caliber): BalanceOfContract => ({
-            address: fuji.calibers[caliber].token,
+            address: chainContracts.calibers[caliber].token,
             abi: AmmoTokenAbi as Abi,
             functionName: "balanceOf",
             args: [address],

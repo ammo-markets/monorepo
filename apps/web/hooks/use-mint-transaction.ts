@@ -7,8 +7,8 @@ import {
 } from "wagmi";
 import { erc20Abi, parseUnits } from "viem";
 import { CaliberMarketAbi } from "@ammo-exchange/contracts/abis";
-import { CONTRACT_ADDRESSES } from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
+import { contracts } from "@/lib/chain";
 
 /**
  * Two-step approve + startMint hook.
@@ -47,7 +47,7 @@ export function useMintTransaction(
   isReady: boolean;
   reset: () => void;
 } {
-  const marketAddress = CONTRACT_ADDRESSES.fuji.calibers[caliber].market;
+  const marketAddress = contracts.calibers[caliber].market;
   const simulationEnabled =
     options.hasEnoughAllowance && actionArgs.usdcAmount !== undefined;
 
@@ -101,7 +101,7 @@ export function useMintTransaction(
 
   function approve(usdcAmount: string) {
     writeApprove({
-      address: CONTRACT_ADDRESSES.fuji.usdc,
+      address: contracts.usdc,
       abi: erc20Abi,
       functionName: "approve",
       args: [marketAddress, parseUnits(usdcAmount, 6)],

@@ -1,7 +1,7 @@
 "use client";
 
 import { useAccount, useDisconnect, useSwitchChain } from "wagmi";
-import { avalancheFuji } from "wagmi/chains";
+import { activeChain } from "@/lib/chain";
 
 export function useWallet() {
   const account = useAccount();
@@ -9,7 +9,7 @@ export function useWallet() {
   const { switchChain, isPending: isSwitching } = useSwitchChain();
 
   const isWrongNetwork =
-    account.isConnected && account.chainId !== avalancheFuji.id;
+    account.isConnected && account.chainId !== activeChain.id;
 
   return {
     address: account.address,
@@ -18,7 +18,7 @@ export function useWallet() {
     isWrongNetwork,
     chainId: account.chainId,
     disconnect: () => disconnect(),
-    switchToFuji: () => switchChain({ chainId: avalancheFuji.id }),
+    switchNetwork: () => switchChain({ chainId: activeChain.id }),
     isSwitching,
   };
 }

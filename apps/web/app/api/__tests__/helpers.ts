@@ -12,11 +12,11 @@ import { vi } from "vitest";
 /**
  * Create a mock session object simulating an authenticated user.
  * @param address Wallet address (defaults to a test address)
- * @param chainId Chain ID (defaults to 43113 / Fuji)
+ * @param chainId Chain ID (defaults to active chain)
  */
 export function createMockSession(
   address = "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
-  chainId = 43113,
+  chainId = 43113, // matches default CHAIN=fuji
 ) {
   return { address, chainId };
 }

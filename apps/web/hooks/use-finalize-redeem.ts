@@ -6,8 +6,8 @@ import {
   useSimulateContract,
 } from "wagmi";
 import { CaliberMarketAbi } from "@ammo-exchange/contracts/abis";
-import { CONTRACT_ADDRESSES } from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
+import { contracts } from "@/lib/chain";
 
 export function useFinalizeRedeem(
   caliber: Caliber,
@@ -26,7 +26,7 @@ export function useFinalizeRedeem(
   isReady: boolean;
   reset: () => void;
 } {
-  const marketAddress = CONTRACT_ADDRESSES.fuji.calibers[caliber].market;
+  const marketAddress = contracts.calibers[caliber].market;
 
   const {
     data: simData,
