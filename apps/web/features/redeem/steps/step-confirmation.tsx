@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Check, XCircle, ExternalLink } from "lucide-react";
 import { caliberIcons } from "@/features/shared/caliber-icons";
 import type { CaliberDetailData } from "@/lib/types";
@@ -184,6 +185,12 @@ export function StepConfirmation({
 
       {/* CTAs */}
       <div className="mt-6 flex w-full flex-col gap-3">
+        <Link
+          href="/portfolio"
+          className="flex w-full items-center justify-center py-3.5 text-sm font-bold transition-none bg-brass text-ax-primary hover:bg-brass-hover"
+        >
+          Track Order
+        </Link>
         <GhostButton onClick={onRedeemMore}>Redeem More</GhostButton>
       </div>
     </div>

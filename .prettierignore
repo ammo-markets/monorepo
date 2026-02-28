@@ -1,0 +1,22 @@
+# Dependencies
+node_modules
+
+# Build outputs
+.next
+dist
+out
+
+# Generated files
+packages/contracts/src/abis/
+packages/db/generated/
+
+# Vendored / third-party
+packages/contracts/lib/
+
+# Planning docs (not source code)
+.planning
+
+# Misc
+.turbo
+coverage
+*.min.js

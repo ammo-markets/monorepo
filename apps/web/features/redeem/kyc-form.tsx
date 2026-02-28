@@ -2,60 +2,7 @@
 
 import { useState } from "react";
 import { Shield, Loader2 } from "lucide-react";
-
-const US_STATES = [
-  { value: "AL", label: "Alabama" },
-  { value: "AK", label: "Alaska" },
-  { value: "AZ", label: "Arizona" },
-  { value: "AR", label: "Arkansas" },
-  { value: "CA", label: "California" },
-  { value: "CO", label: "Colorado" },
-  { value: "CT", label: "Connecticut" },
-  { value: "DE", label: "Delaware" },
-  { value: "DC", label: "District of Columbia" },
-  { value: "FL", label: "Florida" },
-  { value: "GA", label: "Georgia" },
-  { value: "HI", label: "Hawaii" },
-  { value: "ID", label: "Idaho" },
-  { value: "IL", label: "Illinois" },
-  { value: "IN", label: "Indiana" },
-  { value: "IA", label: "Iowa" },
-  { value: "KS", label: "Kansas" },
-  { value: "KY", label: "Kentucky" },
-  { value: "LA", label: "Louisiana" },
-  { value: "ME", label: "Maine" },
-  { value: "MD", label: "Maryland" },
-  { value: "MA", label: "Massachusetts" },
-  { value: "MI", label: "Michigan" },
-  { value: "MN", label: "Minnesota" },
-  { value: "MS", label: "Mississippi" },
-  { value: "MO", label: "Missouri" },
-  { value: "MT", label: "Montana" },
-  { value: "NE", label: "Nebraska" },
-  { value: "NV", label: "Nevada" },
-  { value: "NH", label: "New Hampshire" },
-  { value: "NJ", label: "New Jersey" },
-  { value: "NM", label: "New Mexico" },
-  { value: "NY", label: "New York" },
-  { value: "NC", label: "North Carolina" },
-  { value: "ND", label: "North Dakota" },
-  { value: "OH", label: "Ohio" },
-  { value: "OK", label: "Oklahoma" },
-  { value: "OR", label: "Oregon" },
-  { value: "PA", label: "Pennsylvania" },
-  { value: "RI", label: "Rhode Island" },
-  { value: "SC", label: "South Carolina" },
-  { value: "SD", label: "South Dakota" },
-  { value: "TN", label: "Tennessee" },
-  { value: "TX", label: "Texas" },
-  { value: "UT", label: "Utah" },
-  { value: "VT", label: "Vermont" },
-  { value: "VA", label: "Virginia" },
-  { value: "WA", label: "Washington" },
-  { value: "WV", label: "West Virginia" },
-  { value: "WI", label: "Wisconsin" },
-  { value: "WY", label: "Wyoming" },
-];
+import { US_STATES } from "@/lib/us-states";
 
 const GOV_ID_TYPES = [
   { value: "DRIVERS_LICENSE", label: "Driver's License" },
@@ -137,7 +84,7 @@ export function KycForm({ onSubmit, isSubmitting, prefill }: KycFormProps) {
   }
 
   const inputClass =
-    "w-full rounded-lg px-3.5 py-2.5 text-sm font-medium outline-none transition-colors duration-150 placeholder:font-normal";
+    "w-full px-3.5 py-2.5 text-sm font-medium outline-none transition-colors duration-150 placeholder:font-normal";
 
   const inputStyle = (hasValue: boolean) => ({
     backgroundColor: "var(--bg-tertiary)",
@@ -285,7 +232,7 @@ export function KycForm({ onSubmit, isSubmitting, prefill }: KycFormProps) {
         type="button"
         disabled={isSubmitting}
         onClick={handleSubmit}
-        className={`mt-6 flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold transition-all duration-150 ${
+        className={`mt-6 flex w-full items-center justify-center gap-2 py-3.5 text-sm font-bold transition-all duration-150 ${
           isSubmitting
             ? "cursor-not-allowed bg-ax-tertiary text-text-muted opacity-50"
             : "cursor-pointer bg-brass text-ax-primary hover:bg-brass-hover"

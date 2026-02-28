@@ -152,11 +152,13 @@ export function StepEnterAmount({
         }}
       >
         <input
-          type="number"
-          min="0"
-          step="0.01"
+          type="text"
+          inputMode="decimal"
           value={usdcAmount}
-          onChange={(e) => setUsdcAmount(e.target.value)}
+          onChange={(e) => {
+            const v = e.target.value;
+            if (v === "" || /^\d*\.?\d*$/.test(v)) setUsdcAmount(v);
+          }}
           placeholder="0.00"
           className="flex-1 bg-transparent font-mono text-2xl font-medium tabular-nums outline-none"
           style={{ color: "var(--text-primary)" }}
@@ -245,7 +247,13 @@ export function StepEnterAmount({
       {/* Calculation panel - simplified */}
       {usdcValue > 0 && (
         <div className="mt-4 flex flex-col gap-2">
-          <div className="flex items-center justify-between rounded-lg px-4 py-3" style={{ backgroundColor: "var(--bg-secondary)", border: "1px solid var(--border-default)" }}>
+          <div
+            className="flex items-center justify-between rounded-lg px-4 py-3"
+            style={{
+              backgroundColor: "var(--bg-secondary)",
+              border: "1px solid var(--border-default)",
+            }}
+          >
             <span
               className="font-medium"
               style={{ color: "var(--text-primary)" }}
@@ -272,30 +280,33 @@ export function StepEnterAmount({
 
           <details className="group">
             <summary className="cursor-pointer text-xs font-medium text-text-muted hover:text-text-secondary list-none flex items-center gap-1">
-              <ChevronDown size={14} className="group-open:rotate-180 transition-transform" />
+              <ChevronDown
+                size={14}
+                className="group-open:rotate-180 transition-transform"
+              />
               View fee details
             </summary>
             <div className="mt-2 flex flex-col gap-2 text-xs pl-5">
-               <div className="flex justify-between max-w-xs">
-                  <span style={{ color: "var(--text-muted)" }}>
-                    Mint fee ({caliber.mintFee}%)
-                  </span>
-                  <span
-                    className="font-mono tabular-nums"
-                    style={{ color: "var(--text-secondary)" }}
-                  >
-                    -{fee.toFixed(2)} USDC
-                  </span>
-                </div>
-                <div className="flex justify-between max-w-xs">
-                  <span style={{ color: "var(--text-muted)" }}>Net USDC</span>
-                  <span
-                    className="font-mono tabular-nums"
-                    style={{ color: "var(--text-secondary)" }}
-                  >
-                    {netUsdc.toFixed(2)} USDC
-                  </span>
-                </div>
+              <div className="flex justify-between max-w-xs">
+                <span style={{ color: "var(--text-muted)" }}>
+                  Mint fee ({caliber.mintFee}%)
+                </span>
+                <span
+                  className="font-mono tabular-nums"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  -{fee.toFixed(2)} USDC
+                </span>
+              </div>
+              <div className="flex justify-between max-w-xs">
+                <span style={{ color: "var(--text-muted)" }}>Net USDC</span>
+                <span
+                  className="font-mono tabular-nums"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  {netUsdc.toFixed(2)} USDC
+                </span>
+              </div>
             </div>
           </details>
         </div>

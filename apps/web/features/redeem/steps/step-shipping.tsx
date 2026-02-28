@@ -3,6 +3,7 @@ import { BackButton, PrimaryButton } from "@/features/shared";
 import { AlertTriangle, Truck } from "lucide-react";
 import type { CaliberDetailData } from "@/lib/types";
 import type { ReactNode } from "react";
+import { US_STATES, RESTRICTED_STATES } from "@/lib/us-states";
 
 export interface ShippingAddress {
   fullName: string;
@@ -12,62 +13,6 @@ export interface ShippingAddress {
   state: string;
   zip: string;
 }
-
-const US_STATES = [
-  { value: "AL", label: "Alabama" },
-  { value: "AK", label: "Alaska" },
-  { value: "AZ", label: "Arizona" },
-  { value: "AR", label: "Arkansas" },
-  { value: "CA", label: "California" },
-  { value: "CO", label: "Colorado" },
-  { value: "CT", label: "Connecticut" },
-  { value: "DE", label: "Delaware" },
-  { value: "DC", label: "District of Columbia" },
-  { value: "FL", label: "Florida" },
-  { value: "GA", label: "Georgia" },
-  { value: "HI", label: "Hawaii" },
-  { value: "ID", label: "Idaho" },
-  { value: "IL", label: "Illinois" },
-  { value: "IN", label: "Indiana" },
-  { value: "IA", label: "Iowa" },
-  { value: "KS", label: "Kansas" },
-  { value: "KY", label: "Kentucky" },
-  { value: "LA", label: "Louisiana" },
-  { value: "ME", label: "Maine" },
-  { value: "MD", label: "Maryland" },
-  { value: "MA", label: "Massachusetts" },
-  { value: "MI", label: "Michigan" },
-  { value: "MN", label: "Minnesota" },
-  { value: "MS", label: "Mississippi" },
-  { value: "MO", label: "Missouri" },
-  { value: "MT", label: "Montana" },
-  { value: "NE", label: "Nebraska" },
-  { value: "NV", label: "Nevada" },
-  { value: "NH", label: "New Hampshire" },
-  { value: "NJ", label: "New Jersey" },
-  { value: "NM", label: "New Mexico" },
-  { value: "NY", label: "New York" },
-  { value: "NC", label: "North Carolina" },
-  { value: "ND", label: "North Dakota" },
-  { value: "OH", label: "Ohio" },
-  { value: "OK", label: "Oklahoma" },
-  { value: "OR", label: "Oregon" },
-  { value: "PA", label: "Pennsylvania" },
-  { value: "RI", label: "Rhode Island" },
-  { value: "SC", label: "South Carolina" },
-  { value: "SD", label: "South Dakota" },
-  { value: "TN", label: "Tennessee" },
-  { value: "TX", label: "Texas" },
-  { value: "UT", label: "Utah" },
-  { value: "VT", label: "Vermont" },
-  { value: "VA", label: "Virginia" },
-  { value: "WA", label: "Washington" },
-  { value: "WV", label: "West Virginia" },
-  { value: "WI", label: "Wisconsin" },
-  { value: "WY", label: "Wyoming" },
-];
-
-const RESTRICTED_STATES = ["CA", "NY", "IL", "DC", "NJ"];
 
 function FormField({
   label,
@@ -88,7 +33,10 @@ function FormField({
       >
         {label}
         {!required && (
-          <span className="normal-case tracking-normal" style={{ color: "var(--text-muted)", opacity: 0.6 }}>
+          <span
+            className="normal-case tracking-normal"
+            style={{ color: "var(--text-muted)", opacity: 0.6 }}
+          >
             Optional
           </span>
         )}
@@ -124,7 +72,8 @@ export function StepShipping({
   const [saveError, setSaveError] = useState<string | null>(null);
 
   const isRestricted = RESTRICTED_STATES.includes(address.state);
-  const restrictedStateName = US_STATES.find((s) => s.value === address.state)?.label ?? address.state;
+  const restrictedStateName =
+    US_STATES.find((s) => s.value === address.state)?.label ?? address.state;
 
   const zipValid = /^\d{5}$/.test(address.zip);
   const formComplete =
@@ -146,13 +95,17 @@ export function StepShipping({
     color: "var(--text-primary)",
   });
 
-  const inputClass = "w-full px-3.5 py-2.5 text-sm font-medium outline-none transition-none placeholder:font-normal";
+  const inputClass =
+    "w-full px-3.5 py-2.5 text-sm font-medium outline-none transition-none placeholder:font-normal";
 
   return (
     <div>
       <BackButton onClick={onBack} />
 
-      <h2 className="mb-1 font-display text-2xl font-bold uppercase" style={{ color: "var(--text-primary)" }}>
+      <h2
+        className="mb-1 font-display text-2xl font-bold uppercase"
+        style={{ color: "var(--text-primary)" }}
+      >
         Shipping Information
       </h2>
       <p className="mb-6 text-sm" style={{ color: "var(--text-secondary)" }}>
@@ -168,13 +121,24 @@ export function StepShipping({
             borderLeft: "3px solid var(--red)",
           }}
         >
-          <AlertTriangle size={18} className="mt-0.5 shrink-0" style={{ color: "var(--red)" }} />
+          <AlertTriangle
+            size={18}
+            className="mt-0.5 shrink-0"
+            style={{ color: "var(--red)" }}
+          />
           <div>
-            <p className="font-mono text-sm font-bold uppercase tracking-widest" style={{ color: "var(--red)" }}>
+            <p
+              className="font-mono text-sm font-bold uppercase tracking-widest"
+              style={{ color: "var(--red)" }}
+            >
               Direct shipping is not available in {restrictedStateName}.
             </p>
-            <p className="mt-1 text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-              Ammunition must be shipped to a licensed dealer. Contact support for dealer pickup options.
+            <p
+              className="mt-1 text-xs leading-relaxed"
+              style={{ color: "var(--text-secondary)" }}
+            >
+              Ammunition must be shipped to a licensed dealer. Contact support
+              for dealer pickup options.
             </p>
           </div>
         </div>
@@ -186,9 +150,17 @@ export function StepShipping({
             borderLeft: "3px solid var(--amber)",
           }}
         >
-          <Truck size={18} className="mt-0.5 shrink-0" style={{ color: "var(--amber)" }} />
-          <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-            Physical ammunition ships via UPS Ground to eligible U.S. addresses only.
+          <Truck
+            size={18}
+            className="mt-0.5 shrink-0"
+            style={{ color: "var(--amber)" }}
+          />
+          <p
+            className="text-sm leading-relaxed"
+            style={{ color: "var(--text-secondary)" }}
+          >
+            Physical ammunition ships via UPS Ground to eligible U.S. addresses
+            only.
           </p>
         </div>
       )}
@@ -247,7 +219,10 @@ export function StepShipping({
               className={`${inputClass} appearance-none cursor-pointer`}
               style={{
                 ...inputStyle(address.state !== ""),
-                color: address.state === "" ? "var(--text-muted)" : "var(--text-primary)",
+                color:
+                  address.state === ""
+                    ? "var(--text-muted)"
+                    : "var(--text-primary)",
               }}
             >
               <option value="">Select</option>
@@ -262,7 +237,9 @@ export function StepShipping({
           <FormField
             label="ZIP Code"
             required
-            error={address.zip !== "" && !zipValid ? "Enter 5-digit ZIP" : undefined}
+            error={
+              address.zip !== "" && !zipValid ? "Enter 5-digit ZIP" : undefined
+            }
           >
             <input
               type="text"
@@ -297,8 +274,9 @@ export function StepShipping({
           className="cursor-pointer text-xs leading-relaxed"
           style={{ color: "var(--text-secondary)" }}
         >
-          I confirm I am 21 years or older (handgun ammunition) / 18 years or older (rifle/shotgun ammunition) and
-          legally eligible to receive ammunition in my state.
+          I confirm I am 21 years or older (handgun ammunition) / 18 years or
+          older (rifle/shotgun ammunition) and legally eligible to receive
+          ammunition in my state.
         </label>
       </div>
 

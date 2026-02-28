@@ -12,9 +12,14 @@ const steps = [
 interface MintProgressProps {
   currentStep: number; // 0-indexed
   isEmbedded?: boolean;
+  onStepClick?: (step: number) => void;
 }
 
-export function MintProgress({ currentStep, isEmbedded }: MintProgressProps) {
+export function MintProgress({
+  currentStep,
+  isEmbedded,
+  onStepClick,
+}: MintProgressProps) {
   const displaySteps = isEmbedded ? steps.slice(1) : steps;
   const adjustedStep = isEmbedded ? currentStep - 1 : currentStep;
 
@@ -29,7 +34,12 @@ export function MintProgress({ currentStep, isEmbedded }: MintProgressProps) {
           return (
             <li key={step.label} className="flex flex-1 items-center">
               {/* Step circle + label */}
-              <div className="flex flex-col items-center gap-2">
+              <div
+                className={`flex flex-col items-center gap-2${isCompleted && onStepClick ? " cursor-pointer" : ""}`}
+                onClick={
+                  isCompleted && onStepClick ? () => onStepClick(i) : undefined
+                }
+              >
                 <div
                   className="relative flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold transition-all duration-300"
                   style={{
