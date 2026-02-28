@@ -36,11 +36,21 @@ export async function POST(request: Request) {
     const siweMessage = new SiweMessage(body.message);
 
     // SEC-05: Enforce domain, URI scheme, and chainId policy
+    // Use non-prefixed env vars for server-side, fall back to NEXT_PUBLIC_ variants
     const expectedDomain =
-      process.env.NEXT_PUBLIC_APP_DOMAIN ?? "localhost:3000";
+      process.env.APP_DOMAIN ??
+      process.env.NEXT_PUBLIC_APP_DOMAIN ??
+      "localhost:3000";
     const expectedUri =
-      process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+      process.env.APP_URL ??
+      process.env.NEXT_PUBLIC_APP_URL ??
+      "http://localhost:3000";
     const expectedChainId = avalancheFuji.id; // 43113
+
+    console.log("[SIWE] Expected domain:", expectedDomain);
+    console.log("[SIWE] Message domain:", siweMessage.domain);
+    console.log("[SIWE] Expected URI:", expectedUri);
+    console.log("[SIWE] Message URI:", siweMessage.uri);
 
     const result = await siweMessage.verify({
       signature: body.signature,
@@ -49,6 +59,7 @@ export async function POST(request: Request) {
     });
 
     if (!result.success) {
+      console.error("[SIWE] Verification failed:", result.error);
       return Response.json(
         { error: result.error?.type ?? "Verification failed" },
         { status: 401 },
@@ -57,14 +68,23 @@ export async function POST(request: Request) {
 
     // SEC-05: Verify domain and chainId match expected values
     if (result.data.domain !== expectedDomain) {
+      console.error(
+        `[SIWE] Domain mismatch: got "${result.data.domain}", expected "${expectedDomain}"`,
+      );
       return Response.json({ error: "Invalid domain" }, { status: 401 });
     }
 
     if (result.data.chainId !== expectedChainId) {
+      console.error(
+        `[SIWE] Chain mismatch: got ${result.data.chainId}, expected ${expectedChainId}`,
+      );
       return Response.json({ error: "Invalid chain ID" }, { status: 401 });
     }
 
     if (result.data.uri !== expectedUri) {
+      console.error(
+        `[SIWE] URI mismatch: got "${result.data.uri}", expected "${expectedUri}"`,
+      );
       return Response.json({ error: "Invalid URI" }, { status: 401 });
     }
 
