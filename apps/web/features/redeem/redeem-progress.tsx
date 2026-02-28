@@ -4,8 +4,6 @@ import { Check } from "lucide-react";
 
 const steps = [
   { label: "Caliber & Amount", shortLabel: "Amount" },
-  { label: "Shipping", shortLabel: "Ship" },
-  { label: "Verification", shortLabel: "KYC" },
   { label: "Review", shortLabel: "Review" },
   { label: "Confirmation", shortLabel: "Done" },
 ];

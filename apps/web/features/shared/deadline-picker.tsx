@@ -27,7 +27,7 @@ export function DeadlinePicker({
           className="text-xs font-medium uppercase tracking-wide"
           style={{ color: "var(--text-muted)" }}
         >
-          Order Deadline
+          Order Expiry
         </span>
         <div className="group relative ml-0.5">
           <Info

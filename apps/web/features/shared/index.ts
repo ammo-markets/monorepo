@@ -16,3 +16,4 @@ export {
 
 export { DeadlinePicker } from "./deadline-picker";
 export { SlippagePicker } from "./slippage-picker";
+export { OrderSettingsMenu } from "./order-settings-menu";
