@@ -97,3 +97,30 @@ export const DEPLOYMENT_BLOCKS = {
   fuji: BigInt(52220913),
   mainnet: BigInt(0), // Not yet deployed
 } as const;
+
+/* ────────────── Active Network Resolver ────────────── */
+
+export type NetworkId = "fuji" | "mainnet";
+
+const CHAIN_CONFIGS = {
+  fuji: AVALANCHE_FUJI,
+  mainnet: AVALANCHE_MAINNET,
+} as const;
+
+/**
+ * Returns the full network config for the given network ID.
+ * Every app should call this once at startup with the value of
+ * their CHAIN env var, then re-export the results.
+ */
+export function getNetworkConfig(network: NetworkId) {
+  return {
+    networkId: network,
+    chain: CHAIN_CONFIGS[network],
+    contracts: CONTRACT_ADDRESSES[network],
+    deploymentBlock: DEPLOYMENT_BLOCKS[network],
+    isTestnet: network === "fuji",
+    explorerUrl: CHAIN_CONFIGS[network].blockExplorers.default,
+  };
+}
+
+export type NetworkConfig = ReturnType<typeof getNetworkConfig>;
