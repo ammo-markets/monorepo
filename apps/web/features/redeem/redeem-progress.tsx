@@ -11,9 +11,14 @@ const steps = [
 interface RedeemProgressProps {
   currentStep: number;
   isEmbedded?: boolean;
+  onStepClick?: (step: number) => void;
 }
 
-export function RedeemProgress({ currentStep, isEmbedded }: RedeemProgressProps) {
+export function RedeemProgress({
+  currentStep,
+  isEmbedded,
+  onStepClick,
+}: RedeemProgressProps) {
   const displaySteps = steps.map((step, i) => {
     if (i === 0 && isEmbedded) {
       return { ...step, label: "Amount" };
@@ -30,7 +35,12 @@ export function RedeemProgress({ currentStep, isEmbedded }: RedeemProgressProps)
 
           return (
             <li key={step.label} className="flex flex-1 items-center">
-              <div className="flex flex-col items-center gap-2">
+              <div
+                className={`flex flex-col items-center gap-2${isCompleted && onStepClick ? " cursor-pointer" : ""}`}
+                onClick={
+                  isCompleted && onStepClick ? () => onStepClick(i) : undefined
+                }
+              >
                 <div
                   className="relative flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold transition-all duration-300"
                   style={{

@@ -34,7 +34,10 @@ export function StepCompose({
   isConnected: boolean;
   onConnect: () => void;
 }) {
-  const caliber = selectedCaliber && caliberDetailsMap ? caliberDetailsMap[selectedCaliber] : null;
+  const caliber =
+    selectedCaliber && caliberDetailsMap
+      ? caliberDetailsMap[selectedCaliber]
+      : null;
   const rounds = Number.parseInt(roundsAmount) || 0;
   const fee = Math.ceil(rounds * 0.015);
   const netRounds = rounds - fee;
@@ -60,10 +63,16 @@ export function StepCompose({
     <div>
       {!isEmbedded && (
         <>
-          <h2 className="mb-1 font-display text-2xl font-bold uppercase" style={{ color: "var(--text-primary)" }}>
+          <h2
+            className="mb-1 font-display text-2xl font-bold uppercase"
+            style={{ color: "var(--text-primary)" }}
+          >
             Select Caliber & Amount
           </h2>
-          <p className="mb-6 text-sm" style={{ color: "var(--text-secondary)" }}>
+          <p
+            className="mb-6 text-sm"
+            style={{ color: "var(--text-secondary)" }}
+          >
             Choose the token to redeem for physical ammunition delivery.
           </p>
 
@@ -76,7 +85,9 @@ export function StepCompose({
               const displayBalance = !isConnected
                 ? "—"
                 : calBalance !== undefined
-                  ? Math.floor(Number(formatUnits(calBalance, 18))).toLocaleString("en-US")
+                  ? Math.floor(
+                      Number(formatUnits(calBalance, 18)),
+                    ).toLocaleString("en-US")
                   : "...";
               return (
                 <button
@@ -94,28 +105,47 @@ export function StepCompose({
                       className="absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded-full"
                       style={{ backgroundColor: "var(--brass)" }}
                     >
-                      <Check size={12} strokeWidth={3} style={{ color: "var(--bg-primary)" }} />
+                      <Check
+                        size={12}
+                        strokeWidth={3}
+                        style={{ color: "var(--bg-primary)" }}
+                      />
                     </span>
                   )}
                   <div className="flex items-center gap-3">
                     <Icon size={40} />
                     <div>
-                      <div className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>
+                      <div
+                        className="text-sm font-bold"
+                        style={{ color: "var(--text-primary)" }}
+                      >
                         {cal.symbol}
                       </div>
-                      <div className="text-xs" style={{ color: "var(--text-secondary)" }}>
+                      <div
+                        className="text-xs"
+                        style={{ color: "var(--text-secondary)" }}
+                      >
                         {cal.name}
                       </div>
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs" style={{ color: "var(--text-muted)" }}>
+                    <span
+                      className="text-xs"
+                      style={{ color: "var(--text-muted)" }}
+                    >
                       Balance:{" "}
-                      <span className="font-mono font-medium" style={{ color: "var(--text-secondary)" }}>
+                      <span
+                        className="font-mono font-medium"
+                        style={{ color: "var(--text-secondary)" }}
+                      >
                         {displayBalance}
                       </span>
                     </span>
-                    <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>
+                    <span
+                      className="text-[11px]"
+                      style={{ color: "var(--text-muted)" }}
+                    >
                       Min: {cal.minMint} rds
                     </span>
                   </div>
@@ -128,10 +158,16 @@ export function StepCompose({
 
       {isEmbedded && (
         <>
-          <h2 className="mb-1 font-display text-2xl font-bold uppercase" style={{ color: "var(--text-primary)" }}>
+          <h2
+            className="mb-1 font-display text-2xl font-bold uppercase"
+            style={{ color: "var(--text-primary)" }}
+          >
             Enter Amount
           </h2>
-          <p className="mb-6 text-sm" style={{ color: "var(--text-secondary)" }}>
+          <p
+            className="mb-6 text-sm"
+            style={{ color: "var(--text-secondary)" }}
+          >
             Enter the number of rounds to redeem.
           </p>
         </>
@@ -148,7 +184,10 @@ export function StepCompose({
               >
                 Rounds to Redeem
               </label>
-              <OrderSettingsMenu expiryHours={deadlineHours} onExpiryChange={onDeadlineChange} />
+              <OrderSettingsMenu
+                expiryHours={deadlineHours}
+                onExpiryChange={onDeadlineChange}
+              />
             </div>
 
             <div
@@ -163,11 +202,13 @@ export function StepCompose({
               }}
             >
               <input
-                type="number"
-                min="0"
-                step="1"
+                type="text"
+                inputMode="numeric"
                 value={roundsAmount}
-                onChange={(e) => setRoundsAmount(e.target.value)}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  if (v === "" || /^\d+$/.test(v)) setRoundsAmount(v);
+                }}
                 placeholder="0"
                 className="flex-1 bg-transparent font-mono text-2xl font-medium tabular-nums outline-none"
                 style={{ color: "var(--text-primary)" }}
@@ -177,7 +218,10 @@ export function StepCompose({
                   const Icon = caliberIcons[caliber.id];
                   return <Icon size={22} />;
                 })()}
-                <span className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
+                <span
+                  className="text-sm font-medium"
+                  style={{ color: "var(--text-secondary)" }}
+                >
                   {caliber.symbol}
                 </span>
               </div>
@@ -195,16 +239,22 @@ export function StepCompose({
                   </p>
                 )}
                 {isValid && (
-                  <p className="flex items-center gap-1 text-xs" style={{ color: "var(--green)" }}>
+                  <p
+                    className="flex items-center gap-1 text-xs"
+                    style={{ color: "var(--green)" }}
+                  >
                     <Check size={12} /> Valid amount
                   </p>
                 )}
               </div>
               <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-                Balance: {Math.floor(balance).toLocaleString("en-US")} {caliber.symbol}{" "}
+                Balance: {Math.floor(balance).toLocaleString("en-US")}{" "}
+                {caliber.symbol}{" "}
                 <button
                   type="button"
-                  onClick={() => setRoundsAmount(Math.floor(balance).toString())}
+                  onClick={() =>
+                    setRoundsAmount(Math.floor(balance).toString())
+                  }
                   className="ml-1 font-semibold uppercase transition-none"
                   style={{ color: "var(--brass)" }}
                 >
@@ -219,27 +269,45 @@ export function StepCompose({
             <div className="mt-4 flex flex-col gap-2">
               <div
                 className="flex flex-col gap-1 rounded-lg px-4 py-3"
-                style={{ backgroundColor: "var(--bg-secondary)", border: "1px solid var(--border-default)" }}
+                style={{
+                  backgroundColor: "var(--bg-secondary)",
+                  border: "1px solid var(--border-default)",
+                }}
               >
                 <div className="flex justify-between items-center">
-                  <span className="font-medium" style={{ color: "var(--text-primary)" }}>
+                  <span
+                    className="font-medium"
+                    style={{ color: "var(--text-primary)" }}
+                  >
                     Net rounds shipped
                   </span>
-                  <span className="font-mono font-bold tabular-nums text-lg" style={{ color: "var(--brass)" }}>
+                  <span
+                    className="font-mono font-bold tabular-nums text-lg"
+                    style={{ color: "var(--brass)" }}
+                  >
                     {netRounds.toLocaleString("en-US")}
                   </span>
                 </div>
                 <div className="flex justify-end">
-                  <span className="font-mono text-xs tabular-nums" style={{ color: "var(--text-secondary)" }}>
+                  <span
+                    className="font-mono text-xs tabular-nums"
+                    style={{ color: "var(--text-secondary)" }}
+                  >
                     Est. value: ${estValue.toFixed(2)}
                   </span>
                 </div>
               </div>
               <div className="flex items-center justify-between px-2">
-                <span className="text-xs" style={{ color: "var(--text-muted)" }}>
+                <span
+                  className="text-xs"
+                  style={{ color: "var(--text-muted)" }}
+                >
                   Burn amount: {rounds.toLocaleString("en-US")}
                 </span>
-                <span className="text-xs" style={{ color: "var(--text-muted)" }}>
+                <span
+                  className="text-xs"
+                  style={{ color: "var(--text-muted)" }}
+                >
                   Fee (1.5%): -{fee}
                 </span>
               </div>

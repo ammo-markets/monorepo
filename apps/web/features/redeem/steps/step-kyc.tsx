@@ -166,7 +166,9 @@ export function StepKyc({
             className="mb-6 max-w-sm text-sm leading-relaxed"
             style={{ color: "var(--text-secondary)" }}
           >
-            Your identity is being reviewed. This usually takes a few minutes to a few hours. We'll notify you when approved. You can safely leave this page.
+            Your identity is being reviewed. This usually takes a few minutes to
+            a few hours. We'll notify you when approved. You can safely leave
+            this page.
           </p>
 
           <div

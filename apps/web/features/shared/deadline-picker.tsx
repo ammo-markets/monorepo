@@ -43,8 +43,8 @@ export function DeadlinePicker({
               color: "var(--text-secondary)",
             }}
           >
-            How long the order stays open. After the deadline, you can cancel and
-            get your funds back. &quot;None&quot; means only the admin can
+            How long the order stays open. After the deadline, you can cancel
+            and get your funds back. &quot;None&quot; means only the admin can
             finalize or cancel.
           </div>
         </div>

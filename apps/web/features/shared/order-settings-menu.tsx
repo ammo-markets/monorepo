@@ -54,8 +54,14 @@ export function OrderSettingsMenu({
 
   const content = (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between pb-2" style={{ borderBottom: "1px solid var(--border-default)" }}>
-        <h3 className="text-sm font-semibold uppercase tracking-wide" style={{ color: "var(--text-primary)" }}>
+      <div
+        className="flex items-center justify-between pb-2"
+        style={{ borderBottom: "1px solid var(--border-default)" }}
+      >
+        <h3
+          className="text-sm font-semibold uppercase tracking-wide"
+          style={{ color: "var(--text-primary)" }}
+        >
           Advanced Settings
         </h3>
       </div>
@@ -91,9 +97,7 @@ export function OrderSettingsMenu({
               className="mx-auto mt-3 mb-1 h-1 w-10 rounded-full"
               style={{ backgroundColor: "var(--border-hover)" }}
             />
-            <div className="overflow-y-auto px-4 pb-8 pt-4">
-              {content}
-            </div>
+            <div className="overflow-y-auto px-4 pb-8 pt-4">{content}</div>
           </DrawerPrimitive.Content>
         </DrawerPrimitive.Portal>
       </DrawerPrimitive.Root>
@@ -105,7 +109,14 @@ export function OrderSettingsMenu({
       <PopoverTrigger asChild>
         <span onClick={() => setOpen(true)}>{trigger}</span>
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-80 p-5 rounded-xl shadow-xl" style={{ backgroundColor: "var(--bg-secondary)", border: "1px solid var(--border-default)" }}>
+      <PopoverContent
+        align="start"
+        className="w-80 p-5 rounded-xl shadow-xl"
+        style={{
+          backgroundColor: "var(--bg-secondary)",
+          border: "1px solid var(--border-default)",
+        }}
+      >
         {content}
       </PopoverContent>
     </Popover>

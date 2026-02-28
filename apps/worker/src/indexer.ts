@@ -218,9 +218,7 @@ async function processAndCommit(
   });
 
   // Batch-fetch block timestamps for all unique blocks with events
-  const uniqueBlockNumbers = [
-    ...new Set(allEvents.map((e) => e.blockNumber)),
-  ];
+  const uniqueBlockNumbers = [...new Set(allEvents.map((e) => e.blockNumber))];
   const blocks = await Promise.all(
     uniqueBlockNumbers.map((bn) => client.getBlock({ blockNumber: bn })),
   );

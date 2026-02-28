@@ -178,8 +178,15 @@ export function MintFlow({
   }, [mintTx, isEmbedded, preselected]);
 
   return (
-    <div ref={containerRef} className="mx-auto w-full max-w-[560px] px-4 py-8 md:py-12">
-      <MintProgress currentStep={step} isEmbedded={isEmbedded} />
+    <div
+      ref={containerRef}
+      className="mx-auto w-full max-w-[560px] px-4 py-8 md:py-12"
+    >
+      <MintProgress
+        currentStep={step}
+        isEmbedded={isEmbedded}
+        onStepClick={setStep}
+      />
 
       {/* Loading skeleton while market data fetches */}
       {marketLoading && (

@@ -83,7 +83,10 @@ export function Navbar() {
         <div className="flex items-center gap-3">
           {/* USDC balance -- hidden on very small screens */}
           {isConnected && !isReconnecting && usdc !== undefined && (
-            <div className="hidden items-center gap-1.5 text-xs font-medium sm:flex" style={{ color: "var(--text-secondary)" }}>
+            <div
+              className="hidden items-center gap-1.5 text-xs font-medium sm:flex"
+              style={{ color: "var(--text-secondary)" }}
+            >
               <UsdcIcon size={16} />
               <span>${formatUsdc(usdc)}</span>
             </div>

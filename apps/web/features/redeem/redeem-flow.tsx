@@ -236,8 +236,19 @@ export function RedeemFlow({
   const visualStep = step === 0 ? 0 : step === 4 ? 2 : 1;
 
   return (
-    <div ref={containerRef} className="mx-auto w-full max-w-[560px] px-4 py-8 md:py-12">
-      <RedeemProgress currentStep={visualStep} isEmbedded={isEmbedded} />
+    <div
+      ref={containerRef}
+      className="mx-auto w-full max-w-[560px] px-4 py-8 md:py-12"
+    >
+      <RedeemProgress
+        currentStep={visualStep}
+        isEmbedded={isEmbedded}
+        onStepClick={(visualIdx) => {
+          // Map visual step index back to internal step: 0→0, 1→1
+          if (visualIdx === 0) setStep(0);
+          else if (visualIdx === 1) setStep(1);
+        }}
+      />
 
       {/* Loading skeleton while market data fetches */}
       {marketLoading && (

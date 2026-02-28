@@ -52,7 +52,10 @@ export function AppHeader() {
       <div className="flex items-center gap-3">
         {/* USDC balance */}
         {isConnected && !isReconnecting && usdc !== undefined && (
-          <div className="hidden items-center gap-1.5 text-xs font-medium sm:flex" style={{ color: "var(--text-secondary)" }}>
+          <div
+            className="hidden items-center gap-1.5 text-xs font-medium sm:flex"
+            style={{ color: "var(--text-secondary)" }}
+          >
             <UsdcIcon size={16} />
             <span>${formatUsdc(usdc)}</span>
           </div>
@@ -66,7 +69,8 @@ export function AppHeader() {
             disabled={faucetBusy}
             className="hidden items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors duration-150 disabled:opacity-50 sm:flex"
             style={{
-              backgroundColor: "color-mix(in srgb, var(--blue) 12%, transparent)",
+              backgroundColor:
+                "color-mix(in srgb, var(--blue) 12%, transparent)",
               color: "var(--blue)",
             }}
           >

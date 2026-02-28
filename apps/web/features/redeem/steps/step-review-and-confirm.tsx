@@ -1,4 +1,12 @@
-import { ArrowLeft, Lock, Wallet, MapPin, Truck, CheckCircle2, AlertCircle } from "lucide-react";
+import {
+  ArrowLeft,
+  Lock,
+  Wallet,
+  MapPin,
+  Truck,
+  CheckCircle2,
+  AlertCircle,
+} from "lucide-react";
 import { caliberIcons } from "@/features/shared/caliber-icons";
 import type { CaliberDetailData } from "@/lib/types";
 import { SpinnerButton } from "@/features/shared";
@@ -150,12 +158,18 @@ export function StepReviewAndConfirm({
 
       {/* Progressive Gating / Requirements Panel */}
       <div className="mb-6">
-        <h3 className="text-sm font-semibold uppercase tracking-wide mb-3" style={{ color: "var(--text-primary)" }}>
+        <h3
+          className="text-sm font-semibold uppercase tracking-wide mb-3"
+          style={{ color: "var(--text-primary)" }}
+        >
           Requirements
         </h3>
         <div className="flex flex-col gap-2">
           {/* Identity Verification */}
-          <div className="flex items-center justify-between p-3 rounded-lg border border-border-default" style={{ backgroundColor: "var(--bg-tertiary)" }}>
+          <div
+            className="flex items-center justify-between p-3 rounded-lg border border-border-default"
+            style={{ backgroundColor: "var(--bg-tertiary)" }}
+          >
             <div className="flex items-center gap-3">
               {kycApproved ? (
                 <CheckCircle2 size={18} className="text-green-500" />
@@ -163,9 +177,21 @@ export function StepReviewAndConfirm({
                 <AlertCircle size={18} className="text-ammo-amber" />
               )}
               <div className="flex flex-col">
-                <span className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>Identity Verification</span>
-                <span className="text-xs" style={{ color: "var(--text-secondary)" }}>
-                  {kycApproved ? "Verified" : kycStatus === "PENDING" ? "Review in progress" : "Required by federal law"}
+                <span
+                  className="text-sm font-medium"
+                  style={{ color: "var(--text-primary)" }}
+                >
+                  Identity Verification
+                </span>
+                <span
+                  className="text-xs"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  {kycApproved
+                    ? "Verified"
+                    : kycStatus === "PENDING"
+                      ? "Review in progress"
+                      : "Required by federal law"}
                 </span>
               </div>
             </div>
@@ -182,7 +208,10 @@ export function StepReviewAndConfirm({
           </div>
 
           {/* Shipping Address */}
-          <div className="flex items-center justify-between p-3 rounded-lg border border-border-default" style={{ backgroundColor: "var(--bg-tertiary)" }}>
+          <div
+            className="flex items-center justify-between p-3 rounded-lg border border-border-default"
+            style={{ backgroundColor: "var(--bg-tertiary)" }}
+          >
             <div className="flex items-center gap-3">
               {hasAddress ? (
                 <CheckCircle2 size={18} className="text-green-500" />
@@ -190,9 +219,19 @@ export function StepReviewAndConfirm({
                 <AlertCircle size={18} className="text-ammo-amber" />
               )}
               <div className="flex flex-col">
-                <span className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>Shipping Address</span>
-                <span className="text-xs truncate max-w-[150px] sm:max-w-[200px]" style={{ color: "var(--text-secondary)" }}>
-                  {hasAddress ? `${address.city}, ${address.state} ${address.zip}` : "Where should we send it?"}
+                <span
+                  className="text-sm font-medium"
+                  style={{ color: "var(--text-primary)" }}
+                >
+                  Shipping Address
+                </span>
+                <span
+                  className="text-xs truncate max-w-[150px] sm:max-w-[200px]"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  {hasAddress
+                    ? `${address.city}, ${address.state} ${address.zip}`
+                    : "Where should we send it?"}
                 </span>
               </div>
             </div>
@@ -301,7 +340,7 @@ export function StepReviewAndConfirm({
           >
             <Lock size={16} /> Confirm Redemption
           </button>
-        ) : (txStatus === "approving" || txStatus === "approve-confirming") ? (
+        ) : txStatus === "approving" || txStatus === "approve-confirming" ? (
           <SpinnerButton label="Approving..." />
         ) : txStatus === "approved" ? (
           <button
@@ -311,7 +350,7 @@ export function StepReviewAndConfirm({
           >
             <Lock size={16} /> Confirm Redemption
           </button>
-        ) : (txStatus === "redeeming" || txStatus === "redeem-confirming") ? (
+        ) : txStatus === "redeeming" || txStatus === "redeem-confirming" ? (
           <SpinnerButton label="Burning tokens..." size="large" />
         ) : null}
       </div>
