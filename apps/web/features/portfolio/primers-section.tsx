@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Info, ArrowRight } from "lucide-react";
+import { toast } from "sonner";
 
 export function PrimersSection({ primers }: { primers: number }) {
   const [showTooltip, setShowTooltip] = useState(false);
@@ -95,13 +96,19 @@ export function PrimersSection({ primers }: { primers: number }) {
             >
               Provide liquidity on a DEX to start earning Primers.
             </p>
-            <a
-              href="#"
+            <button
+              type="button"
+              onClick={() =>
+                toast.info("Coming Soon", {
+                  description:
+                    "Primers documentation is under development. Stay tuned!",
+                })
+              }
               className="mt-2 inline-flex items-center gap-1 text-sm font-medium transition-colors duration-150 text-brass hover:text-brass-hover"
             >
               Learn More
               <ArrowRight size={14} />
-            </a>
+            </button>
           </>
         )}
       </div>

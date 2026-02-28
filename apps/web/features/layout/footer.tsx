@@ -1,5 +1,6 @@
 "use client";
 
+import { toast } from "sonner";
 import { AmmoLogo } from "./logo";
 
 const productLinks = [
@@ -15,6 +16,12 @@ const resourceLinks = [
 ];
 
 const socialLinks = [{ label: "X / Twitter", href: "#" }];
+
+function comingSoonToast() {
+  toast.info("Coming Soon", {
+    description: "This feature is under development. Stay tuned!",
+  });
+}
 
 function FooterColumn({
   title,
@@ -34,12 +41,22 @@ function FooterColumn({
       <ul className="flex flex-col gap-2.5">
         {links.map((link) => (
           <li key={link.label}>
-            <a
-              href={link.href}
-              className="text-sm text-text-secondary transition-colors duration-150 hover:text-text-primary"
-            >
-              {link.label}
-            </a>
+            {link.href === "#" ? (
+              <button
+                type="button"
+                onClick={comingSoonToast}
+                className="text-sm text-text-secondary transition-colors duration-150 hover:text-text-primary"
+              >
+                {link.label}
+              </button>
+            ) : (
+              <a
+                href={link.href}
+                className="text-sm text-text-secondary transition-colors duration-150 hover:text-text-primary"
+              >
+                {link.label}
+              </a>
+            )}
           </li>
         ))}
       </ul>

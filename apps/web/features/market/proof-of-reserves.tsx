@@ -1,6 +1,7 @@
 "use client";
 
 import { CheckCircle2 } from "lucide-react";
+import { toast } from "sonner";
 
 export function ProofOfReserves() {
   return (
@@ -21,7 +22,7 @@ export function ProofOfReserves() {
             viewBox="0 0 24 24"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            className="mt-0.5 flex-shrink-0"
+            className="mt-0.5 shrink-0"
             aria-hidden="true"
           >
             <path
@@ -41,34 +42,29 @@ export function ProofOfReserves() {
             />
           </svg>
           <div>
-            <p
-              className="text-sm font-medium"
-              style={{ color: "var(--text-primary)" }}
-            >
-              All tokens are backed 1:1 by physical ammunition in insured,
-              audited storage.
+            <p className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
+              All tokens are backed 1:1 by physical ammunition in insured, audited storage.
             </p>
-            <a
-              href="#"
+            <button
+              type="button"
+              onClick={() =>
+                toast.info("Coming Soon", {
+                  description: "Attestation reports are under development. Stay tuned!",
+                })
+              }
               className="mt-1 inline-flex items-center gap-1 text-xs font-medium transition-colors duration-150 hover:opacity-80"
               style={{ color: "var(--blue)" }}
             >
               {"View latest attestation \u2192"}
-            </a>
+            </button>
           </div>
         </div>
 
         {/* Right: stats */}
-        <div
-          className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs"
-          style={{ color: "var(--text-secondary)" }}
-        >
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs" style={{ color: "var(--text-secondary)" }}>
           <span>
             Total warehouse:{" "}
-            <span
-              className="font-mono font-medium"
-              style={{ color: "var(--text-primary)" }}
-            >
+            <span className="font-mono font-medium" style={{ color: "var(--text-primary)" }}>
               5,580,000 rounds
             </span>
           </span>
@@ -79,10 +75,7 @@ export function ProofOfReserves() {
           />
           <span>
             Total supply:{" "}
-            <span
-              className="font-mono font-medium"
-              style={{ color: "var(--text-primary)" }}
-            >
+            <span className="font-mono font-medium" style={{ color: "var(--text-primary)" }}>
               5,580,000 tokens
             </span>
           </span>
