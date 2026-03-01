@@ -447,6 +447,22 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
             <span className="font-mono tabular-nums">{amountDisplay}</span>
           </DetailRow>
 
+          {order.type === "MINT" && order.requestPrice && (
+            <DetailRow label="Price at Request">
+              <span className="font-mono tabular-nums">
+                ${(Number(order.requestPrice) / 1e18).toFixed(4)}
+              </span>
+            </DetailRow>
+          )}
+
+          {order.type === "MINT" && order.finalizePrice && (
+            <DetailRow label="Finalize Price">
+              <span className="font-mono tabular-nums">
+                ${(Number(order.finalizePrice) / 1e18).toFixed(4)}
+              </span>
+            </DetailRow>
+          )}
+
           <DetailRow label="Status">
             <StatusBadge status={displayStatus} />
           </DetailRow>

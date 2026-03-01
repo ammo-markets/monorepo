@@ -35,6 +35,8 @@ export function usePendingOrders(address: string | undefined) {
         usdcAmount: input.usdcAmount ?? null,
         tokenAmount: input.tokenAmount ?? null,
         onChainOrderId: null,
+        requestPrice: null,
+        finalizePrice: null,
         walletAddress: address,
         txHash: input.txHash,
         chainId: null,

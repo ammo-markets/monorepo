@@ -27,6 +27,8 @@ export interface OrderFromAPI {
   walletAddress: string | null;
   txHash: string | null;
   chainId: number | null;
+  requestPrice: string | null;
+  finalizePrice: string | null;
   createdAt: string; // ISO date string
   updatedAt: string; // ISO date string
   shippingAddress: {

@@ -81,6 +81,8 @@ model Order {
   onChainOrderId  String?
   walletAddress   String?
   txHash          String?
+  requestPrice    String?     // Oracle price at startMint (18-decimal string). Null for REDEEM orders.
+  finalizePrice   String?     // Actual price used at finalizeMint (18-decimal string). Null until finalized, null for REDEEM.
   logIndex        Int
   chainId         Int
   createdAt       DateTime    @default(now())

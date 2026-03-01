@@ -21,6 +21,9 @@ export interface AdminMintOrder {
   updatedAt: string;
   onChainOrderId: string | null;
   txHash: string | null;
+  requestPrice: string | null;
+  finalizePrice: string | null;
+  user: { kycStatus: string; kycFullName: string | null; kycState: string | null } | null;
 }
 
 interface FinalizeMintDialogProps {
@@ -33,6 +36,17 @@ interface FinalizeMintDialogProps {
 function formatUsdc(amount: string): string {
   return (Number(amount) / 1e6).toFixed(2);
 }
+
+function formatPriceX18(priceStr: string): string {
+  return `$${(Number(priceStr) / 1e18).toFixed(4)}/round`;
+}
+
+const KYC_COLORS: Record<string, { bg: string; text: string }> = {
+  APPROVED: { bg: "rgba(34,197,94,0.15)", text: "rgb(34,197,94)" },
+  PENDING: { bg: "rgba(234,179,8,0.15)", text: "rgb(234,179,8)" },
+  REJECTED: { bg: "rgba(239,68,68,0.15)", text: "rgb(239,68,68)" },
+  NONE: { bg: "rgba(148,163,184,0.15)", text: "rgb(148,163,184)" },
+};
 
 export function FinalizeMintDialog({ order, open, onOpenChange, onFinalized }: FinalizeMintDialogProps) {
   const queryClient = useQueryClient();
@@ -142,6 +156,33 @@ export function FinalizeMintDialog({ order, open, onOpenChange, onFinalized }: F
             <span style={{ color: "var(--text-secondary)" }}>USDC Amount</span>
             <span className="font-mono" style={{ color: "var(--text-primary)" }}>
               {formatUsdc(order.usdcAmount ?? "0")} USDC
+            </span>
+          </div>
+          {order.requestPrice && (
+            <div className="flex justify-between">
+              <span style={{ color: "var(--text-secondary)" }}>Oracle Price at Request</span>
+              <span className="font-mono" style={{ color: "var(--text-primary)" }}>
+                {formatPriceX18(order.requestPrice)}
+              </span>
+            </div>
+          )}
+          <div className="flex items-center justify-between">
+            <span style={{ color: "var(--text-secondary)" }}>KYC Status</span>
+            <span className="flex items-center gap-2">
+              <span
+                className="rounded-full px-2 py-0.5 text-xs font-medium"
+                style={{
+                  backgroundColor: KYC_COLORS[order.user?.kycStatus ?? "NONE"]?.bg,
+                  color: KYC_COLORS[order.user?.kycStatus ?? "NONE"]?.text,
+                }}
+              >
+                {order.user?.kycStatus ?? "NONE"}
+              </span>
+              {order.user?.kycFullName && (
+                <span className="text-xs" style={{ color: "var(--text-muted)" }}>
+                  {order.user.kycFullName}{order.user.kycState ? ` (${order.user.kycState})` : ""}
+                </span>
+              )}
             </span>
           </div>
         </div>

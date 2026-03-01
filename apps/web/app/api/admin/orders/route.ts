@@ -96,7 +96,7 @@ export async function GET(request: NextRequest) {
         orderBy: { createdAt: "desc" },
         include: {
           shippingAddress: true,
-          user: { select: { kycStatus: true } },
+          user: { select: { kycStatus: true, kycFullName: true, kycState: true } },
         },
       }),
       prisma.order.count({ where }),

@@ -20,7 +20,7 @@ export interface AdminRedeemOrder {
   updatedAt: string;
   onChainOrderId: string | null;
   txHash: string | null;
-  user: { kycStatus: string } | null;
+  user: { kycStatus: string; kycFullName: string | null; kycState: string | null } | null;
   shippingAddress: {
     id: string;
     orderId: string;
@@ -43,6 +43,13 @@ interface FinalizeRedeemDialogProps {
 function formatTokenAmount(amount: string): string {
   return Math.floor(Number(amount) / 1e18).toLocaleString();
 }
+
+const KYC_COLORS: Record<string, { bg: string; text: string }> = {
+  APPROVED: { bg: "rgba(34,197,94,0.15)", text: "rgb(34,197,94)" },
+  PENDING: { bg: "rgba(234,179,8,0.15)", text: "rgb(234,179,8)" },
+  REJECTED: { bg: "rgba(239,68,68,0.15)", text: "rgb(239,68,68)" },
+  NONE: { bg: "rgba(148,163,184,0.15)", text: "rgb(148,163,184)" },
+};
 
 export function FinalizeRedeemDialog({
   order,
@@ -166,10 +173,23 @@ export function FinalizeRedeemDialog({
               {formatTokenAmount(order.tokenAmount ?? "0")} rounds
             </span>
           </div>
-          <div className="flex justify-between">
+          <div className="flex items-center justify-between">
             <span style={{ color: "var(--text-secondary)" }}>KYC Status</span>
-            <span style={{ color: "var(--text-primary)" }}>
-              {order.user?.kycStatus ?? "NONE"}
+            <span className="flex items-center gap-2">
+              <span
+                className="rounded-full px-2 py-0.5 text-xs font-medium"
+                style={{
+                  backgroundColor: KYC_COLORS[order.user?.kycStatus ?? "NONE"]?.bg,
+                  color: KYC_COLORS[order.user?.kycStatus ?? "NONE"]?.text,
+                }}
+              >
+                {order.user?.kycStatus ?? "NONE"}
+              </span>
+              {order.user?.kycFullName && (
+                <span className="text-xs" style={{ color: "var(--text-muted)" }}>
+                  {order.user.kycFullName}{order.user.kycState ? ` (${order.user.kycState})` : ""}
+                </span>
+              )}
             </span>
           </div>
           <div className="flex justify-between">

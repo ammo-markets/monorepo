@@ -51,6 +51,7 @@ export async function handleMintStarted(
       status: "PENDING",
       caliber: prismaCaliber,
       usdcAmount: args.usdcAmount.toString(),
+      requestPrice: args.requestPrice.toString(),
       onChainOrderId: args.orderId.toString(),
       walletAddress: userAddress,
       txHash: meta.transactionHash,
@@ -96,6 +97,7 @@ export async function handleMintFinalized(
     data: {
       status: "COMPLETED",
       tokenAmount: args.tokenAmount.toString(),
+      finalizePrice: args.priceUsed.toString(),
     },
   });
 
@@ -114,6 +116,7 @@ export async function handleMintFinalized(
         status: "COMPLETED",
         caliber: prismaCaliber,
         tokenAmount: args.tokenAmount.toString(),
+        finalizePrice: args.priceUsed.toString(),
         // usdcAmount unknown from finalization event alone -- leave null
         onChainOrderId: args.orderId.toString(),
         walletAddress: userAddress,

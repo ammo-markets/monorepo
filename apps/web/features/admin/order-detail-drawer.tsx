@@ -88,7 +88,7 @@ function formatTokenAmount(amount: string): string {
 function isRedeemOrder(
   order: AdminMintOrder | AdminRedeemOrder,
 ): order is AdminRedeemOrder {
-  return "user" in order;
+  return "shippingAddress" in order;
 }
 
 function TimelineStep({
@@ -397,6 +397,75 @@ export function OrderDetailDrawer({
               </div>
             </div>
 
+            {/* Mint-specific details */}
+            {type === "MINT" && (
+              <div className="space-y-3">
+                <h3
+                  className="text-xs font-semibold uppercase tracking-wider"
+                  style={{ color: "var(--text-muted)" }}
+                >
+                  Mint Details
+                </h3>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between items-center">
+                    <span style={{ color: "var(--text-secondary)" }}>
+                      KYC Status
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <KycBadge
+                        status={order.user?.kycStatus ?? "NONE"}
+                      />
+                      {order.user?.kycFullName && (
+                        <span
+                          className="text-xs"
+                          style={{ color: "var(--text-muted)" }}
+                        >
+                          {order.user.kycFullName}
+                          {order.user.kycState
+                            ? `, ${order.user.kycState}`
+                            : ""}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {(order as AdminMintOrder).requestPrice != null && (
+                    <div className="flex justify-between">
+                      <span style={{ color: "var(--text-secondary)" }}>
+                        Oracle Price at Request
+                      </span>
+                      <span
+                        className="font-mono"
+                        style={{ color: "var(--text-primary)" }}
+                      >
+                        $
+                        {(
+                          Number((order as AdminMintOrder).requestPrice) / 1e6
+                        ).toFixed(4)}
+                      </span>
+                    </div>
+                  )}
+
+                  {(order as AdminMintOrder).finalizePrice != null && (
+                    <div className="flex justify-between">
+                      <span style={{ color: "var(--text-secondary)" }}>
+                        Finalize Price
+                      </span>
+                      <span
+                        className="font-mono"
+                        style={{ color: "var(--text-primary)" }}
+                      >
+                        $
+                        {(
+                          Number((order as AdminMintOrder).finalizePrice) / 1e6
+                        ).toFixed(4)}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Redeem-specific details */}
             {type === "REDEEM" && isRedeemOrder(order) && (
               <div className="space-y-3">
@@ -407,11 +476,24 @@ export function OrderDetailDrawer({
                   Redeem Details
                 </h3>
                 <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
+                  <div className="flex justify-between items-center">
                     <span style={{ color: "var(--text-secondary)" }}>
                       KYC Status
                     </span>
-                    <KycBadge status={order.user?.kycStatus ?? "NONE"} />
+                    <div className="flex items-center gap-2">
+                      <KycBadge status={order.user?.kycStatus ?? "NONE"} />
+                      {order.user?.kycFullName && (
+                        <span
+                          className="text-xs"
+                          style={{ color: "var(--text-muted)" }}
+                        >
+                          {order.user.kycFullName}
+                          {order.user.kycState
+                            ? `, ${order.user.kycState}`
+                            : ""}
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   <div className="flex justify-between">

@@ -38,6 +38,8 @@ export async function GET(
       walletAddress: order.walletAddress,
       txHash: order.txHash,
       chainId: order.chainId,
+      requestPrice: order.requestPrice,
+      finalizePrice: order.finalizePrice,
       createdAt: order.createdAt.toISOString(),
       updatedAt: order.updatedAt.toISOString(),
       shippingAddress: order.shippingAddress,
