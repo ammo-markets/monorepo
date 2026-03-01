@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
 import {
   ChevronLeft,
@@ -11,6 +10,7 @@ import {
   Search,
 } from "lucide-react";
 import { truncateAddress } from "@/lib/utils";
+import { useAdminRedeemOrders } from "@/hooks/use-admin-orders";
 import { FinalizeRedeemDialog } from "./finalize-redeem-dialog";
 import { CancelRedeemDialog } from "./cancel-redeem-dialog";
 import { OrderDetailDrawer } from "./order-detail-drawer";
@@ -79,14 +79,6 @@ function KycBadge({ status }: { status: string }) {
   );
 }
 
-interface PaginatedResponse {
-  orders: AdminRedeemOrder[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}
-
 export function RedeemOrdersTable() {
   const [selectedOrder, setSelectedOrder] = useState<AdminRedeemOrder | null>(
     null,
@@ -119,28 +111,10 @@ export function RedeemOrdersTable() {
     setCurrentPage(1);
   }, [caliberFilter]);
 
-  const { data, isLoading, error, refetch } = useQuery<PaginatedResponse>({
-    queryKey: [
-      "admin",
-      "orders",
-      "REDEEM",
-      debouncedSearch,
-      caliberFilter,
-      currentPage,
-    ],
-    queryFn: async () => {
-      const params = new URLSearchParams({
-        type: "REDEEM",
-        page: String(currentPage),
-        limit: "20",
-      });
-      if (debouncedSearch) params.set("search", debouncedSearch);
-      if (caliberFilter) params.set("caliber", caliberFilter);
-      const res = await fetch(`/api/admin/orders?${params}`);
-      if (!res.ok) throw new Error("Failed to fetch redeem orders");
-      return (await res.json()) as PaginatedResponse;
-    },
-    refetchInterval: 30_000,
+  const { data, isLoading, error, refetch } = useAdminRedeemOrders({
+    search: debouncedSearch,
+    caliber: caliberFilter,
+    page: currentPage,
   });
 
   const orders = data?.orders;

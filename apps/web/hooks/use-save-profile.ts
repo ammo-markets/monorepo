@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "@/lib/query-keys";
 
 export function useSaveProfile<T extends object = Record<string, string>>() {
   const queryClient = useQueryClient();
@@ -21,7 +22,7 @@ export function useSaveProfile<T extends object = Record<string, string>>() {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.profile.all });
     },
   });
 }

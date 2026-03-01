@@ -20,7 +20,9 @@ import { parseContractError } from "@/lib/errors";
 import { getDeadline, parseTokenAmount } from "@/lib/tx-utils";
 import type { Caliber } from "@ammo-exchange/shared";
 import { contracts } from "@/lib/chain";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
+import { useProfile } from "@/hooks/use-profile";
+import { queryKeys } from "@/lib/query-keys";
 import { usePendingOrders } from "@/hooks/use-pending-orders";
 
 import { StepCompose } from "./steps/step-compose";
@@ -73,15 +75,7 @@ export function RedeemFlow({
   const { addPendingOrder } = usePendingOrders(wallet.address);
 
   // ── User Profile (Shipping) ──
-  const { data: profile } = useQuery({
-    queryKey: ["profile", wallet.address],
-    queryFn: async () => {
-      const res = await fetch("/api/users/profile");
-      if (!res.ok) return null;
-      return res.json();
-    },
-    enabled: !!wallet.isConnected,
-  });
+  const { data: profile } = useProfile(!!wallet.isConnected);
 
   const hasAddress = !!(
     profile?.defaultShippingName &&
@@ -330,7 +324,7 @@ export function RedeemFlow({
           setAgeVerified={setAgeVerified}
           caliber={caliber}
           onNext={() => {
-            queryClient.invalidateQueries({ queryKey: ["profile"] });
+            queryClient.invalidateQueries({ queryKey: queryKeys.profile.all });
             setStep(1);
           }}
           onBack={() => setStep(1)}

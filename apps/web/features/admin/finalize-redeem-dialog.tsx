@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { toast } from "sonner";
 import { X } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "@/lib/query-keys";
 import { useFinalizeRedeem } from "@/hooks/use-finalize-redeem";
 import { parseContractError } from "@/lib/errors";
 import type { Caliber } from "@ammo-exchange/shared";
@@ -68,10 +69,10 @@ export function FinalizeRedeemDialog({
     if (isConfirmed) {
       toast.success("Redeem order finalized");
       void queryClient.invalidateQueries({
-        queryKey: ["admin", "orders", "REDEEM"],
+        queryKey: queryKeys.admin.orders.all("REDEEM"),
       });
       void queryClient.invalidateQueries({
-        queryKey: ["admin", "stats"],
+        queryKey: queryKeys.admin.stats.all,
       });
       onFinalized(order.id);
       onOpenChange(false);

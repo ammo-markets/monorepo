@@ -1,14 +1,16 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { Copy, Check, Wallet, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import { useSaveProfile } from "@/hooks/use-save-profile";
+import { useProfile } from "@/hooks/use-profile";
 import { ConnectWalletCTA } from "@/features/shared/connect-wallet-cta";
 import type { KycFormData } from "@/features/redeem/kyc-form";
 import { useKycStatus, useKycSubmit } from "@/hooks/use-kyc";
-import type { ProfileData, AddressForm } from "./profile-constants";
+import { queryKeys } from "@/lib/query-keys";
+import type { AddressForm } from "./profile-constants";
 import { getKycBadge, emptyForm, profileToForm } from "./profile-constants";
 import { KycSection } from "./kyc-section";
 import { AddressSection } from "./address-section";
@@ -32,7 +34,7 @@ export default function ProfilePage() {
   const handleKycSubmit = useCallback(
     async (data: KycFormData) => {
       await submitKyc(data);
-      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.profile.all });
     },
     [submitKyc, queryClient],
   );
@@ -44,16 +46,7 @@ export default function ProfilePage() {
   const [form, setForm] = useState<AddressForm>(emptyForm);
 
   // Fetch profile data via TanStack Query
-  const { data: profile = null, isLoading: loading } =
-    useQuery<ProfileData | null>({
-      queryKey: ["profile"],
-      queryFn: async () => {
-        const res = await fetch("/api/users/profile");
-        if (!res.ok) return null;
-        return (await res.json()) as ProfileData;
-      },
-      enabled: !!isSignedIn,
-    });
+  const { data: profile = null, isLoading: loading } = useProfile(!!isSignedIn);
 
   // Copy wallet address
   const handleCopy = useCallback(() => {

@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { queryKeys } from "@/lib/query-keys";
 import type { Caliber } from "@ammo-exchange/shared";
 
 interface ProtocolStatRow {
@@ -19,13 +20,14 @@ interface ProtocolStatsResponse {
 
 export function useProtocolStats() {
   return useQuery<ProtocolStatsResponse>({
-    queryKey: ["protocol-stats"],
+    queryKey: queryKeys.protocolStats.all,
     queryFn: async () => {
       const res = await fetch("/api/stats");
       if (!res.ok) throw new Error("Failed to fetch protocol stats");
       return (await res.json()) as ProtocolStatsResponse;
     },
     staleTime: 60_000,
+    refetchInterval: 60_000,
     refetchOnWindowFocus: false,
   });
 }

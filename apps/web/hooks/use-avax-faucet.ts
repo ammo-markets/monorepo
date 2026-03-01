@@ -1,58 +1,67 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 import { useWaitForTransactionReceipt } from "wagmi";
 
 type Status = "idle" | "requesting" | "confirming" | "done";
+
+interface FaucetResponse {
+  hash: `0x${string}`;
+  error?: string;
+  message?: string;
+}
 
 export function useAvaxFaucet(onSuccess?: () => void): {
   request: () => void;
   status: Status;
   error: string | null;
 } {
-  const [status, setStatus] = useState<Status>("idle");
   const [hash, setHash] = useState<`0x${string}` | undefined>();
-  const [error, setError] = useState<string | null>(null);
 
-  const { isSuccess, isError } = useWaitForTransactionReceipt({ hash });
-
-  useEffect(() => {
-    if (isSuccess && status === "confirming") {
-      setStatus("done");
-      onSuccess?.();
-    }
-  }, [isSuccess, status, onSuccess]);
-
-  useEffect(() => {
-    if (isError && status === "confirming") {
-      setError("Transaction failed");
-      setStatus("idle");
-    }
-  }, [isError, status]);
-
-  const request = useCallback(async () => {
-    if (status === "requesting" || status === "confirming") return;
-
-    setError(null);
-    setStatus("requesting");
-
-    try {
+  const mutation = useMutation({
+    mutationFn: async () => {
       const res = await fetch("/api/faucet/avax", { method: "POST" });
-      const data = await res.json();
+      const data = (await res.json()) as FaucetResponse;
 
       if (!res.ok) {
-        setError(data.error ?? data.message ?? "Faucet request failed");
-        setStatus("idle");
-        return;
+        throw new Error(data.error ?? data.message ?? "Faucet request failed");
       }
 
+      return data;
+    },
+    onSuccess: (data) => {
       setHash(data.hash);
-      setStatus("confirming");
-    } catch {
-      setError("Network error");
-      setStatus("idle");
+    },
+  });
+
+  const { isSuccess: receiptSuccess, isError: receiptError } =
+    useWaitForTransactionReceipt({ hash });
+
+  useEffect(() => {
+    if (receiptSuccess && hash) {
+      onSuccess?.();
     }
-  }, [status]);
+  }, [receiptSuccess, hash, onSuccess]);
+
+  const status: Status = useMemo(() => {
+    if (receiptSuccess && hash) return "done";
+    if (hash && !receiptError) return "confirming";
+    if (mutation.isPending) return "requesting";
+    return "idle";
+  }, [mutation.isPending, hash, receiptSuccess, receiptError]);
+
+  const error: string | null = useMemo(() => {
+    if (mutation.error) return mutation.error.message;
+    if (receiptError) return "Transaction failed";
+    return null;
+  }, [mutation.error, receiptError]);
+
+  const request = useCallback(() => {
+    if (status === "requesting" || status === "confirming") return;
+    setHash(undefined);
+    mutation.mutate();
+  }, [status, mutation]);
 
   return { request, status, error };
 }

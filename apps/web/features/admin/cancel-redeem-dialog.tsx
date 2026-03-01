@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "@/lib/query-keys";
 import { useCancelRedeem } from "@/hooks/use-cancel-redeem";
 import { parseContractError } from "@/lib/errors";
 import {
@@ -53,10 +54,10 @@ export function CancelRedeemDialog({
     if (isConfirmed) {
       toast.success("Redeem order cancelled");
       void queryClient.invalidateQueries({
-        queryKey: ["admin", "orders", "REDEEM"],
+        queryKey: queryKeys.admin.orders.all("REDEEM"),
       });
       void queryClient.invalidateQueries({
-        queryKey: ["admin", "stats"],
+        queryKey: queryKeys.admin.stats.all,
       });
       onCancelled(order.id);
       onOpenChange(false);

@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { queryKeys } from "@/lib/query-keys";
 
 export interface ActivityItem {
   id: string;
@@ -15,7 +16,7 @@ interface ActivityResponse {
 
 export function useActivity() {
   return useQuery<ActivityItem[]>({
-    queryKey: ["activity"],
+    queryKey: queryKeys.activity.all,
     queryFn: async () => {
       const res = await fetch("/api/activity");
       if (!res.ok) throw new Error("Failed to fetch activity");

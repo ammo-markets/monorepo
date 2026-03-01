@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
 import {
   ChevronLeft,
@@ -11,6 +10,7 @@ import {
   Search,
 } from "lucide-react";
 import { truncateAddress } from "@/lib/utils";
+import { useAdminMintOrders } from "@/hooks/use-admin-orders";
 import { FinalizeMintDialog } from "./finalize-mint-dialog";
 import { RejectMintDialog } from "./reject-mint-dialog";
 import { OrderDetailDrawer } from "./order-detail-drawer";
@@ -46,14 +46,6 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-interface PaginatedResponse {
-  orders: AdminMintOrder[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}
-
 export function MintOrdersTable() {
   const [selectedOrder, setSelectedOrder] = useState<AdminMintOrder | null>(
     null,
@@ -86,28 +78,10 @@ export function MintOrdersTable() {
     setCurrentPage(1);
   }, [caliberFilter]);
 
-  const { data, isLoading, error, refetch } = useQuery<PaginatedResponse>({
-    queryKey: [
-      "admin",
-      "orders",
-      "MINT",
-      debouncedSearch,
-      caliberFilter,
-      currentPage,
-    ],
-    queryFn: async () => {
-      const params = new URLSearchParams({
-        type: "MINT",
-        page: String(currentPage),
-        limit: "20",
-      });
-      if (debouncedSearch) params.set("search", debouncedSearch);
-      if (caliberFilter) params.set("caliber", caliberFilter);
-      const res = await fetch(`/api/admin/orders?${params}`);
-      if (!res.ok) throw new Error("Failed to fetch mint orders");
-      return (await res.json()) as PaginatedResponse;
-    },
-    refetchInterval: 30_000,
+  const { data, isLoading, error, refetch } = useAdminMintOrders({
+    search: debouncedSearch,
+    caliber: caliberFilter,
+    page: currentPage,
   });
 
   const orders = data?.orders;

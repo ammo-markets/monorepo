@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { queryKeys } from "@/lib/query-keys";
 
 interface CaliberSupply {
   caliber: string;
@@ -17,7 +18,7 @@ export interface StatsData {
 
 export function useAdminStats() {
   return useQuery<StatsData>({
-    queryKey: ["admin", "stats"],
+    queryKey: queryKeys.admin.stats.all,
     queryFn: async () => {
       const res = await fetch("/api/admin/stats");
       if (!res.ok) throw new Error("Failed to fetch stats");

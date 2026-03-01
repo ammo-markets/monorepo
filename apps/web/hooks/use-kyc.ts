@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "@/lib/query-keys";
 import type { KycFormData } from "@/features/redeem/kyc-form";
 
 interface KycPrefill {
@@ -18,7 +19,7 @@ interface KycStatusData {
 
 export function useKycStatus(walletAddress: string | undefined) {
   return useQuery<KycStatusData>({
-    queryKey: ["kyc", walletAddress],
+    queryKey: queryKeys.kyc.status(walletAddress!),
     queryFn: async (): Promise<KycStatusData> => {
       try {
         const res = await fetch("/api/users/kyc");
@@ -78,7 +79,7 @@ export function useKycSubmit() {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["kyc"] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.kyc.all });
     },
   });
 }

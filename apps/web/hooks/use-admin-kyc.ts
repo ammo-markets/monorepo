@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "@/lib/query-keys";
 
 export interface AdminKycUser {
   id: string;
@@ -32,7 +33,7 @@ export function useAdminKycUsers(params: AdminKycParams = {}) {
   const { status, search, page = 1 } = params;
 
   return useQuery<PaginatedKycResponse>({
-    queryKey: ["admin", "kyc", status, search, page],
+    queryKey: queryKeys.admin.kyc.list({ status, search, page }),
     queryFn: async () => {
       const searchParams = new URLSearchParams({
         page: String(page),
@@ -75,7 +76,7 @@ export function useAdminKycAction() {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin", "kyc"] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.kyc.all });
     },
   });
 }

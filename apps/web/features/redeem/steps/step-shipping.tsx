@@ -1,9 +1,9 @@
-import { useState } from "react";
 import { BackButton, PrimaryButton } from "@/features/shared";
 import { AlertTriangle, Truck } from "lucide-react";
 import type { CaliberDetailData } from "@/lib/types";
 import type { ReactNode } from "react";
 import { US_STATES, RESTRICTED_STATES } from "@/lib/us-states";
+import { useSaveProfile } from "@/hooks/use-save-profile";
 
 export interface ShippingAddress {
   fullName: string;
@@ -68,8 +68,12 @@ export function StepShipping({
   onNext: () => void;
   onBack: () => void;
 }) {
-  const [isSaving, setIsSaving] = useState(false);
-  const [saveError, setSaveError] = useState<string | null>(null);
+  const {
+    mutateAsync: saveProfile,
+    isPending: isSaving,
+    error: saveErrorObj,
+  } = useSaveProfile();
+  const saveError = saveErrorObj?.message ?? null;
 
   const isRestricted = RESTRICTED_STATES.includes(address.state);
   const restrictedStateName =
@@ -289,29 +293,18 @@ export function StepShipping({
       <PrimaryButton
         disabled={!formComplete || isSaving}
         onClick={async () => {
-          setIsSaving(true);
-          setSaveError(null);
           try {
-            const res = await fetch("/api/users/profile", {
-              method: "PATCH",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                defaultShippingName: address.fullName,
-                defaultShippingLine1: address.address1,
-                defaultShippingLine2: address.address2 || null,
-                defaultShippingCity: address.city,
-                defaultShippingState: address.state,
-                defaultShippingZip: address.zip,
-              }),
+            await saveProfile({
+              defaultShippingName: address.fullName,
+              defaultShippingLine1: address.address1,
+              defaultShippingLine2: address.address2 || "",
+              defaultShippingCity: address.city,
+              defaultShippingState: address.state,
+              defaultShippingZip: address.zip,
             });
-            if (!res.ok) {
-              throw new Error("Failed to save shipping address");
-            }
             onNext();
           } catch {
-            setSaveError("Failed to save shipping address. Please try again.");
-          } finally {
-            setIsSaving(false);
+            // error captured by mutation state
           }
         }}
       >

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "@/lib/query-keys";
 import { useRefundMint } from "@/hooks/use-refund-mint";
 import { parseContractError } from "@/lib/errors";
 import {
@@ -53,10 +54,10 @@ export function RejectMintDialog({
     if (isConfirmed) {
       toast.success("Mint order rejected");
       void queryClient.invalidateQueries({
-        queryKey: ["admin", "orders", "MINT"],
+        queryKey: queryKeys.admin.orders.all("MINT"),
       });
       void queryClient.invalidateQueries({
-        queryKey: ["admin", "stats"],
+        queryKey: queryKeys.admin.stats.all,
       });
       onRejected(order.id);
       onOpenChange(false);
