@@ -10,23 +10,10 @@ import type { Caliber } from "@ammo-exchange/shared";
 import { CALIBER_SPECS } from "@ammo-exchange/shared";
 import { truncateAddress, snowtraceUrl, formatDate } from "@/lib/utils";
 import { caliberIcons } from "@/features/shared/caliber-icons";
+import { StatusBadge, TypeBadge, mapOrderStatus } from "./portfolio-badges";
+import type { DisplayStatus } from "./portfolio-badges";
 
 /* ────────────── Helpers ────────────── */
-
-type DisplayStatus = "Processing" | "Completed" | "Failed";
-
-function mapOrderStatus(status: OrderFromAPI["status"]): DisplayStatus {
-  switch (status) {
-    case "PENDING":
-    case "PROCESSING":
-      return "Processing";
-    case "COMPLETED":
-      return "Completed";
-    case "FAILED":
-    case "CANCELLED":
-      return "Failed";
-  }
-}
 
 function buildMintSteps(order: OrderFromAPI): OrderStep[] {
   const hasTx = !!order.txHash;
@@ -74,45 +61,6 @@ function buildRedeemSteps(order: OrderFromAPI): OrderStep[] {
       meta: isCompleted ? formatDate(order.updatedAt) : undefined,
     },
   ];
-}
-
-/* ────────────── Badges ────────────── */
-
-function TypeBadge({ type }: { type: "MINT" | "REDEEM" }) {
-  const label = type === "MINT" ? "Mint" : "Redeem";
-  const color = type === "MINT" ? "var(--green)" : "var(--amber)";
-  return (
-    <span
-      className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium"
-      style={{
-        backgroundColor: `color-mix(in srgb, ${color} 15%, transparent)`,
-        color,
-      }}
-    >
-      {label}
-    </span>
-  );
-}
-
-function StatusBadge({ status }: { status: DisplayStatus }) {
-  const colorMap: Record<DisplayStatus, string> = {
-    Processing: "var(--blue)",
-    Completed: "var(--green)",
-    Failed: "var(--red)",
-  };
-  const color = colorMap[status];
-  return (
-    <span
-      className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium"
-      style={{
-        backgroundColor: `color-mix(in srgb, ${color} 15%, transparent)`,
-        color,
-      }}
-    >
-      <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: color }} />
-      {status}
-    </span>
-  );
 }
 
 /* ────────────── Step Icon ────────────── */

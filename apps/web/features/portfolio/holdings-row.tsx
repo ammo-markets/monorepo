@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { caliberIcons } from "@/features/shared/caliber-icons";
 import type { Caliber } from "@ammo-exchange/shared";
 
@@ -15,9 +16,11 @@ export interface HoldingRow {
 
 export function HoldingsDesktopRow({
   holding,
+  onViewOrders,
 }: {
   holding: HoldingRow;
   isLast: boolean;
+  onViewOrders?: () => void;
 }) {
   const Icon = caliberIcons[holding.caliber];
   return (
@@ -66,7 +69,7 @@ export function HoldingsDesktopRow({
       </td>
       {/* Actions */}
       <td className="px-6 py-4 text-right">
-        <div className="flex items-center justify-end gap-2">
+        <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
           <Link
             href={`/exchange?tab=mint&caliber=${holding.caliber.toLowerCase()}`}
             className="rounded-md px-3 py-1.5 text-xs font-semibold transition-colors duration-150 bg-brass text-ax-primary hover:bg-brass-hover"
@@ -79,21 +82,46 @@ export function HoldingsDesktopRow({
           >
             Redeem
           </Link>
+          {onViewOrders && (
+            <button
+              type="button"
+              onClick={onViewOrders}
+              className="rounded-md px-3 py-1.5 text-xs font-medium transition-colors duration-150 text-text-muted hover:text-text-primary"
+            >
+              Orders
+            </button>
+          )}
         </div>
       </td>
     </>
   );
 }
 
-export function HoldingsMobileCard({ holding }: { holding: HoldingRow }) {
+export function HoldingsMobileCard({
+  holding,
+  onViewOrders,
+}: {
+  holding: HoldingRow;
+  onViewOrders?: () => void;
+}) {
   const Icon = caliberIcons[holding.caliber];
+  const router = useRouter();
 
   return (
     <div
-      className="rounded-xl p-4"
+      className="cursor-pointer rounded-xl p-4 transition-colors duration-150 hover:border-brass-border"
       style={{
         backgroundColor: "var(--bg-secondary)",
         border: "1px solid var(--border-default)",
+      }}
+      role="link"
+      tabIndex={0}
+      onClick={() => router.push(`/calibers/${holding.caliber.toLowerCase()}`)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          router.push(`/calibers/${holding.caliber.toLowerCase()}`);
+        }
       }}
     >
       {/* Header */}
@@ -156,28 +184,40 @@ export function HoldingsMobileCard({ holding }: { holding: HoldingRow }) {
       </div>
 
       {/* Actions */}
-      <div className="mt-4 flex items-center gap-2">
-        <Link
-          href={`/exchange?tab=mint&caliber=${holding.caliber.toLowerCase()}`}
-          className="flex-1 rounded-lg px-3 py-2 text-center text-xs font-semibold transition-colors duration-150"
-          style={{
-            backgroundColor: "var(--brass)",
-            color: "var(--bg-primary)",
-          }}
-        >
-          Mint More
-        </Link>
-        <Link
-          href={`/exchange?tab=redeem&caliber=${holding.caliber.toLowerCase()}`}
-          className="flex-1 rounded-lg px-3 py-2 text-center text-xs font-medium transition-colors duration-150"
-          style={{
-            backgroundColor: "transparent",
-            border: "1px solid var(--border-hover)",
-            color: "var(--text-secondary)",
-          }}
-        >
-          Redeem
-        </Link>
+      <div className="mt-4 flex flex-col gap-2" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center gap-2">
+          <Link
+            href={`/exchange?tab=mint&caliber=${holding.caliber.toLowerCase()}`}
+            className="flex-1 rounded-lg px-3 py-2 text-center text-xs font-semibold transition-colors duration-150"
+            style={{
+              backgroundColor: "var(--brass)",
+              color: "var(--bg-primary)",
+            }}
+          >
+            Mint More
+          </Link>
+          <Link
+            href={`/exchange?tab=redeem&caliber=${holding.caliber.toLowerCase()}`}
+            className="flex-1 rounded-lg px-3 py-2 text-center text-xs font-medium transition-colors duration-150"
+            style={{
+              backgroundColor: "transparent",
+              border: "1px solid var(--border-hover)",
+              color: "var(--text-secondary)",
+            }}
+          >
+            Redeem
+          </Link>
+        </div>
+        {onViewOrders && (
+          <button
+            type="button"
+            onClick={onViewOrders}
+            className="text-xs font-medium transition-colors duration-150"
+            style={{ color: "var(--text-muted)" }}
+          >
+            View {holding.caliber} orders ↓
+          </button>
+        )}
       </div>
     </div>
   );

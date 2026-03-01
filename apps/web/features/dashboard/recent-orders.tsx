@@ -6,67 +6,7 @@ import type { OrderFromAPI } from "@/lib/types";
 import type { Caliber } from "@ammo-exchange/shared";
 import { caliberIcons } from "@/features/shared/caliber-icons";
 import { timeAgo } from "@/lib/utils";
-
-/* ────────────── Types ────────────── */
-
-type DisplayStatus = "Processing" | "Completed" | "Failed";
-
-/* ────────────── Helpers ────────────── */
-
-function mapOrderStatus(status: OrderFromAPI["status"]): DisplayStatus {
-  switch (status) {
-    case "PENDING":
-    case "PROCESSING":
-      return "Processing";
-    case "COMPLETED":
-      return "Completed";
-    case "FAILED":
-    case "CANCELLED":
-      return "Failed";
-  }
-}
-
-const statusColors: Record<DisplayStatus, string> = {
-  Processing: "var(--blue)",
-  Completed: "var(--green)",
-  Failed: "var(--red)",
-};
-
-function StatusBadge({ status }: { status: DisplayStatus }) {
-  const color = statusColors[status];
-  return (
-    <span
-      className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium"
-      style={{
-        backgroundColor: `color-mix(in srgb, ${color} 15%, transparent)`,
-        color,
-      }}
-    >
-      <span
-        className="h-1.5 w-1.5 rounded-full"
-        style={{ backgroundColor: color }}
-      />
-      {status}
-    </span>
-  );
-}
-
-function TypeBadge({ type }: { type: "MINT" | "REDEEM" }) {
-  const label = type === "MINT" ? "Mint" : "Redeem";
-  const color = type === "MINT" ? "var(--green)" : "var(--amber)";
-  return (
-    <span
-      className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium"
-      style={{
-        backgroundColor: `color-mix(in srgb, ${color} 15%, transparent)`,
-        color,
-      }}
-    >
-      {label}
-    </span>
-  );
-}
-
+import { StatusBadge, TypeBadge, mapOrderStatus } from "@/features/portfolio/portfolio-badges";
 
 /* ────────────── Skeleton ────────────── */
 

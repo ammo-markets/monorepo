@@ -1,7 +1,9 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { formatUnits } from "viem";
+import { X } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import { ConnectWalletCTA } from "@/features/shared/connect-wallet-cta";
 import { useTokenBalances } from "@/hooks/use-token-balances";
@@ -15,7 +17,7 @@ import {
   HoldingsTableSkeleton,
   OrdersTableSkeleton,
 } from "./portfolio-skeletons";
-import { EmptyHoldings, EmptyOrders } from "./portfolio-empty-states";
+import { EmptyHoldings, EmptyOrders, EmptyFilteredOrders } from "./portfolio-empty-states";
 import { HoldingsDesktopRow, HoldingsMobileCard } from "./holdings-row";
 import type { HoldingRow } from "./holdings-row";
 import { OrdersDesktopRow, OrderMobileCard } from "./orders-row";
@@ -25,18 +27,23 @@ import { PendingBanner } from "@/features/dashboard/pending-banner";
 /* ────────────── Constants ────────────── */
 
 const CALIBERS: Caliber[] = ["9MM", "556", "22LR", "308"];
+const ORDERS_PAGE_SIZE = 10;
 
 /* ────────────── Types ────────────── */
 
-type OrderFilter = "All" | "Active" | "Completed" | "Failed";
+type OrderFilter = "All" | "Processing" | "Completed" | "Failed";
 
 /* ────────────── Main Dashboard ────────────── */
 
 export function PortfolioDashboard() {
   const { address, isConnected, isReconnecting } = useAuth();
   const { tokens, usdc, isLoading: balancesLoading } = useTokenBalances();
+  const router = useRouter();
 
   const [orderFilter, setOrderFilter] = useState<OrderFilter>("All");
+  const [visibleCount, setVisibleCount] = useState(ORDERS_PAGE_SIZE);
+  const [caliberFilter, setCaliberFilter] = useState<Caliber | null>(null);
+  const ordersSectionRef = useRef<HTMLElement>(null);
 
   // Market prices
   const { data: marketData = [], isLoading: marketLoading } = useMarketData();
@@ -77,22 +84,29 @@ export function PortfolioDashboard() {
 
   // Filter orders
   const filteredOrders = useMemo(() => {
-    if (orderFilter === "All") return orders;
-    if (orderFilter === "Active")
-      return orders.filter(
+    let result = orders;
+    if (orderFilter === "Processing")
+      result = result.filter(
         (o: OrderFromAPI) =>
           o.status === "PENDING" || o.status === "PROCESSING",
       );
-    if (orderFilter === "Completed")
-      return orders.filter((o: OrderFromAPI) => o.status === "COMPLETED");
-    return orders.filter(
-      (o: OrderFromAPI) => o.status === "FAILED" || o.status === "CANCELLED",
-    );
-  }, [orderFilter, orders]);
+    else if (orderFilter === "Completed")
+      result = result.filter((o: OrderFromAPI) => o.status === "COMPLETED");
+    else if (orderFilter === "Failed")
+      result = result.filter(
+        (o: OrderFromAPI) => o.status === "FAILED" || o.status === "CANCELLED",
+      );
+    if (caliberFilter)
+      result = result.filter((o: OrderFromAPI) => o.caliber === caliberFilter);
+    return result;
+  }, [orderFilter, orders, caliberFilter]);
+
+  const visibleOrders = filteredOrders.slice(0, visibleCount);
+  const remainingCount = filteredOrders.length - visibleOrders.length;
 
   // Tab counts (must be before early returns to satisfy rules of hooks)
   const tabCounts = useMemo(() => {
-    const active = orders.filter(
+    const processing = orders.filter(
       (o: OrderFromAPI) => o.status === "PENDING" || o.status === "PROCESSING",
     ).length;
     const completed = orders.filter(
@@ -103,11 +117,36 @@ export function PortfolioDashboard() {
     ).length;
     return {
       All: orders.length,
-      Active: active,
+      Processing: processing,
       Completed: completed,
       Failed: failed,
     } as Record<OrderFilter, number>;
   }, [orders]);
+
+  // Callbacks
+  const handleViewActiveOrders = useCallback(() => {
+    setOrderFilter("Processing");
+    setVisibleCount(ORDERS_PAGE_SIZE);
+    setCaliberFilter(null);
+    setTimeout(() => {
+      ordersSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 0);
+  }, []);
+
+  const handleViewOrdersForCaliber = useCallback((caliber: Caliber) => {
+    setOrderFilter("All");
+    setCaliberFilter(caliber);
+    setVisibleCount(ORDERS_PAGE_SIZE);
+    setTimeout(() => {
+      ordersSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 0);
+  }, []);
+
+  const handleTabChange = useCallback((tab: OrderFilter) => {
+    setOrderFilter(tab);
+    setVisibleCount(ORDERS_PAGE_SIZE);
+    setCaliberFilter(null);
+  }, []);
 
   // Show loading skeleton during reconnection (prevents hydration mismatch)
   if (isReconnecting) {
@@ -148,7 +187,7 @@ export function PortfolioDashboard() {
   const dataLoading = balancesLoading || marketLoading;
   const orderFilterTabs: OrderFilter[] = [
     "All",
-    "Active",
+    "Processing",
     "Completed",
     "Failed",
   ];
@@ -195,6 +234,7 @@ export function PortfolioDashboard() {
                   o.status === "PENDING" || o.status === "PROCESSING",
               ).length
             }
+            onViewOrders={handleViewActiveOrders}
           />
         </div>
       )}
@@ -266,17 +306,19 @@ export function PortfolioDashboard() {
                     {holdings.map((holding, i) => (
                       <tr
                         key={holding.caliber}
-                        className="transition-colors duration-100 hover:bg-ax-tertiary"
+                        className="cursor-pointer transition-colors duration-100 hover:bg-ax-tertiary"
                         style={{
                           borderBottom:
                             i < holdings.length - 1
                               ? "1px solid var(--border-default)"
                               : "none",
                         }}
+                        onClick={() => router.push(`/calibers/${holding.caliber.toLowerCase()}`)}
                       >
                         <HoldingsDesktopRow
                           holding={holding}
                           isLast={i === holdings.length - 1}
+                          onViewOrders={() => handleViewOrdersForCaliber(holding.caliber)}
                         />
                       </tr>
                     ))}
@@ -288,7 +330,11 @@ export function PortfolioDashboard() {
             {/* Mobile cards */}
             <div className="flex flex-col gap-3 md:hidden">
               {holdings.map((holding) => (
-                <HoldingsMobileCard key={holding.caliber} holding={holding} />
+                <HoldingsMobileCard
+                  key={holding.caliber}
+                  holding={holding}
+                  onViewOrders={() => handleViewOrdersForCaliber(holding.caliber)}
+                />
               ))}
             </div>
           </>
@@ -296,7 +342,7 @@ export function PortfolioDashboard() {
       </section>
 
       {/* Section 3: Orders */}
-      <section className="mt-10">
+      <section className="mt-10" ref={ordersSectionRef}>
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <h2
             className="text-lg font-semibold"
@@ -306,7 +352,7 @@ export function PortfolioDashboard() {
           </h2>
           {/* Tab filters */}
           <div
-            className="flex items-center gap-1 rounded-lg p-1"
+            className="flex items-center gap-1 overflow-x-auto rounded-lg p-1"
             style={{ backgroundColor: "var(--bg-secondary)" }}
             role="tablist"
             aria-label="Order filters"
@@ -317,7 +363,7 @@ export function PortfolioDashboard() {
                 type="button"
                 role="tab"
                 aria-selected={orderFilter === tab}
-                className="rounded-md px-3 py-1.5 text-xs font-medium transition-all duration-150"
+                className="whitespace-nowrap rounded-md px-3 py-2.5 text-xs font-medium transition-all duration-150"
                 style={{
                   backgroundColor:
                     orderFilter === tab ? "var(--bg-tertiary)" : "transparent",
@@ -330,7 +376,7 @@ export function PortfolioDashboard() {
                       ? "1px solid var(--border-hover)"
                       : "1px solid transparent",
                 }}
-                onClick={() => setOrderFilter(tab)}
+                onClick={() => handleTabChange(tab)}
               >
                 {tab}
                 {tabCounts[tab] > 0 && (
@@ -355,23 +401,36 @@ export function PortfolioDashboard() {
           </div>
         </div>
 
+        {/* Caliber filter pill */}
+        {caliberFilter && (
+          <div className="mb-3 flex items-center gap-2">
+            <span
+              className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium"
+              style={{
+                backgroundColor: "color-mix(in srgb, var(--brass) 15%, transparent)",
+                color: "var(--brass)",
+              }}
+            >
+              {caliberFilter} orders
+              <button
+                type="button"
+                onClick={() => setCaliberFilter(null)}
+                className="ml-0.5 rounded-full p-0.5 transition-colors hover:bg-black/10"
+                aria-label={`Clear ${caliberFilter} filter`}
+              >
+                <X size={12} />
+              </button>
+            </span>
+          </div>
+        )}
+
         {ordersLoading ? (
           <OrdersTableSkeleton />
         ) : filteredOrders.length === 0 ? (
-          orderFilter === "All" ? (
+          orderFilter === "All" && !caliberFilter ? (
             <EmptyOrders />
           ) : (
-            <div
-              className="flex items-center justify-center rounded-xl px-6 py-10 text-center"
-              style={{
-                backgroundColor: "var(--bg-secondary)",
-                border: "1px solid var(--border-default)",
-              }}
-            >
-              <p className="text-sm" style={{ color: "var(--text-muted)" }}>
-                No {orderFilter.toLowerCase()} orders.
-              </p>
-            </div>
+            <EmptyFilteredOrders filter={caliberFilter ?? orderFilter} />
           )
         ) : (
           <>
@@ -430,11 +489,11 @@ export function PortfolioDashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredOrders.map((order: OrderFromAPI, i: number) => (
+                    {visibleOrders.map((order: OrderFromAPI, i: number) => (
                       <OrdersDesktopRow
                         key={order.id}
                         order={order}
-                        isLast={i === filteredOrders.length - 1}
+                        isLast={i === visibleOrders.length - 1}
                       />
                     ))}
                   </tbody>
@@ -444,18 +503,37 @@ export function PortfolioDashboard() {
 
             {/* Mobile cards */}
             <div className="flex flex-col gap-3 md:hidden">
-              {filteredOrders.map((order: OrderFromAPI) => (
+              {visibleOrders.map((order: OrderFromAPI) => (
                 <OrderMobileCard key={order.id} order={order} />
               ))}
             </div>
+
+            {/* Show more */}
+            {remainingCount > 0 && (
+              <div className="mt-4 flex justify-center">
+                <button
+                  type="button"
+                  onClick={() => setVisibleCount((c) => c + ORDERS_PAGE_SIZE)}
+                  className="rounded-lg px-5 py-2.5 text-sm font-medium transition-colors duration-150"
+                  style={{
+                    border: "1px solid var(--border-hover)",
+                    color: "var(--text-secondary)",
+                  }}
+                >
+                  Show more ({remainingCount} remaining)
+                </button>
+              </div>
+            )}
           </>
         )}
       </section>
 
-      {/* Section 4: Primers */}
-      <div className="mt-10">
-        <PrimersSection primers={0} />
-      </div>
+      {/* Section 4: Primers — hidden until feature is ready */}
+      {false && (
+        <div className="mt-10">
+          <PrimersSection primers={0} />
+        </div>
+      )}
     </div>
   );
 }

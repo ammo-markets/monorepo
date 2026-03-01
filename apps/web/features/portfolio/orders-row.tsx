@@ -7,6 +7,17 @@ import { timeAgo } from "@/lib/utils";
 import { StatusBadge, TypeBadge, mapOrderStatus } from "./portfolio-badges";
 import type { OrderFromAPI } from "@/lib/types";
 
+function formatOrderAmount(order: OrderFromAPI): { value: string; label: string } {
+  if (order.type === "MINT") {
+    const val = order.usdcAmount ? (Number(order.usdcAmount) / 1e6).toFixed(2) : "\u2014";
+    return { value: val, label: "USDC spent" };
+  }
+  const val = order.tokenAmount
+    ? Math.floor(Number(order.tokenAmount) / 1e18).toLocaleString()
+    : "\u2014";
+  return { value: val, label: "rounds returned" };
+}
+
 export function OrdersDesktopRow({
   order,
   isLast,
@@ -17,14 +28,7 @@ export function OrdersDesktopRow({
   const Icon = caliberIcons[order.caliber];
   const router = useRouter();
   const displayStatus = mapOrderStatus(order.status);
-  const amountDisplay =
-    order.type === "MINT"
-      ? order.usdcAmount
-        ? `${(Number(order.usdcAmount) / 1e6).toFixed(2)} USDC`
-        : "\u2014"
-      : order.tokenAmount
-        ? `${Math.floor(Number(order.tokenAmount) / 1e18).toLocaleString()} rounds`
-        : "\u2014";
+  const amount = formatOrderAmount(order);
   return (
     <tr
       className={`transition-colors duration-100 hover:bg-ax-tertiary ${order.id.startsWith("pending-") ? "" : "cursor-pointer"}`}
@@ -70,12 +74,17 @@ export function OrdersDesktopRow({
       </td>
       {/* Amount */}
       <td className="px-6 py-4 text-right">
-        <span
-          className="font-mono text-sm tabular-nums"
-          style={{ color: "var(--text-primary)" }}
-        >
-          {amountDisplay}
-        </span>
+        <div className="flex flex-col items-end">
+          <span
+            className="font-mono text-sm tabular-nums"
+            style={{ color: "var(--text-primary)" }}
+          >
+            {amount.value}
+          </span>
+          <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>
+            {amount.label}
+          </span>
+        </div>
       </td>
       {/* Status */}
       <td className="px-6 py-4">
@@ -95,14 +104,7 @@ export function OrderMobileCard({ order }: { order: OrderFromAPI }) {
   const Icon = caliberIcons[order.caliber];
   const router = useRouter();
   const displayStatus = mapOrderStatus(order.status);
-  const amountDisplay =
-    order.type === "MINT"
-      ? order.usdcAmount
-        ? `${(Number(order.usdcAmount) / 1e6).toFixed(2)} USDC`
-        : "\u2014"
-      : order.tokenAmount
-        ? `${Math.floor(Number(order.tokenAmount) / 1e18).toLocaleString()} rounds`
-        : "\u2014";
+  const amount = formatOrderAmount(order);
   return (
     <div
       className={`rounded-xl p-4 transition-all duration-150 bg-ax-secondary border border-border-default ${order.id.startsWith("pending-") ? "" : "cursor-pointer hover:border-brass-border"}`}
@@ -146,12 +148,17 @@ export function OrderMobileCard({ order }: { order: OrderFromAPI }) {
             {order.caliber}
           </span>
         </div>
-        <span
-          className="font-mono text-sm tabular-nums"
-          style={{ color: "var(--text-secondary)" }}
-        >
-          {amountDisplay}
-        </span>
+        <div className="flex flex-col">
+          <span
+            className="font-mono text-sm tabular-nums"
+            style={{ color: "var(--text-secondary)" }}
+          >
+            {amount.value}
+          </span>
+          <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>
+            {amount.label}
+          </span>
+        </div>
       </div>
       <div className="mt-2 flex items-center justify-between">
         <span className="text-xs" style={{ color: "var(--text-muted)" }}>

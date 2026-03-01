@@ -115,6 +115,39 @@ export function EmptyHoldings() {
   );
 }
 
+export function EmptyFilteredOrders({ filter }: { filter: string }) {
+  return (
+    <div
+      className="flex flex-col items-center justify-center rounded-xl px-6 py-12 text-center"
+      style={{
+        backgroundColor: "var(--bg-secondary)",
+        border: "1px solid var(--border-default)",
+      }}
+    >
+      <svg
+        width="40"
+        height="40"
+        viewBox="0 0 40 40"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+        className="mb-4"
+      >
+        <rect x="4" y="8" width="32" height="24" rx="3" stroke="var(--text-muted)" strokeWidth="1.5" />
+        <line x1="4" y1="16" x2="36" y2="16" stroke="var(--text-muted)" strokeWidth="1" opacity="0.4" />
+        <line x1="4" y1="22" x2="36" y2="22" stroke="var(--text-muted)" strokeWidth="1" opacity="0.4" />
+        <line x1="4" y1="28" x2="36" y2="28" stroke="var(--text-muted)" strokeWidth="1" opacity="0.4" />
+      </svg>
+      <p className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
+        No {filter.toLowerCase()} orders
+      </p>
+      <p className="mt-1 text-sm" style={{ color: "var(--text-muted)" }}>
+        Orders matching this filter will appear here.
+      </p>
+    </div>
+  );
+}
+
 export function EmptyOrders() {
   return (
     <div

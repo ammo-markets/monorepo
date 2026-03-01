@@ -1,12 +1,13 @@
 "use client";
 
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, ArrowRight } from "lucide-react";
 
 interface PendingBannerProps {
   pendingCount: number;
+  onViewOrders?: () => void;
 }
 
-export function PendingBanner({ pendingCount }: PendingBannerProps) {
+export function PendingBanner({ pendingCount, onViewOrders }: PendingBannerProps) {
   if (pendingCount === 0) return null;
 
   return (
@@ -22,6 +23,17 @@ export function PendingBanner({ pendingCount }: PendingBannerProps) {
         You have {pendingCount} pending order{pendingCount > 1 ? "s" : ""}{" "}
         awaiting processing
       </p>
+      {onViewOrders && (
+        <button
+          type="button"
+          onClick={onViewOrders}
+          className="inline-flex shrink-0 items-center gap-1 text-sm font-semibold transition-opacity hover:opacity-80"
+          style={{ color: "var(--amber)" }}
+        >
+          View Orders
+          <ArrowRight size={14} />
+        </button>
+      )}
     </div>
   );
 }

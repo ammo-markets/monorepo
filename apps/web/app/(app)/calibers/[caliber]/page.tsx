@@ -11,6 +11,7 @@ import {
   ActionPanelMobile,
 } from "@/features/market";
 import { useMarketData } from "@/hooks/use-market-data";
+import { useAuth } from "@/contexts/auth-context";
 import type { Caliber } from "@ammo-exchange/shared";
 import { buildCaliberDetail } from "@/lib/caliber-utils";
 
@@ -40,6 +41,7 @@ export default function CaliberDetailPage({
   const caliberId = resolveCaliberId(caliberSlug);
   if (!caliberId) notFound();
 
+  const { isConnected } = useAuth();
   const { data: calibers = [], isLoading: loading } = useMarketData();
 
   const data = useMemo(() => {
@@ -103,13 +105,13 @@ export default function CaliberDetailPage({
 
           {/* Right column -- desktop only (sticky action panel) */}
           <div className="hidden lg:block lg:w-[360px] lg:flex-shrink-0">
-            <ActionPanelDesktop data={data} walletConnected={false} />
+            <ActionPanelDesktop data={data} walletConnected={isConnected} />
           </div>
         </div>
       </div>
 
       {/* Mobile bottom sheet action panel */}
-      <ActionPanelMobile data={data} walletConnected={false} />
+      <ActionPanelMobile data={data} walletConnected={isConnected} />
     </div>
   );
 }

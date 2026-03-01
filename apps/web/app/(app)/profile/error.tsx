@@ -47,14 +47,14 @@ export default function ProfileError({
           Try Again
         </button>
         <Link
-          href="/"
+          href="/portfolio"
           className="rounded-lg px-5 py-2.5 text-sm font-medium transition-colors duration-150"
           style={{
             border: "1px solid var(--border-hover)",
             color: "var(--text-secondary)",
           }}
         >
-          Go Home
+          Go to Portfolio
         </Link>
       </div>
     </div>
