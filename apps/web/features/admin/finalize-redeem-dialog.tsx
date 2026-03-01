@@ -8,6 +8,7 @@ import { queryKeys } from "@/lib/query-keys";
 import { useFinalizeRedeem } from "@/hooks/use-finalize-redeem";
 import { parseContractError } from "@/lib/errors";
 import type { Caliber } from "@ammo-exchange/shared";
+import { RESTRICTED_STATES } from "@ammo-exchange/shared";
 
 export interface AdminRedeemOrder {
   id: string;
@@ -99,6 +100,24 @@ export function FinalizeRedeemDialog({
   }
 
   if (!open) return null;
+
+  const kycApproved = order.user?.kycStatus === "APPROVED";
+  const hasShipping = !!order.shippingAddress;
+  const isRestrictedState =
+    hasShipping &&
+    (RESTRICTED_STATES as readonly string[]).includes(
+      order.shippingAddress!.state,
+    );
+
+  const blockReasons: string[] = [];
+  if (!kycApproved) blockReasons.push("KYC is not approved");
+  if (!hasShipping) blockReasons.push("No shipping address on file");
+  if (isRestrictedState)
+    blockReasons.push(
+      `Shipping to ${order.shippingAddress!.state} is restricted`,
+    );
+
+  const canFinalize = blockReasons.length === 0;
 
   const buttonLabel = isPending
     ? "Submitting..."
@@ -211,6 +230,24 @@ export function FinalizeRedeemDialog({
           </p>
         )}
 
+        {!canFinalize && (
+          <div
+            className="mt-4 rounded-lg border px-3 py-2 text-xs"
+            style={{
+              borderColor: "rgba(239,68,68,0.3)",
+              backgroundColor: "rgba(239,68,68,0.08)",
+              color: "rgb(239,68,68)",
+            }}
+          >
+            <p className="font-medium">Cannot finalize:</p>
+            <ul className="mt-1 list-inside list-disc">
+              {blockReasons.map((reason) => (
+                <li key={reason}>{reason}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         {/* Actions */}
         <div className="mt-6 flex gap-3">
           <button
@@ -227,7 +264,7 @@ export function FinalizeRedeemDialog({
           <button
             type="button"
             onClick={handleConfirm}
-            disabled={isPending || isConfirming || !isReady}
+            disabled={isPending || isConfirming || !isReady || !canFinalize}
             className="flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors hover:bg-brass-hover disabled:cursor-not-allowed disabled:opacity-50"
             style={{
               backgroundColor: "var(--brass)",

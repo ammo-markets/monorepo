@@ -11,10 +11,42 @@ import {
 } from "lucide-react";
 import { truncateAddress } from "@/lib/utils";
 import { useAdminRedeemOrders } from "@/hooks/use-admin-orders";
+import { RESTRICTED_STATES } from "@ammo-exchange/shared";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { FinalizeRedeemDialog } from "./finalize-redeem-dialog";
 import { CancelRedeemDialog } from "./cancel-redeem-dialog";
 import { OrderDetailDrawer } from "./order-detail-drawer";
 import type { AdminRedeemOrder } from "./finalize-redeem-dialog";
+
+/** Returns all reasons the order cannot be finalized, or an empty array if it can. */
+function getFinalizeBlockReasons(order: AdminRedeemOrder): string[] {
+  const reasons: string[] = [];
+
+  if (!order.onChainOrderId) reasons.push("On-chain order ID: awaiting");
+  if (!order.user?.kycStatus || order.user.kycStatus === "NONE")
+    reasons.push("KYC: not submitted");
+  else if (order.user.kycStatus === "PENDING")
+    reasons.push("KYC: pending review");
+  else if (order.user.kycStatus === "REJECTED")
+    reasons.push("KYC: rejected");
+
+  if (!order.shippingAddress) reasons.push("Shipping address: not provided");
+  else if (
+    (RESTRICTED_STATES as readonly string[]).includes(
+      order.shippingAddress.state,
+    )
+  )
+    reasons.push(
+      `Shipping address: ${order.shippingAddress.state} is a restricted state`,
+    );
+
+  return reasons;
+}
 
 const CALIBER_OPTIONS = [
   { label: "All Calibers", value: "" },
@@ -158,7 +190,7 @@ export function RedeemOrdersTable() {
             placeholder="Search by wallet, order ID, tx hash..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-lg border py-2 pl-9 pr-3 text-sm outline-none focus:border-[var(--brass)] focus:ring-1 focus:ring-[var(--brass)]"
+            className="w-full rounded-lg border py-2 pl-9 pr-3 text-sm outline-none focus:border-brass focus:ring-1 focus:ring-brass"
             style={{
               borderColor: "var(--border-hover)",
               backgroundColor: "var(--bg-secondary)",
@@ -169,7 +201,7 @@ export function RedeemOrdersTable() {
         <select
           value={caliberFilter}
           onChange={(e) => setCaliberFilter(e.target.value)}
-          className="rounded-lg border px-3 py-2 text-sm outline-none focus:border-[var(--brass)] focus:ring-1 focus:ring-[var(--brass)]"
+          className="rounded-lg border px-3 py-2 text-sm outline-none focus:border-brass focus:ring-1 focus:ring-brass"
           style={{
             borderColor: "var(--border-hover)",
             backgroundColor: "var(--bg-secondary)",
@@ -201,7 +233,7 @@ export function RedeemOrdersTable() {
           <button
             type="button"
             onClick={() => refetch()}
-            className="rounded-lg border px-4 py-2 text-sm transition-colors hover:bg-[var(--bg-tertiary)]"
+            className="rounded-lg border px-4 py-2 text-sm transition-colors hover:bg-ax-tertiary"
             style={{
               borderColor: "var(--border-hover)",
               color: "var(--text-primary)",
@@ -291,7 +323,7 @@ export function RedeemOrdersTable() {
                 {orders.map((order) => (
                   <tr
                     key={order.id}
-                    className="cursor-pointer border-b transition-colors hover:bg-[var(--bg-secondary)]"
+                    className="cursor-pointer border-b transition-colors hover:bg-ax-secondary"
                     style={{ borderColor: "var(--border-default)" }}
                     onClick={() => {
                       setDrawerOrder(order);
@@ -341,27 +373,60 @@ export function RedeemOrdersTable() {
                     <td className="px-4 py-3">
                       {order.status === "PENDING" && (
                         <div className="flex gap-2">
-                          <button
-                            type="button"
-                            disabled={!order.onChainOrderId}
-                            title={
-                              order.onChainOrderId
-                                ? "Finalize this redeem order"
-                                : "Awaiting on-chain order ID"
-                            }
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedOrder(order);
-                              setDialogOpen(true);
-                            }}
-                            className="rounded-md px-3 py-1 text-xs font-medium transition-colors hover:bg-[var(--brass-hover)] disabled:cursor-not-allowed disabled:opacity-50"
-                            style={{
-                              backgroundColor: "var(--brass)",
-                              color: "var(--bg-primary)",
-                            }}
-                          >
-                            Finalize
-                          </button>
+                          {(() => {
+                            const blockReasons =
+                              getFinalizeBlockReasons(order);
+                            const isBlocked = blockReasons.length > 0;
+
+                            const btn = (
+                              <button
+                                type="button"
+                                disabled={isBlocked}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedOrder(order);
+                                  setDialogOpen(true);
+                                }}
+                                className="rounded-md px-3 py-1 text-xs font-medium transition-colors hover:bg-brass-hover disabled:cursor-not-allowed disabled:opacity-50"
+                                style={{
+                                  backgroundColor: "var(--brass)",
+                                  color: "var(--bg-primary)",
+                                }}
+                              >
+                                Finalize
+                              </button>
+                            );
+
+                            if (!isBlocked) return btn;
+
+                            return (
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <span
+                                      className="inline-flex"
+                                      onClick={(e) => e.stopPropagation()}
+                                    >
+                                      {btn}
+                                    </span>
+                                  </TooltipTrigger>
+                                  <TooltipContent
+                                    side="top"
+                                    className="max-w-xs border border-red-900/40 bg-[var(--bg-primary)] text-left"
+                                  >
+                                    <p className="mb-1 font-medium text-red-400">
+                                      Cannot finalize
+                                    </p>
+                                    <ul className="space-y-0.5 text-xs text-[var(--text-secondary)]">
+                                      {blockReasons.map((reason) => (
+                                        <li key={reason}>• {reason}</li>
+                                      ))}
+                                    </ul>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            );
+                          })()}
                           <button
                             type="button"
                             disabled={!order.onChainOrderId}
@@ -405,7 +470,7 @@ export function RedeemOrdersTable() {
                   type="button"
                   disabled={currentPage <= 1}
                   onClick={() => setCurrentPage((p) => p - 1)}
-                  className="rounded-md border p-1.5 transition-colors hover:bg-[var(--bg-tertiary)] disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-md border p-1.5 transition-colors hover:bg-ax-tertiary disabled:cursor-not-allowed disabled:opacity-50"
                   style={{ borderColor: "var(--border-hover)" }}
                   aria-label="Previous page"
                 >
@@ -415,7 +480,7 @@ export function RedeemOrdersTable() {
                   type="button"
                   disabled={currentPage >= totalPages}
                   onClick={() => setCurrentPage((p) => p + 1)}
-                  className="rounded-md border p-1.5 transition-colors hover:bg-[var(--bg-tertiary)] disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-md border p-1.5 transition-colors hover:bg-ax-tertiary disabled:cursor-not-allowed disabled:opacity-50"
                   style={{ borderColor: "var(--border-hover)" }}
                   aria-label="Next page"
                 >
