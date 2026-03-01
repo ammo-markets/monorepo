@@ -7,7 +7,7 @@ import { timeAgo } from "@/lib/utils";
 import { StatusBadge, TypeBadge, mapOrderStatus } from "./portfolio-badges";
 import type { OrderFromAPI } from "@/lib/types";
 
-function formatOrderAmount(order: OrderFromAPI): { value: string; label: string } {
+export function formatOrderAmount(order: OrderFromAPI): { value: string; label: string } {
   if (order.type === "MINT") {
     const val = order.usdcAmount ? (Number(order.usdcAmount) / 1e6).toFixed(2) : "\u2014";
     return { value: val, label: "USDC spent" };

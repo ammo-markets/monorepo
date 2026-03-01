@@ -16,13 +16,14 @@ import {
   HeaderSkeleton,
   HoldingsTableSkeleton,
   OrdersTableSkeleton,
+  ActiveOrdersSkeleton,
 } from "./portfolio-skeletons";
-import { EmptyHoldings, EmptyOrders, EmptyFilteredOrders } from "./portfolio-empty-states";
+import { EmptyHoldings, EmptyOrderHistory, EmptyFilteredOrders } from "./portfolio-empty-states";
 import { HoldingsDesktopRow, HoldingsMobileCard } from "./holdings-row";
 import type { HoldingRow } from "./holdings-row";
 import { OrdersDesktopRow, OrderMobileCard } from "./orders-row";
 import { PrimersSection } from "./primers-section";
-import { PendingBanner } from "@/features/dashboard/pending-banner";
+import { ActiveOrderCard } from "./active-order-card";
 
 /* ────────────── Constants ────────────── */
 
@@ -31,7 +32,7 @@ const ORDERS_PAGE_SIZE = 10;
 
 /* ────────────── Types ────────────── */
 
-type OrderFilter = "All" | "Processing" | "Completed" | "Failed";
+type HistoryFilter = "All" | "Mint" | "Redeem" | "Failed";
 
 /* ────────────── Main Dashboard ────────────── */
 
@@ -40,10 +41,10 @@ export function PortfolioDashboard() {
   const { tokens, usdc, isLoading: balancesLoading } = useTokenBalances();
   const router = useRouter();
 
-  const [orderFilter, setOrderFilter] = useState<OrderFilter>("All");
+  const [historyFilter, setHistoryFilter] = useState<HistoryFilter>("All");
   const [visibleCount, setVisibleCount] = useState(ORDERS_PAGE_SIZE);
   const [caliberFilter, setCaliberFilter] = useState<Caliber | null>(null);
-  const ordersSectionRef = useRef<HTMLElement>(null);
+  const orderHistorySectionRef = useRef<HTMLElement>(null);
 
   // Market prices
   const { data: marketData = [], isLoading: marketLoading } = useMarketData();
@@ -82,68 +83,61 @@ export function PortfolioDashboard() {
   // USDC balance display
   const usdcBalance = usdc ? Number(formatUnits(usdc, 6)) : 0;
 
-  // Filter orders
-  const filteredOrders = useMemo(() => {
-    let result = orders;
-    if (orderFilter === "Processing")
-      result = result.filter(
-        (o: OrderFromAPI) =>
-          o.status === "PENDING" || o.status === "PROCESSING",
-      );
-    else if (orderFilter === "Completed")
-      result = result.filter((o: OrderFromAPI) => o.status === "COMPLETED");
-    else if (orderFilter === "Failed")
-      result = result.filter(
-        (o: OrderFromAPI) => o.status === "FAILED" || o.status === "CANCELLED",
-      );
-    if (caliberFilter)
-      result = result.filter((o: OrderFromAPI) => o.caliber === caliberFilter);
+  // Split orders into active vs history
+  const activeOrders = useMemo(
+    () => orders.filter((o: OrderFromAPI) => o.status === "PENDING" || o.status === "PROCESSING"),
+    [orders],
+  );
+
+  const historyOrders = useMemo(
+    () =>
+      orders.filter(
+        (o: OrderFromAPI) => o.status === "COMPLETED" || o.status === "FAILED" || o.status === "CANCELLED",
+      ),
+    [orders],
+  );
+
+  // Filter history by type/status + optional caliber
+  const filteredHistory = useMemo(() => {
+    let result = historyOrders;
+    if (historyFilter === "Mint") result = result.filter((o: OrderFromAPI) => o.type === "MINT");
+    else if (historyFilter === "Redeem") result = result.filter((o: OrderFromAPI) => o.type === "REDEEM");
+    else if (historyFilter === "Failed")
+      result = result.filter((o: OrderFromAPI) => o.status === "FAILED" || o.status === "CANCELLED");
+    if (caliberFilter) result = result.filter((o: OrderFromAPI) => o.caliber === caliberFilter);
     return result;
-  }, [orderFilter, orders, caliberFilter]);
+  }, [historyOrders, historyFilter, caliberFilter]);
 
-  const visibleOrders = filteredOrders.slice(0, visibleCount);
-  const remainingCount = filteredOrders.length - visibleOrders.length;
+  const visibleHistory = filteredHistory.slice(0, visibleCount);
+  const remainingCount = filteredHistory.length - visibleHistory.length;
 
-  // Tab counts (must be before early returns to satisfy rules of hooks)
+  // Tab counts computed from historyOrders
   const tabCounts = useMemo(() => {
-    const processing = orders.filter(
-      (o: OrderFromAPI) => o.status === "PENDING" || o.status === "PROCESSING",
-    ).length;
-    const completed = orders.filter(
-      (o: OrderFromAPI) => o.status === "COMPLETED",
-    ).length;
-    const failed = orders.filter(
+    const mint = historyOrders.filter((o: OrderFromAPI) => o.type === "MINT").length;
+    const redeem = historyOrders.filter((o: OrderFromAPI) => o.type === "REDEEM").length;
+    const failed = historyOrders.filter(
       (o: OrderFromAPI) => o.status === "FAILED" || o.status === "CANCELLED",
     ).length;
     return {
-      All: orders.length,
-      Processing: processing,
-      Completed: completed,
+      All: historyOrders.length,
+      Mint: mint,
+      Redeem: redeem,
       Failed: failed,
-    } as Record<OrderFilter, number>;
-  }, [orders]);
+    } as Record<HistoryFilter, number>;
+  }, [historyOrders]);
 
   // Callbacks
-  const handleViewActiveOrders = useCallback(() => {
-    setOrderFilter("Processing");
-    setVisibleCount(ORDERS_PAGE_SIZE);
-    setCaliberFilter(null);
-    setTimeout(() => {
-      ordersSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 0);
-  }, []);
-
   const handleViewOrdersForCaliber = useCallback((caliber: Caliber) => {
-    setOrderFilter("All");
+    setHistoryFilter("All");
     setCaliberFilter(caliber);
     setVisibleCount(ORDERS_PAGE_SIZE);
     setTimeout(() => {
-      ordersSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      orderHistorySectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 0);
   }, []);
 
-  const handleTabChange = useCallback((tab: OrderFilter) => {
-    setOrderFilter(tab);
+  const handleHistoryTabChange = useCallback((tab: HistoryFilter) => {
+    setHistoryFilter(tab);
     setVisibleCount(ORDERS_PAGE_SIZE);
     setCaliberFilter(null);
   }, []);
@@ -167,7 +161,7 @@ export function PortfolioDashboard() {
             className="mb-4 text-lg font-semibold"
             style={{ color: "var(--text-primary)" }}
           >
-            Orders
+            Order History
           </h2>
           <OrdersTableSkeleton />
         </section>
@@ -185,12 +179,7 @@ export function PortfolioDashboard() {
   }
 
   const dataLoading = balancesLoading || marketLoading;
-  const orderFilterTabs: OrderFilter[] = [
-    "All",
-    "Processing",
-    "Completed",
-    "Failed",
-  ];
+  const historyFilterTabs: HistoryFilter[] = ["All", "Mint", "Redeem", "Failed"];
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 lg:px-8 lg:py-10">
@@ -224,22 +213,45 @@ export function PortfolioDashboard() {
         </div>
       )}
 
-      {/* Pending Orders Banner */}
-      {!ordersLoading && (
-        <div className="mt-6">
-          <PendingBanner
-            pendingCount={
-              orders.filter(
-                (o: OrderFromAPI) =>
-                  o.status === "PENDING" || o.status === "PROCESSING",
-              ).length
-            }
-            onViewOrders={handleViewActiveOrders}
-          />
-        </div>
+      {/* Section 2: Active Orders */}
+      {ordersLoading ? (
+        <section className="mt-6">
+          <h2
+            className="mb-3 text-lg font-semibold"
+            style={{ color: "var(--text-primary)" }}
+          >
+            Active Orders
+          </h2>
+          <ActiveOrdersSkeleton />
+        </section>
+      ) : (
+        activeOrders.length > 0 && (
+          <section className="mt-6">
+            <h2
+              className="mb-3 text-lg font-semibold"
+              style={{ color: "var(--text-primary)" }}
+            >
+              Active Orders
+              <span
+                className="ml-2 inline-flex items-center justify-center rounded-full px-2 py-0.5 text-xs font-semibold"
+                style={{
+                  backgroundColor: "color-mix(in srgb, var(--blue) 15%, transparent)",
+                  color: "var(--blue)",
+                }}
+              >
+                {activeOrders.length}
+              </span>
+            </h2>
+            <div className="flex flex-col gap-3">
+              {activeOrders.map((order: OrderFromAPI) => (
+                <ActiveOrderCard key={order.id} order={order} />
+              ))}
+            </div>
+          </section>
+        )
       )}
 
-      {/* Section 2: Holdings */}
+      {/* Section 3: Holdings */}
       <section className="mt-10">
         <h2
           className="mb-4 text-lg font-semibold"
@@ -341,42 +353,42 @@ export function PortfolioDashboard() {
         )}
       </section>
 
-      {/* Section 3: Orders */}
-      <section className="mt-10" ref={ordersSectionRef}>
+      {/* Section 4: Order History */}
+      <section className="mt-10" ref={orderHistorySectionRef}>
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <h2
             className="text-lg font-semibold"
             style={{ color: "var(--text-primary)" }}
           >
-            Orders
+            Order History
           </h2>
           {/* Tab filters */}
           <div
             className="flex items-center gap-1 overflow-x-auto rounded-lg p-1"
             style={{ backgroundColor: "var(--bg-secondary)" }}
             role="tablist"
-            aria-label="Order filters"
+            aria-label="Order history filters"
           >
-            {orderFilterTabs.map((tab) => (
+            {historyFilterTabs.map((tab) => (
               <button
                 key={tab}
                 type="button"
                 role="tab"
-                aria-selected={orderFilter === tab}
+                aria-selected={historyFilter === tab}
                 className="whitespace-nowrap rounded-md px-3 py-2.5 text-xs font-medium transition-all duration-150"
                 style={{
                   backgroundColor:
-                    orderFilter === tab ? "var(--bg-tertiary)" : "transparent",
+                    historyFilter === tab ? "var(--bg-tertiary)" : "transparent",
                   color:
-                    orderFilter === tab
+                    historyFilter === tab
                       ? "var(--text-primary)"
                       : "var(--text-muted)",
                   border:
-                    orderFilter === tab
+                    historyFilter === tab
                       ? "1px solid var(--border-hover)"
                       : "1px solid transparent",
                 }}
-                onClick={() => handleTabChange(tab)}
+                onClick={() => handleHistoryTabChange(tab)}
               >
                 {tab}
                 {tabCounts[tab] > 0 && (
@@ -384,11 +396,11 @@ export function PortfolioDashboard() {
                     className="ml-1 rounded-full px-1.5 py-0.5 text-[10px] font-semibold"
                     style={{
                       backgroundColor:
-                        orderFilter === tab
+                        historyFilter === tab
                           ? "var(--bg-secondary)"
                           : "var(--bg-tertiary)",
                       color:
-                        orderFilter === tab
+                        historyFilter === tab
                           ? "var(--text-primary)"
                           : "var(--text-muted)",
                     }}
@@ -426,11 +438,11 @@ export function PortfolioDashboard() {
 
         {ordersLoading ? (
           <OrdersTableSkeleton />
-        ) : filteredOrders.length === 0 ? (
-          orderFilter === "All" && !caliberFilter ? (
-            <EmptyOrders />
+        ) : filteredHistory.length === 0 ? (
+          historyFilter === "All" && !caliberFilter ? (
+            <EmptyOrderHistory />
           ) : (
-            <EmptyFilteredOrders filter={caliberFilter ?? orderFilter} />
+            <EmptyFilteredOrders filter={caliberFilter ?? historyFilter} />
           )
         ) : (
           <>
@@ -489,11 +501,11 @@ export function PortfolioDashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {visibleOrders.map((order: OrderFromAPI, i: number) => (
+                    {visibleHistory.map((order: OrderFromAPI, i: number) => (
                       <OrdersDesktopRow
                         key={order.id}
                         order={order}
-                        isLast={i === visibleOrders.length - 1}
+                        isLast={i === visibleHistory.length - 1}
                       />
                     ))}
                   </tbody>
@@ -503,7 +515,7 @@ export function PortfolioDashboard() {
 
             {/* Mobile cards */}
             <div className="flex flex-col gap-3 md:hidden">
-              {visibleOrders.map((order: OrderFromAPI) => (
+              {visibleHistory.map((order: OrderFromAPI) => (
                 <OrderMobileCard key={order.id} order={order} />
               ))}
             </div>
@@ -528,7 +540,7 @@ export function PortfolioDashboard() {
         )}
       </section>
 
-      {/* Section 4: Primers — hidden until feature is ready */}
+      {/* Section 5: Primers — hidden until feature is ready */}
       {false && (
         <div className="mt-10">
           <PrimersSection primers={0} />

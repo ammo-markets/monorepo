@@ -12,56 +12,7 @@ import { truncateAddress, snowtraceUrl, formatDate } from "@/lib/utils";
 import { caliberIcons } from "@/features/shared/caliber-icons";
 import { StatusBadge, TypeBadge, mapOrderStatus } from "./portfolio-badges";
 import type { DisplayStatus } from "./portfolio-badges";
-
-/* ────────────── Helpers ────────────── */
-
-function buildMintSteps(order: OrderFromAPI): OrderStep[] {
-  const hasTx = !!order.txHash;
-  const isCompleted = order.status === "COMPLETED";
-  const isFailed = order.status === "FAILED" || order.status === "CANCELLED";
-  return [
-    {
-      label: "Order Placed",
-      status: "completed",
-      meta: formatDate(order.createdAt),
-    },
-    {
-      label: "USDC Deposited",
-      status: hasTx ? "completed" : isFailed ? "failed" : "current",
-      meta: order.txHash ? `Tx: ${truncateAddress(order.txHash)}` : "Awaiting confirmation...",
-      link: order.txHash ? { url: snowtraceUrl(order.txHash), label: "View on Snowtrace" } : undefined,
-    },
-    {
-      label: "Tokens Minted",
-      status: isCompleted ? "completed" : isFailed ? "failed" : "future",
-      meta: isCompleted ? formatDate(order.updatedAt) : undefined,
-    },
-  ];
-}
-
-function buildRedeemSteps(order: OrderFromAPI): OrderStep[] {
-  const hasTx = !!order.txHash;
-  const isCompleted = order.status === "COMPLETED";
-  const isFailed = order.status === "FAILED" || order.status === "CANCELLED";
-  return [
-    {
-      label: "Redemption Initiated",
-      status: "completed",
-      meta: formatDate(order.createdAt),
-    },
-    {
-      label: "Tokens Burned",
-      status: hasTx ? "completed" : isFailed ? "failed" : "current",
-      meta: order.txHash ? `Tx: ${truncateAddress(order.txHash)}` : "Awaiting confirmation...",
-      link: order.txHash ? { url: snowtraceUrl(order.txHash), label: "View on Snowtrace" } : undefined,
-    },
-    {
-      label: "Completed",
-      status: isCompleted ? "completed" : isFailed ? "failed" : "future",
-      meta: isCompleted ? formatDate(order.updatedAt) : undefined,
-    },
-  ];
-}
+import { buildMintSteps, buildRedeemSteps } from "./order-steps";
 
 /* ────────────── Step Icon ────────────── */
 

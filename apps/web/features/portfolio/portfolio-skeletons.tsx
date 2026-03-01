@@ -41,6 +41,20 @@ export function HoldingsTableSkeleton() {
   );
 }
 
+export function ActiveOrdersSkeleton() {
+  return (
+    <div className="flex flex-col gap-3">
+      {[1, 2].map((i) => (
+        <div
+          key={i}
+          className="h-16 rounded-xl shimmer"
+          style={{ border: "1px solid var(--border-default)" }}
+        />
+      ))}
+    </div>
+  );
+}
+
 export function OrdersTableSkeleton() {
   return (
     <div
