@@ -49,6 +49,9 @@ model User {
   kycState       String?    // 2-letter state code
   kycGovIdType   String?    // DRIVERS_LICENSE, PASSPORT, STATE_ID
   kycGovIdNumber String?
+  kycRejectionReason String?
+  kycSubmittedAt     DateTime?
+  kycReviewedAt      DateTime?
 
   // Default shipping address (reusable across orders)
   defaultShippingName  String?

@@ -182,6 +182,8 @@ export default function ProfilePage() {
           onKycSubmit={handleKycSubmit}
           kycSubmitting={kycSubmitting}
           kycPrefill={kycPrefill}
+          rejectionReason={kycData?.rejectionReason}
+          submittedAt={kycData?.submittedAt}
         />
 
         {/* ── Section C: Shipping Address ── */}

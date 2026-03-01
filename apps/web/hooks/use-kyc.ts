@@ -12,6 +12,8 @@ interface KycPrefill {
 interface KycStatusData {
   kycStatus: string;
   kycPrefill: KycPrefill | undefined;
+  rejectionReason: string | null;
+  submittedAt: string | null;
 }
 
 export function useKycStatus(walletAddress: string | undefined) {
@@ -40,9 +42,16 @@ export function useKycStatus(walletAddress: string | undefined) {
             govIdType: (data.kycGovIdType as string | null) ?? null,
             govIdNumber: (data.kycGovIdNumber as string | null) ?? null,
           },
+          rejectionReason: (data.kycRejectionReason as string | null) ?? null,
+          submittedAt: (data.kycSubmittedAt as string | null) ?? null,
         };
       } catch {
-        return { kycStatus: "NONE", kycPrefill: undefined };
+        return {
+          kycStatus: "NONE",
+          kycPrefill: undefined,
+          rejectionReason: null,
+          submittedAt: null,
+        };
       }
     },
     enabled: !!walletAddress,

@@ -4,12 +4,13 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Shield,
+  ShieldCheck,
   LayoutDashboard,
   ArrowUpCircle,
   ArrowDownCircle,
   ArrowLeft,
   Menu,
+  Shield,
   X,
 } from "lucide-react";
 
@@ -21,6 +22,7 @@ const NAV_ITEMS = [
     label: "Redeem Orders",
     icon: ArrowDownCircle,
   },
+  { href: "/admin/kyc", label: "KYC Reviews", icon: ShieldCheck },
 ] as const;
 
 export function AdminSidebar() {

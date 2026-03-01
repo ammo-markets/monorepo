@@ -48,6 +48,9 @@ export async function GET() {
         kycState: true,
         kycGovIdType: true,
         kycGovIdNumber: true,
+        kycRejectionReason: true,
+        kycSubmittedAt: true,
+        kycReviewedAt: true,
       },
     });
 
@@ -63,6 +66,9 @@ export async function GET() {
       kycState: user?.kycState ?? null,
       kycGovIdType: user?.kycGovIdType ?? null,
       kycGovIdNumber: maskedGovId,
+      kycRejectionReason: user?.kycRejectionReason ?? null,
+      kycSubmittedAt: user?.kycSubmittedAt?.toISOString() ?? null,
+      kycReviewedAt: user?.kycReviewedAt?.toISOString() ?? null,
     });
   } catch (error) {
     if (error instanceof Response) return error;
@@ -74,20 +80,11 @@ export async function GET() {
  * POST /api/users/kyc
  *
  * Accepts identity data, validates it, stores in User model,
- * and auto-approves KYC for testnet.
- * AUTH-04: Gated to non-production environments only.
+ * and sets KYC status to PENDING for admin review.
  */
 export async function POST(request: NextRequest) {
   try {
     const session = await requireSession();
-
-    // AUTH-04: KYC auto-approve is testnet only
-    if (process.env.NODE_ENV === "production") {
-      return Response.json(
-        { error: "KYC auto-approve disabled in production" },
-        { status: 403 },
-      );
-    }
 
     const body = await request.json().catch(() => null);
     if (!body) {
@@ -102,24 +99,30 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const now = new Date();
+
     const user = await prisma.user.upsert({
       where: { walletAddress: session.address.toLowerCase() },
       create: {
         walletAddress: session.address.toLowerCase(),
-        kycStatus: "APPROVED",
+        kycStatus: "PENDING",
         kycFullName: parsed.data.fullName,
         kycDateOfBirth: new Date(parsed.data.dateOfBirth),
         kycState: parsed.data.state,
         kycGovIdType: parsed.data.govIdType,
         kycGovIdNumber: parsed.data.govIdNumber,
+        kycSubmittedAt: now,
       },
       update: {
-        kycStatus: "APPROVED",
+        kycStatus: "PENDING",
         kycFullName: parsed.data.fullName,
         kycDateOfBirth: new Date(parsed.data.dateOfBirth),
         kycState: parsed.data.state,
         kycGovIdType: parsed.data.govIdType,
         kycGovIdNumber: parsed.data.govIdNumber,
+        kycSubmittedAt: now,
+        kycRejectionReason: null,
+        kycReviewedAt: null,
       },
     });
 
