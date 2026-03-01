@@ -14,10 +14,12 @@ import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useMintTransaction } from "@/hooks/use-mint-transaction";
 import { useAllowance } from "@/hooks/use-allowance";
 import { useTokenBalances } from "@/hooks/use-token-balances";
+import { toast } from "sonner";
 import { parseContractError } from "@/lib/errors";
 import { getDeadline, parseUsdc } from "@/lib/tx-utils";
 import type { Caliber } from "@ammo-exchange/shared";
 import { contracts } from "@/lib/chain";
+import { usePendingOrders } from "@/hooks/use-pending-orders";
 
 import { StepSelectCaliber } from "./steps/step-select-caliber";
 import { StepEnterAmount } from "./steps/step-enter-amount";
@@ -65,6 +67,7 @@ export function MintFlow({
   // ── Real hooks ──
   const wallet = useWallet();
   const { openConnectModal } = useConnectModal();
+  const { addPendingOrder } = usePendingOrders(wallet.address);
   const { usdc: usdcBalanceRaw } = useTokenBalances();
   const marketAddress = contracts.calibers[activeCaliber].market;
   const allowance = useAllowance(
@@ -127,6 +130,7 @@ export function MintFlow({
   useEffect(() => {
     if (mintTx.isApproveConfirmed) {
       allowance.refetch();
+      toast.success("USDC approved");
     }
   }, [mintTx.isApproveConfirmed, allowance.refetch]);
 
@@ -134,8 +138,24 @@ export function MintFlow({
   useEffect(() => {
     if (mintTx.isMintConfirmed) {
       setStep(3);
+      toast.success(`Minted ${activeCaliber} tokens`);
+      if (mintTx.mintHash) {
+        addPendingOrder({
+          type: "MINT",
+          caliber: activeCaliber,
+          usdcAmount: parsedUsdcAmount.toString(),
+          txHash: mintTx.mintHash,
+        });
+      }
     }
-  }, [mintTx.isMintConfirmed]);
+  }, [mintTx.isMintConfirmed, activeCaliber, mintTx.mintHash, addPendingOrder, parsedUsdcAmount]);
+
+  // ── Toast on errors ──
+  useEffect(() => {
+    if (errorMessage) {
+      toast.error(errorMessage);
+    }
+  }, [errorMessage]);
 
   // ── Scroll to top on step change (focus on active step) ──
   useEffect(() => {

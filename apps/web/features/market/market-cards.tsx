@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { caliberIcons } from "@/features/shared/caliber-icons";
 import { useMarketData } from "@/hooks/use-market-data";
@@ -30,8 +31,8 @@ function CaliberCard({ caliber }: { caliber: MarketCaliberFromAPI }) {
   const IconComponent = caliberIcons[caliber.caliber as Caliber];
 
   return (
-    <a
-      href={`/market/${caliber.caliber.toLowerCase()}`}
+    <Link
+      href={`/calibers/${caliber.caliber.toLowerCase()}`}
       className="group block rounded-xl border border-border-default bg-ax-secondary p-5 transition-all duration-150 hover:border-brass-border hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.2),0_0_20px_rgba(198,164,78,0.05)]"
     >
       {/* Header */}
@@ -56,7 +57,7 @@ function CaliberCard({ caliber }: { caliber: MarketCaliberFromAPI }) {
           className="font-mono text-2xl font-medium tabular-nums"
           style={{ color: "var(--text-primary)" }}
         >
-          ${caliber.pricePerRound.toFixed(2)}
+          ${caliber.pricePerRound.toFixed(4)}
         </span>
         <span className="text-xs" style={{ color: "var(--text-muted)" }}>
           per round
@@ -100,7 +101,7 @@ function CaliberCard({ caliber }: { caliber: MarketCaliberFromAPI }) {
           />
         </span>
       </div>
-    </a>
+    </Link>
   );
 }
 

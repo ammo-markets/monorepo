@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import type { CaliberDetailData } from "@/lib/types";
 import type { Caliber } from "@ammo-exchange/shared";
 import { caliberIcons } from "@/features/shared/caliber-icons";
@@ -18,12 +19,12 @@ export function CaliberHeader({ data }: CaliberHeaderProps) {
         className="mb-4 flex items-center gap-2 text-sm"
         aria-label="Breadcrumb"
       >
-        <a
-          href="/market"
+        <Link
+          href="/calibers"
           className="text-brass transition-colors duration-150 hover:text-brass-hover"
         >
-          Market
-        </a>
+          Calibers
+        </Link>
         <span style={{ color: "var(--text-muted)" }} aria-hidden="true">
           /
         </span>
@@ -55,7 +56,7 @@ export function CaliberHeader({ data }: CaliberHeaderProps) {
           className="font-mono text-5xl font-bold tabular-nums tracking-tight"
           style={{ color: "var(--text-primary)" }}
         >
-          ${data.price.toFixed(2)}
+          ${data.price.toFixed(4)}
         </span>
         <div className="mt-2 text-xs" style={{ color: "var(--text-muted)" }}>
           per round

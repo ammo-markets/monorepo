@@ -58,6 +58,16 @@ export function CaliberInfoPanel({
         </p>
       )}
 
+      {/* USDC balance above grid in mint mode */}
+      {balances && mode === "mint" && isConnected && (
+        <p
+          className="mb-3 text-center text-sm font-medium"
+          style={{ color: "var(--text-secondary)" }}
+        >
+          Available: {formatBalance(balances.usdc, 6, balances.isLoading)} USDC
+        </p>
+      )}
+
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {CALIBERS.map((cal) => {
           const spec = CALIBER_SPECS[cal];
@@ -102,7 +112,7 @@ export function CaliberInfoPanel({
                 className="font-mono text-sm font-semibold tabular-nums"
                 style={{ color: "var(--text-primary)" }}
               >
-                ${market?.pricePerRound?.toFixed(2) ?? "--"}
+                ${market?.pricePerRound?.toFixed(4) ?? "--"}
                 <span
                   className="text-[10px] font-normal"
                   style={{ color: "var(--text-muted)" }}
@@ -112,16 +122,14 @@ export function CaliberInfoPanel({
                 </span>
               </div>
 
-              {/* Balance — only show when wallet is connected */}
-              {balances && mode && isConnected && (
+              {/* Balance — per-card in redeem mode only */}
+              {balances && mode === "redeem" && isConnected && (
                 <div
                   className="text-[11px] font-medium"
                   style={{ color: "var(--text-secondary)" }}
                 >
-                  Bal:{" "}
-                  {mode === "mint"
-                    ? `${formatBalance(balances.usdc, 6, balances.isLoading)} USDC`
-                    : `${formatBalance(balances.tokens[cal], 18, balances.isLoading)} ${cal}`}
+                  Your balance:{" "}
+                  {`${formatBalance(balances.tokens[cal], 18, balances.isLoading)} ${cal}`}
                 </div>
               )}
 
@@ -134,6 +142,16 @@ export function CaliberInfoPanel({
                 {spec.caseType === "standard" ? "Std" : "Brass"} | Min{" "}
                 {spec.minMintRounds} rds
               </div>
+
+              {/* Selection hint */}
+              {!isSelected && (
+                <div
+                  className="text-[10px] font-medium"
+                  style={{ color: "var(--text-muted)" }}
+                >
+                  Tap to select
+                </div>
+              )}
             </button>
           );
         })}

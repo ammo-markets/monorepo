@@ -27,20 +27,33 @@ export function OrdersDesktopRow({
         : "\u2014";
   return (
     <tr
-      className="cursor-pointer transition-colors duration-100 hover:bg-ax-tertiary"
+      className={`transition-colors duration-100 hover:bg-ax-tertiary ${order.id.startsWith("pending-") ? "" : "cursor-pointer"}`}
       style={{
         borderBottom: isLast ? "none" : "1px solid var(--border-default)",
       }}
-      onClick={() => router.push(`/portfolio/orders/${order.id}`)}
+      onClick={() => {
+        if (!order.id.startsWith("pending-")) {
+          router.push(`/portfolio/orders/${order.id}`);
+        }
+      }}
     >
       {/* Order ID */}
       <td className="px-6 py-4">
-        <span
-          className="font-mono text-sm"
-          style={{ color: "var(--text-primary)" }}
-        >
-          #{order.id.slice(0, 8)}
-        </span>
+        {order.id.startsWith("pending-") ? (
+          <span
+            className="text-sm font-medium animate-pulse"
+            style={{ color: "var(--amber)" }}
+          >
+            Indexing...
+          </span>
+        ) : (
+          <span
+            className="font-mono text-sm"
+            style={{ color: "var(--text-primary)" }}
+          >
+            #{order.id.slice(0, 8)}
+          </span>
+        )}
       </td>
       {/* Type */}
       <td className="px-6 py-4">
@@ -92,24 +105,37 @@ export function OrderMobileCard({ order }: { order: OrderFromAPI }) {
         : "\u2014";
   return (
     <div
-      className="cursor-pointer rounded-xl p-4 transition-all duration-150 bg-ax-secondary border border-border-default hover:border-brass-border"
-      onClick={() => router.push(`/portfolio/orders/${order.id}`)}
-      role="link"
-      tabIndex={0}
+      className={`rounded-xl p-4 transition-all duration-150 bg-ax-secondary border border-border-default ${order.id.startsWith("pending-") ? "" : "cursor-pointer hover:border-brass-border"}`}
+      onClick={() => {
+        if (!order.id.startsWith("pending-")) {
+          router.push(`/portfolio/orders/${order.id}`);
+        }
+      }}
+      role={order.id.startsWith("pending-") ? undefined : "link"}
+      tabIndex={order.id.startsWith("pending-") ? undefined : 0}
       onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
+        if (!order.id.startsWith("pending-") && (e.key === "Enter" || e.key === " ")) {
           e.preventDefault();
           router.push(`/portfolio/orders/${order.id}`);
         }
       }}
     >
       <div className="flex items-center justify-between">
-        <span
-          className="font-mono text-sm font-medium"
-          style={{ color: "var(--text-primary)" }}
-        >
-          #{order.id.slice(0, 8)}
-        </span>
+        {order.id.startsWith("pending-") ? (
+          <span
+            className="text-sm font-medium animate-pulse"
+            style={{ color: "var(--amber)" }}
+          >
+            Indexing...
+          </span>
+        ) : (
+          <span
+            className="font-mono text-sm font-medium"
+            style={{ color: "var(--text-primary)" }}
+          >
+            #{order.id.slice(0, 8)}
+          </span>
+        )}
         <StatusBadge status={displayStatus} />
       </div>
       <div className="mt-3 flex items-center gap-4">

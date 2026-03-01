@@ -22,7 +22,7 @@ export function ActionPanelDesktop({ data }: ActionPanelProps) {
           physical ammunition.
         </p>
         <Link
-          href={`/trade?tab=mint&caliber=${data.id.toLowerCase()}`}
+          href={`/exchange?tab=mint&caliber=${data.id.toLowerCase()}`}
           className="group flex w-full items-center justify-center gap-2 rounded-lg bg-brass py-3 text-sm font-bold text-ax-primary transition-colors hover:bg-brass-hover"
         >
           Mint {data.symbol}
@@ -43,7 +43,7 @@ export function ActionPanelDesktop({ data }: ActionPanelProps) {
           factory-new ammunition.
         </p>
         <Link
-          href={`/trade?tab=redeem&caliber=${data.id.toLowerCase()}`}
+          href={`/exchange?tab=redeem&caliber=${data.id.toLowerCase()}`}
           className="group flex w-full items-center justify-center gap-2 rounded-lg border border-border-hover bg-transparent py-3 text-sm font-bold text-text-primary transition-colors hover:border-brass-border hover:bg-ax-tertiary"
         >
           Redeem {data.symbol}
@@ -70,7 +70,7 @@ export function ActionPanelMobile({ data }: ActionPanelProps) {
             Mint tokenized {data.name} using USDC.
           </p>
           <Link
-            href={`/trade?tab=mint&caliber=${data.id.toLowerCase()}`}
+            href={`/exchange?tab=mint&caliber=${data.id.toLowerCase()}`}
             className="flex w-full items-center justify-center gap-2 rounded-lg bg-brass py-3 text-sm font-bold text-ax-primary transition-colors active:bg-brass-hover"
           >
             Mint {data.symbol}
@@ -85,7 +85,7 @@ export function ActionPanelMobile({ data }: ActionPanelProps) {
             Burn your {data.symbol} for physical delivery.
           </p>
           <Link
-            href={`/trade?tab=redeem&caliber=${data.id.toLowerCase()}`}
+            href={`/exchange?tab=redeem&caliber=${data.id.toLowerCase()}`}
             className="flex w-full items-center justify-center gap-2 rounded-lg border border-border-hover bg-transparent py-3 text-sm font-bold text-text-primary transition-colors active:bg-ax-tertiary"
           >
             Redeem {data.symbol}
@@ -99,13 +99,13 @@ export function ActionPanelMobile({ data }: ActionPanelProps) {
         style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
       >
         <Link
-          href={`/trade?tab=redeem&caliber=${data.id.toLowerCase()}`}
+          href={`/exchange?tab=redeem&caliber=${data.id.toLowerCase()}`}
           className="flex-1 flex items-center justify-center rounded-lg border border-border-hover bg-transparent py-3.5 text-sm font-bold text-text-primary transition-colors active:bg-ax-tertiary"
         >
           Redeem
         </Link>
         <Link
-          href={`/trade?tab=mint&caliber=${data.id.toLowerCase()}`}
+          href={`/exchange?tab=mint&caliber=${data.id.toLowerCase()}`}
           className="flex-[1.5] flex items-center justify-center rounded-lg bg-brass py-3.5 text-sm font-bold text-ax-primary transition-colors active:bg-brass-hover"
         >
           Mint {data.symbol}

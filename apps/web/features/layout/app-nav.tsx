@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard,
   ArrowLeftRight,
   BarChart3,
   Wallet,
@@ -21,10 +20,9 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Trade", href: "/trade", icon: ArrowLeftRight },
-  { label: "Market", href: "/market", icon: BarChart3 },
+  { label: "Mint / Redeem", href: "/exchange", icon: ArrowLeftRight },
   { label: "Portfolio", href: "/portfolio", icon: Wallet },
+  { label: "Calibers", href: "/calibers", icon: BarChart3 },
   { label: "Profile", href: "/profile", icon: User },
 ];
 
@@ -102,7 +100,7 @@ export function AppNav() {
         }}
       >
         <div
-          className={`grid h-16 w-full ${isKeeper ? "grid-cols-6" : "grid-cols-5"}`}
+          className={`grid h-16 w-full ${isKeeper ? "grid-cols-5" : "grid-cols-4"}`}
         >
           {navItems.map((item) => {
             const active = isActiveLink(pathname, item.href);

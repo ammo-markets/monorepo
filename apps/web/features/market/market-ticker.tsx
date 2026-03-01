@@ -47,7 +47,7 @@ export function MarketTicker() {
                         className="font-mono text-sm font-medium tabular-nums"
                         style={{ color: "var(--text-primary)" }}
                       >
-                        ${caliber.pricePerRound.toFixed(2)}
+                        ${caliber.pricePerRound.toFixed(4)}
                       </span>
                     </div>
                   </div>

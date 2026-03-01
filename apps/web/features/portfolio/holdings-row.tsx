@@ -1,4 +1,6 @@
-import { ExternalLink } from "lucide-react";
+"use client";
+
+import Link from "next/link";
 import { caliberIcons } from "@/features/shared/caliber-icons";
 import type { Caliber } from "@ammo-exchange/shared";
 
@@ -65,25 +67,18 @@ export function HoldingsDesktopRow({
       {/* Actions */}
       <td className="px-6 py-4 text-right">
         <div className="flex items-center justify-end gap-2">
-          <a
-            href={`/trade?tab=mint&caliber=${holding.caliber.toLowerCase()}`}
+          <Link
+            href={`/exchange?tab=mint&caliber=${holding.caliber.toLowerCase()}`}
             className="rounded-md px-3 py-1.5 text-xs font-semibold transition-colors duration-150 bg-brass text-ax-primary hover:bg-brass-hover"
           >
             Mint More
-          </a>
-          <a
-            href={`/trade?tab=redeem&caliber=${holding.caliber.toLowerCase()}`}
+          </Link>
+          <Link
+            href={`/exchange?tab=redeem&caliber=${holding.caliber.toLowerCase()}`}
             className="rounded-md px-3 py-1.5 text-xs font-medium transition-colors duration-150 bg-transparent border border-border-hover text-text-secondary hover:bg-ax-tertiary hover:text-text-primary"
           >
             Redeem
-          </a>
-          <button
-            type="button"
-            className="flex items-center gap-1 rounded-md px-3 py-1.5 text-xs font-medium transition-colors duration-150 bg-transparent border border-border-hover text-text-secondary hover:bg-ax-tertiary hover:text-text-primary"
-          >
-            Trade
-            <ExternalLink size={11} />
-          </button>
+          </Link>
         </div>
       </td>
     </>
@@ -162,8 +157,8 @@ export function HoldingsMobileCard({ holding }: { holding: HoldingRow }) {
 
       {/* Actions */}
       <div className="mt-4 flex items-center gap-2">
-        <a
-          href={`/trade?tab=mint&caliber=${holding.caliber.toLowerCase()}`}
+        <Link
+          href={`/exchange?tab=mint&caliber=${holding.caliber.toLowerCase()}`}
           className="flex-1 rounded-lg px-3 py-2 text-center text-xs font-semibold transition-colors duration-150"
           style={{
             backgroundColor: "var(--brass)",
@@ -171,9 +166,9 @@ export function HoldingsMobileCard({ holding }: { holding: HoldingRow }) {
           }}
         >
           Mint More
-        </a>
-        <a
-          href={`/trade?tab=redeem&caliber=${holding.caliber.toLowerCase()}`}
+        </Link>
+        <Link
+          href={`/exchange?tab=redeem&caliber=${holding.caliber.toLowerCase()}`}
           className="flex-1 rounded-lg px-3 py-2 text-center text-xs font-medium transition-colors duration-150"
           style={{
             backgroundColor: "transparent",
@@ -182,19 +177,7 @@ export function HoldingsMobileCard({ holding }: { holding: HoldingRow }) {
           }}
         >
           Redeem
-        </a>
-        <button
-          type="button"
-          className="flex flex-1 items-center justify-center gap-1 rounded-lg px-3 py-2 text-xs font-medium transition-colors duration-150"
-          style={{
-            backgroundColor: "transparent",
-            border: "1px solid var(--border-hover)",
-            color: "var(--text-secondary)",
-          }}
-        >
-          Trade
-          <ExternalLink size={11} />
-        </button>
+        </Link>
       </div>
     </div>
   );

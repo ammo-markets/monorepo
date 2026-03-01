@@ -15,11 +15,13 @@ import { useRedeemTransaction } from "@/hooks/use-redeem-transaction";
 import { useAllowance } from "@/hooks/use-allowance";
 import { useTokenBalances } from "@/hooks/use-token-balances";
 import { useKycStatus, useKycSubmit } from "@/hooks/use-kyc";
+import { toast } from "sonner";
 import { parseContractError } from "@/lib/errors";
 import { getDeadline, parseTokenAmount } from "@/lib/tx-utils";
 import type { Caliber } from "@ammo-exchange/shared";
 import { contracts } from "@/lib/chain";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { usePendingOrders } from "@/hooks/use-pending-orders";
 
 import { StepCompose } from "./steps/step-compose";
 import { StepReviewAndConfirm } from "./steps/step-review-and-confirm";
@@ -68,6 +70,7 @@ export function RedeemFlow({
   const wallet = useWallet();
   const { openConnectModal } = useConnectModal();
   const balances = useTokenBalances();
+  const { addPendingOrder } = usePendingOrders(wallet.address);
 
   // ── User Profile (Shipping) ──
   const { data: profile } = useQuery({
@@ -182,6 +185,7 @@ export function RedeemFlow({
   useEffect(() => {
     if (redeemTx.isApproveConfirmed) {
       allowance.refetch();
+      toast.success("Token approved");
     }
   }, [redeemTx.isApproveConfirmed, allowance.refetch]);
 
@@ -189,8 +193,24 @@ export function RedeemFlow({
   useEffect(() => {
     if (redeemTx.isRedeemConfirmed) {
       setStep(4);
+      toast.success(`Redeemed ${activeCaliber} tokens`);
+      if (redeemTx.redeemHash) {
+        addPendingOrder({
+          type: "REDEEM",
+          caliber: activeCaliber,
+          tokenAmount: parsedTokenAmount.toString(),
+          txHash: redeemTx.redeemHash,
+        });
+      }
     }
-  }, [redeemTx.isRedeemConfirmed]);
+  }, [redeemTx.isRedeemConfirmed, activeCaliber, redeemTx.redeemHash, addPendingOrder, parsedTokenAmount]);
+
+  // ── Toast on errors ──
+  useEffect(() => {
+    if (errorMessage) {
+      toast.error(errorMessage);
+    }
+  }, [errorMessage]);
 
   // ── Scroll to top on step change (focus on active step) ──
   useEffect(() => {

@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { caliberIcons } from "@/features/shared/caliber-icons";
 import type { CaliberDetailData } from "@/lib/types";
+import { FEES } from "@ammo-exchange/shared";
 import { SpinnerButton } from "@/features/shared";
 import type { RedeemTxStatus } from "@/hooks/use-tx-status";
 import type { ShippingAddress } from "./step-shipping";
@@ -52,7 +53,7 @@ export function StepReviewAndConfirm({
 }) {
   const Icon = caliberIcons[caliber.id];
   const rounds = Number.parseInt(roundsAmount) || 0;
-  const fee = Math.ceil(rounds * 0.015);
+  const fee = Math.ceil(rounds * (FEES.REDEEM_FEE_BPS / FEES.BPS_DENOMINATOR));
   const netRounds = rounds - fee;
 
   const kycApproved = kycStatus === "APPROVED";

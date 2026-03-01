@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { AmmoLogo } from "./logo";
 import { WalletButton, formatUsdc } from "./wallet-button";
@@ -11,9 +12,9 @@ import { useKeeperCheck } from "@/hooks/use-keeper-check";
 import { useSiwe } from "@/hooks/use-siwe";
 
 const navLinks = [
-  { label: "Market", href: "/market" },
-  { label: "Mint", href: "/trade?tab=mint" },
-  { label: "Redeem", href: "/trade?tab=redeem" },
+  { label: "Calibers", href: "/calibers" },
+  { label: "Mint", href: "/exchange?tab=mint" },
+  { label: "Redeem", href: "/exchange?tab=redeem" },
   { label: "Portfolio", href: "/portfolio" },
 ];
 
@@ -69,13 +70,13 @@ export function Navbar() {
         {/* Desktop nav links */}
         <div className="hidden items-center gap-1 lg:flex">
           {allLinks.map((link) => (
-            <a
+            <Link
               key={link.label}
               href={link.href}
               className="rounded-lg px-4 py-2 text-sm font-medium text-text-secondary transition-colors duration-150 hover:bg-ax-tertiary hover:text-text-primary"
             >
               {link.label}
-            </a>
+            </Link>
           ))}
         </div>
 
@@ -134,7 +135,7 @@ export function Navbar() {
         >
           <div className="flex flex-col gap-1 px-4 py-3">
             {allLinks.map((link) => (
-              <a
+              <Link
                 key={link.label}
                 href={link.href}
                 className="rounded-lg px-4 py-3 text-sm font-medium transition-colors duration-150"
@@ -142,7 +143,7 @@ export function Navbar() {
                 onClick={() => setMobileOpen(false)}
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
             {/* Mobile network badge */}
             <div

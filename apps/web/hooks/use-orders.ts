@@ -19,6 +19,19 @@ export function useOrders(address: string | undefined) {
       return data.orders ?? [];
     },
     enabled: !!address,
+    select: (orders) => {
+      // Deduplicate: remove synthetic pending orders when a real order with matching txHash exists
+      const realTxHashes = new Set(
+        orders
+          .filter((o) => !o.id.startsWith("pending-") && o.txHash)
+          .map((o) => o.txHash),
+      );
+      return orders.filter(
+        (o) =>
+          !o.id.startsWith("pending-") ||
+          !realTxHashes.has(o.txHash),
+      );
+    },
   });
 }
 

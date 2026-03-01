@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Manrope, Rajdhani, JetBrains_Mono } from "next/font/google";
-import { Toaster } from "sonner";
+import { Toaster } from "@/components/ui/sonner";
 import { Providers } from "./providers";
 import "./globals.css";
 

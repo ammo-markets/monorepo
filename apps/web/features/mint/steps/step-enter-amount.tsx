@@ -119,7 +119,7 @@ export function StepEnterAmount({
             className="font-mono text-sm font-medium tabular-nums"
             style={{ color: "var(--text-primary)" }}
           >
-            ${caliber.price.toFixed(2)}/rd
+            ${caliber.price.toFixed(4)}/rd
           </span>
         </div>
       )}

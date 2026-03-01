@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 export function EmptyHoldings() {
@@ -103,13 +104,13 @@ export function EmptyHoldings() {
       <p className="mb-6 text-sm" style={{ color: "var(--text-muted)" }}>
         Start minting to build your position.
       </p>
-      <a
-        href="/trade?tab=mint"
+      <Link
+        href="/exchange?tab=mint"
         className="inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold transition-colors duration-150 bg-brass text-ax-primary hover:bg-brass-hover"
       >
         Start Minting
         <ArrowRight size={16} />
-      </a>
+      </Link>
     </div>
   );
 }
@@ -132,12 +133,12 @@ export function EmptyOrders() {
       <p className="mb-5 text-sm" style={{ color: "var(--text-muted)" }}>
         Mint your first tokens to get started.
       </p>
-      <a
-        href="/trade?tab=mint"
+      <Link
+        href="/exchange?tab=mint"
         className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-colors duration-150 bg-brass text-ax-primary hover:bg-brass-hover"
       >
         Start Minting
-      </a>
+      </Link>
     </div>
   );
 }

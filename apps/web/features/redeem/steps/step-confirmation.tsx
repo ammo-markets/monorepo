@@ -4,6 +4,7 @@ import { caliberIcons } from "@/features/shared/caliber-icons";
 import type { CaliberDetailData } from "@/lib/types";
 import { snowtraceUrl, truncateAddress } from "@/lib/utils";
 import { PrimaryButton, GhostButton } from "@/features/shared";
+import { FEES } from "@ammo-exchange/shared";
 
 export function StepConfirmation({
   caliber,
@@ -24,7 +25,7 @@ export function StepConfirmation({
 }) {
   const Icon = caliberIcons[caliber.id];
   const rounds = Number.parseInt(roundsAmount) || 0;
-  const fee = Math.ceil(rounds * 0.015);
+  const fee = Math.ceil(rounds * (FEES.REDEEM_FEE_BPS / FEES.BPS_DENOMINATOR));
   const netRounds = rounds - fee;
 
   if (isError) {
@@ -49,6 +50,7 @@ export function StepConfirmation({
           {errorMessage || "An unexpected error occurred. Please try again."}
         </p>
         <PrimaryButton onClick={onRetry}>Try Again</PrimaryButton>
+        <GhostButton onClick={onRedeemMore}>Change Settings</GhostButton>
       </div>
     );
   }

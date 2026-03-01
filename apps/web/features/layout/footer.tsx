@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { AmmoLogo } from "./logo";
 
 const productLinks = [
-  { label: "Launch App", href: "/dashboard" },
+  { label: "Launch App", href: "/exchange" },
   { label: "How It Works", href: "#how-it-works" },
   { label: "FAQ", href: "#faq" },
 ];

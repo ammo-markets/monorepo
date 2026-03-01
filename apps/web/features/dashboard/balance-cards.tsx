@@ -132,7 +132,7 @@ export function BalanceCards({
           return (
             <Link
               key={h.caliber}
-              href={`/trade?caliber=${h.caliber.toLowerCase()}`}
+              href={`/exchange?caliber=${h.caliber.toLowerCase()}`}
               className="rounded-xl p-4 transition-colors hover:border-[var(--brass-border)]"
               style={{
                 backgroundColor: "var(--bg-secondary)",

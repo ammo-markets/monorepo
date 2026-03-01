@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 export function Hero() {
@@ -30,8 +31,8 @@ export function Hero() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4">
-            <a
-              href="/dashboard"
+            <Link
+              href="/exchange"
               className="group inline-flex items-center justify-center gap-3 bg-brass px-8 py-4 text-sm font-bold text-ax-primary uppercase tracking-widest transition-colors hover:bg-ax-primary border border-transparent hover:border-brass hover:text-brass"
             >
               Launch App
@@ -39,7 +40,7 @@ export function Hero() {
                 size={18}
                 className="transition-transform group-hover:translate-x-1"
               />
-            </a>
+            </Link>
             <a
               href="#market"
               className="inline-flex items-center justify-center gap-3 bg-ax-secondary px-8 py-4 text-sm font-bold text-text-primary uppercase tracking-widest border border-border-default transition-colors hover:bg-ax-tertiary hover:border-brass"

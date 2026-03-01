@@ -3,6 +3,7 @@ import { caliberIcons } from "@/features/shared/caliber-icons";
 import type { CaliberDetailData } from "@/lib/types";
 import { PrimaryButton } from "@/features/shared";
 import type { Caliber } from "@ammo-exchange/shared";
+import { FEES } from "@ammo-exchange/shared";
 import { formatUnits } from "viem";
 import { OrderSettingsMenu } from "@/features/shared/order-settings-menu";
 import { useMemo } from "react";
@@ -39,7 +40,7 @@ export function StepCompose({
       ? caliberDetailsMap[selectedCaliber]
       : null;
   const rounds = Number.parseInt(roundsAmount) || 0;
-  const fee = Math.ceil(rounds * 0.015);
+  const fee = Math.ceil(rounds * (FEES.REDEEM_FEE_BPS / FEES.BPS_DENOMINATOR));
   const netRounds = rounds - fee;
   const estValue = netRounds * (caliber?.price ?? 0);
   const minRedeem = caliber ? caliber.minMint : 50;

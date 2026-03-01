@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export function AmmoLogo({ size = "default" }: { size?: "small" | "default" }) {
   const markSize = size === "small" ? 28 : 36;
   const textClass =
@@ -6,7 +8,7 @@ export function AmmoLogo({ size = "default" }: { size?: "small" | "default" }) {
       : "text-base tracking-[0.08em]";
 
   return (
-    <a
+    <Link
       href="/"
       className="flex items-center gap-2.5"
       aria-label="Ammo Exchange Home"
@@ -73,6 +75,6 @@ export function AmmoLogo({ size = "default" }: { size?: "small" | "default" }) {
         <span style={{ color: "var(--brass)" }}>AMMO</span>
         <span className="text-ax-primary ml-1">EXCHANGE</span>
       </span>
-    </a>
+    </Link>
   );
 }

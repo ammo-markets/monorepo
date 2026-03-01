@@ -103,7 +103,7 @@ export function AdminSidebar() {
             );
           })}
           <Link
-            href="/dashboard"
+            href="/exchange"
             onClick={() => setMobileOpen(false)}
             className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]"
             style={{ color: "var(--text-secondary)" }}
@@ -175,7 +175,7 @@ export function AdminSidebar() {
           style={{ borderColor: "var(--border-default)" }}
         >
           <Link
-            href="/dashboard"
+            href="/exchange"
             className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]"
             style={{ color: "var(--text-secondary)" }}
           >

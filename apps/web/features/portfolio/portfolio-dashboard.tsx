@@ -20,6 +20,7 @@ import { HoldingsDesktopRow, HoldingsMobileCard } from "./holdings-row";
 import type { HoldingRow } from "./holdings-row";
 import { OrdersDesktopRow, OrderMobileCard } from "./orders-row";
 import { PrimersSection } from "./primers-section";
+import { PendingBanner } from "@/features/dashboard/pending-banner";
 
 /* ────────────── Constants ────────────── */
 
@@ -88,6 +89,25 @@ export function PortfolioDashboard() {
       (o: OrderFromAPI) => o.status === "FAILED" || o.status === "CANCELLED",
     );
   }, [orderFilter, orders]);
+
+  // Tab counts (must be before early returns to satisfy rules of hooks)
+  const tabCounts = useMemo(() => {
+    const active = orders.filter(
+      (o: OrderFromAPI) => o.status === "PENDING" || o.status === "PROCESSING",
+    ).length;
+    const completed = orders.filter(
+      (o: OrderFromAPI) => o.status === "COMPLETED",
+    ).length;
+    const failed = orders.filter(
+      (o: OrderFromAPI) => o.status === "FAILED" || o.status === "CANCELLED",
+    ).length;
+    return {
+      All: orders.length,
+      Active: active,
+      Completed: completed,
+      Failed: failed,
+    } as Record<OrderFilter, number>;
+  }, [orders]);
 
   // Show loading skeleton during reconnection (prevents hydration mismatch)
   if (isReconnecting) {
@@ -162,6 +182,20 @@ export function PortfolioDashboard() {
               </p>
             )}
           </div>
+        </div>
+      )}
+
+      {/* Pending Orders Banner */}
+      {!ordersLoading && (
+        <div className="mt-6">
+          <PendingBanner
+            pendingCount={
+              orders.filter(
+                (o: OrderFromAPI) =>
+                  o.status === "PENDING" || o.status === "PROCESSING",
+              ).length
+            }
+          />
         </div>
       )}
 
@@ -299,6 +333,23 @@ export function PortfolioDashboard() {
                 onClick={() => setOrderFilter(tab)}
               >
                 {tab}
+                {tabCounts[tab] > 0 && (
+                  <span
+                    className="ml-1 rounded-full px-1.5 py-0.5 text-[10px] font-semibold"
+                    style={{
+                      backgroundColor:
+                        orderFilter === tab
+                          ? "var(--bg-secondary)"
+                          : "var(--bg-tertiary)",
+                      color:
+                        orderFilter === tab
+                          ? "var(--text-primary)"
+                          : "var(--text-muted)",
+                    }}
+                  >
+                    {tabCounts[tab]}
+                  </span>
+                )}
               </button>
             ))}
           </div>

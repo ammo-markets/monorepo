@@ -78,7 +78,7 @@ export function StepSelectCaliber({
                   className="font-mono text-sm font-bold uppercase tracking-widest tabular-nums"
                   style={{ color: "var(--text-primary)" }}
                 >
-                  ${cal.price.toFixed(2)}
+                  ${cal.price.toFixed(4)}
                   <span
                     className="text-xs font-normal"
                     style={{ color: "var(--text-muted)" }}

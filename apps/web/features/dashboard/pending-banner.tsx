@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { AlertTriangle } from "lucide-react";
 
 interface PendingBannerProps {
@@ -23,13 +22,6 @@ export function PendingBanner({ pendingCount }: PendingBannerProps) {
         You have {pendingCount} pending order{pendingCount > 1 ? "s" : ""}{" "}
         awaiting processing
       </p>
-      <Link
-        href="/portfolio"
-        className="text-sm font-semibold transition-colors duration-150"
-        style={{ color: "var(--amber)" }}
-      >
-        View Orders
-      </Link>
     </div>
   );
 }

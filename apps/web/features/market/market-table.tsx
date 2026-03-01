@@ -3,7 +3,8 @@
 import type { ReactNode } from "react";
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowUp, ArrowDown, ArrowUpDown, ExternalLink } from "lucide-react";
+import Link from "next/link";
+import { ArrowUp, ArrowDown, ArrowUpDown, ChevronRight } from "lucide-react";
 import { caliberIcons } from "@/features/shared/caliber-icons";
 import { useMarketData } from "@/hooks/use-market-data";
 import type { MarketCaliberFromAPI } from "@/lib/types";
@@ -125,17 +126,9 @@ function MobileCaliberCard({
   const IconComponent = caliberIcons[caliber.caliber as Caliber];
 
   return (
-    <div
-      className="cursor-pointer rounded-xl border border-border-default bg-ax-secondary p-4 transition-all duration-150 hover:border-brass-border"
-      onClick={() => router.push(`/market/${caliber.caliber.toLowerCase()}`)}
-      role="link"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          router.push(`/market/${caliber.caliber.toLowerCase()}`);
-        }
-      }}
+    <Link
+      href={`/calibers/${caliber.caliber.toLowerCase()}`}
+      className="block cursor-pointer rounded-xl border border-border-default bg-ax-secondary p-4 transition-all duration-150 hover:border-brass-border"
     >
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -162,12 +155,15 @@ function MobileCaliberCard({
             </span>
           </div>
         </div>
-        <span
-          className="font-mono text-lg font-medium tabular-nums"
-          style={{ color: "var(--text-primary)" }}
-        >
-          ${caliber.pricePerRound.toFixed(2)}
-        </span>
+        <div className="flex items-center gap-2">
+          <span
+            className="font-mono text-lg font-medium tabular-nums"
+            style={{ color: "var(--text-primary)" }}
+          >
+            ${caliber.pricePerRound.toFixed(4)}
+          </span>
+          <ChevronRight size={16} style={{ color: "var(--text-muted)" }} />
+        </div>
       </div>
 
       {/* Data grid */}
@@ -198,27 +194,16 @@ function MobileCaliberCard({
           }}
           onClick={(e) => {
             e.stopPropagation();
+            e.preventDefault();
+            router.push(
+              `/exchange?tab=mint&caliber=${caliber.caliber.toLowerCase()}`,
+            );
           }}
         >
           Mint
         </button>
-        <button
-          type="button"
-          className="flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium transition-colors duration-150"
-          style={{
-            backgroundColor: "transparent",
-            border: "1px solid var(--border-hover)",
-            color: "var(--text-secondary)",
-          }}
-          onClick={(e) => {
-            e.stopPropagation();
-          }}
-        >
-          Trade
-          <ExternalLink size={11} />
-        </button>
       </div>
-    </div>
+    </Link>
   );
 }
 
@@ -363,7 +348,7 @@ export function MarketTable() {
                           : "none",
                     }}
                     onClick={() =>
-                      router.push(`/market/${caliber.caliber.toLowerCase()}`)
+                      router.push(`/calibers/${caliber.caliber.toLowerCase()}`)
                     }
                   >
                     {/* # */}
@@ -401,7 +386,7 @@ export function MarketTable() {
                         className="font-mono text-sm font-medium tabular-nums"
                         style={{ color: "var(--text-primary)" }}
                       >
-                        ${caliber.pricePerRound.toFixed(2)}
+                        ${caliber.pricePerRound.toFixed(4)}
                       </span>
                     </td>
 
@@ -423,20 +408,17 @@ export function MarketTable() {
                           className="rounded-md bg-brass px-3 py-1.5 text-xs font-semibold text-ax-primary transition-colors duration-150 hover:bg-brass-hover"
                           onClick={(e) => {
                             e.stopPropagation();
+                            router.push(
+                              `/exchange?tab=mint&caliber=${caliber.caliber.toLowerCase()}`,
+                            );
                           }}
                         >
                           Mint
                         </button>
-                        <button
-                          type="button"
-                          className="flex items-center gap-1 rounded-md border border-border-hover bg-transparent px-3 py-1.5 text-xs font-medium text-text-secondary transition-colors duration-150 hover:bg-ax-tertiary hover:text-text-primary"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                          }}
-                        >
-                          Trade
-                          <ExternalLink size={11} />
-                        </button>
+                        <ChevronRight
+                          size={16}
+                          style={{ color: "var(--text-muted)" }}
+                        />
                       </div>
                     </td>
                   </tr>
