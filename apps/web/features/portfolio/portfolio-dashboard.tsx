@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useMemo, useRef, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import { formatUnits } from "viem";
 import { X } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
@@ -13,14 +12,13 @@ import type { OrderFromAPI } from "@/lib/types";
 import type { Caliber } from "@ammo-exchange/shared";
 import { CALIBER_SPECS } from "@ammo-exchange/shared";
 import {
-  HeaderSkeleton,
-  HoldingsTableSkeleton,
+  PortfolioHeroSkeleton,
   OrdersTableSkeleton,
   ActiveOrdersSkeleton,
 } from "./portfolio-skeletons";
 import { EmptyHoldings, EmptyOrderHistory, EmptyFilteredOrders } from "./portfolio-empty-states";
-import { HoldingsDesktopRow, HoldingsMobileCard } from "./holdings-row";
 import type { HoldingRow } from "./holdings-row";
+import { PortfolioHero } from "./portfolio-hero";
 import { OrdersDesktopRow, OrderMobileCard } from "./orders-row";
 import { PrimersSection } from "./primers-section";
 import { ActiveOrderCard } from "./active-order-card";
@@ -39,7 +37,6 @@ type HistoryFilter = "All" | "Mint" | "Redeem" | "Failed";
 export function PortfolioDashboard() {
   const { address, isConnected, isReconnecting } = useAuth();
   const { tokens, usdc, isLoading: balancesLoading } = useTokenBalances();
-  const router = useRouter();
 
   const [historyFilter, setHistoryFilter] = useState<HistoryFilter>("All");
   const [visibleCount, setVisibleCount] = useState(ORDERS_PAGE_SIZE);
@@ -146,16 +143,7 @@ export function PortfolioDashboard() {
   if (isReconnecting) {
     return (
       <div className="mx-auto max-w-6xl px-4 py-8 lg:px-8 lg:py-10">
-        <HeaderSkeleton />
-        <section className="mt-10">
-          <h2
-            className="mb-4 text-lg font-semibold"
-            style={{ color: "var(--text-primary)" }}
-          >
-            Holdings
-          </h2>
-          <HoldingsTableSkeleton />
-        </section>
+        <PortfolioHeroSkeleton />
         <section className="mt-10">
           <h2
             className="mb-4 text-lg font-semibold"
@@ -183,37 +171,45 @@ export function PortfolioDashboard() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 lg:px-8 lg:py-10">
-      {/* Section 1: Portfolio Value Header */}
+      {/* Section 1: Portfolio Hero (chart + legend + cards) */}
       {dataLoading ? (
-        <HeaderSkeleton />
-      ) : (
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <h1
-              className="mb-1 text-sm font-semibold uppercase tracking-wide"
-              style={{ color: "var(--text-muted)" }}
-            >
-              Portfolio
-            </h1>
+        <PortfolioHeroSkeleton />
+      ) : holdings.length === 0 ? (
+        <div>
+          <h1
+            className="mb-1 text-sm font-semibold uppercase tracking-wide"
+            style={{ color: "var(--text-muted)" }}
+          >
+            Portfolio
+          </h1>
+          <p
+            className="font-mono text-4xl font-bold tabular-nums tracking-tight"
+            style={{ color: "var(--text-primary)" }}
+          >
+            $0.00
+          </p>
+          {usdcBalance > 0 && (
             <p
-              className="font-mono text-4xl font-bold tabular-nums tracking-tight"
-              style={{ color: "var(--text-primary)" }}
+              className="mt-1.5 text-sm"
+              style={{ color: "var(--text-secondary)" }}
             >
-              ${totalValue.toFixed(2)}
+              + ${usdcBalance.toFixed(2)} USDC available
             </p>
-            {usdcBalance > 0 && (
-              <p
-                className="mt-1.5 text-sm"
-                style={{ color: "var(--text-secondary)" }}
-              >
-                + ${usdcBalance.toFixed(2)} USDC available
-              </p>
-            )}
+          )}
+          <div className="mt-6">
+            <EmptyHoldings />
           </div>
         </div>
+      ) : (
+        <PortfolioHero
+          holdings={holdings}
+          totalValue={totalValue}
+          usdcBalance={usdcBalance}
+          onViewOrdersForCaliber={handleViewOrdersForCaliber}
+        />
       )}
 
-      {/* Section 2: Active Orders */}
+      {/* Active Orders */}
       {ordersLoading ? (
         <section className="mt-6">
           <h2
@@ -251,109 +247,7 @@ export function PortfolioDashboard() {
         )
       )}
 
-      {/* Section 3: Holdings */}
-      <section className="mt-10">
-        <h2
-          className="mb-4 text-lg font-semibold"
-          style={{ color: "var(--text-primary)" }}
-        >
-          Holdings
-        </h2>
-
-        {dataLoading ? (
-          <HoldingsTableSkeleton />
-        ) : holdings.length === 0 ? (
-          <EmptyHoldings />
-        ) : (
-          <>
-            {/* Desktop table */}
-            <div
-              className="hidden overflow-hidden rounded-xl md:block"
-              style={{
-                backgroundColor: "var(--bg-secondary)",
-                border: "1px solid var(--border-default)",
-              }}
-            >
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[700px]">
-                  <thead>
-                    <tr
-                      style={{
-                        borderBottom: "1px solid var(--border-default)",
-                      }}
-                    >
-                      <th
-                        className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide"
-                        style={{ color: "var(--text-muted)" }}
-                      >
-                        Caliber
-                      </th>
-                      <th
-                        className="px-6 py-3 text-right text-xs font-semibold uppercase tracking-wide"
-                        style={{ color: "var(--text-muted)" }}
-                      >
-                        Balance
-                      </th>
-                      <th
-                        className="px-6 py-3 text-right text-xs font-semibold uppercase tracking-wide"
-                        style={{ color: "var(--text-muted)" }}
-                      >
-                        Price
-                      </th>
-                      <th
-                        className="px-6 py-3 text-right text-xs font-semibold uppercase tracking-wide"
-                        style={{ color: "var(--text-muted)" }}
-                      >
-                        Value
-                      </th>
-                      <th
-                        className="px-6 py-3 text-right text-xs font-semibold uppercase tracking-wide"
-                        style={{ color: "var(--text-muted)" }}
-                      >
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {holdings.map((holding, i) => (
-                      <tr
-                        key={holding.caliber}
-                        className="cursor-pointer transition-colors duration-100 hover:bg-ax-tertiary"
-                        style={{
-                          borderBottom:
-                            i < holdings.length - 1
-                              ? "1px solid var(--border-default)"
-                              : "none",
-                        }}
-                        onClick={() => router.push(`/calibers/${holding.caliber.toLowerCase()}`)}
-                      >
-                        <HoldingsDesktopRow
-                          holding={holding}
-                          isLast={i === holdings.length - 1}
-                          onViewOrders={() => handleViewOrdersForCaliber(holding.caliber)}
-                        />
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            {/* Mobile cards */}
-            <div className="flex flex-col gap-3 md:hidden">
-              {holdings.map((holding) => (
-                <HoldingsMobileCard
-                  key={holding.caliber}
-                  holding={holding}
-                  onViewOrders={() => handleViewOrdersForCaliber(holding.caliber)}
-                />
-              ))}
-            </div>
-          </>
-        )}
-      </section>
-
-      {/* Section 4: Order History */}
+      {/* Order History */}
       <section className="mt-10" ref={orderHistorySectionRef}>
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <h2
@@ -540,7 +434,7 @@ export function PortfolioDashboard() {
         )}
       </section>
 
-      {/* Section 5: Primers — hidden until feature is ready */}
+      {/* Primers — hidden until feature is ready */}
       {false && (
         <div className="mt-10">
           <PrimersSection primers={0} />
