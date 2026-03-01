@@ -54,7 +54,7 @@ export function TokenSelector({
 
       {open && (
         <div
-          className="absolute left-0 top-full z-50 mt-1 w-56 rounded-xl py-1 shadow-xl"
+          className="absolute left-0 top-full z-50 mt-1 w-56 rounded-xl py-1 shadow-lg"
           style={{
             backgroundColor: "var(--bg-secondary)",
             border: "1px solid var(--border-hover)",

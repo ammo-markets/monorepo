@@ -104,7 +104,7 @@ export default function CaliberDetailPage({
           </div>
 
           {/* Right column -- desktop only (sticky action panel) */}
-          <div className="hidden lg:block lg:w-[360px] lg:flex-shrink-0">
+          <div className="hidden lg:block lg:w-[360px] lg:shrink-0">
             <ActionPanelDesktop data={data} walletConnected={isConnected} />
           </div>
         </div>

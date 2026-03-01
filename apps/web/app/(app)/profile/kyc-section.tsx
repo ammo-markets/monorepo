@@ -97,7 +97,7 @@ export function KycSection({
           >
             <Clock
               size={16}
-              className="mt-0.5 flex-shrink-0"
+              className="mt-0.5 shrink-0"
               style={{ color: "var(--amber)" }}
             />
             <div>
@@ -132,7 +132,7 @@ export function KycSection({
           >
             <CheckCircle2
               size={16}
-              className="mt-0.5 flex-shrink-0"
+              className="mt-0.5 shrink-0"
               style={{ color: "var(--green)" }}
             />
             <p
@@ -156,7 +156,7 @@ export function KycSection({
             >
               <XCircle
                 size={16}
-                className="mt-0.5 flex-shrink-0"
+                className="mt-0.5 shrink-0"
                 style={{ color: "var(--red)" }}
               />
               <div>

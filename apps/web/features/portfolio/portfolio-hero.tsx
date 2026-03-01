@@ -90,7 +90,7 @@ export function PortfolioHero({
                     : "0";
                 return (
                   <div
-                    className="rounded-lg px-3 py-2 text-xs shadow-xl"
+                    className="rounded-lg px-3 py-2 text-xs shadow-lg"
                     style={{
                       backgroundColor: "var(--bg-secondary)",
                       border: "1px solid var(--border-default)",

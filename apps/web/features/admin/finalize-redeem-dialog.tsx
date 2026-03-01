@@ -103,13 +103,13 @@ export function FinalizeRedeemDialog({
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/60 backdrop-blur-xs"
         onClick={() => onOpenChange(false)}
       />
 
       {/* Dialog */}
       <div
-        className="relative z-10 w-full max-w-md rounded-xl border p-6 shadow-2xl"
+        className="relative z-10 w-full max-w-md rounded-xl border p-6 shadow-xl"
         style={{
           borderColor: "var(--border-default)",
           backgroundColor: "var(--bg-primary)",
@@ -125,7 +125,7 @@ export function FinalizeRedeemDialog({
           <button
             type="button"
             onClick={() => onOpenChange(false)}
-            className="transition-colors hover:text-[var(--text-primary)]"
+            className="transition-colors hover:text-text-primary"
             style={{ color: "var(--text-muted)" }}
           >
             <X className="h-5 w-5" />
@@ -196,7 +196,7 @@ export function FinalizeRedeemDialog({
           <button
             type="button"
             onClick={() => onOpenChange(false)}
-            className="flex-1 rounded-lg border px-4 py-2 text-sm font-medium transition-colors hover:bg-[var(--bg-tertiary)]"
+            className="flex-1 rounded-lg border px-4 py-2 text-sm font-medium transition-colors hover:bg-ax-tertiary"
             style={{
               borderColor: "var(--border-hover)",
               color: "var(--text-primary)",
@@ -208,7 +208,7 @@ export function FinalizeRedeemDialog({
             type="button"
             onClick={handleConfirm}
             disabled={isPending || isConfirming || !isReady}
-            className="flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors hover:bg-[var(--brass-hover)] disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors hover:bg-brass-hover disabled:cursor-not-allowed disabled:opacity-50"
             style={{
               backgroundColor: "var(--brass)",
               color: "var(--bg-primary)",

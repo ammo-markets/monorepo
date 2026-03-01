@@ -102,7 +102,7 @@ export function SwapTab({ tokens }: { tokens: Token[] }) {
         <button
           type="button"
           onClick={handleSwapDirection}
-          className="flex h-10 w-10 items-center justify-center rounded-full shadow-lg transition-all duration-300 bg-ax-tertiary border-2 border-border-hover text-text-secondary hover:border-brass-border hover:text-brass"
+          className="flex h-10 w-10 items-center justify-center rounded-full shadow-md transition-all duration-300 bg-ax-tertiary border-2 border-border-hover text-text-secondary hover:border-brass-border hover:text-brass"
           style={{
             transform: rotated ? "rotate(180deg)" : "rotate(0deg)",
           }}

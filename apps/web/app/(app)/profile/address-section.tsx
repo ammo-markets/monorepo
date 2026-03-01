@@ -238,7 +238,7 @@ export function AddressSection({
           <button
             type="button"
             onClick={onOpenEdit}
-            className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg transition-colors duration-150"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors duration-150"
             style={{
               backgroundColor: "var(--bg-tertiary)",
               color: "var(--text-secondary)",

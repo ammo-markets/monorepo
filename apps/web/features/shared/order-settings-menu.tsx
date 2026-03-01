@@ -111,7 +111,7 @@ export function OrderSettingsMenu({
       </PopoverTrigger>
       <PopoverContent
         align="start"
-        className="w-80 p-5 rounded-xl shadow-xl"
+        className="w-80 p-5 rounded-xl shadow-lg"
         style={{
           backgroundColor: "var(--bg-secondary)",
           border: "1px solid var(--border-default)",

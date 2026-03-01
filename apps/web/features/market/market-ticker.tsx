@@ -25,7 +25,7 @@ export function MarketTicker() {
             return (
               <div
                 key={caliber.caliber}
-                className="flex flex-shrink-0 items-center gap-3 lg:flex-1 lg:justify-center"
+                className="flex shrink-0 items-center gap-3 lg:flex-1 lg:justify-center"
               >
                 <IconComponent size={24} />
                 <div className="flex items-center gap-3">
