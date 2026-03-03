@@ -3,14 +3,17 @@ pragma solidity ^0.8.24;
 
 import "./AmmoManager.sol";
 import "./CaliberMarket.sol";
+import "./PriceOracle.sol";
 
 /// @notice Deploys and registers per-caliber CaliberMarket + AmmoToken pairs.
 /// @dev Only callable by the AmmoManager owner. Each caliber gets its own
-///      isolated market contract and token.
+///      isolated market contract and token. The shared oracle is passed at
+///      construction and markets are auto-registered with it.
 contract AmmoFactory {
     AmmoManager public immutable manager;
     address public immutable usdc;
     uint8 public immutable usdcDecimals;
+    address public immutable oracle;
 
     struct CaliberInfo {
         address market;
@@ -31,11 +34,12 @@ contract AmmoFactory {
         _;
     }
 
-    constructor(address manager_, address usdc_, uint8 usdcDecimals_) {
-        if (manager_ == address(0) || usdc_ == address(0)) revert ZeroAddress();
+    constructor(address manager_, address usdc_, uint8 usdcDecimals_, address oracle_) {
+        if (manager_ == address(0) || usdc_ == address(0) || oracle_ == address(0)) revert ZeroAddress();
         manager = AmmoManager(manager_);
         usdc = usdc_;
         usdcDecimals = usdcDecimals_;
+        oracle = oracle_;
     }
 
     /// @notice Deploy a new caliber market + token pair.
@@ -45,13 +49,11 @@ contract AmmoFactory {
         bytes32 caliberId,
         string calldata name,
         string calldata symbol,
-        address oracle,
         uint256 mintFeeBps,
         uint256 redeemFeeBps,
         uint256 minMintRounds
     ) external onlyOwner returns (address market, address token) {
         if (calibers[caliberId].market != address(0)) revert CaliberExists();
-        if (oracle == address(0)) revert ZeroAddress();
 
         CaliberMarket marketContract = new CaliberMarket(
             address(manager), usdc, usdcDecimals, oracle, caliberId, name, symbol, mintFeeBps, redeemFeeBps, minMintRounds
@@ -59,6 +61,9 @@ contract AmmoFactory {
 
         market = address(marketContract);
         token = address(marketContract.token());
+
+        // Auto-register market with the shared oracle
+        PriceOracle(oracle).registerMarket(market);
 
         calibers[caliberId] = CaliberInfo({market: market, token: token});
         caliberIds.push(caliberId);

@@ -10,26 +10,11 @@ interface IERC20 {
     function transferFrom(address from, address to, uint256 amount) external returns (bool);
 }
 
-/// @notice Per-caliber mint/redeem market with 2-step keeper-finalized flows.
+/// @notice Per-caliber market with 1-step instant mint and 2-step keeper-finalized redeem.
 /// @dev Deployed by AmmoFactory. Each instance manages exactly one caliber.
-///      Oracle is queried at startMint for slippage baseline; keeper passes
-///      actual purchase price at finalizeMint.
+///      Mint reads price from a shared PriceOracle; redeem is keeper-finalized.
 contract CaliberMarket {
-    enum MintStatus { None, Started, Finalized, Refunded }
     enum RedeemStatus { None, Requested, Finalized, Canceled }
-
-    struct MintOrder {
-        address user;
-        uint256 usdcAmount;
-        uint256 minTokensOut;
-        uint256 requestPrice;
-        uint256 feeBps;
-        uint256 minMintAtStart;
-        uint64 deadline;
-        uint64 createdAt;
-        uint64 finalizedAt;
-        MintStatus status;
-    }
 
     struct RedeemOrder {
         address user;
@@ -49,19 +34,19 @@ contract CaliberMarket {
     error InvalidBps();
     error InvalidPrice();
     error MinMintNotMet();
-    error Slippage();
+    error StalePrice();
+    error NoTokensMinted();
     error DeadlineExpired();
     error DeadlineNotSet();
     error InvalidStatus();
     error Reentrancy();
     error TreasuryNotSet();
 
-    event MintStarted(
-        uint256 indexed orderId, address indexed user, uint256 usdcAmount,
-        uint256 requestPrice, uint256 minTokensOut, uint64 deadline
+    event Minted(
+        address indexed user, bytes32 indexed caliberId,
+        uint256 usdcAmount, uint256 tokenAmount,
+        uint256 priceUsed, uint256 refundAmount
     );
-    event MintFinalized(uint256 indexed orderId, address indexed user, uint256 tokenAmount, uint256 priceUsed);
-    event MintRefunded(uint256 indexed orderId, address indexed user, uint256 refundAmount, uint8 reasonCode);
     event RedeemRequested(uint256 indexed orderId, address indexed user, uint256 tokenAmount, uint64 deadline);
     event RedeemFinalized(uint256 indexed orderId, address indexed user, uint256 burnedTokens, uint256 feeTokens);
     event RedeemCanceled(uint256 indexed orderId, address indexed user, uint256 unlockedTokens, uint8 reasonCode);
@@ -70,6 +55,8 @@ contract CaliberMarket {
     event MinMintUpdated(uint256 oldMin, uint256 newMin);
     event Paused(address indexed by);
     event Unpaused(address indexed by);
+
+    uint256 public constant MAX_STALENESS = 6 hours;
 
     AmmoManager public immutable manager;
     IERC20 public immutable usdc;
@@ -85,7 +72,6 @@ contract CaliberMarket {
     uint256 public nextOrderId = 1;
     uint256 private _locked;
 
-    mapping(uint256 => MintOrder) public mintOrders;
     mapping(uint256 => RedeemOrder) public redeemOrders;
 
     modifier onlyOwner() {
@@ -140,41 +126,46 @@ contract CaliberMarket {
 
     // ── User functions ──────────────────────────────
 
-    function startMint(uint256 usdcAmount, uint256 maxSlippageBps, uint64 deadline)
-        external
-        whenNotPaused
-        nonReentrant
-        returns (uint256 orderId)
-    {
+    /// @notice Mint ammo tokens in a single step using the oracle price.
+    /// @param usdcAmount Total USDC to spend (fee is deducted from this).
+    function mint(uint256 usdcAmount) external whenNotPaused nonReentrant {
         if (usdcAmount == 0) revert InvalidAmount();
-        if (maxSlippageBps > 10_000) revert InvalidBps();
 
-        uint256 requestPrice = oracle.getPrice();
-        if (requestPrice == 0) revert InvalidPrice();
+        address treasury = manager.treasury();
+        if (treasury == address(0)) revert TreasuryNotSet();
+
+        (uint256 price, uint256 updatedAt) = oracle.getPriceData();
+        if (price == 0) revert InvalidPrice();
+        if (block.timestamp - updatedAt > MAX_STALENESS) revert StalePrice();
 
         uint256 feeAmount = (usdcAmount * mintFeeBps) / 10_000;
         uint256 netUsdc = usdcAmount - feeAmount;
         uint256 scale = 10 ** (18 - usdcDecimals);
-        uint256 expectedTokens = (netUsdc * scale * 1e18) / requestPrice;
-        uint256 minTokensOut = (expectedTokens * (10_000 - maxSlippageBps)) / 10_000;
 
+        // Round DOWN to whole tokens
+        uint256 tokenAmount = (netUsdc * scale * 1e18) / price;
+        if (tokenAmount < minMintRounds * 1e18) revert MinMintNotMet();
+
+        // Back-calculate exact USDC consumed for whole tokens
+        uint256 actualUsdc = (tokenAmount * price) / (scale * 1e18);
+        uint256 refund = netUsdc - actualUsdc;
+
+        // Transfer USDC from user
         _safeTransferFrom(usdc, msg.sender, address(this), usdcAmount);
 
-        orderId = nextOrderId++;
-        mintOrders[orderId] = MintOrder({
-            user: msg.sender,
-            usdcAmount: usdcAmount,
-            minTokensOut: minTokensOut,
-            requestPrice: requestPrice,
-            feeBps: mintFeeBps,
-            minMintAtStart: minMintRounds,
-            deadline: deadline,
-            createdAt: uint64(block.timestamp),
-            finalizedAt: 0,
-            status: MintStatus.Started
-        });
+        // Distribute USDC
+        if (feeAmount > 0) {
+            _safeTransfer(usdc, manager.feeRecipient(), feeAmount);
+        }
+        _safeTransfer(usdc, treasury, actualUsdc);
+        if (refund > 0) {
+            _safeTransfer(usdc, msg.sender, refund);
+        }
 
-        emit MintStarted(orderId, msg.sender, usdcAmount, requestPrice, minTokensOut, deadline);
+        // Mint tokens
+        token.mint(msg.sender, tokenAmount);
+
+        emit Minted(msg.sender, caliberId, usdcAmount, tokenAmount, price, refund);
     }
 
     function startRedeem(uint256 tokenAmount, uint64 deadline)
@@ -201,55 +192,6 @@ contract CaliberMarket {
     }
 
     // ── Keeper functions ────────────────────────────
-
-    function finalizeMint(uint256 orderId, uint256 actualPriceX18) external onlyKeeper whenNotPaused {
-        if (actualPriceX18 == 0) revert InvalidPrice();
-
-        MintOrder storage order = mintOrders[orderId];
-        if (order.status != MintStatus.Started) revert InvalidStatus();
-        if (order.deadline != 0 && block.timestamp > order.deadline) revert DeadlineExpired();
-
-        address treasury = manager.treasury();
-        if (treasury == address(0)) revert TreasuryNotSet();
-
-        uint256 feeAmount = (order.usdcAmount * order.feeBps) / 10_000;
-        uint256 netUsdc = order.usdcAmount - feeAmount;
-        uint256 scale = 10 ** (18 - usdcDecimals);
-        uint256 tokenAmount = (netUsdc * scale * 1e18) / actualPriceX18;
-
-        if (tokenAmount < order.minMintAtStart * 1e18) revert MinMintNotMet();
-        if (tokenAmount < order.minTokensOut) revert Slippage();
-
-        order.status = MintStatus.Finalized;
-        order.finalizedAt = uint64(block.timestamp);
-
-        if (feeAmount > 0) {
-            _safeTransfer(usdc, manager.feeRecipient(), feeAmount);
-        }
-        _safeTransfer(usdc, treasury, netUsdc);
-        token.mint(order.user, tokenAmount);
-
-        emit MintFinalized(orderId, order.user, tokenAmount, actualPriceX18);
-    }
-
-    function refundMint(uint256 orderId, uint8 reasonCode) external {
-        MintOrder storage order = mintOrders[orderId];
-        if (order.status != MintStatus.Started) revert InvalidStatus();
-
-        // Keeper can refund anytime; user can self-rescue after deadline
-        if (!manager.isKeeper(msg.sender)) {
-            if (msg.sender != order.user) revert NotKeeper();
-            if (order.deadline == 0) revert DeadlineNotSet();
-            if (block.timestamp <= order.deadline) revert DeadlineExpired();
-        }
-
-        order.status = MintStatus.Refunded;
-        order.finalizedAt = uint64(block.timestamp);
-
-        _safeTransfer(usdc, order.user, order.usdcAmount);
-
-        emit MintRefunded(orderId, order.user, order.usdcAmount, reasonCode);
-    }
 
     function finalizeRedeem(uint256 orderId) external onlyKeeper whenNotPaused {
         RedeemOrder storage order = redeemOrders[orderId];
