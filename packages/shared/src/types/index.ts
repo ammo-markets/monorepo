@@ -1,4 +1,8 @@
-export type Caliber = "9MM" | "556" | "22LR" | "308";
+export type Caliber =
+  | "9MM_PRACTICE"
+  | "9MM_SELF_DEFENSE"
+  | "556_SELF_DEFENSE"
+  | "556_NATO_PRACTICE";
 
 export type KycStatus = "none" | "pending" | "approved" | "rejected";
 
@@ -18,13 +22,9 @@ export interface CaliberSpec {
   grainWeight: number;
   caseType: string;
   minMintRounds: number;
-}
-
-export interface OrderRequest {
-  caliber: Caliber;
-  type: OrderType;
-  amount: bigint;
-  walletAddress: `0x${string}`;
+  tokenName: string;
+  tokenSymbol: string;
+  sku: string;
 }
 
 export interface RedeemRequest {

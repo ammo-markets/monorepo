@@ -33,57 +33,50 @@ type NetworkAddresses = {
   manager: `0x${string}`;
   factory: `0x${string}`;
   usdc: `0x${string}`;
+  oracle: `0x${string}`;
   calibers: Record<Caliber, CaliberAddresses>;
 };
+
+const ZERO = "0x0000000000000000000000000000000000000000" as const;
 
 export const CONTRACT_ADDRESSES: {
   fuji: NetworkAddresses;
   mainnet: NetworkAddresses;
 } = {
   fuji: {
-    manager: "0xB275e81aDc8c0fFd8cb0d2c2142AcDBeb4A7B82c",
-    factory: "0xAbbf3fb509DA4FE46Ee65A3BE3A1BbE84E2Aa3e4",
-    usdc: "0xE073D724c03346202C5311aDEbca530aaB72299e",
+    manager: "0x74994498D05358502C56e491A1fd68bdC3F5177c",
+    factory: "0xAB76E1c1ae81aB94B3D3824fC905189287143D5e",
+    usdc: "0x313f01B900150446036F325B881993eE18c40375",
+    oracle: "0x4C39b892B228E3A4Fdf971cDDB6De50b1de0A144",
     calibers: {
-      "9MM": {
-        market: "0x0bff015EEA8C18674AB8d9B3f995E25359Da8Ab1",
-        token: "0x1f7999bc88090c7B397D4630442991a4E27Fb98F",
+      "9MM_PRACTICE": {
+        market: "0xC2a1D88A13539eBd62C481F7Abe5366A6c780670",
+        token: "0xfed6e25c7e1d67CC38b57bD04997922fa2474E45",
       },
-      "556": {
-        market: "0x1094166b993c0D92912D298E6AD9E5170977e12C",
-        token: "0x11afaDEd9C8Fa5D19377251232Af30BeB57b04b6",
+      "9MM_SELF_DEFENSE": {
+        market: "0xD33B1c993d7958EaF5bf81Ec88ec6D5Ae757adf4",
+        token: "0x810f64aa6Ca1e1030Ca1b859FFdf41Cf509b2183",
       },
-      "22LR": {
-        market: "0xc5DC672b3A72c1c6f78dBaF98d7A118bBCe18a79",
-        token: "0xac6A4F943845e7Fad9d7421756DAd1aceb57f4c7",
+      "556_SELF_DEFENSE": {
+        market: "0x0A461cf5C3c9437FDE6416BA45f50C0236aef04d",
+        token: "0xD7DCc019463173967dbC5871Eb8a6c2134FC6b23",
       },
-      "308": {
-        market: "0x4b4DeBfCCCB60250007dB708f670CE74b62387AE",
-        token: "0x6Ea392b168BEFbC33776068c18ad8F4313cDdCeE",
+      "556_NATO_PRACTICE": {
+        market: "0x6855E5F296b24e9FA49524bf59A4326a952A8a82",
+        token: "0xbca964959f8739b10b2981a6dA35EeF7845FA73b",
       },
     },
   },
   mainnet: {
-    manager: "0x0000000000000000000000000000000000000000",
-    factory: "0x0000000000000000000000000000000000000000",
+    manager: ZERO,
+    factory: ZERO,
     usdc: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
+    oracle: ZERO,
     calibers: {
-      "9MM": {
-        market: "0x0000000000000000000000000000000000000000",
-        token: "0x0000000000000000000000000000000000000000",
-      },
-      "556": {
-        market: "0x0000000000000000000000000000000000000000",
-        token: "0x0000000000000000000000000000000000000000",
-      },
-      "22LR": {
-        market: "0x0000000000000000000000000000000000000000",
-        token: "0x0000000000000000000000000000000000000000",
-      },
-      "308": {
-        market: "0x0000000000000000000000000000000000000000",
-        token: "0x0000000000000000000000000000000000000000",
-      },
+      "9MM_PRACTICE": { market: ZERO, token: ZERO },
+      "9MM_SELF_DEFENSE": { market: ZERO, token: ZERO },
+      "556_SELF_DEFENSE": { market: ZERO, token: ZERO },
+      "556_NATO_PRACTICE": { market: ZERO, token: ZERO },
     },
   },
 } as const;
@@ -94,7 +87,7 @@ export const CONTRACT_ADDRESSES: {
  * to avoid scanning millions of empty blocks.
  */
 export const DEPLOYMENT_BLOCKS = {
-  fuji: BigInt(52220913),
+  fuji: BigInt(52346218),
   mainnet: BigInt(0), // Not yet deployed
 } as const;
 
