@@ -16,7 +16,7 @@ import { useAllowance } from "@/hooks/use-allowance";
 import { useTokenBalances } from "@/hooks/use-token-balances";
 import { toast } from "sonner";
 import { parseContractError } from "@/lib/errors";
-import { getDeadline, parseUsdc } from "@/lib/tx-utils";
+import { parseUsdc } from "@/lib/tx-utils";
 import type { Caliber } from "@ammo-exchange/shared";
 import { contracts } from "@/lib/chain";
 import { usePendingOrders } from "@/hooks/use-pending-orders";
@@ -55,10 +55,8 @@ export function MintFlow({
     return null;
   });
   const [usdcAmount, setUsdcAmount] = useState("");
-  const [deadlineHours, setDeadlineHours] = useState(24);
-  const [slippageBps, setSlippageBps] = useState(100);
 
-  const activeCaliber: Caliber = selectedCaliber ?? "9MM";
+  const activeCaliber: Caliber = selectedCaliber ?? "9MM_PRACTICE";
   const caliber =
     selectedCaliber && caliberDetailsMap
       ? caliberDetailsMap[selectedCaliber]
@@ -93,8 +91,6 @@ export function MintFlow({
     activeCaliber,
     {
       usdcAmount: parsedUsdcAmount > BigInt(0) ? parsedUsdcAmount : undefined,
-      slippageBps: BigInt(slippageBps),
-      deadline: getDeadline(deadlineHours),
     },
     { hasEnoughAllowance },
   );
@@ -177,7 +173,7 @@ export function MintFlow({
   }, [mintTx, usdcAmount]);
 
   const handleConfirm = useCallback(() => {
-    mintTx.startMint();
+    mintTx.mint();
   }, [mintTx]);
 
   const handleRetry = useCallback(() => {
@@ -194,7 +190,6 @@ export function MintFlow({
       setSelectedCaliber(null);
     }
     setUsdcAmount("");
-    setDeadlineHours(24);
   }, [mintTx, isEmbedded, preselected]);
 
   return (
@@ -237,10 +232,6 @@ export function MintFlow({
           usdcAmount={usdcAmount}
           setUsdcAmount={setUsdcAmount}
           usdcBalance={usdcBalance}
-          deadlineHours={deadlineHours}
-          onDeadlineChange={setDeadlineHours}
-          slippageBps={slippageBps}
-          onSlippageChange={setSlippageBps}
           onNext={() => setStep(2)}
           onBack={() => setStep(0)}
           hideBack={isEmbedded}
@@ -253,8 +244,6 @@ export function MintFlow({
         <StepReview
           caliber={caliber}
           usdcAmount={usdcAmount}
-          deadlineHours={deadlineHours}
-          slippageBps={slippageBps}
           txStatus={txStatus}
           errorMessage={errorMessage}
           isConnected={wallet.isConnected}

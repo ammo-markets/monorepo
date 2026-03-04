@@ -17,29 +17,21 @@ export function PortfolioHeroSkeleton() {
       {/* Title shimmer */}
       <div className="mb-6 h-4 w-24 rounded shimmer" />
 
-      {/* Chart + legend row */}
-      <div className="flex flex-col items-center gap-8 sm:flex-row sm:items-start sm:gap-10">
-        {/* Donut placeholder */}
-        <div className="flex h-[180px] w-[180px] shrink-0 items-center justify-center sm:h-[200px] sm:w-[200px]">
-          <div className="h-[170px] w-[170px] rounded-full shimmer sm:h-[170px] sm:w-[170px]" />
+      {/* Unified grid */}
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {/* Summary card skeleton */}
+        <div
+          className="flex flex-col items-center justify-center rounded-xl p-4 sm:aspect-square"
+          style={{
+            backgroundColor: "var(--bg-secondary)",
+            border: "1px solid var(--border-default)",
+          }}
+        >
+          <div className="h-[144px] w-[144px] rounded-full shimmer" />
+          <div className="mt-2 h-3 w-28 rounded shimmer" />
         </div>
 
-        {/* Legend shimmer */}
-        <div className="flex w-full flex-col gap-3">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="flex items-center gap-3">
-              <div className="h-2.5 w-2.5 shrink-0 rounded-sm shimmer" />
-              <div className="h-4 w-10 rounded shimmer" />
-              <div className="h-2 flex-1 rounded-full shimmer" />
-              <div className="h-4 w-8 rounded shimmer" />
-              <div className="h-4 w-16 rounded shimmer" />
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Card grid shimmer */}
-      <div className="mt-8 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {/* Caliber card skeletons */}
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}
@@ -52,6 +44,7 @@ export function PortfolioHeroSkeleton() {
             <div className="flex items-center gap-2">
               <div className="h-5 w-5 rounded shimmer" />
               <div className="h-4 w-10 rounded shimmer" />
+              <div className="ml-auto h-3 w-8 rounded shimmer" />
             </div>
             <div className="mt-3 space-y-2">
               <div className="h-3 w-20 rounded shimmer" />

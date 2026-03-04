@@ -3,13 +3,9 @@
 import Link from "next/link";
 import { formatUnits } from "viem";
 import type { Caliber } from "@ammo-exchange/shared";
-import { CALIBER_SPECS } from "@ammo-exchange/shared";
+import { CALIBER_SPECS, CALIBERS } from "@ammo-exchange/shared";
 import type { MarketCaliberFromAPI } from "@/lib/types";
 import { caliberIcons } from "@/features/shared/caliber-icons";
-
-/* ────────────── Constants ────────────── */
-
-const CALIBERS: Caliber[] = ["9MM", "556", "22LR", "308"];
 
 /* ────────────── Props ────────────── */
 
@@ -133,7 +129,7 @@ export function BalanceCards({
             <Link
               key={h.caliber}
               href={`/exchange?caliber=${h.caliber.toLowerCase()}`}
-              className="rounded-xl p-4 transition-colors hover:border-[var(--brass-border)]"
+              className="rounded-xl p-4 transition-colors hover:border-brass-border"
               style={{
                 backgroundColor: "var(--bg-secondary)",
                 border: "1px solid var(--border-default)",

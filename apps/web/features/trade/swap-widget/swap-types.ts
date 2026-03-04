@@ -1,4 +1,4 @@
-import { CALIBER_SPECS } from "@ammo-exchange/shared";
+import { CALIBER_SPECS, CALIBERS } from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
 import type { MarketCaliberFromAPI } from "@/lib/types";
 
@@ -13,8 +13,6 @@ export interface Token {
   price: number;
   balance: number;
 }
-
-export const CALIBERS: Caliber[] = ["9MM", "556", "22LR", "308"];
 
 export function buildTokens(marketData: MarketCaliberFromAPI[]): Token[] {
   const base: Token[] = [

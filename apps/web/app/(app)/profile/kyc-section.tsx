@@ -75,7 +75,7 @@ export function KycSection({
             <button
               type="button"
               onClick={() => setDialogOpen(true)}
-              className="rounded-lg px-4 py-2 text-sm font-medium transition-colors hover:bg-[var(--brass-hover)]"
+              className="rounded-lg px-4 py-2 text-sm font-medium transition-colors hover:bg-brass-hover"
               style={{
                 backgroundColor: "var(--brass)",
                 color: "var(--bg-primary)",
@@ -179,7 +179,7 @@ export function KycSection({
             <button
               type="button"
               onClick={() => setDialogOpen(true)}
-              className="rounded-lg px-4 py-2 text-sm font-medium transition-colors hover:bg-[var(--brass-hover)]"
+              className="rounded-lg px-4 py-2 text-sm font-medium transition-colors hover:bg-brass-hover"
               style={{
                 backgroundColor: "var(--brass)",
                 color: "var(--bg-primary)",

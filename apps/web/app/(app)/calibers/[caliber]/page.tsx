@@ -15,14 +15,14 @@ import { useAuth } from "@/contexts/auth-context";
 import type { Caliber } from "@ammo-exchange/shared";
 import { buildCaliberDetail } from "@/lib/caliber-utils";
 
-const validCalibers = ["9mm", "556", "22lr", "308"];
+const validCalibers = ["9mm-practice", "9mm-self-defense", "556-self-defense", "556-nato-practice"];
 
 function resolveCaliberId(slug: string): Caliber | null {
   const map: Record<string, Caliber> = {
-    "9mm": "9MM",
-    "556": "556",
-    "22lr": "22LR",
-    "308": "308",
+    "9mm-practice": "9MM_PRACTICE",
+    "9mm-self-defense": "9MM_SELF_DEFENSE",
+    "556-self-defense": "556_SELF_DEFENSE",
+    "556-nato-practice": "556_NATO_PRACTICE",
   };
   return map[slug.toLowerCase()] ?? null;
 }

@@ -10,7 +10,7 @@ import { useMarketData } from "@/hooks/use-market-data";
 import { useOrders } from "@/hooks/use-orders";
 import type { OrderFromAPI } from "@/lib/types";
 import type { Caliber } from "@ammo-exchange/shared";
-import { CALIBER_SPECS } from "@ammo-exchange/shared";
+import { CALIBER_SPECS, CALIBERS } from "@ammo-exchange/shared";
 import {
   PortfolioHeroSkeleton,
   OrdersTableSkeleton,
@@ -25,7 +25,6 @@ import { ActiveOrderCard } from "./active-order-card";
 
 /* ────────────── Constants ────────────── */
 
-const CALIBERS: Caliber[] = ["9MM", "556", "22LR", "308"];
 const ORDERS_PAGE_SIZE = 10;
 
 /* ────────────── Types ────────────── */

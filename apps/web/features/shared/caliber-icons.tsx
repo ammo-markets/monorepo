@@ -207,9 +207,9 @@ export function Icon308({ size = 24, className }: CaliberIconProps) {
   );
 }
 
-export const caliberIcons = {
-  "9MM": Icon9MM,
-  "556": Icon556,
-  "22LR": Icon22LR,
-  "308": Icon308,
-} as const;
+export const caliberIcons: Record<import("@ammo-exchange/shared").Caliber, React.FC<CaliberIconProps>> = {
+  "9MM_PRACTICE": Icon9MM,
+  "9MM_SELF_DEFENSE": Icon9MM,
+  "556_SELF_DEFENSE": Icon556,
+  "556_NATO_PRACTICE": Icon556,
+};

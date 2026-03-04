@@ -1,12 +1,10 @@
 "use client";
 
 import { formatUnits } from "viem";
-import { CALIBER_SPECS } from "@ammo-exchange/shared";
+import { CALIBER_SPECS, CALIBERS } from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
 import type { MarketCaliberFromAPI } from "@/lib/types";
 import { caliberIcons } from "@/features/shared/caliber-icons";
-
-const CALIBERS: Caliber[] = ["9MM", "556", "22LR", "308"];
 
 interface TokenBalances {
   usdc: bigint | undefined;

@@ -19,7 +19,7 @@ export function TradePageClient() {
 
   const [selectedCaliber, setSelectedCaliber] = useState<Caliber | null>(() => {
     const param = searchParams.get("caliber")?.toUpperCase() as Caliber | null;
-    return param ?? "9MM";
+    return param ?? "9MM_PRACTICE";
   });
   const [activeTab, setActiveTab] = useState<TradeTab>(() => {
     const tab = searchParams.get("tab") as TradeTab | null;

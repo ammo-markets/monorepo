@@ -15,7 +15,7 @@ export function SwapTab({ tokens }: { tokens: Token[] }) {
   const { isConnected } = useAuth();
   const { openConnectModal } = useConnectModal();
   const [payToken, setPayToken] = useState<TokenId>("USDC");
-  const [receiveToken, setReceiveToken] = useState<TokenId>("9MM");
+  const [receiveToken, setReceiveToken] = useState<TokenId>("9MM_PRACTICE");
   const [payAmount, setPayAmount] = useState("");
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [rotated, setRotated] = useState(false);

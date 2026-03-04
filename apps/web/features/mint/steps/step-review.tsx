@@ -7,8 +7,6 @@ import type { MintTxStatus } from "@/hooks/use-tx-status";
 export function StepReview({
   caliber,
   usdcAmount,
-  deadlineHours,
-  slippageBps,
   txStatus,
   errorMessage,
   isConnected,
@@ -22,8 +20,6 @@ export function StepReview({
 }: {
   caliber: CaliberDetailData;
   usdcAmount: string;
-  deadlineHours: number;
-  slippageBps: number;
   txStatus: MintTxStatus;
   errorMessage: string;
   isConnected: boolean;
@@ -140,8 +136,8 @@ export function StepReview({
                       color: "var(--text-secondary)",
                     }}
                   >
-                    Final amount determined by admin at fulfillment based on
-                    current market price. Estimate may differ.
+                    Tokens minted instantly at the current oracle price.
+                    Estimate based on live price.
                   </span>
                 </span>
               </span>
@@ -162,26 +158,6 @@ export function StepReview({
               </span>
               <span className="font-medium" style={{ color: "var(--amber)" }}>
                 24-48 hours
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span style={{ color: "var(--text-muted)" }}>Order expiry</span>
-              <span
-                className="font-mono tabular-nums"
-                style={{ color: "var(--text-secondary)" }}
-              >
-                {deadlineHours === 0 ? "None" : `${deadlineHours} hours`}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span style={{ color: "var(--text-muted)" }}>
-                Slippage tolerance
-              </span>
-              <span
-                className="font-mono tabular-nums"
-                style={{ color: "var(--text-secondary)" }}
-              >
-                {slippageBps / 100}%
               </span>
             </div>
           </div>

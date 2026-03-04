@@ -1,7 +1,6 @@
-import { ArrowLeft, Check, Wallet, ChevronDown, ChevronUp } from "lucide-react";
+import { ArrowLeft, Check, Wallet, ChevronDown } from "lucide-react";
 import { caliberIcons } from "@/features/shared/caliber-icons";
 import type { CaliberDetailData } from "@/lib/types";
-import { OrderSettingsMenu } from "@/features/shared/order-settings-menu";
 
 function UsdcIcon({ size = 16 }: { size?: number }) {
   return (
@@ -41,10 +40,6 @@ export function StepEnterAmount({
   usdcAmount,
   setUsdcAmount,
   usdcBalance,
-  deadlineHours,
-  onDeadlineChange,
-  slippageBps,
-  onSlippageChange,
   onNext,
   onBack,
   hideBack,
@@ -55,10 +50,6 @@ export function StepEnterAmount({
   usdcAmount: string;
   setUsdcAmount: (val: string) => void;
   usdcBalance: number;
-  deadlineHours: number;
-  onDeadlineChange: (hours: number) => void;
-  slippageBps: number;
-  onSlippageChange: (bps: number) => void;
   onNext: () => void;
   onBack: () => void;
   hideBack?: boolean;
@@ -125,20 +116,12 @@ export function StepEnterAmount({
       )}
 
       {/* Main USDC input */}
-      <div className="flex items-center justify-between mb-2">
-        <label
-          className="block text-xs font-medium uppercase tracking-wide"
-          style={{ color: "var(--text-muted)" }}
-        >
-          Amount (USDC)
-        </label>
-        <OrderSettingsMenu
-          slippageBps={slippageBps}
-          onSlippageChange={onSlippageChange}
-          expiryHours={deadlineHours}
-          onExpiryChange={onDeadlineChange}
-        />
-      </div>
+      <label
+        className="block text-xs font-medium uppercase tracking-wide mb-2"
+        style={{ color: "var(--text-muted)" }}
+      >
+        Amount (USDC)
+      </label>
 
       <div
         className="flex items-center px-4 py-3 transition-none"
