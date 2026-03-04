@@ -2,10 +2,9 @@
 
 import Link from "next/link";
 import {
-  DollarSign,
-  ArrowUpCircle,
   ArrowDownCircle,
   RefreshCw,
+  Package,
 } from "lucide-react";
 import { useAdminStats } from "@/hooks/use-admin-stats";
 
@@ -16,8 +15,8 @@ export function ProtocolStats() {
     return (
       <div className="space-y-6">
         {/* Skeleton cards */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {Array.from({ length: 4 }).map((_, i) => (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {Array.from({ length: 2 }).map((_, i) => (
             <div
               key={i}
               className="animate-pulse rounded-lg border p-6"
@@ -73,7 +72,7 @@ export function ProtocolStats() {
         <button
           type="button"
           onClick={() => void refetch()}
-          className="rounded-lg border px-4 py-2 text-sm transition-colors hover:bg-[var(--bg-tertiary)]"
+          className="rounded-lg border px-4 py-2 text-sm transition-colors hover:bg-ax-tertiary"
           style={{
             borderColor: "var(--border-hover)",
             color: "var(--text-primary)",
@@ -85,45 +84,8 @@ export function ProtocolStats() {
     );
   }
 
-  const pendingMintHighlight = stats.pendingMints > 0;
   const pendingRedeemHighlight = stats.pendingRedeems > 0;
-
-  function StatCard({
-    label,
-    value,
-    icon: Icon,
-  }: {
-    label: string;
-    value: string;
-    icon: React.ComponentType<{
-      className?: string;
-      style?: React.CSSProperties;
-    }>;
-  }) {
-    return (
-      <div
-        className="rounded-lg border p-6"
-        style={{
-          borderColor: "var(--border-default)",
-          backgroundColor: "var(--bg-secondary)",
-        }}
-      >
-        <div
-          className="flex items-center gap-2 text-sm"
-          style={{ color: "var(--text-secondary)" }}
-        >
-          <Icon className="h-4 w-4" style={{ color: "var(--brass)" }} />
-          {label}
-        </div>
-        <p
-          className="mt-2 text-2xl font-bold"
-          style={{ color: "var(--text-primary)" }}
-        >
-          {value}
-        </p>
-      </div>
-    );
-  }
+  const unbackedHighlight = stats.unbackedMints > 0;
 
   function PendingCard({
     label,
@@ -144,7 +106,7 @@ export function ProtocolStats() {
     return (
       <Link
         href={href}
-        className="block cursor-pointer rounded-lg border p-6 transition-colors hover:bg-[var(--bg-tertiary)]"
+        className="block cursor-pointer rounded-lg border p-6 transition-colors hover:bg-ax-tertiary"
         style={{
           borderColor: highlighted ? "var(--brass)" : "var(--border-default)",
           boxShadow: highlighted ? "0 0 0 1px var(--brass)" : "none",
@@ -171,18 +133,13 @@ export function ProtocolStats() {
   return (
     <div className="space-y-6">
       {/* Summary cards */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-        <StatCard
-          label="Treasury Balance"
-          value={`$${Number(stats.treasuryUsdc).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDC`}
-          icon={DollarSign}
-        />
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <PendingCard
-          label="Pending Mints"
-          value={stats.pendingMints.toLocaleString()}
-          icon={ArrowUpCircle}
+          label="Unbacked Mints"
+          value={stats.unbackedMints.toLocaleString()}
+          icon={Package}
           href="/admin/mint-orders"
-          highlighted={pendingMintHighlight}
+          highlighted={unbackedHighlight}
         />
         <PendingCard
           label="Pending Redeems"
@@ -190,16 +147,6 @@ export function ProtocolStats() {
           icon={ArrowDownCircle}
           href="/admin/redeem-orders"
           highlighted={pendingRedeemHighlight}
-        />
-        <StatCard
-          label="Completed Mints"
-          value={stats.totalMinted.toLocaleString()}
-          icon={ArrowUpCircle}
-        />
-        <StatCard
-          label="Completed Redeems"
-          value={stats.totalRedeemed.toLocaleString()}
-          icon={ArrowDownCircle}
         />
       </div>
 
@@ -225,7 +172,7 @@ export function ProtocolStats() {
             type="button"
             onClick={() => void refetch()}
             title="Refresh stats"
-            className="transition-colors hover:text-[var(--text-primary)]"
+            className="transition-colors hover:text-text-primary"
             style={{ color: "var(--text-muted)" }}
           >
             <RefreshCw className="h-4 w-4" />

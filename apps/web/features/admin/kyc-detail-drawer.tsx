@@ -205,7 +205,7 @@ export function KycDetailDrawer({
               <button
                 type="button"
                 onClick={() => setApproveOpen(true)}
-                className="flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors hover:bg-[var(--brass-hover)]"
+                className="flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors hover:bg-brass-hover"
                 style={{
                   backgroundColor: "var(--brass)",
                   color: "var(--bg-primary)",
@@ -229,7 +229,7 @@ export function KycDetailDrawer({
               <button
                 type="button"
                 onClick={() => onOpenChange(false)}
-                className="w-full rounded-lg border px-4 py-2 text-sm font-medium transition-colors hover:bg-[var(--bg-tertiary)]"
+                className="w-full rounded-lg border px-4 py-2 text-sm font-medium transition-colors hover:bg-ax-tertiary"
                 style={{
                   borderColor: "var(--border-hover)",
                   color: "var(--text-primary)",

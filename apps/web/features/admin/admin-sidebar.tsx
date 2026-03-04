@@ -50,7 +50,7 @@ export function AdminSidebar() {
         </div>
         <button
           type="button"
-          className="rounded-lg p-2 transition-colors hover:bg-[var(--bg-tertiary)]"
+          className="rounded-lg p-2 transition-colors hover:bg-ax-tertiary"
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label={mobileOpen ? "Close menu" : "Open menu"}
           aria-expanded={mobileOpen}
@@ -88,7 +88,7 @@ export function AdminSidebar() {
                 className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                   isActive
                     ? ""
-                    : "hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]"
+                    : "hover:bg-ax-tertiary hover:text-text-primary"
                 }`}
                 style={
                   isActive
@@ -107,7 +107,7 @@ export function AdminSidebar() {
           <Link
             href="/exchange"
             onClick={() => setMobileOpen(false)}
-            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]"
+            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-ax-tertiary hover:text-text-primary"
             style={{ color: "var(--text-secondary)" }}
           >
             <ArrowLeft className="h-4 w-4" />
@@ -153,7 +153,7 @@ export function AdminSidebar() {
                 className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                   isActive
                     ? ""
-                    : "hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]"
+                    : "hover:bg-ax-tertiary hover:text-text-primary"
                 }`}
                 style={
                   isActive
@@ -178,7 +178,7 @@ export function AdminSidebar() {
         >
           <Link
             href="/exchange"
-            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]"
+            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-ax-tertiary hover:text-text-primary"
             style={{ color: "var(--text-secondary)" }}
           >
             <ArrowLeft className="h-4 w-4" />

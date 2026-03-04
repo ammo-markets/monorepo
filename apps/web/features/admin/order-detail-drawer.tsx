@@ -429,10 +429,10 @@ export function OrderDetailDrawer({
                     </div>
                   </div>
 
-                  {(order as AdminMintOrder).requestPrice != null && (
+                  {(order as AdminMintOrder).mintPrice != null && (
                     <div className="flex justify-between">
                       <span style={{ color: "var(--text-secondary)" }}>
-                        Oracle Price at Request
+                        Mint Price
                       </span>
                       <span
                         className="font-mono"
@@ -440,25 +440,23 @@ export function OrderDetailDrawer({
                       >
                         $
                         {(
-                          Number((order as AdminMintOrder).requestPrice) / 1e6
+                          Number((order as AdminMintOrder).mintPrice) / 1e6
                         ).toFixed(4)}
                       </span>
                     </div>
                   )}
 
-                  {(order as AdminMintOrder).finalizePrice != null && (
+                  {(order as AdminMintOrder).refundAmount != null &&
+                    (order as AdminMintOrder).refundAmount !== "0" && (
                     <div className="flex justify-between">
                       <span style={{ color: "var(--text-secondary)" }}>
-                        Finalize Price
+                        Refund Amount
                       </span>
                       <span
                         className="font-mono"
                         style={{ color: "var(--text-primary)" }}
                       >
-                        $
-                        {(
-                          Number((order as AdminMintOrder).finalizePrice) / 1e6
-                        ).toFixed(4)}
+                        {(order as AdminMintOrder).refundAmount}
                       </span>
                     </div>
                   )}
@@ -535,7 +533,7 @@ export function OrderDetailDrawer({
                 type="button"
                 disabled={!hasOnChainId}
                 onClick={() => setFinalizeOpen(true)}
-                className="flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors hover:bg-[var(--brass-hover)] disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors hover:bg-brass-hover disabled:cursor-not-allowed disabled:opacity-50"
                 style={{
                   backgroundColor: "var(--brass)",
                   color: "var(--bg-primary)",
@@ -562,7 +560,7 @@ export function OrderDetailDrawer({
               <button
                 type="button"
                 onClick={() => onOpenChange(false)}
-                className="w-full rounded-lg border px-4 py-2 text-sm font-medium transition-colors hover:bg-[var(--bg-tertiary)]"
+                className="w-full rounded-lg border px-4 py-2 text-sm font-medium transition-colors hover:bg-ax-tertiary"
                 style={{
                   borderColor: "var(--border-hover)",
                   color: "var(--text-primary)",

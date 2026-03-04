@@ -121,7 +121,7 @@ export function CancelRedeemDialog({
               setReason(e.target.value);
               setReasonError("");
             }}
-            className="w-full rounded-lg border px-3 py-2 text-sm outline-none focus:border-[var(--brass)] focus:ring-1 focus:ring-[var(--brass)]"
+            className="w-full rounded-lg border px-3 py-2 text-sm outline-none focus:border-brass focus:ring-1 focus:ring-brass"
             style={{
               borderColor: reasonError
                 ? "rgb(248 113 113)"

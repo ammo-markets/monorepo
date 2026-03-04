@@ -21,8 +21,11 @@ export interface AdminMintOrder {
   updatedAt: string;
   onChainOrderId: string | null;
   txHash: string | null;
-  requestPrice: string | null;
-  finalizePrice: string | null;
+  mintPrice: string | null;
+  refundAmount: string | null;
+  feeAmount: string | null;
+  backedAt: string | null;
+  backedBy: string | null;
   user: { kycStatus: string; kycFullName: string | null; kycState: string | null } | null;
 }
 
@@ -158,11 +161,11 @@ export function FinalizeMintDialog({ order, open, onOpenChange, onFinalized }: F
               {formatUsdc(order.usdcAmount ?? "0")} USDC
             </span>
           </div>
-          {order.requestPrice && (
+          {order.mintPrice && (
             <div className="flex justify-between">
-              <span style={{ color: "var(--text-secondary)" }}>Oracle Price at Request</span>
+              <span style={{ color: "var(--text-secondary)" }}>Mint Price</span>
               <span className="font-mono" style={{ color: "var(--text-primary)" }}>
-                {formatPriceX18(order.requestPrice)}
+                {formatPriceX18(order.mintPrice)}
               </span>
             </div>
           )}

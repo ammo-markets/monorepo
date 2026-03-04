@@ -50,10 +50,10 @@ function getFinalizeBlockReasons(order: AdminRedeemOrder): string[] {
 
 const CALIBER_OPTIONS = [
   { label: "All Calibers", value: "" },
-  { label: "9MM", value: "9MM" },
-  { label: "5.56", value: "556" },
-  { label: ".22 LR", value: "22LR" },
-  { label: ".308", value: "308" },
+  { label: "9mm Practice", value: "9MM_PRACTICE" },
+  { label: "9mm Self Defense", value: "9MM_SELF_DEFENSE" },
+  { label: "5.56 Self Defense", value: "556_SELF_DEFENSE" },
+  { label: "5.56 NATO Practice", value: "556_NATO_PRACTICE" },
 ] as const;
 
 function formatTokenAmount(amount: string): string {
@@ -384,6 +384,7 @@ export function RedeemOrdersTable() {
                                 disabled={isBlocked}
                                 onClick={(e) => {
                                   e.stopPropagation();
+                                  if (isBlocked) return;
                                   setSelectedOrder(order);
                                   setDialogOpen(true);
                                 }}
@@ -412,12 +413,16 @@ export function RedeemOrdersTable() {
                                   </TooltipTrigger>
                                   <TooltipContent
                                     side="top"
-                                    className="max-w-xs border border-red-900/40 bg-[var(--bg-primary)] text-left"
+                                    className="max-w-xs border border-red-900/40 bg-ax-primary text-left"
+                                    onClick={(e) => e.stopPropagation()}
+                                    onPointerDown={(e) =>
+                                      e.stopPropagation()
+                                    }
                                   >
                                     <p className="mb-1 font-medium text-red-400">
                                       Cannot finalize
                                     </p>
-                                    <ul className="space-y-0.5 text-xs text-[var(--text-secondary)]">
+                                    <ul className="space-y-0.5 text-xs text-text-secondary">
                                       {blockReasons.map((reason) => (
                                         <li key={reason}>• {reason}</li>
                                       ))}

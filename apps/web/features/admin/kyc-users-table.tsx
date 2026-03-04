@@ -86,7 +86,7 @@ export function KycUsersTable() {
             placeholder="Search by wallet or name..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-lg border py-2 pl-9 pr-3 text-sm outline-none focus:border-[var(--brass)] focus:ring-1 focus:ring-[var(--brass)]"
+            className="w-full rounded-lg border py-2 pl-9 pr-3 text-sm outline-none focus:border-brass focus:ring-1 focus:ring-brass"
             style={{
               borderColor: "var(--border-hover)",
               backgroundColor: "var(--bg-secondary)",
@@ -97,7 +97,7 @@ export function KycUsersTable() {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="rounded-lg border px-3 py-2 text-sm outline-none focus:border-[var(--brass)] focus:ring-1 focus:ring-[var(--brass)]"
+          className="rounded-lg border px-3 py-2 text-sm outline-none focus:border-brass focus:ring-1 focus:ring-brass"
           style={{
             borderColor: "var(--border-hover)",
             backgroundColor: "var(--bg-secondary)",
@@ -129,7 +129,7 @@ export function KycUsersTable() {
           <button
             type="button"
             onClick={() => refetch()}
-            className="rounded-lg border px-4 py-2 text-sm transition-colors hover:bg-[var(--bg-tertiary)]"
+            className="rounded-lg border px-4 py-2 text-sm transition-colors hover:bg-ax-tertiary"
             style={{
               borderColor: "var(--border-hover)",
               color: "var(--text-primary)",
@@ -213,7 +213,7 @@ export function KycUsersTable() {
                 {users.map((user) => (
                   <tr
                     key={user.id}
-                    className="cursor-pointer border-b transition-colors hover:bg-[var(--bg-secondary)]"
+                    className="cursor-pointer border-b transition-colors hover:bg-ax-secondary"
                     style={{ borderColor: "var(--border-default)" }}
                     onClick={() => {
                       setDrawerUser(user);
@@ -266,7 +266,7 @@ export function KycUsersTable() {
                             setDrawerUser(user);
                             setDrawerOpen(true);
                           }}
-                          className="rounded-md px-3 py-1 text-xs font-medium transition-colors hover:bg-[var(--brass-hover)]"
+                          className="rounded-md px-3 py-1 text-xs font-medium transition-colors hover:bg-brass-hover"
                           style={{
                             backgroundColor: "var(--brass)",
                             color: "var(--bg-primary)",
@@ -299,7 +299,7 @@ export function KycUsersTable() {
                   type="button"
                   disabled={currentPage <= 1}
                   onClick={() => setCurrentPage((p) => p - 1)}
-                  className="rounded-md border p-1.5 transition-colors hover:bg-[var(--bg-tertiary)] disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-md border p-1.5 transition-colors hover:bg-ax-tertiary disabled:cursor-not-allowed disabled:opacity-50"
                   style={{ borderColor: "var(--border-hover)" }}
                   aria-label="Previous page"
                 >
@@ -309,7 +309,7 @@ export function KycUsersTable() {
                   type="button"
                   disabled={currentPage >= totalPages}
                   onClick={() => setCurrentPage((p) => p + 1)}
-                  className="rounded-md border p-1.5 transition-colors hover:bg-[var(--bg-tertiary)] disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-md border p-1.5 transition-colors hover:bg-ax-tertiary disabled:cursor-not-allowed disabled:opacity-50"
                   style={{ borderColor: "var(--border-hover)" }}
                   aria-label="Next page"
                 >
