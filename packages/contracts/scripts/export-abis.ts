@@ -10,6 +10,7 @@ const CONTRACTS_TO_EXPORT = [
   "CaliberMarket",
   "AmmoToken",
   "MockUSDC",
+  "PriceOracle",
 ];
 
 if (!existsSync(ABI_DIR)) {

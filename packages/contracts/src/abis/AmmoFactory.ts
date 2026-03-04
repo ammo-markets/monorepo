@@ -16,6 +16,11 @@ export const AmmoFactoryAbi = [
         "name": "usdcDecimals_",
         "type": "uint8",
         "internalType": "uint8"
+      },
+      {
+        "name": "oracle_",
+        "type": "address",
+        "internalType": "address"
       }
     ],
     "stateMutability": "nonpayable"
@@ -83,11 +88,6 @@ export const AmmoFactoryAbi = [
         "internalType": "string"
       },
       {
-        "name": "oracle",
-        "type": "address",
-        "internalType": "address"
-      },
-      {
         "name": "mintFeeBps",
         "type": "uint256",
         "internalType": "uint256"
@@ -139,6 +139,19 @@ export const AmmoFactoryAbi = [
         "name": "",
         "type": "address",
         "internalType": "contract AmmoManager"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "oracle",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
       }
     ],
     "stateMutability": "view"

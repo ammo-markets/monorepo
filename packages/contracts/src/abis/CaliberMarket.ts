@@ -57,6 +57,19 @@ export const CaliberMarketAbi = [
   },
   {
     "type": "function",
+    "name": "MAX_STALENESS",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "caliberId",
     "inputs": [],
     "outputs": [
@@ -81,24 +94,6 @@ export const CaliberMarketAbi = [
         "name": "reasonCode",
         "type": "uint8",
         "internalType": "uint8"
-      }
-    ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "finalizeMint",
-    "inputs": [
-      {
-        "name": "orderId",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "actualPriceX18",
-        "type": "uint256",
-        "internalType": "uint256"
       }
     ],
     "outputs": [],
@@ -145,6 +140,19 @@ export const CaliberMarketAbi = [
   },
   {
     "type": "function",
+    "name": "mint",
+    "inputs": [
+      {
+        "name": "usdcAmount",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
     "name": "mintFeeBps",
     "inputs": [],
     "outputs": [
@@ -152,70 +160,6 @@ export const CaliberMarketAbi = [
         "name": "",
         "type": "uint256",
         "internalType": "uint256"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "mintOrders",
-    "inputs": [
-      {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "outputs": [
-      {
-        "name": "user",
-        "type": "address",
-        "internalType": "address"
-      },
-      {
-        "name": "usdcAmount",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "minTokensOut",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "requestPrice",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "feeBps",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "minMintAtStart",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "deadline",
-        "type": "uint64",
-        "internalType": "uint64"
-      },
-      {
-        "name": "createdAt",
-        "type": "uint64",
-        "internalType": "uint64"
-      },
-      {
-        "name": "finalizedAt",
-        "type": "uint64",
-        "internalType": "uint64"
-      },
-      {
-        "name": "status",
-        "type": "uint8",
-        "internalType": "enum CaliberMarket.MintStatus"
       }
     ],
     "stateMutability": "view"
@@ -330,24 +274,6 @@ export const CaliberMarketAbi = [
   },
   {
     "type": "function",
-    "name": "refundMint",
-    "inputs": [
-      {
-        "name": "orderId",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "reasonCode",
-        "type": "uint8",
-        "internalType": "uint8"
-      }
-    ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
     "name": "setMinMint",
     "inputs": [
       {
@@ -383,35 +309,6 @@ export const CaliberMarketAbi = [
       }
     ],
     "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "startMint",
-    "inputs": [
-      {
-        "name": "usdcAmount",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "maxSlippageBps",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "deadline",
-        "type": "uint64",
-        "internalType": "uint64"
-      }
-    ],
-    "outputs": [
-      {
-        "name": "orderId",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
     "stateMutability": "nonpayable"
   },
   {
@@ -524,19 +421,25 @@ export const CaliberMarketAbi = [
   },
   {
     "type": "event",
-    "name": "MintFinalized",
+    "name": "Minted",
     "inputs": [
-      {
-        "name": "orderId",
-        "type": "uint256",
-        "indexed": true,
-        "internalType": "uint256"
-      },
       {
         "name": "user",
         "type": "address",
         "indexed": true,
         "internalType": "address"
+      },
+      {
+        "name": "caliberId",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "usdcAmount",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
       },
       {
         "name": "tokenAmount",
@@ -549,80 +452,12 @@ export const CaliberMarketAbi = [
         "type": "uint256",
         "indexed": false,
         "internalType": "uint256"
-      }
-    ],
-    "anonymous": false
-  },
-  {
-    "type": "event",
-    "name": "MintRefunded",
-    "inputs": [
-      {
-        "name": "orderId",
-        "type": "uint256",
-        "indexed": true,
-        "internalType": "uint256"
-      },
-      {
-        "name": "user",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
       },
       {
         "name": "refundAmount",
         "type": "uint256",
         "indexed": false,
         "internalType": "uint256"
-      },
-      {
-        "name": "reasonCode",
-        "type": "uint8",
-        "indexed": false,
-        "internalType": "uint8"
-      }
-    ],
-    "anonymous": false
-  },
-  {
-    "type": "event",
-    "name": "MintStarted",
-    "inputs": [
-      {
-        "name": "orderId",
-        "type": "uint256",
-        "indexed": true,
-        "internalType": "uint256"
-      },
-      {
-        "name": "user",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      },
-      {
-        "name": "usdcAmount",
-        "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
-      },
-      {
-        "name": "requestPrice",
-        "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
-      },
-      {
-        "name": "minTokensOut",
-        "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
-      },
-      {
-        "name": "deadline",
-        "type": "uint64",
-        "indexed": false,
-        "internalType": "uint64"
       }
     ],
     "anonymous": false
@@ -807,6 +642,11 @@ export const CaliberMarketAbi = [
   },
   {
     "type": "error",
+    "name": "NoTokensMinted",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "NotKeeper",
     "inputs": []
   },
@@ -822,7 +662,7 @@ export const CaliberMarketAbi = [
   },
   {
     "type": "error",
-    "name": "Slippage",
+    "name": "StalePrice",
     "inputs": []
   },
   {
