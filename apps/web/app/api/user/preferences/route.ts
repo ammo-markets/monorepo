@@ -2,11 +2,11 @@ import type { NextRequest } from "next/server";
 import { z } from "zod";
 import { prisma } from "@ammo-exchange/db";
 import { requireSession } from "@/lib/auth";
-import { PRISMA_TO_CALIBER, CALIBER_TO_PRISMA } from "@ammo-exchange/shared";
+import { PRISMA_TO_CALIBER, CALIBER_TO_PRISMA, CALIBERS } from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
 
 const favoritesSchema = z.object({
-  favoriteCalibers: z.array(z.enum(["9MM", "556", "22LR", "308"])),
+  favoriteCalibers: z.array(z.enum(CALIBERS as [Caliber, ...Caliber[]])),
 });
 
 export async function GET() {

@@ -38,6 +38,9 @@ export const queryKeys = {
     stats: {
       all: ["admin", "stats"] as const,
     },
+    inventory: {
+      all: ["admin", "inventory"] as const,
+    },
   },
 
   market: {

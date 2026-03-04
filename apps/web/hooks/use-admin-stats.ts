@@ -8,11 +8,8 @@ interface CaliberSupply {
 }
 
 export interface StatsData {
-  treasuryUsdc: string;
-  totalRedeemed: number;
-  totalMinted: number;
-  pendingMints: number;
   pendingRedeems: number;
+  unbackedMints: number;
   calibers: CaliberSupply[];
 }
 

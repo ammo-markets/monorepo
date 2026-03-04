@@ -11,20 +11,18 @@ import type { Caliber } from "@ammo-exchange/shared";
 import { contracts } from "@/lib/chain";
 
 /**
- * Two-step approve + startMint hook.
+ * Two-step approve + mint hook for 1-step mint flow.
  *
  * Uses two separate `useWriteContract` instances (one for USDC approval,
- * one for CaliberMarket.startMint) so their state never collides.
+ * one for CaliberMarket.mint) so their state never collides.
  *
- * The startMint step is simulated via `useSimulateContract`, gated on
+ * The mint step is simulated via `useSimulateContract`, gated on
  * `hasEnoughAllowance` to avoid spurious InsufficientAllowance errors.
  */
 export function useMintTransaction(
   caliber: Caliber,
   actionArgs: {
     usdcAmount: bigint | undefined;
-    slippageBps: bigint;
-    deadline: bigint;
   },
   options: { hasEnoughAllowance: boolean },
 ): {
@@ -35,7 +33,7 @@ export function useMintTransaction(
   isApprovePending: boolean;
   isApproveConfirming: boolean;
   isApproveConfirmed: boolean;
-  startMint: () => void;
+  mint: () => void;
   mintHash: `0x${string}` | undefined;
   mintError: Error | null;
   mintReceiptError: Error | null;
@@ -51,7 +49,7 @@ export function useMintTransaction(
   const simulationEnabled =
     options.hasEnoughAllowance && actionArgs.usdcAmount !== undefined;
 
-  // ── Simulate startMint ──
+  // ── Simulate mint ──
   const {
     data: simData,
     error: simulationError,
@@ -59,10 +57,10 @@ export function useMintTransaction(
   } = useSimulateContract({
     address: marketAddress,
     abi: CaliberMarketAbi,
-    functionName: "startMint",
+    functionName: "mint",
     args:
       actionArgs.usdcAmount !== undefined
-        ? [actionArgs.usdcAmount, actionArgs.slippageBps, actionArgs.deadline]
+        ? [actionArgs.usdcAmount]
         : undefined,
     query: { enabled: simulationEnabled },
   });
@@ -108,7 +106,7 @@ export function useMintTransaction(
     });
   }
 
-  function startMint() {
+  function mint() {
     if (simData?.request) writeMint(simData.request);
   }
 
@@ -127,7 +125,7 @@ export function useMintTransaction(
     isApproveConfirming,
     isApproveConfirmed,
     // Mint
-    startMint,
+    mint,
     mintHash,
     mintError,
     mintReceiptError,

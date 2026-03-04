@@ -1,20 +1,10 @@
 import { publicClient } from "@/lib/viem";
-import { CaliberMarketAbi, AmmoTokenAbi } from "@ammo-exchange/contracts/abis";
+import { PriceOracleAbi, AmmoTokenAbi } from "@ammo-exchange/contracts/abis";
 import { CALIBER_SPECS } from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
 import { contracts } from "@/lib/chain";
 
 const CALIBERS = Object.keys(contracts.calibers) as Caliber[];
-
-const priceOracleAbi = [
-  {
-    type: "function",
-    name: "getPrice",
-    inputs: [],
-    outputs: [{ name: "priceX18", type: "uint256" }],
-    stateMutability: "view",
-  },
-] as const;
 
 const CACHE_HEADERS = {
   "Cache-Control": "s-maxage=60, stale-while-revalidate=300",
@@ -22,13 +12,14 @@ const CACHE_HEADERS = {
 
 export async function GET() {
   try {
-    // Phase 1: Read oracle addresses + totalSupply in a single multicall (8 calls, 1 RPC round trip)
-    const phase1 = await publicClient.multicall({
+    // Single multicall: 4 oracle.markets() + 4 token.totalSupply() = 8 calls, 1 RPC round trip
+    const results = await publicClient.multicall({
       contracts: [
         ...CALIBERS.map((caliber) => ({
-          address: contracts.calibers[caliber].market,
-          abi: CaliberMarketAbi,
-          functionName: "oracle" as const,
+          address: contracts.oracle,
+          abi: PriceOracleAbi,
+          functionName: "markets" as const,
+          args: [contracts.calibers[caliber].market] as const,
         })),
         ...CALIBERS.map((caliber) => ({
           address: contracts.calibers[caliber].token,
@@ -38,30 +29,21 @@ export async function GET() {
       ],
     });
 
-    const oracleResults = phase1.slice(0, CALIBERS.length);
-    const supplyResults = phase1.slice(CALIBERS.length);
-
-    // Phase 2: Read prices from resolved oracle addresses (4 calls, 1 RPC round trip)
-    const oracleAddresses = oracleResults.map((r) =>
-      r.status === "success" ? (r.result as `0x${string}`) : ("0x0" as const),
-    );
-
-    const phase2 = await publicClient.multicall({
-      contracts: oracleAddresses.map((addr) => ({
-        address: addr,
-        abi: priceOracleAbi,
-        functionName: "getPrice" as const,
-      })),
-    });
+    const oracleResults = results.slice(0, CALIBERS.length);
+    const supplyResults = results.slice(CALIBERS.length);
 
     const calibers = CALIBERS.map((caliber, i) => {
+      const oracleData = oracleResults[i]!;
+      const supplyData = supplyResults[i]!;
+
+      // oracle.markets() returns [price, updatedAt, registered]
       const priceX18 =
-        phase2[i]!.status === "success"
-          ? (phase2[i]!.result as bigint)
+        oracleData.status === "success"
+          ? (oracleData.result as [bigint, bigint, boolean])[0]
           : BigInt(0);
       const supply =
-        supplyResults[i]!.status === "success"
-          ? (supplyResults[i]!.result as bigint)
+        supplyData.status === "success"
+          ? (supplyData.result as bigint)
           : BigInt(0);
 
       return {

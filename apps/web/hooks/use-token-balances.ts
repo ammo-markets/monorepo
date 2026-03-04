@@ -4,10 +4,9 @@ import { useAccount, useReadContracts } from "wagmi";
 import type { Abi, Address } from "viem";
 import { erc20Abi } from "viem";
 import { AmmoTokenAbi } from "@ammo-exchange/contracts/abis";
+import { CALIBERS } from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
 import { contracts as chainContracts } from "@/lib/chain";
-
-const CALIBERS: Caliber[] = ["9MM", "556", "22LR", "308"];
 
 interface BalanceOfContract {
   address: Address;

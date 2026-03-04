@@ -1,17 +1,18 @@
 "use client";
 
-import {
-  useWriteContract,
-  useWaitForTransactionReceipt,
-  useSimulateContract,
-} from "wagmi";
-import { CaliberMarketAbi } from "@ammo-exchange/contracts/abis";
 import type { Caliber } from "@ammo-exchange/shared";
-import { contracts } from "@/lib/chain";
 
+/**
+ * Stub: refundMint no longer exists in the 1-step mint flow.
+ * Mints are now atomic — if the mint fails, the USDC transfer
+ * simply reverts. No separate refund step is needed.
+ *
+ * This hook is preserved for type compatibility with admin UI
+ * components that haven't been fully refactored yet.
+ */
 export function useRefundMint(
-  caliber: Caliber,
-  args: { orderId: bigint | undefined; reasonCode?: number },
+  _caliber: Caliber,
+  _args: { orderId: bigint | undefined; reasonCode?: number },
 ): {
   write: () => void;
   hash: `0x${string}` | undefined;
@@ -26,51 +27,18 @@ export function useRefundMint(
   isReady: boolean;
   reset: () => void;
 } {
-  const marketAddress = contracts.calibers[caliber].market;
-  const reasonCode = args.reasonCode ?? 1;
-
-  const {
-    data: simData,
-    error: simulationError,
-    isLoading: isSimulating,
-  } = useSimulateContract({
-    address: marketAddress,
-    abi: CaliberMarketAbi,
-    functionName: "refundMint",
-    args: args.orderId !== undefined ? [args.orderId, reasonCode] : undefined,
-    query: { enabled: args.orderId !== undefined },
-  });
-
-  const {
-    data: hash,
-    error: writeError,
-    isPending,
-    writeContract,
-    reset,
-  } = useWriteContract();
-
-  const {
-    isLoading: isConfirming,
-    isSuccess: isConfirmed,
-    error: receiptError,
-  } = useWaitForTransactionReceipt({ hash });
-
-  function write() {
-    if (simData?.request) writeContract(simData.request);
-  }
-
   return {
-    write,
-    hash,
-    writeError,
-    simulationError,
-    receiptError,
-    error: receiptError ?? writeError ?? simulationError ?? null,
-    isPending,
-    isConfirming,
-    isConfirmed,
-    isSimulating,
-    isReady: !!simData?.request,
-    reset,
+    write: () => {},
+    hash: undefined,
+    writeError: null,
+    simulationError: null,
+    receiptError: null,
+    error: null,
+    isPending: false,
+    isConfirming: false,
+    isConfirmed: false,
+    isSimulating: false,
+    isReady: false,
+    reset: () => {},
   };
 }

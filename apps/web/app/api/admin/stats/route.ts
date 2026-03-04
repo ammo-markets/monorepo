@@ -1,34 +1,15 @@
 import { publicClient } from "@/lib/viem";
-import { AmmoManagerAbi, AmmoTokenAbi } from "@ammo-exchange/contracts/abis";
-import { CALIBER_SPECS } from "@ammo-exchange/shared";
-import type { Caliber } from "@ammo-exchange/shared";
-import { erc20Abi, formatUnits } from "viem";
+import { AmmoTokenAbi } from "@ammo-exchange/contracts/abis";
+import { CALIBER_SPECS, CALIBERS } from "@ammo-exchange/shared";
 import { prisma } from "@ammo-exchange/db";
 import { requireKeeper } from "@/lib/auth";
 import { contracts } from "@/lib/chain";
-
-const CALIBERS: Caliber[] = ["9MM", "556", "22LR", "308"];
 
 export async function GET() {
   try {
     await requireKeeper();
 
-    // 1. Read treasury address
-    const treasury = await publicClient.readContract({
-      address: contracts.manager,
-      abi: AmmoManagerAbi,
-      functionName: "treasury",
-    });
-
-    // 2. Read USDC balance of treasury
-    const usdcBalance = await publicClient.readContract({
-      address: contracts.usdc,
-      abi: erc20Abi,
-      functionName: "balanceOf",
-      args: [treasury],
-    });
-
-    // 3. Read totalSupply for each caliber token
+    // Read totalSupply for each caliber token
     const supplies = await Promise.all(
       CALIBERS.map((caliber) =>
         publicClient
@@ -41,21 +22,15 @@ export async function GET() {
       ),
     );
 
-    // 4-7. Query order counts from DB
-    const [totalRedeemed, totalMinted, pendingMints, pendingRedeems] =
-      await Promise.all([
-        prisma.order.count({ where: { type: "REDEEM", status: "COMPLETED" } }),
-        prisma.order.count({ where: { type: "MINT", status: "COMPLETED" } }),
-        prisma.order.count({ where: { type: "MINT", status: "PENDING" } }),
-        prisma.order.count({ where: { type: "REDEEM", status: "PENDING" } }),
-      ]);
+    // Query actionable order counts from DB
+    const [pendingRedeems, unbackedMints] = await Promise.all([
+      prisma.order.count({ where: { type: "REDEEM", status: "PENDING" } }),
+      prisma.order.count({ where: { type: "MINT", status: "COMPLETED", backedAt: null } }),
+    ]);
 
     return Response.json({
-      treasuryUsdc: formatUnits(usdcBalance, 6),
-      totalRedeemed,
-      totalMinted,
-      pendingMints,
       pendingRedeems,
+      unbackedMints,
       calibers: CALIBERS.map((caliber, i) => ({
         caliber,
         name: CALIBER_SPECS[caliber].name,

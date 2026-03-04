@@ -1,17 +1,18 @@
 "use client";
 
-import {
-  useWriteContract,
-  useWaitForTransactionReceipt,
-  useSimulateContract,
-} from "wagmi";
-import { CaliberMarketAbi } from "@ammo-exchange/contracts/abis";
 import type { Caliber } from "@ammo-exchange/shared";
-import { contracts } from "@/lib/chain";
 
+/**
+ * Stub: finalizeMint no longer exists in the 1-step mint flow.
+ * Mints are now atomic — the oracle price is used at mint time,
+ * so there's no keeper finalization step.
+ *
+ * This hook is preserved for type compatibility with admin UI
+ * components that haven't been fully refactored yet.
+ */
 export function useFinalizeMint(
-  caliber: Caliber,
-  args: { orderId: bigint | undefined; actualPriceX18: bigint | undefined },
+  _caliber: Caliber,
+  _args: { orderId: bigint | undefined; actualPriceX18: bigint | undefined },
 ): {
   write: () => void;
   hash: `0x${string}` | undefined;
@@ -26,52 +27,18 @@ export function useFinalizeMint(
   isReady: boolean;
   reset: () => void;
 } {
-  const marketAddress = contracts.calibers[caliber].market;
-  const argsReady =
-    args.orderId !== undefined && args.actualPriceX18 !== undefined;
-
-  const {
-    data: simData,
-    error: simulationError,
-    isLoading: isSimulating,
-  } = useSimulateContract({
-    address: marketAddress,
-    abi: CaliberMarketAbi,
-    functionName: "finalizeMint",
-    args: argsReady ? [args.orderId!, args.actualPriceX18!] : undefined,
-    query: { enabled: argsReady },
-  });
-
-  const {
-    data: hash,
-    error: writeError,
-    isPending,
-    writeContract,
-    reset,
-  } = useWriteContract();
-
-  const {
-    isLoading: isConfirming,
-    isSuccess: isConfirmed,
-    error: receiptError,
-  } = useWaitForTransactionReceipt({ hash });
-
-  function write() {
-    if (simData?.request) writeContract(simData.request);
-  }
-
   return {
-    write,
-    hash,
-    writeError,
-    simulationError,
-    receiptError,
-    error: receiptError ?? writeError ?? simulationError ?? null,
-    isPending,
-    isConfirming,
-    isConfirmed,
-    isSimulating,
-    isReady: !!simData?.request,
-    reset,
+    write: () => {},
+    hash: undefined,
+    writeError: null,
+    simulationError: null,
+    receiptError: null,
+    error: null,
+    isPending: false,
+    isConfirming: false,
+    isConfirmed: false,
+    isSimulating: false,
+    isReady: false,
+    reset: () => {},
   };
 }
