@@ -30,10 +30,10 @@ enum OrderStatus {
 }
 
 enum Caliber {
-  NINE_MM
-  FIVE_FIVE_SIX
-  TWENTY_TWO_LR
-  THREE_OH_EIGHT
+  NINE_MM_PRACTICE
+  NINE_MM_SELF_DEFENSE
+  FIVE_FIVE_SIX_SELF_DEFENSE
+  FIVE_FIVE_SIX_NATO_PRACTICE
 }
 
 // ── Models ──────────────────────────────────────
@@ -81,8 +81,11 @@ model Order {
   onChainOrderId  String?
   walletAddress   String?
   txHash          String?
-  requestPrice    String?     // Oracle price at startMint (18-decimal string). Null for REDEEM orders.
-  finalizePrice   String?     // Actual price used at finalizeMint (18-decimal string). Null until finalized, null for REDEEM.
+  mintPrice       String?     // Oracle price used for 1-step mint (18-decimal string). Null for REDEEM orders.
+  refundAmount    String?     // Dust refund from rounding (18-decimal string)
+  feeAmount       String?     // Fee charged (18-decimal string)
+  backedAt        DateTime?   // null = unbacked, set = physically backed
+  backedBy        String?     // keeper wallet who marked it backed
   logIndex        Int
   chainId         Int
   createdAt       DateTime    @default(now())
@@ -97,6 +100,7 @@ model Order {
   @@index([status])
   @@index([walletAddress])
   @@index([onChainOrderId])
+  @@index([type, status, backedAt])
 }
 
 model ShippingAddress {
@@ -175,4 +179,25 @@ model UserPreference {
   updatedAt        DateTime  @updatedAt
 
   user User @relation(fields: [userId], references: [id])
+}
+
+model CaliberPrice {
+  id        String   @id @default(cuid())
+  caliber   Caliber  @unique
+  price     String               // cents string e.g. "57" for $0.57
+  priceX18  String               // 18-decimal for on-chain: "570000000000000000"
+  source    String   @default("ammosquared")
+  updatedAt DateTime @updatedAt
+
+  @@index([caliber])
+}
+
+model PriceSnapshot {
+  id        String   @id @default(cuid())
+  caliber   Caliber
+  price     String               // cents string
+  source    String   @default("ammosquared")
+  createdAt DateTime @default(now())
+
+  @@index([caliber, createdAt])
 }

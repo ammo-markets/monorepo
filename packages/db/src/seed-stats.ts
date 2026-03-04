@@ -7,10 +7,10 @@ config({ path: resolve(import.meta.dirname ?? ".", "../../.env") });
 import { prisma } from "./client.js";
 
 const CALIBERS = [
-  "NINE_MM",
-  "FIVE_FIVE_SIX",
-  "TWENTY_TWO_LR",
-  "THREE_OH_EIGHT",
+  "NINE_MM_PRACTICE",
+  "NINE_MM_SELF_DEFENSE",
+  "FIVE_FIVE_SIX_SELF_DEFENSE",
+  "FIVE_FIVE_SIX_NATO_PRACTICE",
 ] as const;
 
 async function seedStats() {
