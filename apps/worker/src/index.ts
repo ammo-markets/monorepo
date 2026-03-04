@@ -5,6 +5,9 @@ import { pollOnce } from "./indexer";
 import { client } from "./lib/client";
 import { POLL_INTERVAL_MS, STATS_INTERVAL_MS } from "./lib/constants";
 import { backfillActivityLog, computeStats } from "./stats";
+import { syncPrices } from "./priceSync";
+
+const PRICE_SYNC_INTERVAL_MS = 60 * 60 * 1000; // 1 hour
 
 async function main() {
   console.log("[worker] Starting Ammo Exchange event indexer...");
@@ -57,6 +60,13 @@ async function main() {
     `[worker] Computing stats every ${STATS_INTERVAL_MS / 60000} minutes`,
   );
 
+  // Sync ammo prices on startup, then every hour
+  await syncPrices();
+  const priceSyncTimer = setInterval(syncPrices, PRICE_SYNC_INTERVAL_MS);
+  console.log(
+    `[worker] Syncing prices every ${PRICE_SYNC_INTERVAL_MS / 60000} minutes`,
+  );
+
   // Graceful shutdown on SIGTERM / SIGINT -- drains in-flight work
   const shutdown = async () => {
     if (isShuttingDown) return; // Prevent double-shutdown
@@ -64,6 +74,7 @@ async function main() {
     console.log("[worker] Shutting down -- draining in-flight work...");
     clearInterval(intervalId);
     clearInterval(statsIntervalId);
+    clearInterval(priceSyncTimer);
 
     // Wait for current poll cycle to complete
     if (currentPoll) {

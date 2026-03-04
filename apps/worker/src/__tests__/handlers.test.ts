@@ -4,24 +4,24 @@
  * TEST-01: Same event replayed (identical txHash + logIndex) = exactly 1 order
  * TEST-02: Two events in same tx (same txHash, different logIndex) = 2 orders
  *
- * Uses bun:test with mock PrismaTx (no real database).
+ * Uses vitest with mock PrismaTx (no real database).
  */
 
-import { describe, test, expect, beforeEach } from "bun:test";
-import { handleMintStarted } from "../handlers/mint";
+import { describe, test, expect, beforeEach } from "vitest";
+import { handleMinted } from "../handlers/mint";
 import { handleRedeemRequested } from "../handlers/redeem";
 import type { PrismaTx } from "../lib/cursor";
 import {
   createMockPrismaTx,
   buildEventMeta,
-  buildMintStartedArgs,
+  buildMintedArgs,
   buildRedeemRequestedArgs,
 } from "./helpers";
 import type { MockPrismaTx } from "./helpers";
 
-// ── MintStarted Idempotency (TEST-01, TEST-02) ─────────────────────
+// ── Minted Idempotency (TEST-01, TEST-02) ────────────────────────
 
-describe("handleMintStarted - idempotency (TEST-01)", () => {
+describe("handleMinted - idempotency (TEST-01)", () => {
   let mockTx: MockPrismaTx;
 
   beforeEach(() => {
@@ -29,10 +29,10 @@ describe("handleMintStarted - idempotency (TEST-01)", () => {
   });
 
   test("processes event once -- creates one order", async () => {
-    const args = buildMintStartedArgs();
+    const args = buildMintedArgs();
     const meta = buildEventMeta();
 
-    await handleMintStarted(mockTx as unknown as PrismaTx, args, meta);
+    await handleMinted(mockTx as unknown as PrismaTx, args, meta);
 
     expect(mockTx.order._upsertCalls.length).toBe(1);
     expect(mockTx.order._store.size).toBe(1);
@@ -48,12 +48,12 @@ describe("handleMintStarted - idempotency (TEST-01)", () => {
   });
 
   test("replaying same event -- still results in one order", async () => {
-    const args = buildMintStartedArgs();
+    const args = buildMintedArgs();
     const meta = buildEventMeta();
 
     // Process same event twice
-    await handleMintStarted(mockTx as unknown as PrismaTx, args, meta);
-    await handleMintStarted(mockTx as unknown as PrismaTx, args, meta);
+    await handleMinted(mockTx as unknown as PrismaTx, args, meta);
+    await handleMinted(mockTx as unknown as PrismaTx, args, meta);
 
     // Two upsert calls were made, but store has exactly 1 entry
     expect(mockTx.order._upsertCalls.length).toBe(2);
@@ -61,15 +61,15 @@ describe("handleMintStarted - idempotency (TEST-01)", () => {
   });
 
   test("same txHash different logIndex -- creates two orders (TEST-02)", async () => {
-    const args = buildMintStartedArgs();
+    const args = buildMintedArgs();
     const txHash =
       "0xdef0000000000000000000000000000000000000000000000000000000000002" as const;
 
     const meta0 = buildEventMeta({ transactionHash: txHash, logIndex: 0 });
     const meta1 = buildEventMeta({ transactionHash: txHash, logIndex: 1 });
 
-    await handleMintStarted(mockTx as unknown as PrismaTx, args, meta0);
-    await handleMintStarted(mockTx as unknown as PrismaTx, args, meta1);
+    await handleMinted(mockTx as unknown as PrismaTx, args, meta0);
+    await handleMinted(mockTx as unknown as PrismaTx, args, meta1);
 
     // Two distinct entries in the store
     expect(mockTx.order._store.size).toBe(2);
@@ -131,9 +131,9 @@ describe("handleRedeemRequested - idempotency (TEST-01)", () => {
   });
 });
 
-// ── MintStarted Data Correctness ────────────────────────────────────
+// ── Minted Data Correctness ─────────────────────────────────────────
 
-describe("handleMintStarted - data correctness", () => {
+describe("handleMinted - data correctness", () => {
   let mockTx: MockPrismaTx;
 
   beforeEach(() => {
@@ -142,24 +142,45 @@ describe("handleMintStarted - data correctness", () => {
 
   test("stores usdcAmount from event args", async () => {
     const usdcAmount = 100_000_000n; // 100 USDC
-    const args = buildMintStartedArgs({ usdcAmount });
+    const args = buildMintedArgs({ usdcAmount });
     const meta = buildEventMeta();
 
-    await handleMintStarted(mockTx as unknown as PrismaTx, args, meta);
+    await handleMinted(mockTx as unknown as PrismaTx, args, meta);
 
     const call = mockTx.order._upsertCalls[0]!;
     expect(call.create).toHaveProperty("usdcAmount", usdcAmount.toString());
   });
 
   test("stores caliber resolved from contract address", async () => {
-    const meta = buildEventMeta(); // Uses 9MM market address by default
-    const args = buildMintStartedArgs();
+    const meta = buildEventMeta(); // Uses 9MM_PRACTICE market address by default
+    const args = buildMintedArgs();
 
-    await handleMintStarted(mockTx as unknown as PrismaTx, args, meta);
+    await handleMinted(mockTx as unknown as PrismaTx, args, meta);
 
     const call = mockTx.order._upsertCalls[0]!;
-    // 9MM maps to NINE_MM in Prisma
-    expect(call.create).toHaveProperty("caliber", "NINE_MM");
+    // 9MM_PRACTICE maps to NINE_MM_PRACTICE in Prisma
+    expect(call.create).toHaveProperty("caliber", "NINE_MM_PRACTICE");
+  });
+
+  test("creates order with COMPLETED status", async () => {
+    const args = buildMintedArgs();
+    const meta = buildEventMeta();
+
+    await handleMinted(mockTx as unknown as PrismaTx, args, meta);
+
+    const call = mockTx.order._upsertCalls[0]!;
+    expect(call.create).toHaveProperty("status", "COMPLETED");
+  });
+
+  test("stores mintPrice and refundAmount", async () => {
+    const args = buildMintedArgs({ priceUsed: 570000n, refundAmount: 1234n });
+    const meta = buildEventMeta();
+
+    await handleMinted(mockTx as unknown as PrismaTx, args, meta);
+
+    const call = mockTx.order._upsertCalls[0]!;
+    expect(call.create).toHaveProperty("mintPrice", "570000");
+    expect(call.create).toHaveProperty("refundAmount", "1234");
   });
 });
 

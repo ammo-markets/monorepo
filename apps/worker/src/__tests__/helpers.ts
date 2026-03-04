@@ -6,7 +6,7 @@
  */
 
 import type { EventMeta } from "../lib/constants";
-import type { MintStartedArgs, MintFinalizedArgs } from "../handlers/mint";
+import type { MintedArgs } from "../handlers/mint";
 import type {
   RedeemRequestedArgs,
   RedeemFinalizedArgs,
@@ -20,8 +20,8 @@ const DEFAULT_TX_HASH =
 
 const DEFAULT_USER = "0x1234567890abcdef1234567890abcdef12345678" as const;
 
-/** First caliber market address (9MM on active chain) */
-const DEFAULT_MARKET_ADDRESS = contracts.calibers["9MM"].market;
+/** First caliber market address (9MM_PRACTICE on active chain) */
+const DEFAULT_MARKET_ADDRESS = contracts.calibers["9MM_PRACTICE"].market;
 
 // ── Mock PrismaTx ───────────────────────────────────────────────────
 
@@ -150,33 +150,18 @@ export function buildEventMeta(overrides: Partial<EventMeta> = {}): EventMeta {
 }
 
 /**
- * Build MintStartedArgs with sensible defaults.
+ * Build MintedArgs with sensible defaults.
  */
-export function buildMintStartedArgs(
-  overrides: Partial<MintStartedArgs> = {},
-): MintStartedArgs {
+export function buildMintedArgs(
+  overrides: Partial<MintedArgs> = {},
+): MintedArgs {
   return {
-    orderId: 1n,
     user: DEFAULT_USER,
+    caliberId: "0x394d4d5f50524143544943450000000000000000000000000000000000000000" as `0x${string}`,
     usdcAmount: 50_000_000n, // 50 USDC (6 decimals)
-    requestPrice: 1_000_000n,
-    minTokensOut: 45n,
-    deadline: BigInt(Math.floor(Date.now() / 1000) + 3600),
-    ...overrides,
-  };
-}
-
-/**
- * Build MintFinalizedArgs with sensible defaults.
- */
-export function buildMintFinalizedArgs(
-  overrides: Partial<MintFinalizedArgs> = {},
-): MintFinalizedArgs {
-  return {
-    orderId: 1n,
-    user: DEFAULT_USER,
     tokenAmount: 50_000_000_000_000_000_000n, // 50 tokens (18 decimals)
     priceUsed: 1_000_000n,
+    refundAmount: 0n,
     ...overrides,
   };
 }

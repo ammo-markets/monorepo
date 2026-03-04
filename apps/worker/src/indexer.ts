@@ -9,8 +9,8 @@ import {
 } from "./lib/constants";
 import type { EventMeta } from "./lib/constants";
 import { getCursor, upsertCursor } from "./lib/cursor";
-import { handleMintStarted, handleMintFinalized } from "./handlers/mint";
-import type { MintStartedArgs, MintFinalizedArgs } from "./handlers/mint";
+import { handleMinted } from "./handlers/mint";
+import type { MintedArgs } from "./handlers/mint";
 import {
   handleRedeemRequested,
   handleRedeemFinalized,
@@ -19,8 +19,8 @@ import type {
   RedeemRequestedArgs,
   RedeemFinalizedArgs,
 } from "./handlers/redeem";
-import { handleMintRefunded, handleRedeemCanceled } from "./handlers/refund";
-import type { MintRefundedArgs, RedeemCanceledArgs } from "./handlers/refund";
+import { handleRedeemCanceled } from "./handlers/refund";
+import type { RedeemCanceledArgs } from "./handlers/refund";
 import {
   handlePaused,
   handleUnpaused,
@@ -34,14 +34,12 @@ import { CaliberMarketAbi } from "@ammo-exchange/contracts";
 // ── Event Fetching ──────────────────────────────────────────────────
 
 /**
- * Fetch all 9 event types from all CaliberMarket contracts in parallel.
+ * Fetch all 8 event types from all CaliberMarket contracts in parallel.
  * Uses strict mode for typed event args.
  */
 async function fetchEvents(fromBlock: bigint, toBlock: bigint) {
   const [
-    mintStarted,
-    mintFinalized,
-    mintRefunded,
+    minted,
     redeemRequested,
     redeemFinalized,
     redeemCanceled,
@@ -54,23 +52,7 @@ async function fetchEvents(fromBlock: bigint, toBlock: bigint) {
     client.getContractEvents({
       abi: CaliberMarketAbi,
       address: MARKET_ADDRESSES,
-      eventName: "MintStarted",
-      fromBlock,
-      toBlock,
-      strict: true,
-    }),
-    client.getContractEvents({
-      abi: CaliberMarketAbi,
-      address: MARKET_ADDRESSES,
-      eventName: "MintFinalized",
-      fromBlock,
-      toBlock,
-      strict: true,
-    }),
-    client.getContractEvents({
-      abi: CaliberMarketAbi,
-      address: MARKET_ADDRESSES,
-      eventName: "MintRefunded",
+      eventName: "Minted",
       fromBlock,
       toBlock,
       strict: true,
@@ -142,9 +124,7 @@ async function fetchEvents(fromBlock: bigint, toBlock: bigint) {
   ]);
 
   return {
-    mintStarted,
-    mintFinalized,
-    mintRefunded,
+    minted,
     redeemRequested,
     redeemFinalized,
     redeemCanceled,
@@ -171,17 +151,9 @@ async function processAndCommit(
 ): Promise<void> {
   // Combine all event arrays with a common shape for sorting
   const allEvents = [
-    ...events.mintStarted.map((e) => ({
+    ...events.minted.map((e) => ({
       ...e,
-      eventName: "MintStarted" as const,
-    })),
-    ...events.mintFinalized.map((e) => ({
-      ...e,
-      eventName: "MintFinalized" as const,
-    })),
-    ...events.mintRefunded.map((e) => ({
-      ...e,
-      eventName: "MintRefunded" as const,
+      eventName: "Minted" as const,
     })),
     ...events.redeemRequested.map((e) => ({
       ...e,
@@ -239,17 +211,10 @@ async function processAndCommit(
         };
 
         switch (event.eventName) {
-          case "MintStarted":
-            await handleMintStarted(
+          case "Minted":
+            await handleMinted(
               tx,
-              event.args as unknown as MintStartedArgs,
-              meta,
-            );
-            break;
-          case "MintFinalized":
-            await handleMintFinalized(
-              tx,
-              event.args as unknown as MintFinalizedArgs,
+              event.args as unknown as MintedArgs,
               meta,
             );
             break;
@@ -264,13 +229,6 @@ async function processAndCommit(
             await handleRedeemFinalized(
               tx,
               event.args as unknown as RedeemFinalizedArgs,
-              meta,
-            );
-            break;
-          case "MintRefunded":
-            await handleMintRefunded(
-              tx,
-              event.args as unknown as MintRefundedArgs,
               meta,
             );
             break;
@@ -318,7 +276,7 @@ async function processAndCommit(
   );
 
   console.log(
-    `[indexer] Processed ${allEvents.length} events (blocks ${events.mintStarted[0]?.blockNumber ?? lastBlock}..${lastBlock})`,
+    `[indexer] Processed ${allEvents.length} events (blocks ${events.minted[0]?.blockNumber ?? lastBlock}..${lastBlock})`,
   );
 }
 
@@ -372,9 +330,7 @@ export async function pollOnce(): Promise<void> {
 
     const events = await fetchEvents(batchStart, batchEnd);
     const totalEvents =
-      events.mintStarted.length +
-      events.mintFinalized.length +
-      events.mintRefunded.length +
+      events.minted.length +
       events.redeemRequested.length +
       events.redeemFinalized.length +
       events.redeemCanceled.length +

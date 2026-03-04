@@ -4,21 +4,27 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "bun --env-file=../../.env --watch src/index.ts",
-    "build": "bun build src/index.ts --outdir dist --target bun",
-    "start": "bun --env-file=../../.env dist/index.js",
-    "check": "tsc --noEmit",
-    "reset": "bun --env-file=../../.env src/reset.ts"
+    "dev": "tsx --env-file=../../.env --watch src/index.ts",
+    "build": "tsup",
+    "start": "node --env-file=../../.env dist/index.js",
+    "check": "tsc",
+    "reset": "tsx --env-file=../../.env src/reset.ts",
+    "test": "vitest run"
   },
   "dependencies": {
     "@ammo-exchange/contracts": "workspace:*",
     "@ammo-exchange/db": "workspace:*",
     "@ammo-exchange/shared": "workspace:*",
+    "playwright": "^1.50.0",
     "viem": "^2.23.2",
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@types/bun": "^1.2.2",
-    "typescript": "^5.7.3"
-  }
+    "@types/node": "^22.0.0",
+    "tsup": "^8.5.1",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.3",
+    "vitest": "^4.0.0"
+  },
+  "postinstall": "npx playwright install chromium"
 }

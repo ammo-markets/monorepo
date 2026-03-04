@@ -6,33 +6,27 @@ import type { Caliber as PrismaCaliber } from "@ammo-exchange/db";
 
 // ── Event Argument Types ────────────────────────────────────────────
 
-export interface MintStartedArgs {
-  orderId: bigint;
+export interface MintedArgs {
   user: `0x${string}`;
+  caliberId: `0x${string}`;
   usdcAmount: bigint;
-  requestPrice: bigint;
-  minTokensOut: bigint;
-  deadline: bigint;
-}
-
-export interface MintFinalizedArgs {
-  orderId: bigint;
-  user: `0x${string}`;
   tokenAmount: bigint;
   priceUsed: bigint;
+  refundAmount: bigint;
 }
 
 // ── Handlers ────────────────────────────────────────────────────────
 
 /**
- * Handle a MintStarted event by creating a PENDING MINT order.
+ * Handle a Minted event from the 1-step mint flow.
  *
+ * Creates a COMPLETED order directly — no PENDING→COMPLETED transition needed.
  * Uses composite (txHash, logIndex) upsert for idempotency (safe to reprocess).
  * Auto-creates User records via connectOrCreate for new wallets.
  */
-export async function handleMintStarted(
+export async function handleMinted(
   tx: PrismaTx,
-  args: MintStartedArgs,
+  args: MintedArgs,
   meta: EventMeta,
 ): Promise<void> {
   const caliber = addressToCaliber(meta.address);
@@ -48,11 +42,12 @@ export async function handleMintStarted(
     },
     create: {
       type: "MINT",
-      status: "PENDING",
+      status: "COMPLETED",
       caliber: prismaCaliber,
       usdcAmount: args.usdcAmount.toString(),
-      requestPrice: args.requestPrice.toString(),
-      onChainOrderId: args.orderId.toString(),
+      tokenAmount: args.tokenAmount.toString(),
+      mintPrice: args.priceUsed.toString(),
+      refundAmount: args.refundAmount.toString(),
       walletAddress: userAddress,
       txHash: meta.transactionHash,
       logIndex: meta.logIndex,
@@ -67,105 +62,19 @@ export async function handleMintStarted(
     },
     update: {}, // No-op if already exists (idempotent)
   });
-}
-
-/**
- * Handle a MintFinalized event by updating the matching PENDING MINT order
- * to COMPLETED status with tokenAmount.
- *
- * Uses updateMany because onChainOrderId is not a unique field --
- * the lookup is by (onChainOrderId, caliber, type, status).
- *
- * Self-healing: if no pending order exists (e.g. MintStarted was missed),
- * creates the order from the finalization event directly.
- */
-export async function handleMintFinalized(
-  tx: PrismaTx,
-  args: MintFinalizedArgs,
-  meta: EventMeta,
-): Promise<void> {
-  const caliber = addressToCaliber(meta.address);
-  const prismaCaliber = CALIBER_TO_PRISMA[caliber] as PrismaCaliber;
-
-  const { count } = await tx.order.updateMany({
-    where: {
-      onChainOrderId: args.orderId.toString(),
-      caliber: prismaCaliber,
-      type: "MINT",
-      status: { in: ["PENDING", "COMPLETED"] },
-    },
-    data: {
-      status: "COMPLETED",
-      tokenAmount: args.tokenAmount.toString(),
-      finalizePrice: args.priceUsed.toString(),
-    },
-  });
-
-  // Self-healing: if no pending order exists, create from finalization event
-  if (count === 0) {
-    const userAddress = args.user.toLowerCase();
-    await tx.order.upsert({
-      where: {
-        txHash_logIndex: {
-          txHash: meta.transactionHash,
-          logIndex: meta.logIndex,
-        },
-      },
-      create: {
-        type: "MINT",
-        status: "COMPLETED",
-        caliber: prismaCaliber,
-        tokenAmount: args.tokenAmount.toString(),
-        finalizePrice: args.priceUsed.toString(),
-        // usdcAmount unknown from finalization event alone -- leave null
-        onChainOrderId: args.orderId.toString(),
-        walletAddress: userAddress,
-        txHash: meta.transactionHash,
-        logIndex: meta.logIndex,
-        chainId: CHAIN_ID,
-        createdAt: meta.blockTimestamp,
-        user: {
-          connectOrCreate: {
-            where: { walletAddress: userAddress },
-            create: { walletAddress: userAddress },
-          },
-        },
-      },
-      update: {},
-    });
-  }
 
   // Write ActivityLog entry for completed mint
   try {
-    const order = await tx.order.findFirst({
-      where: {
-        onChainOrderId: args.orderId.toString(),
-        caliber: prismaCaliber,
+    await tx.activityLog.create({
+      data: {
         type: "MINT",
-        status: "COMPLETED",
-      },
-      select: {
-        id: true,
-        caliber: true,
-        usdcAmount: true,
-        tokenAmount: true,
-        walletAddress: true,
+        caliber: prismaCaliber,
+        amount: args.usdcAmount.toString(),
+        txHash: meta.transactionHash,
+        walletAddress: userAddress,
+        createdAt: meta.blockTimestamp,
       },
     });
-
-    if (order) {
-      await tx.activityLog.create({
-        data: {
-          type: "MINT",
-          caliber: order.caliber,
-          amount: order.usdcAmount ?? order.tokenAmount ?? "0",
-          txHash: meta.transactionHash,
-          walletAddress: order.walletAddress ?? "",
-          createdAt: meta.blockTimestamp,
-        },
-      });
-      console.log(`[mint] Created ActivityLog entry for mint ${order.id}`);
-    }
   } catch (error) {
     console.error("[mint] Failed to create ActivityLog entry:", error);
   }

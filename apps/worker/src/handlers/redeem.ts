@@ -67,6 +67,55 @@ export async function handleRedeemRequested(
     },
     update: {}, // No-op if already exists (idempotent)
   });
+
+  // Copy the user's default shipping address to the order (if available).
+  // This is best-effort — a missing address should not fail order creation.
+  try {
+    const order = await tx.order.findUnique({
+      where: {
+        txHash_logIndex: {
+          txHash: meta.transactionHash,
+          logIndex: meta.logIndex,
+        },
+      },
+      select: { id: true },
+    });
+    const user = await tx.user.findUnique({
+      where: { walletAddress: userAddress },
+      select: {
+        defaultShippingName: true,
+        defaultShippingLine1: true,
+        defaultShippingLine2: true,
+        defaultShippingCity: true,
+        defaultShippingState: true,
+        defaultShippingZip: true,
+      },
+    });
+    if (
+      order &&
+      user?.defaultShippingName &&
+      user?.defaultShippingLine1 &&
+      user?.defaultShippingCity &&
+      user?.defaultShippingState &&
+      user?.defaultShippingZip
+    ) {
+      await tx.shippingAddress.upsert({
+        where: { orderId: order.id },
+        create: {
+          orderId: order.id,
+          name: user.defaultShippingName,
+          line1: user.defaultShippingLine1,
+          line2: user.defaultShippingLine2 ?? "",
+          city: user.defaultShippingCity,
+          state: user.defaultShippingState,
+          zip: user.defaultShippingZip,
+        },
+        update: {}, // don't overwrite if updated via API later
+      });
+    }
+  } catch (err) {
+    console.error("[redeem] Failed to copy shipping address:", err);
+  }
 }
 
 /**

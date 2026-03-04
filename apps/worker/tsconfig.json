@@ -4,9 +4,7 @@
     "target": "ES2022",
     "module": "Preserve",
     "moduleResolution": "bundler",
-    "types": ["bun"],
-    "rootDir": "src",
-    "outDir": "dist",
+    "types": ["node"],
     "noEmit": true,
     "verbatimModuleSyntax": false
   },
