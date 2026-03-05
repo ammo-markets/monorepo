@@ -327,14 +327,14 @@ export function OrderDetailDrawer({
 
                 <div className="flex justify-between">
                   <span style={{ color: "var(--text-secondary)" }}>
-                    {type === "MINT" ? "USDC Amount" : "Token Amount"}
+                    {type === "MINT" ? "USDT Amount" : "Token Amount"}
                   </span>
                   <span
                     className="font-mono"
                     style={{ color: "var(--text-primary)" }}
                   >
                     {type === "MINT"
-                      ? `${formatUsdc(order.usdcAmount ?? "0")} USDC`
+                      ? `${formatUsdc(order.usdcAmount ?? "0")} USDT`
                       : `${formatTokenAmount(order.tokenAmount ?? "0")} rounds`}
                   </span>
                 </div>

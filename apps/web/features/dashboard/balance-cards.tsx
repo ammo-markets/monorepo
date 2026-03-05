@@ -117,7 +117,7 @@ export function BalanceCards({
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
           })}{" "}
-          USDC
+          USDT
         </p>
       </div>
 

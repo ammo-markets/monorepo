@@ -192,7 +192,7 @@ export function PortfolioDashboard() {
               className="mt-1.5 text-sm"
               style={{ color: "var(--text-secondary)" }}
             >
-              + ${usdcBalance.toFixed(2)} USDC available
+              + ${usdcBalance.toFixed(2)} USDT available
             </p>
           )}
           <div className="mt-6">

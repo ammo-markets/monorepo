@@ -173,7 +173,7 @@ export function PortfolioHero({
               className="mt-1 text-center text-xs"
               style={{ color: "var(--text-secondary)" }}
             >
-              + ${usdcBalance.toFixed(2)} USDC available
+              + ${usdcBalance.toFixed(2)} USDT available
             </p>
           )}
         </div>

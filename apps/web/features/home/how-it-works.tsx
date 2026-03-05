@@ -15,7 +15,7 @@ function MintIllustration() {
         cx="28"
         cy="40"
         r="16"
-        stroke="#3498DB"
+        stroke="#26A17B"
         strokeWidth="1.5"
         opacity="0.6"
       />
@@ -23,7 +23,7 @@ function MintIllustration() {
         x="28"
         y="44"
         textAnchor="middle"
-        fill="#3498DB"
+        fill="#26A17B"
         fontSize="10"
         fontFamily="monospace"
         opacity="0.8"
@@ -231,7 +231,7 @@ const steps = [
     number: "01",
     title: "Mint",
     description:
-      "Deposit USDC. We purchase ammo and store it in insured facilities. You receive tokens representing your rounds.",
+      "Deposit stablecoins. We purchase ammo and store it in insured facilities. You receive tokens representing your rounds.",
     illustration: MintIllustration,
   },
   {

@@ -96,13 +96,13 @@ export function StepReview({
           <div className="flex flex-col gap-3 text-sm">
             <div className="flex justify-between">
               <span style={{ color: "var(--text-muted)" }}>
-                USDC to deposit
+                USDT to deposit
               </span>
               <span
                 className="font-mono font-medium tabular-nums"
                 style={{ color: "var(--text-primary)" }}
               >
-                {usdcValue.toFixed(2)} USDC
+                {usdcValue.toFixed(2)} USDT
               </span>
             </div>
             <div className="flex justify-between">
@@ -113,7 +113,7 @@ export function StepReview({
                 className="font-mono tabular-nums"
                 style={{ color: "var(--text-secondary)" }}
               >
-                {fee.toFixed(2)} USDC
+                {fee.toFixed(2)} USDT
               </span>
             </div>
             <div className="flex justify-between">
@@ -210,7 +210,7 @@ export function StepReview({
               onClick={onApprove}
               className="flex w-full items-center justify-center gap-2 py-3.5 text-sm font-bold transition-none bg-brass text-ax-primary hover:bg-brass-hover"
             >
-              Approve USDC Spending
+              Approve USDT Spending
             </button>
             <div
               className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 w-56 -translate-x-1/2 px-3 py-2 text-xs leading-relaxed opacity-0 transition-opacity group-hover:opacity-100"
@@ -220,7 +220,7 @@ export function StepReview({
                 color: "var(--text-secondary)",
               }}
             >
-              Allows the smart contract to use your USDC. You only need to do
+              Allows the smart contract to use your USDT. You only need to do
               this once.
             </div>
           </div>

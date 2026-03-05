@@ -7,7 +7,7 @@ const STEPS = [
     icon: "💵",
     title: "Users Pay Us",
     description:
-      "Deposit USDC to purchase ammunition tokens for any supported caliber and type.",
+      "Deposit USDT to purchase ammunition tokens for any supported caliber and type.",
   },
   {
     step: "2",

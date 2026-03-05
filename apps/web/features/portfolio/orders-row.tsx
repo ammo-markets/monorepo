@@ -10,7 +10,7 @@ import type { OrderFromAPI } from "@/lib/types";
 export function formatOrderAmount(order: OrderFromAPI): { value: string; label: string } {
   if (order.type === "MINT") {
     const val = order.usdcAmount ? (Number(order.usdcAmount) / 1e6).toFixed(2) : "\u2014";
-    return { value: val, label: "USDC spent" };
+    return { value: val, label: "USDT spent" };
   }
   const val = order.tokenAmount
     ? Math.floor(Number(order.tokenAmount) / 1e18).toLocaleString()

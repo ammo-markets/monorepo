@@ -18,7 +18,7 @@ export function ActionPanelDesktop({ data }: ActionPanelProps) {
           Mint
         </h3>
         <p className="mb-6 text-sm text-text-muted">
-          Mint tokenized {data.name} using USDC. Tokens represent a 1:1 claim on
+          Mint tokenized {data.name} using USDT. Tokens represent a 1:1 claim on
           physical ammunition.
         </p>
         <Link
@@ -67,7 +67,7 @@ export function ActionPanelMobile({ data }: ActionPanelProps) {
             Mint
           </h3>
           <p className="mb-6 text-sm text-text-muted">
-            Mint tokenized {data.name} using USDC.
+            Mint tokenized {data.name} using USDT.
           </p>
           <Link
             href={`/exchange?tab=mint&caliber=${data.id.toLowerCase()}`}

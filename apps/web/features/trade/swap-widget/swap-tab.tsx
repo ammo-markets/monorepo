@@ -14,7 +14,7 @@ import { UniswapLogo } from "./token-icons";
 export function SwapTab({ tokens }: { tokens: Token[] }) {
   const { isConnected } = useAuth();
   const { openConnectModal } = useConnectModal();
-  const [payToken, setPayToken] = useState<TokenId>("USDC");
+  const [payToken, setPayToken] = useState<TokenId>("USDT");
   const [receiveToken, setReceiveToken] = useState<TokenId>("9MM_PRACTICE");
   const [payAmount, setPayAmount] = useState("");
   const [detailsOpen, setDetailsOpen] = useState(false);
@@ -152,7 +152,7 @@ export function SwapTab({ tokens }: { tokens: Token[] }) {
         {payNum > 0 && (
           <div className="mt-2 text-xs" style={{ color: "var(--text-muted)" }}>
             1 {receiveData.symbol} ={" "}
-            {receiveData.price.toFixed(receiveData.price < 0.1 ? 3 : 2)} USDC
+            {receiveData.price.toFixed(receiveData.price < 0.1 ? 3 : 2)} USDT
           </div>
         )}
       </div>

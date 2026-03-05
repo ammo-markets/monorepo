@@ -99,7 +99,7 @@ export function RejectMintDialog({
         <AlertDialogHeader>
           <AlertDialogTitle>Reject Mint Order?</AlertDialogTitle>
           <AlertDialogDescription>
-            This will refund the user&apos;s USDC. This action cannot be undone.
+            This will refund the user&apos;s USDT. This action cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
 

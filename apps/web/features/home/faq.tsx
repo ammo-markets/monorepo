@@ -31,7 +31,7 @@ const faqItems: FaqItem[] = [
   {
     question: "What is Ammo Exchange?",
     answer:
-      "Ammo Exchange is a DeFi protocol for tokenized ammunition on Avalanche. Deposit USDC, receive ERC20 tokens backed 1:1 by physical rounds stored in insured, ATF-compliant facilities.",
+      "Ammo Exchange is a DeFi protocol for tokenized ammunition on Avalanche. Deposit stablecoins, receive ERC20 tokens backed 1:1 by physical rounds stored in insured, ATF-compliant facilities.",
   },
   {
     question: "How are ammo tokens backed?",
@@ -41,7 +41,7 @@ const faqItems: FaqItem[] = [
   {
     question: "Who can mint and trade?",
     answer:
-      "Anyone with USDC and an Avalanche wallet can mint and trade ammo tokens. No KYC is required for minting or trading on decentralized exchanges.",
+      "Anyone with stablecoins and an Avalanche wallet can mint and trade ammo tokens. No KYC is required for minting or trading on decentralized exchanges.",
   },
   {
     question: "Who can redeem for physical ammo?",

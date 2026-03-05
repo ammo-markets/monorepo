@@ -14,7 +14,7 @@ export function buildMintSteps(order: OrderFromAPI): OrderStep[] {
       meta: formatDate(order.createdAt),
     },
     {
-      label: "USDC Deposited",
+      label: "USDT Deposited",
       status: hasTx ? "completed" : isFailed ? "failed" : "current",
       meta: order.txHash ? `Tx: ${truncateAddress(order.txHash)}` : "Awaiting confirmation...",
       link: order.txHash ? { url: snowtraceUrl(order.txHash), label: "View on Snowtrace" } : undefined,

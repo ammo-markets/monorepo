@@ -98,7 +98,7 @@ function ConfirmBackedDialog({
           Mark <strong>{cal.orderCount}</strong> unbacked {cal.name} orders
           as backed? This covers{" "}
           <strong>{Number(cal.rounds).toLocaleString()} rounds</strong>{" "}
-          (${cal.usdcTotal} USDC).
+          (${cal.usdcTotal} USDT).
         </p>
         <div className="mt-4 flex justify-end gap-3">
           <button
@@ -233,7 +233,7 @@ function UnbackedInventoryCards() {
                     style={{ color: "var(--text-muted)" }}
                   >
                     <span>{cal.orderCount} orders</span>
-                    <span>${cal.usdcTotal} USDC</span>
+                    <span>${cal.usdcTotal} USDT</span>
                   </div>
                   <button
                     type="button"
@@ -452,7 +452,7 @@ export function MintOrdersTable() {
                       className="px-4 py-3 font-medium text-right"
                       style={{ color: "var(--text-secondary)" }}
                     >
-                      USDC Amt
+                      USDT Amt
                     </th>
                     <th
                       className="px-4 py-3 font-medium text-right"
@@ -509,7 +509,7 @@ export function MintOrdersTable() {
                         className="px-4 py-3 text-right font-mono"
                         style={{ color: "var(--text-primary)" }}
                       >
-                        {formatUsdc(order.usdcAmount ?? "0")} USDC
+                        {formatUsdc(order.usdcAmount ?? "0")} USDT
                       </td>
                       <td
                         className="px-4 py-3 text-right font-mono"

@@ -62,7 +62,7 @@ export function CaliberInfoPanel({
           className="mb-3 text-center text-sm font-medium"
           style={{ color: "var(--text-secondary)" }}
         >
-          Available: {formatBalance(balances.usdc, 6, balances.isLoading)} USDC
+          Available: {formatBalance(balances.usdc, 6, balances.isLoading)} USDT
         </p>
       )}
 

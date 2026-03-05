@@ -52,7 +52,7 @@ export function FaucetButtons() {
       ? "Confirming..."
       : isPending
         ? "Requesting..."
-        : "Get Test USDC";
+        : "Get Test USDT";
 
   const showAvaxFaucet = isActiveChain && avaxBalance?.value === BigInt(0);
   const avaxBusy = avaxStatus === "requesting" || avaxStatus === "confirming";

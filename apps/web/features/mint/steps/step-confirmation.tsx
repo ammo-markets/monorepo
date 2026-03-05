@@ -110,7 +110,7 @@ export function StepConfirmation({
                 className="text-xs"
                 style={{ color: "var(--text-secondary)" }}
               >
-                {usdcValue.toFixed(2)} USDC
+                {usdcValue.toFixed(2)} USDT
               </div>
             </div>
           </div>

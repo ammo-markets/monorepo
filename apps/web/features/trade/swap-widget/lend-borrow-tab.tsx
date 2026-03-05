@@ -13,7 +13,7 @@ export function LendBorrowTab() {
       href: "https://app.aave.com/reserve-overview/?underlyingAsset=9mm",
     },
     {
-      title: "Borrow USDC",
+      title: "Borrow USDT",
       description:
         "Borrow stablecoins against your ammo token holdings. Maintain exposure to ammo prices while accessing liquidity.",
       cta: "Borrow",

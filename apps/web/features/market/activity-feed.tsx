@@ -125,7 +125,7 @@ export function ActivityFeed() {
                         style={{ color: "var(--text-secondary)" }}
                       >
                         {item.type === "MINT"
-                          ? `${(Number(item.amount) / 1e6).toFixed(2)} USDC`
+                          ? `${(Number(item.amount) / 1e6).toFixed(2)} USDT`
                           : `${Math.floor(Number(item.amount) / 1e18).toLocaleString("en-US")} rounds`}
                       </span>
                     </td>

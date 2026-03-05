@@ -375,7 +375,7 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
   const amountDisplay =
     order.type === "MINT"
       ? order.usdcAmount
-        ? `${(Number(order.usdcAmount) / 1e6).toFixed(2)} USDC`
+        ? `${(Number(order.usdcAmount) / 1e6).toFixed(2)} USDT`
         : "\u2014"
       : order.tokenAmount
         ? `${Math.floor(Number(order.tokenAmount) / 1e18).toLocaleString()} rounds`

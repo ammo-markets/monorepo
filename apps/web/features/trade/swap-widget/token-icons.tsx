@@ -16,20 +16,20 @@ export function UsdcIcon({ size = 20 }: { size?: number }) {
         cx="12"
         cy="12"
         r="11"
-        stroke="#2775CA"
+        stroke="#26A17B"
         strokeWidth="1.5"
         fill="none"
       />
-      <circle cx="12" cy="12" r="11" fill="#2775CA" opacity="0.1" />
+      <circle cx="12" cy="12" r="11" fill="#26A17B" opacity="0.1" />
       <path
         d="M12 5.5V7M12 17v1.5"
-        stroke="#2775CA"
+        stroke="#26A17B"
         strokeWidth="1.5"
         strokeLinecap="round"
       />
       <path
         d="M9.5 15.5c0 1.1 1.12 2 2.5 2s2.5-.9 2.5-2-1.12-2-2.5-2-2.5-.9-2.5-2 1.12-2 2.5-2 2.5.9 2.5 2"
-        stroke="#2775CA"
+        stroke="#26A17B"
         strokeWidth="1.5"
         strokeLinecap="round"
       />
@@ -100,7 +100,7 @@ export function TokenIcon({
   tokenId: TokenId;
   size?: number;
 }) {
-  if (tokenId === "USDC") return <UsdcIcon size={size} />;
+  if (tokenId === "USDT") return <UsdcIcon size={size} />;
   const Icon = caliberIcons[tokenId];
   return Icon ? <Icon size={size} /> : null;
 }

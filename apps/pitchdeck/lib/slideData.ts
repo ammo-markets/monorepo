@@ -78,7 +78,7 @@ export const USE_CASE_DATA: UseCase[] = [
   {
     title: "Liquidity",
     description:
-      "Provide liquidity in AMM pools (e.g. 9mm/USDC) and earn trading fees from every swap.",
+      "Provide liquidity in AMM pools (e.g. 9mm/USDT) and earn trading fees from every swap.",
   },
   {
     title: "Leverage",

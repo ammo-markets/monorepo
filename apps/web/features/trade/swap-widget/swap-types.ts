@@ -4,7 +4,7 @@ import type { MarketCaliberFromAPI } from "@/lib/types";
 
 /* Token definitions */
 
-export type TokenId = Caliber | "USDC";
+export type TokenId = Caliber | "USDT";
 
 export interface Token {
   id: TokenId;
@@ -16,7 +16,7 @@ export interface Token {
 
 export function buildTokens(marketData: MarketCaliberFromAPI[]): Token[] {
   const base: Token[] = [
-    { id: "USDC", symbol: "USDC", name: "USD Coin", price: 1.0, balance: 0 },
+    { id: "USDT", symbol: "USDT", name: "Tether USD", price: 1.0, balance: 0 },
   ];
   for (const cal of CALIBERS) {
     const market = marketData.find((m) => m.caliber === cal);

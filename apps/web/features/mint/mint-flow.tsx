@@ -126,7 +126,7 @@ export function MintFlow({
   useEffect(() => {
     if (mintTx.isApproveConfirmed) {
       allowance.refetch();
-      toast.success("USDC approved");
+      toast.success("USDT approved");
     }
   }, [mintTx.isApproveConfirmed, allowance.refetch]);
 

@@ -16,7 +16,7 @@ function UsdcIcon({ size = 16 }: { size?: number }) {
         cx="12"
         cy="12"
         r="11"
-        stroke="#3498DB"
+        stroke="#26A17B"
         strokeWidth="1.5"
         fill="rgba(52, 152, 219, 0.1)"
       />
@@ -24,7 +24,7 @@ function UsdcIcon({ size = 16 }: { size?: number }) {
         x="12"
         y="16.5"
         textAnchor="middle"
-        fill="#3498DB"
+        fill="#26A17B"
         fontSize="12"
         fontWeight="bold"
         fontFamily="system-ui, sans-serif"
@@ -120,7 +120,7 @@ export function StepEnterAmount({
         className="block text-xs font-medium uppercase tracking-wide mb-2"
         style={{ color: "var(--text-muted)" }}
       >
-        Amount (USDC)
+        Amount (USDT)
       </label>
 
       <div
@@ -153,7 +153,7 @@ export function StepEnterAmount({
             className="text-sm font-medium"
             style={{ color: "var(--text-secondary)" }}
           >
-            USDC
+            USDT
           </span>
         </div>
       </div>
@@ -162,12 +162,12 @@ export function StepEnterAmount({
           {belowMinimum && (
             <p className="text-xs" style={{ color: "var(--red)" }}>
               Minimum mint is {caliber.minMint} rounds (~$
-              {minUsdcForMinMint.toFixed(2)} USDC)
+              {minUsdcForMinMint.toFixed(2)} USDT)
             </p>
           )}
           {exceedsBalance && (
             <p className="text-xs" style={{ color: "var(--red)" }}>
-              Insufficient USDC balance
+              Insufficient USDT balance
             </p>
           )}
           {isValid && (
@@ -186,7 +186,7 @@ export function StepEnterAmount({
               {usdcBalance.toLocaleString("en-US", {
                 minimumFractionDigits: 2,
               })}{" "}
-              USDC{" "}
+              USDT{" "}
               <button
                 type="button"
                 onClick={() => setUsdcAmount(usdcBalance.toFixed(2))}
@@ -278,16 +278,16 @@ export function StepEnterAmount({
                   className="font-mono tabular-nums"
                   style={{ color: "var(--text-secondary)" }}
                 >
-                  -{fee.toFixed(2)} USDC
+                  -{fee.toFixed(2)} USDT
                 </span>
               </div>
               <div className="flex justify-between max-w-xs">
-                <span style={{ color: "var(--text-muted)" }}>Net USDC</span>
+                <span style={{ color: "var(--text-muted)" }}>Net USDT</span>
                 <span
                   className="font-mono tabular-nums"
                   style={{ color: "var(--text-secondary)" }}
                 >
-                  {netUsdc.toFixed(2)} USDC
+                  {netUsdc.toFixed(2)} USDT
                 </span>
               </div>
             </div>

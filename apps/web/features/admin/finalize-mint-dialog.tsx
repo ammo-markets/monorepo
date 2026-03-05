@@ -156,9 +156,9 @@ export function FinalizeMintDialog({ order, open, onOpenChange, onFinalized }: F
             <span style={{ color: "var(--text-primary)" }}>{order.caliber}</span>
           </div>
           <div className="flex justify-between">
-            <span style={{ color: "var(--text-secondary)" }}>USDC Amount</span>
+            <span style={{ color: "var(--text-secondary)" }}>USDT Amount</span>
             <span className="font-mono" style={{ color: "var(--text-primary)" }}>
-              {formatUsdc(order.usdcAmount ?? "0")} USDC
+              {formatUsdc(order.usdcAmount ?? "0")} USDT
             </span>
           </div>
           {order.mintPrice && (

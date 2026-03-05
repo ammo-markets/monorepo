@@ -26,7 +26,7 @@ export function Hero() {
 
           <p className="max-w-xl text-lg sm:text-xl leading-relaxed text-text-secondary font-sans mb-12">
             Buy, hold, and trade tokenized ammunition backed 1:1 by physical
-            rounds in insured storage. No shipping. No friction. Just USDC in,
+            rounds in insured storage. No shipping. No friction. Just stablecoins in,
             ammo tokens out.
           </p>
 
@@ -75,7 +75,7 @@ export function Hero() {
                 03 // Settlement
               </div>
               <div className="text-text-primary font-sans font-medium">
-                Instant USDC settlement on Avalanche
+                Instant stablecoin settlement on Avalanche
               </div>
             </div>
           </div>
