@@ -9,7 +9,7 @@ packages/contracts   → Foundry smart contracts + ABI exports
 packages/shared      → Shared types, chain config, constants
 packages/db          → Prisma ORM + Neon PostgreSQL
 apps/web             → Next.js 15 frontend
-apps/worker          → Bun event listener service
+apps/worker          → Node.js event listener service
 ```
 
 ## Getting Started
@@ -41,6 +41,6 @@ pnpm db:studio        # Open Prisma Studio
 - **Contracts**: Solidity 0.8.24, Foundry
 - **Chain**: Avalanche C-Chain
 - **Frontend**: Next.js 15, React 19, Tailwind CSS v4, wagmi/viem
-- **Worker**: Bun, viem
+- **Worker**: Node.js, viem
 - **Database**: PostgreSQL (Neon), Prisma
 - **Tooling**: pnpm workspaces, Turborepo, TypeScript (strict)

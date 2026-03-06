@@ -52,37 +52,45 @@ Ammo Exchange differs by supporting **multiple calibers**, deploying tokens as *
 ### 2.1 System Overview
 
 ```
-User sends USDC ──► Ammo Exchange ──► Purchases ammo from supplier
-                                    ──► Stores in insured warehouse
-                                    ──► Mints caliber-specific ERC-20 token
-                                    ──► Sends token to user wallet
+User sends USDC ──► CaliberMarket contract ──► Deducts fee, sends net USDC to treasury
+                                             ──► Mints caliber-specific ERC-20 tokens instantly
+                                             ──► Ammo Exchange purchases physical ammo to maintain backing
 
-User burns token ──► Ammo Exchange ──► Verifies identity (KYC for shipping)
-                                    ──► Ships physical ammo to user
-                                    ──► Burns token from supply
+User burns token ──► CaliberMarket contract ──► Locks tokens in contract
+                                             ──► Keeper verifies KYC and ships physical ammo
+                                             ──► Keeper finalizes, burning tokens from supply
 ```
 
 ### 2.2 Minting (Buy)
 
-1. User connects wallet and selects caliber and quantity
-2. User sends USDC (or ETH) to the mint contract
-3. An `OrderPlaced` event is emitted on-chain
-4. Ammo Exchange purchases the equivalent ammunition from supplier (batched daily)
-5. Ammunition is delivered to and verified at the warehouse
-6. A keeper (authorized backend) calls `finalizeMint()`, minting caliber tokens to the user
+Minting is a single atomic transaction — the user receives tokens immediately:
 
-**Minimum mint:** 50 rounds equivalent (subject to caliber)
-**Processing fee:** 1-2% of order value
+1. User connects wallet and selects caliber and USDC amount
+2. User approves USDC spend to the CaliberMarket contract
+3. User calls `mint(usdcAmount)` on the CaliberMarket
+4. Contract reads current price from the on-chain PriceOracle
+5. Mint fee (1.5%) is deducted; net USDC is sent to the treasury; dust from rounding is refunded
+6. Caliber tokens are minted directly to the user's wallet
+7. A `Minted` event is emitted on-chain
+
+Physical backing is maintained off-chain: Ammo Exchange purchases equivalent ammunition from suppliers (batched) and stores it in the insured warehouse. Proof of reserves is published via monthly audits.
+
+**Minimum mint:** 50 rounds equivalent (configurable per caliber)
+**Processing fee:** 1.5% of order value (configurable)
+**Price staleness:** Mint reverts if the oracle price is older than 6 hours
 
 ### 2.3 Redemption (Burn)
 
-1. User initiates redemption on-chain by calling `startRedeem(amount)`
-2. Tokens are locked in the contract
-3. User completes KYC/age verification off-chain (required for physical shipment)
-4. Ammo Exchange ships from warehouse to user's address
-5. Keeper calls `finalizeRedeem()`, permanently burning the locked tokens
+Redemption is a 2-step process because it requires off-chain verification and physical shipping:
 
-**Redemption fee:** 1-2% + shipping costs
+1. User calls `startRedeem(tokenAmount, deadline)` — tokens are locked in the contract
+2. A `RedeemRequested` event is emitted; the worker indexes it and begins off-chain processing
+3. User completes KYC/age verification off-chain (required for physical shipment)
+4. Ammo Exchange reserves and ships ammunition from the warehouse
+5. Keeper calls `finalizeRedeem(orderId)`, permanently burning the locked tokens (minus fee)
+6. If the keeper does not act before the user-set deadline, the user can call `cancelRedeem()` to recover their tokens (self-rescue mechanism)
+
+**Redemption fee:** 1.5% (configurable) + shipping costs
 **Age verification:** Required at redemption, per federal law (21+ for handgun ammo, 18+ for rifle/shotgun ammo)
 **Shipping:** Via **UPS Ground only** within the 48 contiguous states (USPS prohibits ammunition shipping). Limited Quantity labeling applied per DOT regulations.
 
@@ -122,28 +130,32 @@ Each supported ammunition caliber has its own ERC-20 token:
 
 **Spec & substitution policy:** each token maps to a published SKU spec (brand class, load, case type, new factory ammo only). Substitutions, if any, must be disclosed and priced via a published discount schedule.
 
-### 3.2 Upgradeable Contracts
+### 3.2 Contract Architecture
 
-All token contracts are deployed behind **upgradeable proxies** (TransparentUpgradeableProxy pattern). This allows:
+The protocol uses a factory pattern with per-caliber isolation:
 
-- Adjusting fee parameters as the business evolves
-- Adding compliance features if regulations change
-- Fixing bugs without redeploying
-- Migrating to new standards if needed
+- **AmmoManager** — Global role registry (owner, keeper, guardian, feeRecipient, treasury)
+- **AmmoFactory** — Deploys CaliberMarket + AmmoToken pairs per caliber
+- **CaliberMarket** — Per-caliber market handling mint/redeem logic
+- **AmmoToken** — Minimal ERC-20 (mint/burn restricted to its CaliberMarket)
+- **PriceOracle** — Shared price registry, keeper-only writes
+- **AmmoPriceFunctions** — Chainlink Functions + Automation consumer for decentralized price updates
 
-Proxy admin is controlled by a **multisig wallet** requiring multiple signers.
+Owner is a multisig in production. Critical addresses (manager, oracle, USDC, token) are immutable post-deployment.
 
 ### 3.3 Contract Interface
 
 ```solidity
-interface IAmmoToken {
+// CaliberMarket — per-caliber market
+interface ICaliberMarket {
     // User-facing
-    function startMint(uint256 usdcAmount) external;
-    function startRedeem(uint256 tokenAmount) external;
+    function mint(uint256 usdcAmount) external;                       // 1-step instant mint
+    function startRedeem(uint256 tokenAmount, uint256 deadline) external; // 2-step: lock tokens
+    function cancelRedeem(uint256 orderId, uint8 reasonCode) external;   // self-rescue after deadline
 
-    // Keeper-only (authorized backend)
-    function finalizeMint(address user, uint256 tokenAmount) external;
-    function finalizeRedeem(address user, uint256 tokenAmount) external;
+    // Keeper-only
+    function finalizeRedeem(uint256 orderId) external;    // burn tokens, complete redeem
+    function cancelRedeem(uint256 orderId, uint8 reasonCode) external; // cancel anytime
 
     // Admin
     function setMintFee(uint256 bps) external;
@@ -153,7 +165,7 @@ interface IAmmoToken {
 }
 ```
 
-The two-step mint/redeem pattern is intentional: it decouples the on-chain action from the off-chain procurement/shipping, ensuring tokens are only minted when physical ammo is verified in storage.
+Minting is instant (1-step) because USDC transfer and token minting are atomic — no off-chain verification needed. Redeeming is 2-step because it requires off-chain work (KYC verification, warehouse reservation, physical shipping) before tokens can be burned.
 
 ---
 

@@ -6,7 +6,7 @@ DeFi protocol for tokenized ammunition trading on Avalanche. See `whitepaper.md`
 
 ```
 apps/web          → Next.js 15 frontend (Vercel)
-apps/worker       → Bun TypeScript event listener (Railway)
+apps/worker       → Node.js TypeScript event listener (Railway)
 packages/shared   → @ammo-exchange/shared — types, chain config, constants
 packages/db       → @ammo-exchange/db — Prisma + Neon PostgreSQL
 packages/contracts → @ammo-exchange/contracts — Foundry + ABI exports
@@ -69,7 +69,7 @@ NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=xxx    # WalletConnect Cloud project ID (ge
 - **Package manager**: pnpm (workspaces) + Turborepo
 - **Language**: TypeScript (strict mode) + Solidity 0.8.24
 - **Frontend**: Next.js 15, React 19, Tailwind CSS v4, wagmi/viem, RainbowKit
-- **Worker**: Bun runtime, viem for chain interaction
+- **Worker**: Node.js runtime, viem for chain interaction
 - **Database**: PostgreSQL (Neon) via Prisma ORM
 - **Smart contracts**: Foundry (forge, cast, anvil)
 - **Chain**: Avalanche C-Chain (EVM)
