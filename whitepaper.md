@@ -1,13 +1,13 @@
 # Ammo Exchange: A Tokenized Ammunition Market Protocol
 
-**Version 0.1 — Draft**
-**February 2026**
+**Version 0.2 — Draft**
+**March 2026**
 
 ---
 
 ## Abstract
 
-Ammunition is an approximately **$8B** annual U.S. market (2024 estimate) with widespread civilian ownership, yet no efficient secondary market exists for trading it. Holders of physical ammunition cannot easily liquidate, trade, or gain price exposure without the friction of physical transfer. We propose Ammo Exchange, a protocol that mints blockchain tokens backed 1:1 by physical ammunition stored in insured, climate-controlled warehouses. Each token represents ownership of a specific caliber and **specification** of factory-new ammunition (brand class, load, and case type). Tokens are tradeable on decentralized exchanges, enabling price discovery, speculation, and liquidity for an asset class that has historically been largely illiquid. Holders may redeem tokens for physical delivery, subject to applicable laws and shipping constraints.
+Ammunition is an approximately **$8B** annual U.S. market (2024 estimate) with widespread civilian ownership, yet no efficient secondary market exists for trading it. Holders of physical ammunition cannot easily liquidate, trade, or gain price exposure without the friction of physical transfer. We propose Ammo Exchange, a protocol that mints blockchain tokens backed 1:1 by physical ammunition stored in insured, climate-controlled warehouses. Each token represents ownership of a specific caliber and **specification** of factory-new ammunition (brand class, load type, and case type). Tokens are tradeable on decentralized exchanges on Avalanche C-Chain, enabling price discovery, speculation, and liquidity for an asset class that has historically been largely illiquid. Holders may redeem tokens for physical delivery, subject to applicable laws and shipping constraints.
 
 ---
 
@@ -43,7 +43,7 @@ This volatility creates opportunity. People who stockpile ammunition during low 
 
 Existing tools provide **price discovery** and **inventory accumulation**, but not a liquid, standardized marketplace for transfer of ownership claims.
 
-Ammo Exchange differs by supporting **multiple calibers**, deploying tokens as **standard ERC-20s** on public blockchains, enabling **DEX trading** for real price discovery, and designing for **DeFi composability** from day one.
+Ammo Exchange differs by supporting **multiple calibers and load types**, deploying tokens as **standard ERC-20s** on Avalanche C-Chain, enabling **DEX trading** for real price discovery, and designing for **DeFi composability** from day one.
 
 ---
 
@@ -52,13 +52,20 @@ Ammo Exchange differs by supporting **multiple calibers**, deploying tokens as *
 ### 2.1 System Overview
 
 ```
-User sends USDC ──► CaliberMarket contract ──► Deducts fee, sends net USDC to treasury
-                                             ──► Mints caliber-specific ERC-20 tokens instantly
+User sends USDC ──► CaliberMarket contract ──► Deducts fee (1.5%), sends net USDC to treasury
+                                             ──► Mints caliber-specific ERC-20 tokens instantly (e.g., ax9P, ax556SD)
                                              ──► Ammo Exchange purchases physical ammo to maintain backing
 
-User burns token ──► CaliberMarket contract ──► Locks tokens in contract
-                                             ──► Keeper verifies KYC and ships physical ammo
-                                             ──► Keeper finalizes, burning tokens from supply
+User burns token ──► CaliberMarket contract ──► Locks tokens in contract (startRedeem)
+                                             ──► User completes KYC via web app, admin reviews
+                                             ──► Keeper finalizes on-chain, burning tokens from supply
+                                             ──► Physical ammo ships to user
+```
+
+**Price flow:**
+```
+AmmoSquared ──► Chainlink Functions DON (every 4 hours) ──► PriceOracle contract
+                                                          ──► CaliberMarket reads price at mint time
 ```
 
 ### 2.2 Minting (Buy)
@@ -68,7 +75,7 @@ Minting is a single atomic transaction — the user receives tokens immediately:
 1. User connects wallet and selects caliber and USDC amount
 2. User approves USDC spend to the CaliberMarket contract
 3. User calls `mint(usdcAmount)` on the CaliberMarket
-4. Contract reads current price from the on-chain PriceOracle
+4. Contract reads current price from the on-chain PriceOracle (updated every 4 hours via Chainlink Functions)
 5. Mint fee (1.5%) is deducted; net USDC is sent to the treasury; dust from rounding is refunded
 6. Caliber tokens are minted directly to the user's wallet
 7. A `Minted` event is emitted on-chain
@@ -76,8 +83,9 @@ Minting is a single atomic transaction — the user receives tokens immediately:
 Physical backing is maintained off-chain: Ammo Exchange purchases equivalent ammunition from suppliers (batched) and stores it in the insured warehouse. Proof of reserves is published via monthly audits.
 
 **Minimum mint:** 50 rounds equivalent (configurable per caliber)
-**Processing fee:** 1.5% of order value (configurable)
+**Processing fee:** 1.5% of order value (configurable, max 5%)
 **Price staleness:** Mint reverts if the oracle price is older than 6 hours
+**Price source:** AmmoSquared market data, fetched by Chainlink Functions DON every 4 hours via Chainlink Automation
 
 ### 2.3 Redemption (Burn)
 
@@ -98,7 +106,7 @@ Redemption is a 2-step process because it requires off-chain verification and ph
 
 Between minting and redemption, tokens circulate freely:
 
-- Trade on **Uniswap, Curve,** or any DEX
+- Trade on **Trader Joe, Pangolin,** or any Avalanche-compatible DEX
 - Use as **collateral** in DeFi lending protocols
 - Hold for **price speculation** — no KYC needed to buy/sell tokens on secondary markets
 - **Anyone with access to a DEX** can gain exposure to U.S. ammunition prices by purchasing tokens on a DEX
@@ -110,25 +118,28 @@ Note: redemption is **U.S.-only** and subject to shipping/legal constraints. Non
 
 ## 3. Token Architecture
 
-### 3.1 One Token Per Caliber
+### 3.1 One Token Per Caliber and Load Type
 
-Each supported ammunition caliber has its own ERC-20 token:
+Each supported ammunition caliber and load type has its own ERC-20 token. Rather than a single token per caliber, we separate by load type (e.g., practice vs. self-defense) because these have materially different prices, demand curves, and use cases:
 
-| Token  | Represents                                                      | Backed By                    |
-| ------ | --------------------------------------------------------------- | ---------------------------- |
-| `9MM`  | 1 round of 9mm 115gr FMJ, brass case, factory‑new (spec’d)      | Physical 9mm in warehouse    |
-| `556`  | 1 round of 5.56 NATO 55gr FMJ, brass case, factory‑new (spec’d) | Physical 5.56 in warehouse   |
-| `22LR` | 1 round of .22 LR 40gr, factory‑new (spec’d)                    | Physical .22 LR in warehouse |
-| `308`  | 1 round of .308 Win 147gr FMJ, brass case, factory‑new (spec’d) | Physical .308 in warehouse   |
+| Token    | Symbol    | Represents                                                            | Backed By                              |
+| -------- | --------- | --------------------------------------------------------------------- | -------------------------------------- |
+| `ax9P`   | ax9P      | 1 round of 9mm 115gr FMJ, brass case, factory‑new practice ammo       | Physical 9mm FMJ in warehouse          |
+| `ax9SD`  | ax9SD     | 1 round of 9mm 124gr JHP, brass case, factory‑new self‑defense ammo   | Physical 9mm JHP in warehouse          |
+| `ax556SD`| ax556SD   | 1 round of 5.56 62gr self‑defense, brass case, factory‑new            | Physical 5.56 SD in warehouse          |
+| `ax556P` | ax556P    | 1 round of 5.56 NATO 55gr FMJ, brass case, factory‑new practice ammo  | Physical 5.56 FMJ in warehouse         |
 
-**Why per-caliber tokens instead of an index?**
+**Why per-caliber-and-load tokens instead of an index or a single token per caliber?**
 
-- Each caliber has independent supply/demand dynamics
-- Price movements can diverge materially between calibers during demand shocks
-- Users who want exposure to specific calibers should be able to target them
-- Simplifies warehouse accounting: 1 token = 1 round, always
+- Practice and self-defense loads have materially different prices (JHP costs 2-3x FMJ)
+- Each load type has independent supply/demand dynamics
+- Price movements can diverge materially between calibers and load types during demand shocks
+- Users who want exposure to specific ammunition types should be able to target them
+- Simplifies warehouse accounting: 1 token = 1 round of a specific spec, always
 
-**Spec & substitution policy:** each token maps to a published SKU spec (brand class, load, case type, new factory ammo only). Substitutions, if any, must be disclosed and priced via a published discount schedule.
+**Future calibers:** Additional calibers (.22 LR, .308 Win, .45 ACP, etc.) can be added via the factory pattern without modifying existing contracts.
+
+**Spec & substitution policy:** each token maps to a published SKU spec (brand class, load type, case type, new factory ammo only). Substitutions, if any, must be disclosed and priced via a published discount schedule.
 
 ### 3.2 Contract Architecture
 
@@ -139,9 +150,9 @@ The protocol uses a factory pattern with per-caliber isolation:
 - **CaliberMarket** — Per-caliber market handling mint/redeem logic
 - **AmmoToken** — Minimal ERC-20 (mint/burn restricted to its CaliberMarket)
 - **PriceOracle** — Shared price registry, keeper-only writes
-- **AmmoPriceFunctions** — Chainlink Functions + Automation consumer for decentralized price updates
+- **AmmoPriceFunctions** — Chainlink Functions + Automation consumer for automated price updates from external sources (currently AmmoSquared)
 
-Owner is a multisig in production. Critical addresses (manager, oracle, USDC, token) are immutable post-deployment.
+Owner is a multisig in production. Critical addresses (manager, oracle, USDC, token) are immutable post-deployment. The protocol is deployed on **Avalanche C-Chain** (Fuji testnet for development, mainnet for production).
 
 ### 3.3 Contract Interface
 
@@ -158,14 +169,49 @@ interface ICaliberMarket {
     function cancelRedeem(uint256 orderId, uint8 reasonCode) external; // cancel anytime
 
     // Admin
-    function setMintFee(uint256 bps) external;
-    function setRedeemFee(uint256 bps) external;
-    function pause() external;
-    function unpause() external;
+    function setMintFee(uint256 bps) external;            // max 500 bps (5%)
+    function setRedeemFee(uint256 bps) external;           // max 500 bps (5%)
+    function setMinMint(uint256 newMin) external;
+    function pause() external;                             // owner or guardian
+    function unpause() external;                           // owner only
+}
+
+// AmmoFactory — deploys per-caliber markets
+interface IAmmoFactory {
+    function createCaliber(
+        bytes32 caliberId,
+        string calldata name,
+        string calldata symbol,
+        uint256 mintFeeBps,
+        uint256 redeemFeeBps,
+        uint256 minMintRounds
+    ) external returns (address market, address token);
+}
+
+// PriceOracle — shared price registry
+interface IPriceOracle {
+    function setPrice(address market, uint256 priceX18) external;           // keeper-only
+    function setBatchPrices(address[] calldata, uint256[] calldata) external; // keeper-only
+    function getPriceData() external view returns (uint256 price, uint256 updatedAt); // market-only
 }
 ```
 
 Minting is instant (1-step) because USDC transfer and token minting are atomic — no off-chain verification needed. Redeeming is 2-step because it requires off-chain work (KYC verification, warehouse reservation, physical shipping) before tokens can be burned.
+
+### 3.4 Price Oracle Architecture
+
+On-chain pricing uses a two-layer system:
+
+1. **PriceOracle contract** — Shared price registry that stores per-market price data (18-decimal format) with timestamps. Only registered keepers can write prices; only registered CaliberMarket contracts can read them.
+
+2. **AmmoPriceFunctions contract** — Chainlink Functions + Automation consumer that automates price updates:
+   - **Chainlink Automation** checks every 4 hours whether an update is needed (`checkUpkeep`/`performUpkeep`)
+   - **Chainlink Functions** sends JavaScript to the Decentralized Oracle Network (DON) to fetch current ammunition prices from the protocol API (sourced from AmmoSquared market data)
+   - The DON returns prices for all calibers in a single callback, which calls `oracle.setBatchPrices()` to update all markets atomically
+
+**Off-chain price pipeline:** A worker service scrapes AmmoSquared prices hourly, stores them in the database (CaliberPrice for latest, PriceSnapshot for history), and exposes them via the protocol API that Chainlink Functions reads from.
+
+**Staleness protection:** CaliberMarket reverts any mint if the oracle price is older than 6 hours, protecting users from stale pricing.
 
 ---
 
@@ -204,12 +250,12 @@ This mirrors how **Tether Gold (XAUT)** and **Paxos Gold (PAXG)** operate — bo
 
 ### 5.1 Fee Structure
 
-| Revenue Source   | Rate               | Notes                               |
-| ---------------- | ------------------ | ----------------------------------- |
-| Mint fee         | 1-2%               | Charged on USDC deposit             |
-| Redeem fee       | 1-2%               | Charged on token burn               |
-| Wholesale spread | 5-15%              | Buy wholesale, mint at retail price |
-| Shipping fee     | At cost + handling | Passed through to redeemer          |
+| Revenue Source   | Rate                    | Notes                                        |
+| ---------------- | ----------------------- | -------------------------------------------- |
+| Mint fee         | 1.5% (configurable, max 5%) | Charged on USDC deposit, deducted before mint |
+| Redeem fee       | 1.5% (configurable, max 5%) | Charged on token amount at finalization       |
+| Wholesale spread | 5-15%                  | Buy wholesale, mint at retail price           |
+| Shipping fee     | At cost + handling      | Passed through to redeemer                    |
 
 **Why no storage fee (demurrage)?**
 
@@ -240,7 +286,7 @@ A token is worthless without liquidity. No one will mint if they can't trade, an
 ### 6.2 Initial Liquidity Strategy
 
 **Step 1: Protocol-Seeded Pools**
-Ammo Exchange uses initial capital (from funding or revenue) to seed Uniswap v3 pools for each caliber token against USDC. Even $50-100K of liquidity per pool enables basic trading, but concentrated liquidity requires active range management to avoid depth evaporating during volatility.
+Ammo Exchange uses initial capital (from funding or revenue) to seed DEX liquidity pools (e.g., Trader Joe) for each caliber token against USDC on Avalanche. Even $50-100K of liquidity per pool enables basic trading, but concentrated liquidity requires active range management to avoid depth evaporating during volatility.
 
 **Step 2: Primers (Liquidity Incentive Program)**
 Liquidity providers earn **Primers** — a points system that rewards providing depth to ammo token pools. Primers are not a tradeable token. They represent accumulated contribution to the protocol.
@@ -328,7 +374,7 @@ This mirrors how commodity‑backed tokens generally operate: secondary market t
 
 1. **Political climate:** Heightened uncertainty drives ammunition demand; policy risk and supply shocks can move prices quickly.
 2. **RWA momentum:** Real-world asset tokenization is growing. Gold tokens (XAUT, PAXG) show the model can work with real custody and attestations.
-3. **Infrastructure maturity:** DEXs, bridges, and DeFi lending protocols are mature enough to support commodity tokens.
+3. **Infrastructure maturity:** DEXs, bridges, and DeFi lending protocols are mature enough to support commodity tokens. Avalanche C-Chain provides low fees, fast finality, and EVM compatibility.
 4. **Cultural alignment:** Ammunition is deeply embedded in American identity. The messaging is intuitive: _"Make your ammo liquid."_
 
 ### 8.3 Total Addressable Market
@@ -345,26 +391,31 @@ Even conservative penetration represents a significant market given near-zero co
 
 ## 9. Roadmap
 
-### Phase 1: MVP (Months 1-3)
+### Phase 1: MVP (Current — Testnet)
 
-- Deploy mint/redeem contracts for **9mm** (most popular caliber)
+- ✅ Deploy mint/redeem contracts for **4 caliber markets** (9mm practice, 9mm self-defense, 5.56 self-defense, 5.56 NATO practice) on Avalanche Fuji testnet
+- ✅ Factory pattern for deploying new caliber markets
+- ✅ Chainlink Functions + Automation for automated on-chain price updates (sourced from AmmoSquared)
+- ✅ Full web frontend: mint, redeem, portfolio, caliber browsing, admin dashboard
+- ✅ Event indexer worker for order tracking and protocol statistics
+- ✅ KYC flow with admin review panel
+- ✅ Wallet-based authentication (SIWE pattern via iron-session)
 - Establish warehouse/supplier partnership
-- Build minimal frontend: mint, redeem, and link to DEX trading
-- Seed initial Uniswap v3 liquidity pool (9MM/USDC)
+- Seed initial DEX liquidity pools on Avalanche (e.g., Trader Joe)
 - Launch Primers program for LPs
 
-### Phase 2: Expansion (Months 4-8)
+### Phase 2: Mainnet & Expansion (Months 4-8)
 
-- Add calibers: .223/5.56, .22 LR, .308
-- Integrate price feed oracle (aggregating public price trackers like AmmoSeek and AmmoStats)
-- Dealer partnerships for restricted-state shipping
-- Mobile-responsive frontend
+- Deploy to Avalanche C-Chain mainnet
+- Add calibers: .22 LR, .308 Win, .45 ACP (via factory — no contract changes needed)
+- Dealer partnerships for restricted-state shipping (CA, NY, IL, DC, NJ)
 - Proof of reserves dashboard
+- Integrate additional price sources beyond AmmoSquared (AmmoSeek, AmmoStats)
 
 ### Phase 3: DeFi Integration (Months 9-12)
 
 - List ammo tokens on lending protocols (borrow against your ammo position)
-- Cross-chain deployment (Avalanche, Base, Arbitrum)
+- Cross-chain deployment (Base, Arbitrum)
 - Fiat on-ramp for non-crypto users
 - Explore protocol governance token
 
@@ -372,7 +423,7 @@ Even conservative penetration represents a significant market given near-zero co
 
 - Own warehouse operations
 - Direct manufacturer partnerships for wholesale pricing
-- Ammo index token (basket of calibers)
+- Ammo index token (basket of calibers and load types)
 - Smart account support for simplified UX
 
 ---
@@ -381,10 +432,10 @@ Even conservative penetration represents a significant market given near-zero co
 
 | Risk                                                | Mitigation                                                                                       |
 | --------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| Regulatory change (federal ammo sales restrictions) | Tokens represent ownership, not sale. Upgradeable contracts allow compliance adaptation.         |
+| Regulatory change (federal ammo sales restrictions) | Tokens represent ownership, not sale. Factory pattern allows deploying new compliant markets.    |
 | Warehouse incident (fire, theft)                    | Insurance coverage, multiple storage locations at scale                                          |
 | Low liquidity / no trading activity                 | Primers incentive program, protocol-seeded pools, loss-leader pricing on ammo to attract users   |
-| Smart contract risk                                 | Audited contracts, upgradeable proxies, multisig admin, battle-tested OpenZeppelin patterns      |
+| Smart contract risk                                 | Audited contracts, multisig admin, battle-tested patterns, reentrancy guards, pausable markets   |
 | Ammunition degradation over time                    | Climate-controlled storage extends shelf life to 20+ years. Rotate inventory on long-term basis. |
 | Token classified as security                        | Structure as commodity receipt (1:1 physical backing, redeemable). Retain legal counsel.         |
 | Competition from incumbents or new entrants         | DeFi composability, multi-caliber support, and open protocol are structural advantages           |
