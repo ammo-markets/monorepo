@@ -10,6 +10,11 @@ nvm use 22
 
 git pull origin main
 pnpm install
-pnpm db:generate
 pnpm --filter @ammo-exchange/worker build
-pm2 restart ammo-worker
+
+# Restart with xvfb-run for Playwright (headless: false needs a virtual display)
+pm2 delete ammo-worker 2>/dev/null || true
+pm2 start "xvfb-run --auto-servernum pnpm --filter @ammo-exchange/worker start" \
+  --name ammo-worker \
+  --cwd ~/ammo-exchange
+pm2 save

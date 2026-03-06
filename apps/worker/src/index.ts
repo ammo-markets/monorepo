@@ -61,8 +61,19 @@ async function main() {
   );
 
   // Sync ammo prices on startup, then every hour
-  await syncPrices();
-  const priceSyncTimer = setInterval(syncPrices, PRICE_SYNC_INTERVAL_MS);
+  // Non-fatal: price sync failures must not kill the indexer
+  try {
+    await syncPrices();
+  } catch (error) {
+    console.error("[worker] Initial price sync failed (will retry):", error);
+  }
+  const priceSyncTimer = setInterval(async () => {
+    try {
+      await syncPrices();
+    } catch (error) {
+      console.error("[worker] Price sync failed (will retry):", error);
+    }
+  }, PRICE_SYNC_INTERVAL_MS);
   console.log(
     `[worker] Syncing prices every ${PRICE_SYNC_INTERVAL_MS / 60000} minutes`,
   );
