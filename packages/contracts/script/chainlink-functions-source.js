@@ -9,7 +9,6 @@ const caliberKeys = args.slice(1);
 
 const response = await Functions.makeHttpRequest({
   url: `${apiBaseUrl}/api/prices`,
-  headers: { "ngrok-skip-browser-warning": "true" },
   timeout: 9000,
 });
 

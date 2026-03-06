@@ -61,6 +61,11 @@ chainlink_status:
 	@echo "lastUpkeepTimestamp:"
 	@cast call $(PRICE_FUNCTIONS) "lastUpkeepTimestamp()" --rpc-url $(FUJI_RPC_URL)
 
+# Update the API base URL on the contract (no trailing slash)
+chainlink_set_url:
+	cast send $(PRICE_FUNCTIONS) "setApiBaseUrl(string)" "https://www.ammomarkets.com" \
+		--rpc-url $(FUJI_RPC_URL) --private-key $(PRIVATE_KEY)
+
 # Push updated JS source to the contract
 chainlink_update_source:
 	cast send $(PRICE_FUNCTIONS) "setSource(string)" "$$(cat $(CONTRACTS_DIR)/script/chainlink-functions-source.js)" \
