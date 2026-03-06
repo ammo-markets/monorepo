@@ -28,7 +28,7 @@ echo "==> Building worker (includes db:generate + db:build via Turbo)..."
 pnpm --filter @ammo-exchange/worker build
 
 echo "==> Running database migrations..."
-pnpm db:migrate deploy
+pnpm --filter @ammo-exchange/db exec prisma migrate deploy
 
 echo "==> Setting up PM2..."
 pm2 delete ammo-worker 2>/dev/null || true
