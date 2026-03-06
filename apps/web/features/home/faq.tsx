@@ -31,37 +31,42 @@ const faqItems: FaqItem[] = [
   {
     question: "What is Ammo Exchange?",
     answer:
-      "Ammo Exchange is a DeFi protocol for tokenized ammunition on Avalanche. Deposit stablecoins, receive ERC20 tokens backed 1:1 by physical rounds stored in insured, ATF-compliant facilities.",
+      "Ammo Exchange is a DeFi protocol on Avalanche that lets you tokenize physical ammunition. Deposit USDT to mint ERC-20 tokens backed 1:1 by factory-new rounds stored in insured, ATF-compliant facilities.",
   },
   {
     question: "How are ammo tokens backed?",
     answer:
-      "Each token represents 1 round of ammunition stored in ATF-compliant, insured facilities managed by Ammo Squared. Tokens are standard ERC20 on Avalanche, freely transferable and tradeable.",
+      "Each token represents one physical round stored in a climate-controlled, insured warehouse. Token supply is verifiable on-chain, and reserves are audited by third parties.",
   },
   {
     question: "Who can mint and trade?",
     answer:
-      "Anyone with stablecoins and an Avalanche wallet can mint and trade ammo tokens. No KYC is required for minting or trading on decentralized exchanges.",
+      "Anyone with USDT and an Avalanche wallet can mint tokens. No KYC is required for minting or trading on decentralized exchanges. International users can hold and trade tokens freely.",
   },
   {
     question: "Who can redeem for physical ammo?",
     answer:
-      "Only verified U.S. residents in allowed states can redeem tokens for physical ammunition. KYC verification is required. You must be 18+ for rifle ammo and 21+ for handgun ammo. Some states are restricted (CA, NY, IL, DC, NJ).",
+      "Only verified U.S. residents in eligible states. KYC and age verification are required — 18+ for rifle ammo, 21+ for handgun ammo. Restricted states: CA, NY, IL, DC, and NJ.",
   },
   {
     question: "What are the fees?",
     answer:
-      "1.5% on minting and 1.5% on redemption. There are no protocol fees for trading tokens on decentralized exchanges.",
+      "1.5% on minting and 1.5% on redemption. Shipping costs are passed through at cost. No storage fees — ever.",
   },
   {
     question: "What calibers are supported?",
     answer:
-      "9mm Luger (115gr FMJ), 5.56 NATO (55gr FMJ), .22 LR (40gr), and .308 Winchester (147gr FMJ). All factory-new ammunition from reputable manufacturers.",
+      "9mm Practice (115gr FMJ), 9mm Self Defense (124gr JHP), 5.56 NATO Practice (55gr FMJ), and 5.56 Self Defense (62gr). All factory-new from reputable manufacturers.",
   },
   {
-    question: "How does the 2-step settlement work?",
+    question: "Is there a minimum order?",
     answer:
-      "You initiate a mint or redeem order on-chain. The protocol admin verifies and finalizes the order. For mints, ammunition is purchased and stored. For redemptions, ammunition is shipped to your door via UPS Ground.",
+      "Yes — 50 rounds per caliber for minting. There is no minimum for trading tokens on secondary markets.",
+  },
+  {
+    question: "How does shipping work?",
+    answer:
+      "Physical ammo ships via UPS Ground to the 48 contiguous U.S. states. No international shipments. Shipping costs are at-cost plus handling, charged at redemption.",
   },
   {
     question: "Is this on mainnet?",

@@ -32,7 +32,7 @@ function CaliberCard({ caliber }: { caliber: MarketCaliberFromAPI }) {
 
   return (
     <Link
-      href={`/calibers/${caliber.caliber.toLowerCase()}`}
+      href={`/exchange?caliber=${caliber.caliber.toLowerCase()}`}
       className="group block rounded-xl border border-border-default bg-ax-secondary p-5 transition-all duration-150 hover:border-brass-border hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.2),0_0_20px_rgba(198,164,78,0.05)]"
     >
       {/* Header */}

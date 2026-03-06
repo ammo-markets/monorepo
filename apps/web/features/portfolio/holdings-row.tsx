@@ -116,11 +116,11 @@ export function HoldingsMobileCard({
       }}
       role="link"
       tabIndex={0}
-      onClick={() => router.push(`/calibers/${holding.caliber.toLowerCase()}`)}
+      onClick={() => router.push(`/exchange?caliber=${holding.caliber.toLowerCase()}`)}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
-          router.push(`/calibers/${holding.caliber.toLowerCase()}`);
+          router.push(`/exchange?caliber=${holding.caliber.toLowerCase()}`);
         }
       }}
     >

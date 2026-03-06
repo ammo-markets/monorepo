@@ -127,7 +127,7 @@ function MobileCaliberCard({
 
   return (
     <Link
-      href={`/calibers/${caliber.caliber.toLowerCase()}`}
+      href={`/exchange?caliber=${caliber.caliber.toLowerCase()}`}
       className="block cursor-pointer rounded-xl border border-border-default bg-ax-secondary p-4 transition-all duration-150 hover:border-brass-border"
     >
       {/* Header */}
@@ -348,7 +348,7 @@ export function MarketTable() {
                           : "none",
                     }}
                     onClick={() =>
-                      router.push(`/calibers/${caliber.caliber.toLowerCase()}`)
+                      router.push(`/exchange?caliber=${caliber.caliber.toLowerCase()}`)
                     }
                   >
                     {/* # */}
