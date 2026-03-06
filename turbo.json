@@ -32,7 +32,8 @@
       "dependsOn": ["^build", "^db:generate"]
     },
     "db:generate": {
-      "cache": false
+      "cache": false,
+      "outputs": ["generated/prisma/**"]
     },
     "db:migrate": {
       "cache": false
