@@ -32,6 +32,20 @@ chainlink_deploy:
 		--verifier-url "https://api.avascan.info/v2/network/testnet/evm/43113/etherscan" \
 		--etherscan-api-key $(SNOWTRACE_API_KEY) -vv
 
+# ── Keeper management ────────────────────────────
+MANAGER := 0x74994498D05358502C56e491A1fd68bdC3F5177c
+
+# Usage: make add_keeper 0x... / make remove_keeper 0x...
+KEEPER_ADDR := $(word 2,$(MAKECMDGOALS))
+
+add_keeper:
+	cast send $(MANAGER) "setKeeper(address,bool)" $(KEEPER_ADDR) true \
+		--rpc-url $(FUJI_RPC_URL) --private-key $(PRIVATE_KEY)
+
+remove_keeper:
+	cast send $(MANAGER) "setKeeper(address,bool)" $(KEEPER_ADDR) false \
+		--rpc-url $(FUJI_RPC_URL) --private-key $(PRIVATE_KEY)
+
 # ── Chainlink Functions testing ─────────────────
 PRICE_FUNCTIONS := 0x3482B32F6B7D1f3a4A6037031282732187b95C37
 
@@ -72,3 +86,7 @@ chainlink_interval_test:
 chainlink_interval_prod:
 	cast send $(PRICE_FUNCTIONS) "setUpdateInterval(uint256)" 21000 \
 		--rpc-url $(FUJI_RPC_URL) --private-key $(PRIVATE_KEY)
+
+# Silently ignore address args passed to add_keeper / remove_keeper
+0x%:
+	@:
