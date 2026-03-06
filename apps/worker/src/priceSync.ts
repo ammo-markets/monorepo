@@ -1,5 +1,4 @@
 import { scrapeAmmoSquaredPrices } from "./scraper";
-import { pushPricesToOracle } from "./oracleSync";
 import { prisma } from "@ammo-exchange/db";
 import { CALIBER_TO_PRISMA } from "@ammo-exchange/shared";
 import type { Caliber as PrismaCaliber } from "@ammo-exchange/db";
@@ -11,7 +10,7 @@ import type { Caliber as PrismaCaliber } from "@ammo-exchange/db";
  * - Upserts CaliberPrice (latest price, unique per caliber)
  * - Inserts PriceSnapshot (append-only history for auditing/charts)
  *
- * After DB sync, pushes prices to on-chain oracle via setBatchPrices.
+ * On-chain price updates are handled by Chainlink Functions + Automation.
  */
 export async function syncPrices(): Promise<void> {
   console.log("[priceSync] Starting price sync...");
@@ -62,7 +61,4 @@ export async function syncPrices(): Promise<void> {
   console.log(
     `[priceSync] Synced ${successCount}/${prices.length} caliber prices`,
   );
-
-  // Push updated prices to on-chain oracle
-  await pushPricesToOracle();
 }
