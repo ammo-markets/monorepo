@@ -31,6 +31,7 @@ export async function backfillActivityLog(): Promise<void> {
         usdcAmount: true,
         tokenAmount: true,
         txHash: true,
+        logIndex: true,
         walletAddress: true,
         createdAt: true,
       },
@@ -48,14 +49,17 @@ export async function backfillActivityLog(): Promise<void> {
     // Use createMany with skipDuplicates to handle idempotency
     // (same txHash may already exist if partially backfilled)
     const result = await prisma.activityLog.createMany({
-      data: orders.map((order) => ({
-        type: order.type,
-        caliber: order.caliber,
-        amount: order.usdcAmount ?? order.tokenAmount ?? "0",
-        txHash: order.txHash,
-        walletAddress: order.walletAddress ?? "",
-        createdAt: order.createdAt,
-      })),
+      data: orders
+        .filter((order) => order.txHash !== null)
+        .map((order) => ({
+          type: order.type,
+          caliber: order.caliber,
+          amount: order.usdcAmount ?? order.tokenAmount ?? "0",
+          txHash: order.txHash!,
+          logIndex: order.logIndex,
+          walletAddress: order.walletAddress ?? "",
+          createdAt: order.createdAt,
+        })),
       skipDuplicates: true,
     });
 

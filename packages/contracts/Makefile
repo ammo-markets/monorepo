@@ -18,3 +18,57 @@ fuji_deploy:
 		--broadcast --verify --slow \
 		--verifier-url "https://api.avascan.info/v2/network/testnet/evm/43113/etherscan" \
 		--etherscan-api-key $(SNOWTRACE_API_KEY) -vv
+
+chainlink_check:
+	@cd $(CONTRACTS_DIR) && forge script script/DeployChainlinkFunctions.s.sol:DeployChainlinkFunctions \
+		--rpc-url $(FUJI_RPC_URL) \
+		--private-key $(PRIVATE_KEY) -vv
+
+chainlink_deploy:
+	@cd $(CONTRACTS_DIR) && forge script script/DeployChainlinkFunctions.s.sol:DeployChainlinkFunctions \
+		--rpc-url $(FUJI_RPC_URL) \
+		--private-key $(PRIVATE_KEY) \
+		--broadcast --verify --slow \
+		--verifier-url "https://api.avascan.info/v2/network/testnet/evm/43113/etherscan" \
+		--etherscan-api-key $(SNOWTRACE_API_KEY) -vv
+
+# ── Chainlink Functions testing ─────────────────
+PRICE_FUNCTIONS := 0x3482B32F6B7D1f3a4A6037031282732187b95C37
+
+# Trigger performUpkeep manually (fires a Functions request to the DON)
+chainlink_trigger:
+	cast send $(PRICE_FUNCTIONS) "performUpkeep(bytes)" "0x" \
+		--rpc-url $(FUJI_RPC_URL) --private-key $(PRIVATE_KEY)
+
+# Check last request ID and upkeep timestamp
+chainlink_status:
+	@echo "lastRequestId:"
+	@cast call $(PRICE_FUNCTIONS) "lastRequestId()" --rpc-url $(FUJI_RPC_URL)
+	@echo "lastUpkeepTimestamp:"
+	@cast call $(PRICE_FUNCTIONS) "lastUpkeepTimestamp()" --rpc-url $(FUJI_RPC_URL)
+
+# Push updated JS source to the contract
+chainlink_update_source:
+	cast send $(PRICE_FUNCTIONS) "setSource(string)" "$$(cat $(CONTRACTS_DIR)/script/chainlink-functions-source.js)" \
+		--rpc-url $(FUJI_RPC_URL) --private-key $(PRIVATE_KEY)
+
+# Check oracle prices and timestamps for all calibers
+chainlink_oracle:
+	@echo "=== 9MM_PRACTICE ==="
+	@cast call 0x4C39b892B228E3A4Fdf971cDDB6De50b1de0A144 "markets(address)(uint256,uint256,bool)" 0xC2a1D88A13539eBd62C481F7Abe5366A6c780670 --rpc-url $(FUJI_RPC_URL)
+	@echo "=== 9MM_SELF_DEFENSE ==="
+	@cast call 0x4C39b892B228E3A4Fdf971cDDB6De50b1de0A144 "markets(address)(uint256,uint256,bool)" 0xD33B1c993d7958EaF5bf81Ec88ec6D5Ae757adf4 --rpc-url $(FUJI_RPC_URL)
+	@echo "=== 556_SELF_DEFENSE ==="
+	@cast call 0x4C39b892B228E3A4Fdf971cDDB6De50b1de0A144 "markets(address)(uint256,uint256,bool)" 0x0A461cf5C3c9437FDE6416BA45f50C0236aef04d --rpc-url $(FUJI_RPC_URL)
+	@echo "=== 556_NATO_PRACTICE ==="
+	@cast call 0x4C39b892B228E3A4Fdf971cDDB6De50b1de0A144 "markets(address)(uint256,uint256,bool)" 0x6855E5F296b24e9FA49524bf59A4326a952A8a82 --rpc-url $(FUJI_RPC_URL)
+
+# Set update interval to 60s for testing
+chainlink_interval_test:
+	cast send $(PRICE_FUNCTIONS) "setUpdateInterval(uint256)" 60 \
+		--rpc-url $(FUJI_RPC_URL) --private-key $(PRIVATE_KEY)
+
+# Set update interval to 4 hours for production
+chainlink_interval_prod:
+	cast send $(PRICE_FUNCTIONS) "setUpdateInterval(uint256)" 21000 \
+		--rpc-url $(FUJI_RPC_URL) --private-key $(PRIVATE_KEY)

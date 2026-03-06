@@ -29,11 +29,18 @@ type CaliberAddresses = {
   token: `0x${string}`;
 };
 
+type ChainlinkAddresses = {
+  functionsRouter: `0x${string}`;
+  linkToken: `0x${string}`;
+};
+
 type NetworkAddresses = {
   manager: `0x${string}`;
   factory: `0x${string}`;
   usdc: `0x${string}`;
   oracle: `0x${string}`;
+  priceFunctions: `0x${string}`;
+  chainlink: ChainlinkAddresses;
   calibers: Record<Caliber, CaliberAddresses>;
 };
 
@@ -48,6 +55,11 @@ export const CONTRACT_ADDRESSES: {
     factory: "0xAB76E1c1ae81aB94B3D3824fC905189287143D5e",
     usdc: "0x313f01B900150446036F325B881993eE18c40375",
     oracle: "0x4C39b892B228E3A4Fdf971cDDB6De50b1de0A144",
+    priceFunctions: "0x3482B32F6B7D1f3a4A6037031282732187b95C37",
+    chainlink: {
+      functionsRouter: "0xA9d587a00A31A52Ed70D6026794a8FC5E2F5dCb0",
+      linkToken: "0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846",
+    },
     calibers: {
       "9MM_PRACTICE": {
         market: "0xC2a1D88A13539eBd62C481F7Abe5366A6c780670",
@@ -72,6 +84,11 @@ export const CONTRACT_ADDRESSES: {
     factory: ZERO,
     usdc: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
     oracle: ZERO,
+    priceFunctions: ZERO,
+    chainlink: {
+      functionsRouter: ZERO,
+      linkToken: ZERO,
+    },
     calibers: {
       "9MM_PRACTICE": { market: ZERO, token: ZERO },
       "9MM_SELF_DEFENSE": { market: ZERO, token: ZERO },

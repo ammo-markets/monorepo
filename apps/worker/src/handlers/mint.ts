@@ -63,17 +63,25 @@ export async function handleMinted(
     update: {}, // No-op if already exists (idempotent)
   });
 
-  // Write ActivityLog entry for completed mint
+  // Write ActivityLog entry for completed mint (idempotent via txHash+logIndex)
   try {
-    await tx.activityLog.create({
-      data: {
+    await tx.activityLog.upsert({
+      where: {
+        txHash_logIndex: {
+          txHash: meta.transactionHash,
+          logIndex: meta.logIndex,
+        },
+      },
+      create: {
         type: "MINT",
         caliber: prismaCaliber,
         amount: args.usdcAmount.toString(),
         txHash: meta.transactionHash,
+        logIndex: meta.logIndex,
         walletAddress: userAddress,
         createdAt: meta.blockTimestamp,
       },
+      update: {},
     });
   } catch (error) {
     console.error("[mint] Failed to create ActivityLog entry:", error);

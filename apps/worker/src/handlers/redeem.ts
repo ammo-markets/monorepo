@@ -201,15 +201,23 @@ export async function handleRedeemFinalized(
     });
 
     if (order) {
-      await tx.activityLog.create({
-        data: {
+      await tx.activityLog.upsert({
+        where: {
+          txHash_logIndex: {
+            txHash: meta.transactionHash,
+            logIndex: meta.logIndex,
+          },
+        },
+        create: {
           type: "REDEEM",
           caliber: order.caliber,
           amount: order.usdcAmount ?? order.tokenAmount ?? "0",
           txHash: meta.transactionHash,
+          logIndex: meta.logIndex,
           walletAddress: order.walletAddress ?? "",
           createdAt: meta.blockTimestamp,
         },
+        update: {},
       });
       console.log(`[redeem] Created ActivityLog entry for redeem ${order.id}`);
     }

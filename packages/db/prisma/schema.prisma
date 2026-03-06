@@ -162,10 +162,12 @@ model ActivityLog {
   type          OrderType
   caliber       Caliber
   amount        String
-  txHash        String?
+  txHash        String
+  logIndex      Int       @default(0)
   walletAddress String
   createdAt     DateTime  @default(now())
 
+  @@unique([txHash, logIndex])
   @@index([walletAddress])
   @@index([createdAt])
   @@index([type])
