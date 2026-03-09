@@ -33,7 +33,7 @@ chainlink_deploy:
 		--etherscan-api-key $(SNOWTRACE_API_KEY) -vv
 
 # ── Keeper management ────────────────────────────
-MANAGER := 0x74994498D05358502C56e491A1fd68bdC3F5177c
+MANAGER := 0x3D3DAca6B9A402547DFfaef181e8017cB41175Af
 
 # Usage: make add_keeper 0x... / make remove_keeper 0x...
 KEEPER_ADDR := $(word 2,$(MAKECMDGOALS))
@@ -74,13 +74,13 @@ chainlink_update_source:
 # Check oracle prices and timestamps for all calibers
 chainlink_oracle:
 	@echo "=== 9MM_PRACTICE ==="
-	@cast call 0x4C39b892B228E3A4Fdf971cDDB6De50b1de0A144 "markets(address)(uint256,uint256,bool)" 0xC2a1D88A13539eBd62C481F7Abe5366A6c780670 --rpc-url $(FUJI_RPC_URL)
+	@cast call 0x109f8aBb10a0A4Ec0DBB6A81161dD79150A1E425 "markets(address)(uint256,uint256,bool)" 0x2a1a20F7326b10d85Ea77d67B41FBfac285B70E6 --rpc-url $(FUJI_RPC_URL)
 	@echo "=== 9MM_SELF_DEFENSE ==="
-	@cast call 0x4C39b892B228E3A4Fdf971cDDB6De50b1de0A144 "markets(address)(uint256,uint256,bool)" 0xD33B1c993d7958EaF5bf81Ec88ec6D5Ae757adf4 --rpc-url $(FUJI_RPC_URL)
+	@cast call 0x109f8aBb10a0A4Ec0DBB6A81161dD79150A1E425 "markets(address)(uint256,uint256,bool)" 0xd63dA5E2FD7a9eA4E994973c0D7C0bcA1EAc1ED7 --rpc-url $(FUJI_RPC_URL)
 	@echo "=== 556_SELF_DEFENSE ==="
-	@cast call 0x4C39b892B228E3A4Fdf971cDDB6De50b1de0A144 "markets(address)(uint256,uint256,bool)" 0x0A461cf5C3c9437FDE6416BA45f50C0236aef04d --rpc-url $(FUJI_RPC_URL)
+	@cast call 0x109f8aBb10a0A4Ec0DBB6A81161dD79150A1E425 "markets(address)(uint256,uint256,bool)" 0xe1c2b489F0CF1D4056c9d21305e0236a3bf5830F --rpc-url $(FUJI_RPC_URL)
 	@echo "=== 556_NATO_PRACTICE ==="
-	@cast call 0x4C39b892B228E3A4Fdf971cDDB6De50b1de0A144 "markets(address)(uint256,uint256,bool)" 0x6855E5F296b24e9FA49524bf59A4326a952A8a82 --rpc-url $(FUJI_RPC_URL)
+	@cast call 0x109f8aBb10a0A4Ec0DBB6A81161dD79150A1E425 "markets(address)(uint256,uint256,bool)" 0xba84fFBf6D5CB6Ced18cf23461B264C34264c659 --rpc-url $(FUJI_RPC_URL)
 
 # Set update interval to 60s for testing
 chainlink_interval_test:

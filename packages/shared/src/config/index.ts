@@ -51,10 +51,10 @@ export const CONTRACT_ADDRESSES: {
   mainnet: NetworkAddresses;
 } = {
   fuji: {
-    manager: "0x74994498D05358502C56e491A1fd68bdC3F5177c",
-    factory: "0xAB76E1c1ae81aB94B3D3824fC905189287143D5e",
-    usdc: "0x313f01B900150446036F325B881993eE18c40375",
-    oracle: "0x4C39b892B228E3A4Fdf971cDDB6De50b1de0A144",
+    manager: "0x3D3DAca6B9A402547DFfaef181e8017cB41175Af",
+    factory: "0x62345A84750E0F1DFfa84b13faEaC3567123170b",
+    usdc: "0x3A7D061c31eF92b34074F92aB6217b28f7F3DCFC",
+    oracle: "0x109f8aBb10a0A4Ec0DBB6A81161dD79150A1E425",
     priceFunctions: "0x3482B32F6B7D1f3a4A6037031282732187b95C37",
     chainlink: {
       functionsRouter: "0xA9d587a00A31A52Ed70D6026794a8FC5E2F5dCb0",
@@ -62,20 +62,20 @@ export const CONTRACT_ADDRESSES: {
     },
     calibers: {
       "9MM_PRACTICE": {
-        market: "0xC2a1D88A13539eBd62C481F7Abe5366A6c780670",
-        token: "0xfed6e25c7e1d67CC38b57bD04997922fa2474E45",
+        market: "0x2a1a20F7326b10d85Ea77d67B41FBfac285B70E6",
+        token: "0x2F0F7EC6F17eC4080C721b40A5617c8838497a21",
       },
       "9MM_SELF_DEFENSE": {
-        market: "0xD33B1c993d7958EaF5bf81Ec88ec6D5Ae757adf4",
-        token: "0x810f64aa6Ca1e1030Ca1b859FFdf41Cf509b2183",
+        market: "0xd63dA5E2FD7a9eA4E994973c0D7C0bcA1EAc1ED7",
+        token: "0xb929CB94dEA8f83E8529C1fF7A95Cf82b1A5aC71",
       },
       "556_SELF_DEFENSE": {
-        market: "0x0A461cf5C3c9437FDE6416BA45f50C0236aef04d",
-        token: "0xD7DCc019463173967dbC5871Eb8a6c2134FC6b23",
+        market: "0xe1c2b489F0CF1D4056c9d21305e0236a3bf5830F",
+        token: "0xc6b70C4Fc5B5e6581D03d46db11604E4340af566",
       },
       "556_NATO_PRACTICE": {
-        market: "0x6855E5F296b24e9FA49524bf59A4326a952A8a82",
-        token: "0xbca964959f8739b10b2981a6dA35EeF7845FA73b",
+        market: "0xba84fFBf6D5CB6Ced18cf23461B264C34264c659",
+        token: "0xa95Fb7045C822c8187325980dB9f0085eF8a1E7c",
       },
     },
   },
@@ -104,7 +104,7 @@ export const CONTRACT_ADDRESSES: {
  * to avoid scanning millions of empty blocks.
  */
 export const DEPLOYMENT_BLOCKS = {
-  fuji: BigInt(52346218),
+  fuji: BigInt(52525594),
   mainnet: BigInt(0), // Not yet deployed
 } as const;
 
