@@ -28,12 +28,6 @@ function getFinalizeBlockReasons(order: AdminRedeemOrder): string[] {
   const reasons: string[] = [];
 
   if (!order.onChainOrderId) reasons.push("On-chain order ID: awaiting");
-  if (!order.user?.kycStatus || order.user.kycStatus === "NONE")
-    reasons.push("KYC: not submitted");
-  else if (order.user.kycStatus === "PENDING")
-    reasons.push("KYC: pending review");
-  else if (order.user.kycStatus === "REJECTED")
-    reasons.push("KYC: rejected");
 
   if (!order.shippingAddress) reasons.push("Shipping address: not provided");
   else if (
@@ -72,39 +66,6 @@ function StatusBadge({ status }: { status: string }) {
   return (
     <span
       className={`inline-block rounded-full border px-2 py-0.5 text-xs font-medium ${styles[status] ?? "bg-gray-900/30 text-gray-400 border-gray-800"}`}
-    >
-      {status}
-    </span>
-  );
-}
-
-function KycBadge({ status }: { status: string }) {
-  const semantic: Record<string, string> = {
-    APPROVED: "bg-green-900/30 text-green-400 border-green-800",
-    PENDING: "bg-yellow-900/30 text-yellow-400 border-yellow-800",
-    REJECTED: "bg-red-900/30 text-red-400 border-red-800",
-  };
-
-  const semanticStyle = semantic[status];
-
-  if (semanticStyle) {
-    return (
-      <span
-        className={`inline-block rounded-full border px-2 py-0.5 text-xs font-medium ${semanticStyle}`}
-      >
-        {status}
-      </span>
-    );
-  }
-
-  return (
-    <span
-      className="inline-block rounded-full border px-2 py-0.5 text-xs font-medium"
-      style={{
-        backgroundColor: "var(--bg-tertiary)",
-        color: "var(--text-muted)",
-        borderColor: "var(--border-hover)",
-      }}
     >
       {status}
     </span>
@@ -297,12 +258,6 @@ export function RedeemOrdersTable() {
                     className="px-4 py-3 font-medium"
                     style={{ color: "var(--text-secondary)" }}
                   >
-                    KYC
-                  </th>
-                  <th
-                    className="px-4 py-3 font-medium"
-                    style={{ color: "var(--text-secondary)" }}
-                  >
                     Status
                   </th>
                   <th
@@ -355,9 +310,6 @@ export function RedeemOrdersTable() {
                       style={{ color: "var(--text-primary)" }}
                     >
                       {formatTokenAmount(order.tokenAmount ?? "0")} rounds
-                    </td>
-                    <td className="px-4 py-3">
-                      <KycBadge status={order.user?.kycStatus ?? "NONE"} />
                     </td>
                     <td className="px-4 py-3">
                       <StatusBadge status={order.status} />

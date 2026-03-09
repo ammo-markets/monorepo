@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  ShieldCheck,
   LayoutDashboard,
   ArrowUpCircle,
   ArrowDownCircle,
@@ -22,7 +21,6 @@ const NAV_ITEMS = [
     label: "Redeem Orders",
     icon: ArrowDownCircle,
   },
-  { href: "/admin/kyc", label: "KYC Reviews", icon: ShieldCheck },
 ] as const;
 
 export function AdminSidebar() {

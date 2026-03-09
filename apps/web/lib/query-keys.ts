@@ -9,17 +9,7 @@ export const queryKeys = {
     detail: (orderId: string) => ["orders", "detail", orderId] as const,
   },
 
-  kyc: {
-    all: ["kyc"] as const,
-    status: (address: string) => ["kyc", address] as const,
-  },
-
   admin: {
-    kyc: {
-      all: ["admin", "kyc"] as const,
-      list: (params: { status?: string; search?: string; page?: number }) =>
-        ["admin", "kyc", params.status, params.search, params.page] as const,
-    },
     orders: {
       all: (type: string) => ["admin", "orders", type] as const,
       list: (

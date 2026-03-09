@@ -2,7 +2,6 @@
  * API Compliance Tests (TEST-04)
  *
  * Verify:
- * - KYC data masking (gov ID never exposed in full)
  * - State code normalization (lowercase -> uppercase)
  * - Restricted state rejection for redeem shipping
  */
@@ -45,93 +44,10 @@ vi.mock("@/lib/serialize", () => ({
 
 // ---------- Tests ----------
 
-describe("KYC data masking (TEST-04)", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    mockRequireSession.mockResolvedValue(createMockSession());
-  });
-
-  it("GET /api/users/kyc masks govIdNumber to last 4 chars (****XXXX format)", async () => {
-    mockPrisma.user.findUnique.mockResolvedValue({
-      kycStatus: "APPROVED",
-      kycFullName: "John Doe",
-      kycDateOfBirth: new Date("1990-01-01"),
-      kycState: "TX",
-      kycGovIdType: "DRIVERS_LICENSE",
-      kycGovIdNumber: "DL123456789",
-    });
-
-    const { GET } = await import("../users/kyc/route");
-    const response = await GET();
-
-    expect(response.status).toBe(200);
-    const body = await response.json();
-    expect(body.kycGovIdNumber).toBe("****6789");
-    // Must never contain the full ID
-    expect(body.kycGovIdNumber).not.toContain("DL123456789");
-  });
-
-  it("GET /api/users/kyc returns null govIdNumber when user has none", async () => {
-    mockPrisma.user.findUnique.mockResolvedValue({
-      kycStatus: "NONE",
-      kycFullName: null,
-      kycDateOfBirth: null,
-      kycState: null,
-      kycGovIdType: null,
-      kycGovIdNumber: null,
-    });
-
-    const { GET } = await import("../users/kyc/route");
-    const response = await GET();
-
-    expect(response.status).toBe(200);
-    const body = await response.json();
-    expect(body.kycGovIdNumber).toBeNull();
-  });
-
-  it("GET /api/users/kyc returns null when user does not exist", async () => {
-    mockPrisma.user.findUnique.mockResolvedValue(null);
-
-    const { GET } = await import("../users/kyc/route");
-    const response = await GET();
-
-    expect(response.status).toBe(200);
-    const body = await response.json();
-    expect(body.kycGovIdNumber).toBeNull();
-    expect(body.kycStatus).toBe("NONE");
-  });
-});
-
 describe("State code validation (TEST-04)", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockRequireSession.mockResolvedValue(createMockSession());
-  });
-
-  it("POST /api/users/kyc normalizes lowercase state to uppercase", async () => {
-    mockPrisma.user.upsert.mockResolvedValue({ kycStatus: "APPROVED" });
-
-    const { POST } = await import("../users/kyc/route");
-    const request = buildJsonPostRequest(
-      "http://localhost:3000/api/users/kyc",
-      {
-        fullName: "Jane Doe",
-        dateOfBirth: "1990-06-15",
-        state: "ca",
-        govIdType: "DRIVERS_LICENSE",
-        govIdNumber: "DL987654321",
-      },
-    );
-    const response = await POST(request as never);
-
-    expect(response.status).toBe(200);
-    // Verify upsert was called with normalized state
-    expect(mockPrisma.user.upsert).toHaveBeenCalledWith(
-      expect.objectContaining({
-        create: expect.objectContaining({ kycState: "CA" }),
-        update: expect.objectContaining({ kycState: "CA" }),
-      }),
-    );
   });
 
   it("POST /api/redeem/shipping rejects restricted state (NY)", async () => {

@@ -18,18 +18,6 @@ export default function ProfileLoading() {
           <div className="h-5 w-full max-w-sm rounded shimmer" />
         </div>
 
-        {/* KYC section */}
-        <div
-          className="rounded-xl p-5"
-          style={{
-            backgroundColor: "var(--bg-secondary)",
-            border: "1px solid var(--border-default)",
-          }}
-        >
-          <div className="mb-3 h-4 w-36 rounded shimmer" />
-          <div className="h-7 w-24 rounded-full shimmer" />
-        </div>
-
         {/* Address section */}
         <div
           className="rounded-xl p-5"

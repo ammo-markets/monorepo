@@ -1,6 +1,5 @@
 export interface ProfileData {
   walletAddress: string;
-  kycStatus: string;
   defaultShippingName: string | null;
   defaultShippingLine1: string | null;
   defaultShippingLine2: string | null;
@@ -71,35 +70,6 @@ export const US_STATES = [
   { value: "WI", label: "Wisconsin" },
   { value: "WY", label: "Wyoming" },
 ];
-
-export function getKycBadge(status: string) {
-  switch (status) {
-    case "APPROVED":
-      return {
-        label: "Verified",
-        bg: "rgba(46, 204, 113, 0.15)",
-        color: "var(--green)",
-      };
-    case "PENDING":
-      return {
-        label: "Pending",
-        bg: "rgba(243, 156, 18, 0.15)",
-        color: "var(--amber)",
-      };
-    case "REJECTED":
-      return {
-        label: "Rejected",
-        bg: "rgba(231, 76, 60, 0.15)",
-        color: "var(--red)",
-      };
-    default:
-      return {
-        label: "Not Verified",
-        bg: "var(--bg-tertiary)",
-        color: "var(--text-muted)",
-      };
-  }
-}
 
 export const emptyForm: AddressForm = {
   defaultShippingName: "",

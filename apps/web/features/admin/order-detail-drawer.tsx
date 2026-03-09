@@ -44,39 +44,6 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-function KycBadge({ status }: { status: string }) {
-  const semantic: Record<string, string> = {
-    APPROVED: "bg-green-900/30 text-green-400 border-green-800",
-    PENDING: "bg-yellow-900/30 text-yellow-400 border-yellow-800",
-    REJECTED: "bg-red-900/30 text-red-400 border-red-800",
-  };
-
-  const semanticStyle = semantic[status];
-
-  if (semanticStyle) {
-    return (
-      <span
-        className={`inline-block rounded-full border px-2 py-0.5 text-xs font-medium ${semanticStyle}`}
-      >
-        {status}
-      </span>
-    );
-  }
-
-  return (
-    <span
-      className="inline-block rounded-full border px-2 py-0.5 text-xs font-medium"
-      style={{
-        backgroundColor: "var(--bg-tertiary)",
-        color: "var(--text-muted)",
-        borderColor: "var(--border-hover)",
-      }}
-    >
-      {status}
-    </span>
-  );
-}
-
 function formatUsdc(amount: string): string {
   return (Number(amount) / 1e6).toFixed(2);
 }
@@ -407,28 +374,6 @@ export function OrderDetailDrawer({
                   Mint Details
                 </h3>
                 <div className="space-y-2 text-sm">
-                  <div className="flex justify-between items-center">
-                    <span style={{ color: "var(--text-secondary)" }}>
-                      KYC Status
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <KycBadge
-                        status={order.user?.kycStatus ?? "NONE"}
-                      />
-                      {order.user?.kycFullName && (
-                        <span
-                          className="text-xs"
-                          style={{ color: "var(--text-muted)" }}
-                        >
-                          {order.user.kycFullName}
-                          {order.user.kycState
-                            ? `, ${order.user.kycState}`
-                            : ""}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
                   {(order as AdminMintOrder).mintPrice != null && (
                     <div className="flex justify-between">
                       <span style={{ color: "var(--text-secondary)" }}>
@@ -474,26 +419,6 @@ export function OrderDetailDrawer({
                   Redeem Details
                 </h3>
                 <div className="space-y-2 text-sm">
-                  <div className="flex justify-between items-center">
-                    <span style={{ color: "var(--text-secondary)" }}>
-                      KYC Status
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <KycBadge status={order.user?.kycStatus ?? "NONE"} />
-                      {order.user?.kycFullName && (
-                        <span
-                          className="text-xs"
-                          style={{ color: "var(--text-muted)" }}
-                        >
-                          {order.user.kycFullName}
-                          {order.user.kycState
-                            ? `, ${order.user.kycState}`
-                            : ""}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
                   <div className="flex justify-between">
                     <span style={{ color: "var(--text-secondary)" }}>
                       Shipping

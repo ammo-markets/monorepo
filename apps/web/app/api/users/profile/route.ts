@@ -21,7 +21,6 @@ const addressSchema = z.object({
 
 const profileSelect = {
   walletAddress: true,
-  kycStatus: true,
   defaultShippingName: true,
   defaultShippingLine1: true,
   defaultShippingLine2: true,

@@ -20,7 +20,7 @@ export default function RedeemOrdersPage() {
         className="mt-2 mb-6 text-sm"
         style={{ color: "var(--text-secondary)" }}
       >
-        Review pending redemption orders with KYC status and shipping details.
+        Review pending redemption orders and shipping details.
       </p>
       <RedeemOrdersTable />
     </div>

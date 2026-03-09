@@ -49,7 +49,6 @@ export async function POST(request: NextRequest) {
 
     return Response.json({
       walletAddress: user.walletAddress,
-      kycStatus: user.kycStatus,
     });
   } catch (err) {
     const code = (err as { code?: string }).code;

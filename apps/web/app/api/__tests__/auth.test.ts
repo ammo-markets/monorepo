@@ -69,33 +69,6 @@ describe("API Auth - Protected routes (TEST-03)", () => {
     expect(body.error).toBe("Not authenticated");
   });
 
-  it("GET /api/users/kyc returns 401 when unauthenticated", async () => {
-    mockRequireSession.mockRejectedValue(createUnauthenticatedResponse());
-
-    const { GET } = await import("../users/kyc/route");
-    const response = await GET();
-
-    expect(response.status).toBe(401);
-    const body = await response.json();
-    expect(body.error).toBe("Not authenticated");
-  });
-
-  it("POST /api/users/kyc returns 401 when unauthenticated", async () => {
-    mockRequireSession.mockRejectedValue(createUnauthenticatedResponse());
-
-    const { POST } = await import("../users/kyc/route");
-    const request = buildRequest("http://localhost:3000/api/users/kyc", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ fullName: "Test" }),
-    });
-    const response = await POST(request as never);
-
-    expect(response.status).toBe(401);
-    const body = await response.json();
-    expect(body.error).toBe("Not authenticated");
-  });
-
   it("GET /api/admin/orders returns 401 when unauthenticated", async () => {
     mockRequireKeeper.mockRejectedValue(createUnauthenticatedResponse());
 
