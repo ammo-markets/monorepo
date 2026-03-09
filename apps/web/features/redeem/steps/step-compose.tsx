@@ -43,7 +43,7 @@ export function StepCompose({
   const fee = Math.ceil(rounds * (FEES.REDEEM_FEE_BPS / FEES.BPS_DENOMINATOR));
   const netRounds = rounds - fee;
   const estValue = netRounds * (caliber?.price ?? 0);
-  const minRedeem = caliber ? caliber.minMint : 50;
+  const minRedeem = caliber ? caliber.minRedeem : 50;
 
   // Real on-chain balance for selected caliber (18 decimals -> number)
   const balance = useMemo(() => {
@@ -147,7 +147,7 @@ export function StepCompose({
                       className="text-[11px]"
                       style={{ color: "var(--text-muted)" }}
                     >
-                      Min: {cal.minMint} rds
+                      Min: {cal.minRedeem} rds
                     </span>
                   </div>
                 </button>
