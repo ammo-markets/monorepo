@@ -87,12 +87,6 @@ export function StepSelectCaliber({
                     /round
                   </span>
                 </span>
-                <span
-                  className="text-[11px]"
-                  style={{ color: "var(--text-muted)" }}
-                >
-                  Min: {cal.minMint} rounds
-                </span>
               </div>
             </button>
           );

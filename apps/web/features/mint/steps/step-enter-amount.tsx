@@ -62,11 +62,9 @@ export function StepEnterAmount({
   const fee = usdcValue * (caliber.mintFee / 100);
   const netUsdc = usdcValue - fee;
   const estimatedRounds = Math.floor(netUsdc / caliber.price);
-  const minUsdcForMinMint = caliber.minMint * caliber.price;
-  const belowMinimum = usdcValue > 0 && usdcValue < minUsdcForMinMint;
   const exceedsBalance = usdcValue > usdcBalance;
-  const isValid = usdcValue >= minUsdcForMinMint && !exceedsBalance;
-  const hasError = belowMinimum || exceedsBalance;
+  const isValid = usdcValue > 0 && !exceedsBalance;
+  const hasError = exceedsBalance;
 
   return (
     <div>
@@ -159,12 +157,6 @@ export function StepEnterAmount({
       </div>
       <div className="mt-1.5 flex items-center justify-between">
         <div>
-          {belowMinimum && (
-            <p className="text-xs" style={{ color: "var(--red)" }}>
-              Minimum mint is {caliber.minMint} rounds (~$
-              {minUsdcForMinMint.toFixed(2)} USDT)
-            </p>
-          )}
           {exceedsBalance && (
             <p className="text-xs" style={{ color: "var(--red)" }}>
               Insufficient USDT balance

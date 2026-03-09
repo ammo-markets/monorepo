@@ -17,6 +17,7 @@ export function buildCaliberDetail(
     mintFee: FEES.MINT_FEE_BPS / 100,
     redeemFee: FEES.REDEEM_FEE_BPS / 100,
     minMint: spec.minMintRounds,
+    minRedeem: spec.minRedeemRounds,
   };
 }
 

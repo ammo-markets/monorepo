@@ -12,6 +12,7 @@ export interface CaliberDetailData {
   mintFee: number; // percentage (1.5)
   redeemFee: number; // percentage (1.5)
   minMint: number; // from CALIBER_SPECS
+  minRedeem: number; // from CALIBER_SPECS
 }
 
 /* ── Order returned by /api/orders and /api/orders/[id] ── */
