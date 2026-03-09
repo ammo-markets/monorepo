@@ -45,7 +45,7 @@ Understanding these constraints will inform design decisions:
 
 These are the ammunition types available at launch. Each has its own token and independent price.
 
-| Token Symbol | Display Name | Description                    | Min Mint   |
+| Token Symbol | Display Name | Description                    | Min Redeem |
 | ------------ | ------------ | ------------------------------ | ---------- |
 | `9MM`        | 9mm FMJ      | 115gr, brass case, factory-new | 50 rounds  |
 | `556`        | 5.56 NATO    | 55gr, brass case, factory-new  | 50 rounds  |
@@ -205,7 +205,7 @@ Two-column grid:
 | Market Cap          | Total supply x current price    |
 | Mint Fee            | 1.5%                            |
 | Redeem Fee          | 1.5%                            |
-| Min Mint            | 50 rounds (varies by caliber)   |
+| Min Redeem          | 50 rounds (varies by caliber)   |
 
 #### Action Panel (right sidebar on desktop, bottom sheet on mobile)
 
@@ -236,7 +236,7 @@ Two-column grid:
 #### Step 1: Select Caliber
 
 - Grid of caliber cards (same design as landing page cards)
-- Each card shows: name, current price, min mint quantity
+- Each card shows: name, current price
 - User clicks one to select → visual selection state (border highlight, checkmark)
 - "Next" button at bottom
 
@@ -251,7 +251,7 @@ Two-column grid:
     - Net USDC for ammo: [subtotal - fee]
     - Estimated rounds: [net / price]
 - Input field validation:
-  - Must be enough for minimum mint (50 rounds for 9mm/556, 100 for 22LR, 20 for 308)
+  - Must be greater than zero
   - Cannot exceed wallet USDC balance
 - Show user's USDC balance
 - "Next" button
@@ -309,7 +309,7 @@ Two-column grid:
   - Net rounds for shipment: [amount - fee]
 - Validation:
   - Cannot exceed token balance
-  - Minimum redemption: same as minimum mint
+  - Minimum redemption: 50 rounds per caliber
 - "Next" button
 
 #### Step 2: Shipping Information

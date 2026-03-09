@@ -82,7 +82,7 @@ Minting is a single atomic transaction — the user receives tokens immediately:
 
 Physical backing is maintained off-chain: Ammo Exchange purchases equivalent ammunition from suppliers (batched) and stores it in the insured warehouse. Proof of reserves is published via monthly audits.
 
-**Minimum mint:** 50 rounds equivalent (configurable per caliber)
+**Minimum mint:** None (any non-zero amount accepted)
 **Processing fee:** 1.5% of order value (configurable, max 5%)
 **Price staleness:** Mint reverts if the oracle price is older than 6 hours
 **Price source:** AmmoSquared market data, fetched by Chainlink Functions DON every 4 hours via Chainlink Automation
