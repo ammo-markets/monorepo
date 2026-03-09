@@ -1,7 +1,7 @@
 // Import env first to fail fast on missing variables before any other work
 import { env as _env } from "./lib/env";
 
-import { pollOnce } from "./indexer";
+import { pollOnce, seedMarketConfig } from "./indexer";
 import { client } from "./lib/client";
 import { POLL_INTERVAL_MS, STATS_INTERVAL_MS } from "./lib/constants";
 import { backfillActivityLog, computeStats } from "./stats";
@@ -19,6 +19,9 @@ async function main() {
   // Shutdown coordination
   let isShuttingDown = false;
   let currentPoll: Promise<void> | null = null;
+
+  // Seed MarketConfig from contract state (skip if already seeded)
+  await seedMarketConfig();
 
   // Run initial backfill from last cursor to current head
   console.log("[worker] Running initial backfill...");

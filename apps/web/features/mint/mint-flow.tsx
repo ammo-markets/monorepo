@@ -5,6 +5,7 @@ import { useMarketData } from "@/hooks/use-market-data";
 import { useSearchParams } from "next/navigation";
 import { formatUnits } from "viem";
 import { buildAllCaliberDetails } from "@/lib/caliber-utils";
+import { useMarketConfig } from "@/hooks/use-market-config";
 import { MintProgress } from "./mint-progress";
 import type { MintTxStatus } from "@/hooks/use-tx-status";
 import { useTxStatus } from "@/hooks/use-tx-status";
@@ -40,11 +41,12 @@ export function MintFlow({
 
   const { data: marketCalibers = [], isLoading: marketLoading } =
     useMarketData();
+  const { configMap } = useMarketConfig();
 
   const caliberDetailsMap = useMemo(() => {
     if (marketCalibers.length === 0) return null;
-    return buildAllCaliberDetails(marketCalibers);
-  }, [marketCalibers]);
+    return buildAllCaliberDetails(marketCalibers, configMap);
+  }, [marketCalibers, configMap]);
 
   const [step, setStep] = useState(() => {
     if (preselected) return 1;

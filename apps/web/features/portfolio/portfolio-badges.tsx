@@ -1,11 +1,21 @@
 import type { OrderFromAPI } from "@/lib/types";
 
-export type DisplayStatus = "Processing" | "Completed" | "Failed";
+export type DisplayStatus =
+  | "Processing"
+  | "Action Required"
+  | "Completed"
+  | "Failed";
 
-export function mapOrderStatus(status: OrderFromAPI["status"]): DisplayStatus {
+export function mapOrderStatus(
+  status: OrderFromAPI["status"],
+  type?: OrderFromAPI["type"],
+): DisplayStatus {
   switch (status) {
-    case "PENDING":
     case "APPROVED":
+      // Redeem orders in APPROVED state need user payment
+      if (type === "REDEEM") return "Action Required";
+      return "Processing";
+    case "PENDING":
     case "PAID":
     case "PROCESSING":
       return "Processing";
@@ -19,6 +29,7 @@ export function mapOrderStatus(status: OrderFromAPI["status"]): DisplayStatus {
 
 export const statusColors: Record<DisplayStatus, string> = {
   Processing: "var(--blue)",
+  "Action Required": "var(--amber)",
   Completed: "var(--green)",
   Failed: "var(--red)",
 };

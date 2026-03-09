@@ -5,7 +5,7 @@ import { ChevronRight } from "lucide-react";
 import { caliberIcons } from "@/features/shared/caliber-icons";
 import { timeAgo } from "@/lib/utils";
 import type { OrderFromAPI, OrderStep } from "@/lib/types";
-import { TypeBadge } from "./portfolio-badges";
+import { TypeBadge, StatusBadge, mapOrderStatus } from "./portfolio-badges";
 import { buildOrderSteps, getCurrentStepIndex } from "./order-steps";
 import { formatOrderAmount } from "./orders-row";
 
@@ -74,6 +74,8 @@ export function ActiveOrderCard({ order }: { order: OrderFromAPI }) {
   const steps = buildOrderSteps(order);
   const amount = formatOrderAmount(order);
   const isPending = order.id.startsWith("pending-");
+  const displayStatus = mapOrderStatus(order.status, order.type);
+  const showActionBadge = displayStatus === "Action Required";
 
   return (
     <div
@@ -100,6 +102,7 @@ export function ActiveOrderCard({ order }: { order: OrderFromAPI }) {
             {order.caliber}
           </span>
           <TypeBadge type={order.type} />
+          {showActionBadge && <StatusBadge status="Action Required" />}
         </div>
         <span
           className="font-mono text-sm tabular-nums"
@@ -134,6 +137,7 @@ export function ActiveOrderCard({ order }: { order: OrderFromAPI }) {
               {order.caliber}
             </span>
             <TypeBadge type={order.type} />
+            {showActionBadge && <StatusBadge status="Action Required" />}
           </div>
           {isPending ? (
             <span

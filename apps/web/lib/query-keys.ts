@@ -49,6 +49,10 @@ export const queryKeys = {
       ["market", "history", caliber, range] as const,
   },
 
+  marketConfig: {
+    all: ["market-config"] as const,
+  },
+
   protocolStats: {
     all: ["protocol-stats"] as const,
   },

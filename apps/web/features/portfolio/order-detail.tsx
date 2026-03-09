@@ -1,18 +1,20 @@
 "use client";
 
-import { Fragment, type ReactNode } from "react";
+import { Fragment, type ReactNode, useEffect } from "react";
 import Link from "next/link";
-import { ArrowLeft, Check, X, ExternalLink, MessageSquare, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Check, X, ExternalLink, MessageSquare, AlertTriangle, Truck, DollarSign } from "lucide-react";
 import { toast } from "sonner";
 import { useOrderDetail } from "@/hooks/use-orders";
 import type { OrderFromAPI, OrderStep, StepStatus } from "@/lib/types";
 import type { Caliber } from "@ammo-exchange/shared";
 import { CALIBER_SPECS } from "@ammo-exchange/shared";
 import { truncateAddress, snowtraceUrl, formatDate } from "@/lib/utils";
+import { formatUsdc } from "@/lib/tx-utils";
 import { caliberIcons } from "@/features/shared/caliber-icons";
 import { StatusBadge, TypeBadge, mapOrderStatus } from "./portfolio-badges";
 import type { DisplayStatus } from "./portfolio-badges";
 import { buildMintSteps, buildRedeemSteps } from "./order-steps";
+import { PayRedeemCard } from "./pay-redeem-card";
 
 /* ────────────── Step Icon ────────────── */
 
@@ -368,7 +370,7 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
     );
   }
 
-  const displayStatus = mapOrderStatus(order.status);
+  const displayStatus = mapOrderStatus(order.status, order.type);
   const steps = order.type === "MINT" ? buildMintSteps(order) : buildRedeemSteps(order);
   const spec = CALIBER_SPECS[order.caliber as Caliber];
   const Icon = caliberIcons[order.caliber as Caliber];
@@ -412,6 +414,44 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
         <DesktopStepper steps={steps} />
         <MobileStepper steps={steps} />
       </div>
+
+      {/* Pay Shipping Card (APPROVED redeem orders) */}
+      {order.type === "REDEEM" && order.status === "APPROVED" && (
+        <PayRedeemCard order={order} />
+      )}
+
+      {/* Awaiting Shipment Card (PAID redeem orders) */}
+      {order.type === "REDEEM" && order.status === "PAID" && (
+        <div
+          className="mb-6 rounded-xl p-6 sm:p-8"
+          style={{
+            backgroundColor: "var(--bg-secondary)",
+            border: "1px solid var(--border-default)",
+          }}
+        >
+          <div className="flex items-center gap-3">
+            <Truck size={20} style={{ color: "var(--blue)" }} />
+            <div>
+              <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
+                Awaiting Shipment
+              </p>
+              <p className="mt-0.5 text-xs" style={{ color: "var(--text-muted)" }}>
+                Payment received. Your order is being prepared for shipping.
+              </p>
+            </div>
+          </div>
+          {order.trackingId && (
+            <div className="mt-4 rounded-lg px-4 py-3" style={{ backgroundColor: "var(--bg-tertiary)" }}>
+              <span className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>
+                Tracking
+              </span>
+              <p className="mt-1 font-mono text-sm" style={{ color: "var(--text-primary)" }}>
+                {order.trackingId}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Order Details Card */}
       <div
@@ -486,6 +526,28 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
                 {truncateAddress(order.txHash)}
                 <ExternalLink size={12} />
               </a>
+            </DetailRow>
+          )}
+
+          {order.type === "REDEEM" && order.shippingCost && (
+            <DetailRow label="Shipping Cost">
+              <span className="font-mono tabular-nums">
+                ${formatUsdc(BigInt(order.shippingCost))} USDT
+              </span>
+            </DetailRow>
+          )}
+
+          {order.type === "REDEEM" && order.protocolFee && (
+            <DetailRow label="Protocol Fee">
+              <span className="font-mono tabular-nums">
+                ${formatUsdc(BigInt(order.protocolFee))} USDT
+              </span>
+            </DetailRow>
+          )}
+
+          {order.trackingId && (
+            <DetailRow label="Tracking ID">
+              <span className="font-mono">{order.trackingId}</span>
             </DetailRow>
           )}
 

@@ -34,6 +34,94 @@ import {
 } from "./handlers/lifecycle";
 import { prisma } from "@ammo-exchange/db";
 import { CaliberMarketAbi } from "@ammo-exchange/contracts";
+import { CALIBER_TO_PRISMA } from "@ammo-exchange/shared";
+import type { Caliber } from "@ammo-exchange/shared";
+
+// ── MarketConfig Seeding ─────────────────────────────────────────────
+
+/**
+ * Seed the MarketConfig table by reading current contract state for each
+ * caliber market. Runs on worker startup when the table is empty.
+ *
+ * Uses multicall to batch-read mintFeeBps, redeemFeeBps, minRedeemAmount,
+ * and paused state from every CaliberMarket contract in a single RPC call.
+ */
+export async function seedMarketConfig(): Promise<void> {
+  const existing = await prisma.marketConfig.count();
+  if (existing > 0) {
+    console.log(`[indexer] MarketConfig already seeded (${existing} entries)`);
+    return;
+  }
+
+  const { contracts: contractAddresses } = await import("./lib/chain");
+
+  const calibers = Object.keys(contractAddresses.calibers) as Caliber[];
+
+  // Build multicall contracts for all calibers
+  const calls = calibers.flatMap((caliber) => {
+    const address = contractAddresses.calibers[caliber].market;
+    return [
+      {
+        address,
+        abi: CaliberMarketAbi,
+        functionName: "mintFeeBps" as const,
+      },
+      {
+        address,
+        abi: CaliberMarketAbi,
+        functionName: "redeemFeeBps" as const,
+      },
+      {
+        address,
+        abi: CaliberMarketAbi,
+        functionName: "minRedeemAmount" as const,
+      },
+      {
+        address,
+        abi: CaliberMarketAbi,
+        functionName: "paused" as const,
+      },
+    ];
+  });
+
+  const results = await client.multicall({ contracts: calls });
+
+  // Process results in groups of 4 (one per caliber)
+  for (let i = 0; i < calibers.length; i++) {
+    const caliber = calibers[i]!;
+    const base = i * 4;
+    const mintFeeBps = results[base]?.result as bigint | undefined;
+    const redeemFeeBps = results[base + 1]?.result as bigint | undefined;
+    const minRedeemAmount = results[base + 2]?.result as bigint | undefined;
+    const paused = results[base + 3]?.result as boolean | undefined;
+
+    // Convert minRedeemAmount from token amount (18 decimals) to rounds
+    const minMintRounds = minRedeemAmount
+      ? Number(minRedeemAmount / 10n ** 18n)
+      : 50;
+
+    await prisma.marketConfig.upsert({
+      where: { caliber: CALIBER_TO_PRISMA[caliber] },
+      create: {
+        caliber: CALIBER_TO_PRISMA[caliber],
+        mintFeeBps: mintFeeBps !== undefined ? Number(mintFeeBps) : 150,
+        redeemFeeBps: redeemFeeBps !== undefined ? Number(redeemFeeBps) : 150,
+        minMintRounds,
+        paused: paused ?? false,
+      },
+      update: {
+        mintFeeBps: mintFeeBps !== undefined ? Number(mintFeeBps) : 150,
+        redeemFeeBps: redeemFeeBps !== undefined ? Number(redeemFeeBps) : 150,
+        minMintRounds,
+        paused: paused ?? false,
+      },
+    });
+  }
+
+  console.log(
+    `[indexer] Seeded MarketConfig for ${calibers.length} calibers`,
+  );
+}
 
 // ── Event Fetching ──────────────────────────────────────────────────
 

@@ -86,7 +86,7 @@ interface RecentOrdersProps {
 
 function OrderRow({ order }: { order: OrderFromAPI }) {
   const Icon = caliberIcons[order.caliber as Caliber];
-  const displayStatus = mapOrderStatus(order.status);
+  const displayStatus = mapOrderStatus(order.status, order.type);
   const amountDisplay =
     order.type === "MINT"
       ? order.usdcAmount
@@ -128,7 +128,7 @@ function OrderRow({ order }: { order: OrderFromAPI }) {
 
 function OrderCard({ order }: { order: OrderFromAPI }) {
   const Icon = caliberIcons[order.caliber as Caliber];
-  const displayStatus = mapOrderStatus(order.status);
+  const displayStatus = mapOrderStatus(order.status, order.type);
   const amountDisplay =
     order.type === "MINT"
       ? order.usdcAmount

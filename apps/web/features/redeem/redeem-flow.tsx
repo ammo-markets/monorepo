@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { useMarketData } from "@/hooks/use-market-data";
 import { useSearchParams } from "next/navigation";
 import { buildAllCaliberDetails } from "@/lib/caliber-utils";
+import { useMarketConfig } from "@/hooks/use-market-config";
 import { RedeemProgress } from "./redeem-progress";
 import type { RedeemTxStatus } from "@/hooks/use-tx-status";
 import { useTxStatus } from "@/hooks/use-tx-status";
@@ -44,11 +45,12 @@ export function RedeemFlow({
 
   const { data: marketCalibers = [], isLoading: marketLoading } =
     useMarketData();
+  const { configMap } = useMarketConfig();
 
   const caliberDetailsMap = useMemo(() => {
     if (marketCalibers.length === 0) return null;
-    return buildAllCaliberDetails(marketCalibers);
-  }, [marketCalibers]);
+    return buildAllCaliberDetails(marketCalibers, configMap);
+  }, [marketCalibers, configMap]);
 
   // Steps: 0 = Compose, 1 = Review, 2 = Shipping (Side), 3 = Confirmation
   const [step, setStep] = useState(0);
