@@ -9,8 +9,8 @@ export interface CaliberDetailData {
   specLine: string;
   price: number; // oracle price per round (from /api/market)
   totalSupply: string; // from on-chain totalSupply read (BigInt-safe string)
-  mintFee: number; // percentage (1.5)
-  redeemFee: number; // percentage (1.5)
+  mintFee: number; // percentage, derived from FEES.MINT_FEE_BPS
+  redeemFee: number; // percentage, derived from FEES.REDEEM_FEE_BPS
   minMint: number; // from CALIBER_SPECS
   minRedeem: number; // from CALIBER_SPECS
 }

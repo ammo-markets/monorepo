@@ -3,7 +3,7 @@ import type { Caliber, CaliberSpec } from "../types/index";
 /** Fee constants in basis points (1 BPS = 0.01%) */
 export const FEES = {
   MINT_FEE_BPS: 150, // 1.5%
-  REDEEM_FEE_BPS: 150, // 1.5%
+  REDEEM_FEE_BPS: 0, // disabled — fees collected in USDT on new flow
   MAX_FEE_BPS: 500, // 5% hard cap
   BPS_DENOMINATOR: 10_000,
 } as const;

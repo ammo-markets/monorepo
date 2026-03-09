@@ -305,12 +305,14 @@ export function StepCompose({
                 >
                   Burn amount: {rounds.toLocaleString("en-US")}
                 </span>
-                <span
-                  className="text-xs"
-                  style={{ color: "var(--text-muted)" }}
-                >
-                  Fee (1.5%): -{fee}
-                </span>
+                {fee > 0 && (
+                  <span
+                    className="text-xs"
+                    style={{ color: "var(--text-muted)" }}
+                  >
+                    Fee ({FEES.REDEEM_FEE_BPS / 100}%): -{fee}
+                  </span>
+                )}
               </div>
             </div>
           )}

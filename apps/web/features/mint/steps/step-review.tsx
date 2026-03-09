@@ -105,17 +105,19 @@ export function StepReview({
                 {usdcValue.toFixed(2)} USDT
               </span>
             </div>
-            <div className="flex justify-between">
-              <span style={{ color: "var(--text-muted)" }}>
-                Mint fee ({caliber.mintFee}%)
-              </span>
-              <span
-                className="font-mono tabular-nums"
-                style={{ color: "var(--text-secondary)" }}
-              >
-                {fee.toFixed(2)} USDT
-              </span>
-            </div>
+            {fee > 0 && (
+              <div className="flex justify-between">
+                <span style={{ color: "var(--text-muted)" }}>
+                  Mint fee ({caliber.mintFee}%)
+                </span>
+                <span
+                  className="font-mono tabular-nums"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  {fee.toFixed(2)} USDT
+                </span>
+              </div>
+            )}
             <div className="flex justify-between">
               <span
                 className="flex items-center gap-1.5 font-medium"

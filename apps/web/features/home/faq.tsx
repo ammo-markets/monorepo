@@ -51,7 +51,7 @@ const faqItems: FaqItem[] = [
   {
     question: "What are the fees?",
     answer:
-      "1.5% on minting and 1.5% on redemption. Shipping costs are passed through at cost. No storage fees — ever.",
+      "1.5% on minting. No redemption fee. Shipping costs are passed through at cost. No storage fees — ever.",
   },
   {
     question: "What calibers are supported?",

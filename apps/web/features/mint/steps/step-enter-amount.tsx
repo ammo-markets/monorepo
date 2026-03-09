@@ -253,37 +253,39 @@ export function StepEnterAmount({
             </div>
           </div>
 
-          <details className="group">
-            <summary className="cursor-pointer text-xs font-medium text-text-muted hover:text-text-secondary list-none flex items-center gap-1">
-              <ChevronDown
-                size={14}
-                className="group-open:rotate-180 transition-transform"
-              />
-              View fee details
-            </summary>
-            <div className="mt-2 flex flex-col gap-2 text-xs pl-5">
-              <div className="flex justify-between max-w-xs">
-                <span style={{ color: "var(--text-muted)" }}>
-                  Mint fee ({caliber.mintFee}%)
-                </span>
-                <span
-                  className="font-mono tabular-nums"
-                  style={{ color: "var(--text-secondary)" }}
-                >
-                  -{fee.toFixed(2)} USDT
-                </span>
+          {fee > 0 && (
+            <details className="group">
+              <summary className="cursor-pointer text-xs font-medium text-text-muted hover:text-text-secondary list-none flex items-center gap-1">
+                <ChevronDown
+                  size={14}
+                  className="group-open:rotate-180 transition-transform"
+                />
+                View fee details
+              </summary>
+              <div className="mt-2 flex flex-col gap-2 text-xs pl-5">
+                <div className="flex justify-between max-w-xs">
+                  <span style={{ color: "var(--text-muted)" }}>
+                    Mint fee ({caliber.mintFee}%)
+                  </span>
+                  <span
+                    className="font-mono tabular-nums"
+                    style={{ color: "var(--text-secondary)" }}
+                  >
+                    -{fee.toFixed(2)} USDT
+                  </span>
+                </div>
+                <div className="flex justify-between max-w-xs">
+                  <span style={{ color: "var(--text-muted)" }}>Net USDT</span>
+                  <span
+                    className="font-mono tabular-nums"
+                    style={{ color: "var(--text-secondary)" }}
+                  >
+                    {netUsdc.toFixed(2)} USDT
+                  </span>
+                </div>
               </div>
-              <div className="flex justify-between max-w-xs">
-                <span style={{ color: "var(--text-muted)" }}>Net USDT</span>
-                <span
-                  className="font-mono tabular-nums"
-                  style={{ color: "var(--text-secondary)" }}
-                >
-                  {netUsdc.toFixed(2)} USDT
-                </span>
-              </div>
-            </div>
-          </details>
+            </details>
+          )}
         </div>
       )}
 

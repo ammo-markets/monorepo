@@ -112,17 +112,19 @@ export function StepReviewAndConfirm({
                 {rounds.toLocaleString("en-US")} {caliber.symbol}
               </span>
             </div>
-            <div className="flex justify-between">
-              <span style={{ color: "var(--text-muted)" }}>
-                Redeem fee (1.5%)
-              </span>
-              <span
-                className="font-mono tabular-nums"
-                style={{ color: "var(--text-secondary)" }}
-              >
-                {fee} rounds
-              </span>
-            </div>
+            {fee > 0 && (
+              <div className="flex justify-between">
+                <span style={{ color: "var(--text-muted)" }}>
+                  Redeem fee ({FEES.REDEEM_FEE_BPS / 100}%)
+                </span>
+                <span
+                  className="font-mono tabular-nums"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  {fee} rounds
+                </span>
+              </div>
+            )}
             <div className="flex justify-between">
               <span
                 className="font-medium"
