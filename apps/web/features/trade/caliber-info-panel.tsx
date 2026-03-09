@@ -137,8 +137,7 @@ export function CaliberInfoPanel({
                 style={{ color: "var(--text-muted)" }}
               >
                 {spec.grainWeight}gr |{" "}
-                {spec.caseType === "standard" ? "Std" : "Brass"} | Min{" "}
-                {spec.minMintRounds} rds
+                {spec.caseType === "standard" ? "Std" : "Brass"}
               </div>
 
               {/* Selection hint */}

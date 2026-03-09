@@ -61,7 +61,7 @@ const faqItems: FaqItem[] = [
   {
     question: "Is there a minimum order?",
     answer:
-      "Yes — 50 rounds per caliber for minting. There is no minimum for trading tokens on secondary markets.",
+      "There is no minimum for minting or trading tokens. Redemption for physical delivery requires a minimum of 50 rounds per caliber.",
   },
   {
     question: "How does shipping work?",

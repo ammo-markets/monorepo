@@ -82,10 +82,6 @@ function CaliberCard({ caliber }: { caliber: MarketCaliberFromAPI }) {
             .toUpperCase() +
             CALIBER_SPECS[caliber.caliber as Caliber].caseType.slice(1)}
         </span>
-        <span aria-hidden="true">&middot;</span>
-        <span>
-          {CALIBER_SPECS[caliber.caliber as Caliber].minMintRounds} rd min
-        </span>
       </div>
 
       {/* Footer */}

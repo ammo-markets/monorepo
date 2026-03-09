@@ -61,7 +61,6 @@ export function TokenStats({ data }: TokenStatsProps) {
         />
         <StatCard label="Mint Fee" value={`${data.mintFee}%`} />
         <StatCard label="Redeem Fee" value={`${data.redeemFee}%`} />
-        <StatCard label="Min Mint" value={`${data.minMint} rounds`} />
       </div>
     </div>
   );
@@ -72,7 +71,7 @@ export function TokenStatsSkeleton() {
     <div>
       <div className="mb-4 h-4 w-24 rounded shimmer" />
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        {Array.from({ length: 5 }).map((_, i) => (
+        {Array.from({ length: 4 }).map((_, i) => (
           <div
             key={i}
             className="rounded-lg p-4"
