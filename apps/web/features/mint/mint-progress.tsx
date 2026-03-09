@@ -25,14 +25,23 @@ export function MintProgress({
 
   return (
     <nav aria-label="Mint progress" className="mb-8 md:mb-10">
-      <ol className="flex items-center justify-between">
+      {/* Grid: columns = step, connector, step, connector, step */}
+      <ol
+        className="grid items-center"
+        style={{
+          gridTemplateColumns: displaySteps
+            .map((_, i) =>
+              i < displaySteps.length - 1 ? "auto 1fr" : "auto",
+            )
+            .join(" "),
+        }}
+      >
         {displaySteps.map((step, i) => {
           const isCompleted = i < adjustedStep;
           const isCurrent = i === adjustedStep;
-          const isFuture = i > currentStep;
 
           return (
-            <li key={step.label} className="flex flex-1 items-center">
+            <li key={step.label} className="contents">
               {/* Step circle + label */}
               <div
                 className={`flex flex-col items-center gap-2${isCompleted && onStepClick ? " cursor-pointer" : ""}`}
@@ -45,9 +54,7 @@ export function MintProgress({
                   style={{
                     backgroundColor: isCompleted
                       ? "var(--brass)"
-                      : isCurrent
-                        ? "transparent"
-                        : "transparent",
+                      : "transparent",
                     border: isCompleted
                       ? "2px solid var(--brass)"
                       : isCurrent
@@ -63,12 +70,10 @@ export function MintProgress({
                   {isCompleted ? (
                     <Check size={14} strokeWidth={3} />
                   ) : isCurrent ? (
-                    <>
-                      <span
-                        className="absolute h-2.5 w-2.5 rounded-full animate-pulse"
-                        style={{ backgroundColor: "var(--brass)" }}
-                      />
-                    </>
+                    <span
+                      className="absolute h-2.5 w-2.5 rounded-full animate-pulse"
+                      style={{ backgroundColor: "var(--brass)" }}
+                    />
                   ) : (
                     <span className="font-mono">{i + 1}</span>
                   )}
@@ -90,7 +95,7 @@ export function MintProgress({
               {/* Connector line */}
               {i < displaySteps.length - 1 && (
                 <div
-                  className="mx-2 h-[2px] flex-1 rounded-full transition-colors duration-300"
+                  className="mx-2 h-[2px] rounded-full transition-colors duration-300"
                   style={{
                     backgroundColor: isCompleted
                       ? "var(--brass)"

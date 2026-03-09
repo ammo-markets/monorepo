@@ -118,17 +118,32 @@ function CardSkeleton() {
 function MobileCaliberCard({
   caliber,
   index,
+  isSelected,
+  onSelect,
 }: {
   caliber: MarketCaliberFromAPI;
   index: number;
+  isSelected?: boolean;
+  onSelect?: (caliber: Caliber) => void;
 }) {
   const router = useRouter();
   const IconComponent = caliberIcons[caliber.caliber as Caliber];
 
+  const handleClick = () => {
+    if (onSelect) {
+      onSelect(caliber.caliber as Caliber);
+    }
+  };
+
   return (
-    <Link
-      href={`/exchange?caliber=${caliber.caliber.toLowerCase()}`}
-      className="block cursor-pointer rounded-xl border border-border-default bg-ax-secondary p-4 transition-all duration-150 hover:border-brass-border"
+    <div
+      className="block cursor-pointer rounded-xl border p-4 transition-all duration-150"
+      style={{
+        backgroundColor: isSelected ? "var(--bg-tertiary)" : "var(--bg-secondary)",
+        borderColor: isSelected ? "var(--brass)" : "var(--border-default)",
+        borderLeftWidth: isSelected ? "3px" : "1px",
+      }}
+      onClick={onSelect ? handleClick : undefined}
     >
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -162,7 +177,6 @@ function MobileCaliberCard({
           >
             ${caliber.pricePerRound.toFixed(4)}
           </span>
-          <ChevronRight size={16} style={{ color: "var(--text-muted)" }} />
         </div>
       </div>
 
@@ -194,7 +208,6 @@ function MobileCaliberCard({
           }}
           onClick={(e) => {
             e.stopPropagation();
-            e.preventDefault();
             router.push(
               `/exchange?tab=mint&caliber=${caliber.caliber.toLowerCase()}`,
             );
@@ -203,7 +216,7 @@ function MobileCaliberCard({
           Mint
         </button>
       </div>
-    </Link>
+    </div>
   );
 }
 
@@ -223,7 +236,13 @@ function DataItem({ label, value }: { label: string; value: ReactNode }) {
 
 /* Main Table */
 
-export function MarketTable() {
+export function MarketTable({
+  selectedCaliber,
+  onSelectCaliber,
+}: {
+  selectedCaliber?: Caliber;
+  onSelectCaliber?: (caliber: Caliber) => void;
+} = {}) {
   const [sortKey, setSortKey] = useState<SortKey | null>(null);
   const [sortDir, setSortDir] = useState<SortDir>("desc");
   const { data: calibers = [], isLoading } = useMarketData();
@@ -337,6 +356,7 @@ export function MarketTable() {
             <tbody>
               {sorted.map((caliber, index) => {
                 const IconComponent = caliberIcons[caliber.caliber as Caliber];
+                const isSelected = selectedCaliber === caliber.caliber;
                 return (
                   <tr
                     key={caliber.caliber}
@@ -346,10 +366,22 @@ export function MarketTable() {
                         index < sorted.length - 1
                           ? "1px solid var(--border-default)"
                           : "none",
+                      backgroundColor: isSelected
+                        ? "var(--bg-tertiary)"
+                        : undefined,
+                      borderLeft: isSelected
+                        ? "3px solid var(--brass)"
+                        : "3px solid transparent",
                     }}
-                    onClick={() =>
-                      router.push(`/exchange?caliber=${caliber.caliber.toLowerCase()}`)
-                    }
+                    onClick={() => {
+                      if (onSelectCaliber) {
+                        onSelectCaliber(caliber.caliber as Caliber);
+                      } else {
+                        router.push(
+                          `/exchange?caliber=${caliber.caliber.toLowerCase()}`,
+                        );
+                      }
+                    }}
                   >
                     {/* # */}
                     <td className="px-4 py-4">
@@ -436,6 +468,8 @@ export function MarketTable() {
             key={caliber.caliber}
             caliber={caliber}
             index={index}
+            isSelected={selectedCaliber === caliber.caliber}
+            onSelect={onSelectCaliber}
           />
         ))}
       </div>

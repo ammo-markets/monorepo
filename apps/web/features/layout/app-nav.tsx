@@ -22,7 +22,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { label: "Mint / Redeem", href: "/exchange", icon: ArrowLeftRight },
   { label: "Portfolio", href: "/portfolio", icon: Wallet },
-  { label: "Calibers", href: "/calibers", icon: BarChart3 },
+  { label: "Market", href: "/market", icon: BarChart3 },
   { label: "Profile", href: "/profile", icon: User },
 ];
 

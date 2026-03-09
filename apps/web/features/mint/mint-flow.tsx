@@ -193,10 +193,7 @@ export function MintFlow({
   }, [mintTx, isEmbedded, preselected]);
 
   return (
-    <div
-      ref={containerRef}
-      className="mx-auto w-full max-w-[560px] px-4 py-8 md:py-12"
-    >
+    <div ref={containerRef} className="mx-auto w-full max-w-xl px-4 py-8 md:py-12">
       <MintProgress
         currentStep={step}
         isEmbedded={isEmbedded}

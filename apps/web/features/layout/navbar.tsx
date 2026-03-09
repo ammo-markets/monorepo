@@ -12,7 +12,7 @@ import { useKeeperCheck } from "@/hooks/use-keeper-check";
 import { useSiwe } from "@/hooks/use-siwe";
 
 const navLinks = [
-  { label: "Calibers", href: "/calibers" },
+  { label: "Market", href: "/market" },
   { label: "Mint", href: "/exchange?tab=mint" },
   { label: "Redeem", href: "/exchange?tab=redeem" },
   { label: "Portfolio", href: "/portfolio" },

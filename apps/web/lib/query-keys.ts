@@ -45,6 +45,8 @@ export const queryKeys = {
 
   market: {
     all: ["market"] as const,
+    history: (caliber: string, range: string) =>
+      ["market", "history", caliber, range] as const,
   },
 
   protocolStats: {

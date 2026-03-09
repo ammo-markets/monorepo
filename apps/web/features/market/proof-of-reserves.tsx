@@ -60,37 +60,13 @@ export function ProofOfReserves() {
           </div>
         </div>
 
-        {/* Right: stats */}
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs" style={{ color: "var(--text-secondary)" }}>
-          <span>
-            Total warehouse:{" "}
-            <span className="font-mono font-medium" style={{ color: "var(--text-primary)" }}>
-              5,580,000 rounds
-            </span>
+        {/* Right: badge */}
+        <span className="flex items-center gap-1 text-xs">
+          <CheckCircle2 size={14} style={{ color: "var(--green)" }} />
+          <span className="font-medium" style={{ color: "var(--green)" }}>
+            Fully backed
           </span>
-          <span
-            className="hidden h-3 w-px lg:block"
-            style={{ backgroundColor: "var(--border-hover)" }}
-            aria-hidden="true"
-          />
-          <span>
-            Total supply:{" "}
-            <span className="font-mono font-medium" style={{ color: "var(--text-primary)" }}>
-              5,580,000 tokens
-            </span>
-          </span>
-          <span
-            className="hidden h-3 w-px lg:block"
-            style={{ backgroundColor: "var(--border-hover)" }}
-            aria-hidden="true"
-          />
-          <span className="flex items-center gap-1">
-            <CheckCircle2 size={14} style={{ color: "var(--green)" }} />
-            <span className="font-medium" style={{ color: "var(--green)" }}>
-              Fully backed
-            </span>
-          </span>
-        </div>
+        </span>
       </div>
     </div>
   );
