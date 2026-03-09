@@ -182,14 +182,29 @@ export function FinalizeRedeemDialog({
               {formatTokenAmount(order.tokenAmount ?? "0")} rounds
             </span>
           </div>
-          <div className="flex justify-between">
-            <span style={{ color: "var(--text-secondary)" }}>Shipping</span>
-            <span style={{ color: "var(--text-primary)" }}>
-              {order.shippingAddress
-                ? `${order.shippingAddress.city}, ${order.shippingAddress.state}`
-                : "None"}
-            </span>
-          </div>
+          {order.shippingAddress ? (
+            <div>
+              <span className="text-xs" style={{ color: "var(--text-secondary)" }}>Ship To</span>
+              <div
+                className="mt-1 rounded-lg border p-3 text-xs leading-relaxed"
+                style={{
+                  borderColor: "var(--border-default)",
+                  backgroundColor: "var(--bg-secondary)",
+                  color: "var(--text-primary)",
+                }}
+              >
+                <p className="font-medium">{order.shippingAddress.name}</p>
+                <p>{order.shippingAddress.line1}</p>
+                {order.shippingAddress.line2 && <p>{order.shippingAddress.line2}</p>}
+                <p>{order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.zip}</p>
+              </div>
+            </div>
+          ) : (
+            <div className="flex justify-between">
+              <span style={{ color: "var(--text-secondary)" }}>Shipping</span>
+              <span style={{ color: "var(--text-primary)" }}>None</span>
+            </div>
+          )}
         </div>
 
         {hash && (
