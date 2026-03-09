@@ -154,10 +154,10 @@ export function StepReview({
                 style={{ color: "var(--text-muted)" }}
               >
                 <Clock size={14} />
-                Processing time
+                Settlement
               </span>
-              <span className="font-medium" style={{ color: "var(--amber)" }}>
-                24-48 hours
+              <span className="font-medium" style={{ color: "var(--green)" }}>
+                Instant
               </span>
             </div>
           </div>

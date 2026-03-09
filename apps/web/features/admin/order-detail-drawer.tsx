@@ -523,8 +523,8 @@ export function OrderDetailDrawer({
             </div>
           </div>
 
-          {/* Footer actions */}
-          {isPending && (
+          {/* Footer actions — only for REDEEM orders (mints are instant, no admin action needed) */}
+          {isPending && type === "REDEEM" && (
             <SheetFooter
               className="flex-row gap-3 border-t"
               style={{ borderColor: "var(--border-default)" }}
@@ -547,7 +547,7 @@ export function OrderDetailDrawer({
                 onClick={() => setRejectOpen(true)}
                 className="flex-1 rounded-lg bg-red-900/30 px-4 py-2 text-sm font-medium text-red-400 transition-colors hover:bg-red-900/50 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {type === "MINT" ? "Reject" : "Cancel"}
+                Cancel
               </button>
             </SheetFooter>
           )}

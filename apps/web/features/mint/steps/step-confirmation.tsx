@@ -78,11 +78,10 @@ export function StepConfirmation({
         className="mb-1 font-display text-2xl font-bold uppercase"
         style={{ color: "var(--brass)" }}
       >
-        Mint Order Submitted!
+        Mint Complete!
       </h2>
       <p className="mb-6 text-sm" style={{ color: "var(--text-secondary)" }}>
-        Your tokens will be delivered to your wallet once the order is
-        processed.
+        Your tokens have been minted to your wallet.
       </p>
 
       {/* Order details card */}
@@ -147,26 +146,15 @@ export function StepConfirmation({
             )}
           </div>
           <div className="flex justify-between">
-            <span style={{ color: "var(--text-muted)" }}>
-              Estimated delivery
-            </span>
-            <span
-              className="font-medium"
-              style={{ color: "var(--text-primary)" }}
-            >
-              24-48 hours
-            </span>
-          </div>
-          <div className="flex justify-between">
             <span style={{ color: "var(--text-muted)" }}>Status</span>
             <span
               className="rounded-full px-2.5 py-0.5 text-xs font-semibold"
               style={{
-                backgroundColor: "rgba(243, 156, 18, 0.15)",
-                color: "var(--amber)",
+                backgroundColor: "rgba(46, 204, 113, 0.15)",
+                color: "var(--green)",
               }}
             >
-              Pending
+              Completed
             </span>
           </div>
         </div>
