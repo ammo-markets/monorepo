@@ -1,18 +1,13 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import { Copy, Check, Wallet, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import { useSaveProfile } from "@/hooks/use-save-profile";
 import { useProfile } from "@/hooks/use-profile";
 import { ConnectWalletCTA } from "@/features/shared/connect-wallet-cta";
-import type { KycFormData } from "@/features/redeem/kyc-form";
-import { useKycStatus, useKycSubmit } from "@/hooks/use-kyc";
-import { queryKeys } from "@/lib/query-keys";
 import type { AddressForm } from "./profile-constants";
-import { getKycBadge, emptyForm, profileToForm } from "./profile-constants";
-import { KycSection } from "./kyc-section";
+import { emptyForm, profileToForm } from "./profile-constants";
 import { AddressSection } from "./address-section";
 
 export default function ProfilePage() {
@@ -22,22 +17,6 @@ export default function ProfilePage() {
     isPending: saving,
     error: saveError,
   } = useSaveProfile<AddressForm>();
-
-  const queryClient = useQueryClient();
-
-  // KYC hooks
-  const { data: kycData, isLoading: kycLoading } = useKycStatus(
-    isSignedIn ? "connected" : undefined,
-  );
-  const { mutateAsync: submitKyc, isPending: kycSubmitting } = useKycSubmit();
-
-  const handleKycSubmit = useCallback(
-    async (data: KycFormData) => {
-      await submitKyc(data);
-      queryClient.invalidateQueries({ queryKey: queryKeys.profile.all });
-    },
-    [submitKyc, queryClient],
-  );
 
   const [copied, setCopied] = useState(false);
 
@@ -99,7 +78,7 @@ export default function ProfilePage() {
     return (
       <ConnectWalletCTA
         title="Connect your wallet to view your profile"
-        description="Sign in with your wallet to manage your account settings, shipping address, and verification status."
+        description="Sign in with your wallet to manage your account settings and shipping address."
       />
     );
   }
@@ -107,12 +86,6 @@ export default function ProfilePage() {
   if (!profile) {
     return null;
   }
-
-  /* ── Derived ── */
-
-  const effectiveKycStatus = kycData?.kycStatus ?? profile.kycStatus;
-  const kycPrefill = kycData?.kycPrefill;
-  const badge = getKycBadge(effectiveKycStatus);
 
   /* ── Render ── */
 
@@ -168,18 +141,7 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* ── Section B: KYC Status ── */}
-        <KycSection
-          effectiveKycStatus={effectiveKycStatus}
-          badge={badge}
-          onKycSubmit={handleKycSubmit}
-          kycSubmitting={kycSubmitting}
-          kycPrefill={kycPrefill}
-          rejectionReason={kycData?.rejectionReason}
-          submittedAt={kycData?.submittedAt}
-        />
-
-        {/* ── Section C: Shipping Address ── */}
+        {/* ── Section B: Shipping Address ── */}
         <AddressSection
           profile={profile}
           editing={editing}

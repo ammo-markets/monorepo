@@ -7,14 +7,12 @@ import { buildAllCaliberDetails } from "@/lib/caliber-utils";
 import { RedeemProgress } from "./redeem-progress";
 import type { RedeemTxStatus } from "@/hooks/use-tx-status";
 import { useTxStatus } from "@/hooks/use-tx-status";
-import type { KycFormData } from "./kyc-form";
 
 import { useWallet } from "@/hooks/use-wallet";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useRedeemTransaction } from "@/hooks/use-redeem-transaction";
 import { useAllowance } from "@/hooks/use-allowance";
 import { useTokenBalances } from "@/hooks/use-token-balances";
-import { useKycStatus, useKycSubmit } from "@/hooks/use-kyc";
 import { toast } from "sonner";
 import { parseContractError } from "@/lib/errors";
 import { getDeadline, parseTokenAmount } from "@/lib/tx-utils";
@@ -28,7 +26,6 @@ import { usePendingOrders } from "@/hooks/use-pending-orders";
 import { StepCompose } from "./steps/step-compose";
 import { StepReviewAndConfirm } from "./steps/step-review-and-confirm";
 import { StepShipping, type ShippingAddress } from "./steps/step-shipping";
-import { StepKyc } from "./steps/step-kyc";
 import { StepConfirmation } from "./steps/step-confirmation";
 
 export function RedeemFlow({
@@ -53,7 +50,7 @@ export function RedeemFlow({
     return buildAllCaliberDetails(marketCalibers);
   }, [marketCalibers]);
 
-  // Steps: 0 = Compose, 1 = Review, 2 = Shipping (Side), 3 = KYC (Side), 4 = Confirmation
+  // Steps: 0 = Compose, 1 = Review, 2 = Shipping (Side), 3 = Confirmation
   const [step, setStep] = useState(0);
   const [selectedCaliber, setSelectedCaliber] = useState<Caliber | null>(() => {
     if (preselected) return preselected;
@@ -109,21 +106,6 @@ export function RedeemFlow({
   }, [profile]);
 
   const [ageVerified, setAgeVerified] = useState(false);
-
-  // ── KYC hooks ──
-  const { data: kycData, isLoading: kycLoading } = useKycStatus(wallet.address);
-  const kycStatus = kycData?.kycStatus ?? "NONE";
-  const kycPrefill = kycData?.kycPrefill;
-  const { mutateAsync: submitKyc, isPending: kycSubmitting } = useKycSubmit();
-
-  const handleKycSubmit = useCallback(
-    async (data: KycFormData) => {
-      await submitKyc(data);
-      // Wait briefly then go back to review
-      setTimeout(() => setStep(1), 1500);
-    },
-    [submitKyc],
-  );
 
   const tokenAddress = contracts.calibers[activeCaliber].token;
   const marketAddress = contracts.calibers[activeCaliber].market;
@@ -186,7 +168,7 @@ export function RedeemFlow({
   // ── Auto-advance to confirmation when redeem confirmed ──
   useEffect(() => {
     if (redeemTx.isRedeemConfirmed) {
-      setStep(4);
+      setStep(3);
       toast.success(`Redeemed ${activeCaliber} tokens`);
       if (redeemTx.redeemHash) {
         addPendingOrder({
@@ -245,15 +227,12 @@ export function RedeemFlow({
 
   // Visual Step computation for progress bar
   // 0 -> Compose (1)
-  // 1, 2, 3 -> Review (2)
-  // 4 -> Confirm (3)
-  const visualStep = step === 0 ? 0 : step === 4 ? 2 : 1;
+  // 1, 2 -> Review (2)
+  // 3 -> Confirm (3)
+  const visualStep = step === 0 ? 0 : step === 3 ? 2 : 1;
 
   return (
-    <div
-      ref={containerRef}
-      className="mx-auto w-full max-w-[560px] px-4 py-8 md:py-12"
-    >
+    <div ref={containerRef} className="mx-auto w-full max-w-xl px-4 py-8 md:py-12">
       <RedeemProgress
         currentStep={visualStep}
         isEmbedded={isEmbedded}
@@ -300,7 +279,6 @@ export function RedeemFlow({
           roundsAmount={roundsAmount}
           address={localAddress}
           hasAddress={hasAddress}
-          kycStatus={kycStatus}
           deadlineHours={deadlineHours}
           txStatus={txStatus}
           errorMessage={errorMessage}
@@ -312,7 +290,6 @@ export function RedeemFlow({
           onRetry={handleRetry}
           onBack={() => setStep(0)}
           onGoToShipping={() => setStep(2)}
-          onGoToKyc={() => setStep(3)}
         />
       )}
 
@@ -331,23 +308,7 @@ export function RedeemFlow({
         />
       )}
 
-      {step === 3 && (
-        <StepKyc
-          kycStatus={kycStatus}
-          kycLoading={kycSubmitting}
-          onSubmit={handleKycSubmit}
-          kycPrefill={kycPrefill}
-          onSaveDraft={() => {
-            window.location.href = "/portfolio";
-          }}
-          onGoPortfolio={() => {
-            window.location.href = "/portfolio";
-          }}
-          onBack={() => setStep(1)}
-        />
-      )}
-
-      {step === 4 && caliber && (
+      {step === 3 && caliber && (
         <StepConfirmation
           caliber={caliber}
           roundsAmount={roundsAmount}

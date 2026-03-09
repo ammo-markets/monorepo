@@ -41,12 +41,12 @@ const faqItems: FaqItem[] = [
   {
     question: "Who can mint and trade?",
     answer:
-      "Anyone with USDT and an Avalanche wallet can mint tokens. No KYC is required for minting or trading on decentralized exchanges. International users can hold and trade tokens freely.",
+      "Anyone with USDT and an Avalanche wallet can mint tokens. No identity verification is required for minting or trading on decentralized exchanges. International users can hold and trade tokens freely.",
   },
   {
     question: "Who can redeem for physical ammo?",
     answer:
-      "Only verified U.S. residents in eligible states. KYC and age verification are required — 18+ for rifle ammo, 21+ for handgun ammo. Restricted states: CA, NY, IL, DC, and NJ.",
+      "U.S. residents in eligible states with a valid shipping address. Age requirements: 18+ for rifle ammo, 21+ for handgun ammo. Restricted states: CA, NY, IL, DC, and NJ.",
   },
   {
     question: "What are the fees?",

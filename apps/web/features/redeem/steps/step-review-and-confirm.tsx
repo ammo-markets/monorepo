@@ -2,8 +2,6 @@ import {
   ArrowLeft,
   Lock,
   Wallet,
-  MapPin,
-  Truck,
   CheckCircle2,
   AlertCircle,
 } from "lucide-react";
@@ -19,7 +17,6 @@ export function StepReviewAndConfirm({
   roundsAmount,
   address,
   hasAddress,
-  kycStatus,
   deadlineHours,
   txStatus,
   errorMessage,
@@ -31,13 +28,11 @@ export function StepReviewAndConfirm({
   onRetry,
   onBack,
   onGoToShipping,
-  onGoToKyc,
 }: {
   caliber: CaliberDetailData;
   roundsAmount: string;
   address: ShippingAddress;
   hasAddress: boolean;
-  kycStatus: string;
   deadlineHours: number;
   txStatus: RedeemTxStatus;
   errorMessage: string;
@@ -49,15 +44,13 @@ export function StepReviewAndConfirm({
   onRetry: () => void;
   onBack: () => void;
   onGoToShipping: () => void;
-  onGoToKyc: () => void;
 }) {
   const Icon = caliberIcons[caliber.id];
   const rounds = Number.parseInt(roundsAmount) || 0;
   const fee = Math.ceil(rounds * (FEES.REDEEM_FEE_BPS / FEES.BPS_DENOMINATOR));
   const netRounds = rounds - fee;
 
-  const kycApproved = kycStatus === "APPROVED";
-  const canProceed = isConnected && kycApproved && hasAddress;
+  const canProceed = isConnected && hasAddress;
 
   return (
     <div>
@@ -166,48 +159,6 @@ export function StepReviewAndConfirm({
           Requirements
         </h3>
         <div className="flex flex-col gap-2">
-          {/* Identity Verification */}
-          <div
-            className="flex items-center justify-between p-3 rounded-lg border border-border-default"
-            style={{ backgroundColor: "var(--bg-tertiary)" }}
-          >
-            <div className="flex items-center gap-3">
-              {kycApproved ? (
-                <CheckCircle2 size={18} className="text-green-500" />
-              ) : (
-                <AlertCircle size={18} className="text-ammo-amber" />
-              )}
-              <div className="flex flex-col">
-                <span
-                  className="text-sm font-medium"
-                  style={{ color: "var(--text-primary)" }}
-                >
-                  Identity Verification
-                </span>
-                <span
-                  className="text-xs"
-                  style={{ color: "var(--text-secondary)" }}
-                >
-                  {kycApproved
-                    ? "Verified"
-                    : kycStatus === "PENDING"
-                      ? "Review in progress"
-                      : "Required by federal law"}
-                </span>
-              </div>
-            </div>
-            {!kycApproved && (
-              <button
-                type="button"
-                onClick={onGoToKyc}
-                className="text-xs font-semibold px-3 py-1.5 rounded-md border border-border-hover transition-colors hover:bg-bg-secondary"
-                style={{ color: "var(--text-primary)" }}
-              >
-                {kycStatus === "PENDING" ? "View Status" : "Verify"}
-              </button>
-            )}
-          </div>
-
           {/* Shipping Address */}
           <div
             className="flex items-center justify-between p-3 rounded-lg border border-border-default"

@@ -28,13 +28,24 @@ export function RedeemProgress({
 
   return (
     <nav aria-label="Redeem progress" className="mb-8 md:mb-10">
-      <ol className="flex items-center justify-between">
+      {/* Grid: columns = step, connector, step, connector, step */}
+      <ol
+        className="grid items-center"
+        style={{
+          gridTemplateColumns: displaySteps
+            .map((_, i) =>
+              i < displaySteps.length - 1 ? "auto 1fr" : "auto",
+            )
+            .join(" "),
+        }}
+      >
         {displaySteps.map((step, i) => {
           const isCompleted = i < currentStep;
           const isCurrent = i === currentStep;
 
           return (
-            <li key={step.label} className="flex flex-1 items-center">
+            <li key={step.label} className="contents">
+              {/* Step circle + label */}
               <div
                 className={`flex flex-col items-center gap-2${isCompleted && onStepClick ? " cursor-pointer" : ""}`}
                 onClick={
@@ -84,9 +95,10 @@ export function RedeemProgress({
                 </span>
               </div>
 
+              {/* Connector line */}
               {i < displaySteps.length - 1 && (
                 <div
-                  className="mx-1.5 h-[2px] flex-1 rounded-full transition-colors duration-300 sm:mx-2"
+                  className="mx-2 h-[2px] rounded-full transition-colors duration-300"
                   style={{
                     backgroundColor: isCompleted
                       ? "var(--brass)"

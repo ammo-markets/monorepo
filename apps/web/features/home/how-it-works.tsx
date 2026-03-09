@@ -238,7 +238,7 @@ const steps = [
     number: "02",
     title: "Trade",
     description:
-      "Trade tokens on decentralized exchanges. Speculate on ammo price movements. No KYC required for trading.",
+      "Trade tokens on decentralized exchanges. Speculate on ammo price movements. No identity verification required for trading.",
     illustration: TradeIllustration,
   },
   {

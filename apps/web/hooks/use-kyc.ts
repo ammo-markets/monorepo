@@ -1,6 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
-import type { KycFormData } from "@/features/redeem/kyc-form";
+
+export interface KycFormData {
+  fullName: string;
+  dateOfBirth: string;
+  state: string;
+  govIdType: string;
+  govIdNumber: string;
+}
 
 interface KycPrefill {
   fullName: string | null;
