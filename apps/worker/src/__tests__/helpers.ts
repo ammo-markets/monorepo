@@ -190,8 +190,7 @@ export function buildRedeemFinalizedArgs(
   return {
     orderId: 1n,
     user: DEFAULT_USER,
-    burnedTokens: 49_250_000_000_000_000_000n, // 49.25 tokens after fee
-    feeTokens: 750_000_000_000_000_000n, // 0.75 tokens fee
+    burnedTokens: 50_000_000_000_000_000_000n, // 50 tokens (all burned, fees paid in USDT)
     ...overrides,
   };
 }

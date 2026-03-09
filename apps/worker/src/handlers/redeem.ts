@@ -16,11 +16,24 @@ export interface RedeemRequestedArgs {
   deadline: bigint;
 }
 
+export interface RedeemApprovedArgs {
+  orderId: bigint;
+  user: `0x${string}`;
+  shippingCost: bigint;
+  protocolFee: bigint;
+}
+
+export interface RedeemPaidArgs {
+  orderId: bigint;
+  user: `0x${string}`;
+  shippingCost: bigint;
+  protocolFee: bigint;
+}
+
 export interface RedeemFinalizedArgs {
   orderId: bigint;
   user: `0x${string}`;
   burnedTokens: bigint;
-  feeTokens: bigint;
 }
 
 // ── Handlers ────────────────────────────────────────────────────────
@@ -119,7 +132,68 @@ export async function handleRedeemRequested(
 }
 
 /**
- * Handle a RedeemFinalized event by updating the matching PENDING REDEEM order
+ * Handle a RedeemApproved event by updating the matching PENDING REDEEM order
+ * to APPROVED status with shipping cost and protocol fee.
+ */
+export async function handleRedeemApproved(
+  tx: PrismaTx,
+  args: RedeemApprovedArgs,
+  meta: EventMeta,
+): Promise<void> {
+  const caliber = addressToCaliber(meta.address);
+  const prismaCaliber = CALIBER_TO_PRISMA[caliber] as PrismaCaliber;
+
+  await tx.order.updateMany({
+    where: {
+      onChainOrderId: args.orderId.toString(),
+      caliber: prismaCaliber,
+      type: "REDEEM",
+      status: { in: ["PENDING", "APPROVED"] },
+    },
+    data: {
+      status: "APPROVED",
+      shippingCost: args.shippingCost.toString(),
+      protocolFee: args.protocolFee.toString(),
+    },
+  });
+
+  console.log(
+    `[redeem] RedeemApproved orderId=${args.orderId} shipping=${args.shippingCost} fee=${args.protocolFee}`,
+  );
+}
+
+/**
+ * Handle a RedeemPaid event by updating the matching APPROVED REDEEM order
+ * to PAID status with the payment timestamp.
+ */
+export async function handleRedeemPaid(
+  tx: PrismaTx,
+  args: RedeemPaidArgs,
+  meta: EventMeta,
+): Promise<void> {
+  const caliber = addressToCaliber(meta.address);
+  const prismaCaliber = CALIBER_TO_PRISMA[caliber] as PrismaCaliber;
+
+  await tx.order.updateMany({
+    where: {
+      onChainOrderId: args.orderId.toString(),
+      caliber: prismaCaliber,
+      type: "REDEEM",
+      status: { in: ["APPROVED", "PAID"] },
+    },
+    data: {
+      status: "PAID",
+      paidAt: meta.blockTimestamp,
+    },
+  });
+
+  console.log(
+    `[redeem] RedeemPaid orderId=${args.orderId} shipping=${args.shippingCost} fee=${args.protocolFee}`,
+  );
+}
+
+/**
+ * Handle a RedeemFinalized event by updating the matching PAID REDEEM order
  * to COMPLETED status with final burned token amount.
  *
  * Uses updateMany because onChainOrderId is not a unique field --
@@ -141,7 +215,7 @@ export async function handleRedeemFinalized(
       onChainOrderId: args.orderId.toString(),
       caliber: prismaCaliber,
       type: "REDEEM",
-      status: { in: ["PENDING", "COMPLETED"] },
+      status: { in: ["PAID", "PENDING", "APPROVED", "COMPLETED"] },
     },
     data: {
       status: "COMPLETED",

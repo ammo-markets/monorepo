@@ -13,10 +13,14 @@ import { handleMinted } from "./handlers/mint";
 import type { MintedArgs } from "./handlers/mint";
 import {
   handleRedeemRequested,
+  handleRedeemApproved,
+  handleRedeemPaid,
   handleRedeemFinalized,
 } from "./handlers/redeem";
 import type {
   RedeemRequestedArgs,
+  RedeemApprovedArgs,
+  RedeemPaidArgs,
   RedeemFinalizedArgs,
 } from "./handlers/redeem";
 import { handleRedeemCanceled } from "./handlers/refund";
@@ -26,7 +30,7 @@ import {
   handleUnpaused,
   handleMintFeeUpdated,
   handleRedeemFeeUpdated,
-  handleMinMintUpdated,
+  handleMinRedeemUpdated,
 } from "./handlers/lifecycle";
 import { prisma } from "@ammo-exchange/db";
 import { CaliberMarketAbi } from "@ammo-exchange/contracts";
@@ -41,13 +45,15 @@ async function fetchEvents(fromBlock: bigint, toBlock: bigint) {
   const [
     minted,
     redeemRequested,
+    redeemApproved,
+    redeemPaid,
     redeemFinalized,
     redeemCanceled,
     paused,
     unpaused,
     mintFeeUpdated,
     redeemFeeUpdated,
-    minMintUpdated,
+    minRedeemUpdated,
   ] = await Promise.all([
     client.getContractEvents({
       abi: CaliberMarketAbi,
@@ -61,6 +67,22 @@ async function fetchEvents(fromBlock: bigint, toBlock: bigint) {
       abi: CaliberMarketAbi,
       address: MARKET_ADDRESSES,
       eventName: "RedeemRequested",
+      fromBlock,
+      toBlock,
+      strict: true,
+    }),
+    client.getContractEvents({
+      abi: CaliberMarketAbi,
+      address: MARKET_ADDRESSES,
+      eventName: "RedeemApproved",
+      fromBlock,
+      toBlock,
+      strict: true,
+    }),
+    client.getContractEvents({
+      abi: CaliberMarketAbi,
+      address: MARKET_ADDRESSES,
+      eventName: "RedeemPaid",
       fromBlock,
       toBlock,
       strict: true,
@@ -116,7 +138,7 @@ async function fetchEvents(fromBlock: bigint, toBlock: bigint) {
     client.getContractEvents({
       abi: CaliberMarketAbi,
       address: MARKET_ADDRESSES,
-      eventName: "MinMintUpdated",
+      eventName: "MinRedeemUpdated",
       fromBlock,
       toBlock,
       strict: true,
@@ -126,13 +148,15 @@ async function fetchEvents(fromBlock: bigint, toBlock: bigint) {
   return {
     minted,
     redeemRequested,
+    redeemApproved,
+    redeemPaid,
     redeemFinalized,
     redeemCanceled,
     paused,
     unpaused,
     mintFeeUpdated,
     redeemFeeUpdated,
-    minMintUpdated,
+    minRedeemUpdated,
   };
 }
 
@@ -159,6 +183,14 @@ async function processAndCommit(
       ...e,
       eventName: "RedeemRequested" as const,
     })),
+    ...events.redeemApproved.map((e) => ({
+      ...e,
+      eventName: "RedeemApproved" as const,
+    })),
+    ...events.redeemPaid.map((e) => ({
+      ...e,
+      eventName: "RedeemPaid" as const,
+    })),
     ...events.redeemFinalized.map((e) => ({
       ...e,
       eventName: "RedeemFinalized" as const,
@@ -177,9 +209,9 @@ async function processAndCommit(
       ...e,
       eventName: "RedeemFeeUpdated" as const,
     })),
-    ...events.minMintUpdated.map((e) => ({
+    ...events.minRedeemUpdated.map((e) => ({
       ...e,
-      eventName: "MinMintUpdated" as const,
+      eventName: "MinRedeemUpdated" as const,
     })),
   ];
 
@@ -225,6 +257,20 @@ async function processAndCommit(
               meta,
             );
             break;
+          case "RedeemApproved":
+            await handleRedeemApproved(
+              tx,
+              event.args as unknown as RedeemApprovedArgs,
+              meta,
+            );
+            break;
+          case "RedeemPaid":
+            await handleRedeemPaid(
+              tx,
+              event.args as unknown as RedeemPaidArgs,
+              meta,
+            );
+            break;
           case "RedeemFinalized":
             await handleRedeemFinalized(
               tx,
@@ -240,29 +286,29 @@ async function processAndCommit(
             );
             break;
           case "Paused":
-            handlePaused(meta, event.args as unknown as { by: `0x${string}` });
+            await handlePaused(tx, meta, event.args as unknown as { by: `0x${string}` });
             break;
           case "Unpaused":
-            handleUnpaused(
-              meta,
+            await handleUnpaused(
+              tx, meta,
               event.args as unknown as { by: `0x${string}` },
             );
             break;
           case "MintFeeUpdated":
-            handleMintFeeUpdated(
-              meta,
+            await handleMintFeeUpdated(
+              tx, meta,
               event.args as unknown as { oldBps: bigint; newBps: bigint },
             );
             break;
           case "RedeemFeeUpdated":
-            handleRedeemFeeUpdated(
-              meta,
+            await handleRedeemFeeUpdated(
+              tx, meta,
               event.args as unknown as { oldBps: bigint; newBps: bigint },
             );
             break;
-          case "MinMintUpdated":
-            handleMinMintUpdated(
-              meta,
+          case "MinRedeemUpdated":
+            await handleMinRedeemUpdated(
+              tx, meta,
               event.args as unknown as { oldMin: bigint; newMin: bigint },
             );
             break;
@@ -332,13 +378,15 @@ export async function pollOnce(): Promise<void> {
     const totalEvents =
       events.minted.length +
       events.redeemRequested.length +
+      events.redeemApproved.length +
+      events.redeemPaid.length +
       events.redeemFinalized.length +
       events.redeemCanceled.length +
       events.paused.length +
       events.unpaused.length +
       events.mintFeeUpdated.length +
       events.redeemFeeUpdated.length +
-      events.minMintUpdated.length;
+      events.minRedeemUpdated.length;
 
     if (totalEvents > 0) {
       await processAndCommit(events, batchEnd);

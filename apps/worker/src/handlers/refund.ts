@@ -35,7 +35,7 @@ export async function handleRedeemCanceled(
       onChainOrderId: args.orderId.toString(),
       caliber: prismaCaliber,
       type: "REDEEM",
-      status: { in: ["PENDING", "CANCELLED"] },
+      status: { in: ["PENDING", "APPROVED", "CANCELLED"] },
     },
     data: {
       status: "CANCELLED",
