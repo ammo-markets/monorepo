@@ -114,7 +114,7 @@ export function StepReviewAndConfirm({
             </div>
             <div className="flex justify-between">
               <span style={{ color: "var(--text-muted)" }}>
-                Redeem fee (1.5%)
+                Redeem fee ({FEES.REDEEM_FEE_BPS / 100}%)
               </span>
               <span
                 className="font-mono tabular-nums"

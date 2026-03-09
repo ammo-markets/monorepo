@@ -10,8 +10,7 @@ export interface CaliberDetailData {
   price: number; // oracle price per round (from /api/market)
   totalSupply: string; // from on-chain totalSupply read (BigInt-safe string)
   mintFee: number; // percentage (1.5)
-  redeemFee: number; // percentage (1.5)
-  minMint: number; // from CALIBER_SPECS
+  redeemFee: number; // percentage
   minRedeem: number; // from CALIBER_SPECS
 }
 
@@ -20,7 +19,14 @@ export interface CaliberDetailData {
 export interface OrderFromAPI {
   id: string;
   type: "MINT" | "REDEEM";
-  status: "PENDING" | "PROCESSING" | "COMPLETED" | "FAILED" | "CANCELLED";
+  status:
+    | "PENDING"
+    | "APPROVED"
+    | "PAID"
+    | "PROCESSING"
+    | "COMPLETED"
+    | "FAILED"
+    | "CANCELLED";
   caliber: Caliber;
   usdcAmount: string | null;
   tokenAmount: string | null;
@@ -31,6 +37,10 @@ export interface OrderFromAPI {
   mintPrice: string | null;
   refundAmount: string | null;
   feeAmount: string | null;
+  shippingCost: string | null;
+  protocolFee: string | null;
+  trackingId: string | null;
+  paidAt: string | null;
   createdAt: string; // ISO date string
   updatedAt: string; // ISO date string
   shippingAddress: {

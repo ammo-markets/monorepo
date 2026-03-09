@@ -7,6 +7,8 @@ import { requireKeeper } from "@/lib/auth";
 
 const VALID_STATUSES = new Set([
   "PENDING",
+  "APPROVED",
+  "PAID",
   "PROCESSING",
   "COMPLETED",
   "FAILED",

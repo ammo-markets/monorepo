@@ -309,7 +309,7 @@ export function StepCompose({
                   className="text-xs"
                   style={{ color: "var(--text-muted)" }}
                 >
-                  Fee (1.5%): -{fee}
+                  Fee ({FEES.REDEEM_FEE_BPS / 100}%): -{fee}
                 </span>
               </div>
             </div>

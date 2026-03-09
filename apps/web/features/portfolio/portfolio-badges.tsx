@@ -5,6 +5,8 @@ export type DisplayStatus = "Processing" | "Completed" | "Failed";
 export function mapOrderStatus(status: OrderFromAPI["status"]): DisplayStatus {
   switch (status) {
     case "PENDING":
+    case "APPROVED":
+    case "PAID":
     case "PROCESSING":
       return "Processing";
     case "COMPLETED":

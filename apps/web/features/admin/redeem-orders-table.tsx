@@ -19,6 +19,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { FinalizeRedeemDialog } from "./finalize-redeem-dialog";
+import { ApproveRedeemDialog } from "./approve-redeem-dialog";
 import { CancelRedeemDialog } from "./cancel-redeem-dialog";
 import { OrderDetailDrawer } from "./order-detail-drawer";
 import type { AdminRedeemOrder } from "./finalize-redeem-dialog";
@@ -63,6 +64,8 @@ function formatTokenAmount(amount: string): string {
 function StatusBadge({ status }: { status: string }) {
   const styles: Record<string, string> = {
     PENDING: "bg-yellow-900/30 text-yellow-400 border-yellow-800",
+    APPROVED: "bg-blue-900/30 text-blue-400 border-blue-800",
+    PAID: "bg-purple-900/30 text-purple-400 border-purple-800",
     PROCESSING: "bg-blue-900/30 text-blue-400 border-blue-800",
     COMPLETED: "bg-green-900/30 text-green-400 border-green-800",
     FAILED: "bg-red-900/30 text-red-400 border-red-800",
@@ -116,6 +119,8 @@ export function RedeemOrdersTable() {
     null,
   );
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [approveOrder, setApproveOrder] = useState<AdminRedeemOrder | null>(null);
+  const [approveDialogOpen, setApproveDialogOpen] = useState(false);
   const [cancelOrder, setCancelOrder] = useState<AdminRedeemOrder | null>(null);
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
 
@@ -154,6 +159,13 @@ export function RedeemOrdersTable() {
   const total = data?.total ?? 0;
 
   const handleFinalized = useCallback(
+    (_orderId: string) => {
+      void refetch();
+    },
+    [refetch],
+  );
+
+  const handleApproved = useCallback(
     (_orderId: string) => {
       void refetch();
     },
@@ -371,6 +383,7 @@ export function RedeemOrdersTable() {
                       })}
                     </td>
                     <td className="px-4 py-3">
+                      {/* PENDING → Approve or Cancel */}
                       {order.status === "PENDING" && (
                         <div className="flex gap-2">
                           {(() => {
@@ -385,8 +398,8 @@ export function RedeemOrdersTable() {
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   if (isBlocked) return;
-                                  setSelectedOrder(order);
-                                  setDialogOpen(true);
+                                  setApproveOrder(order);
+                                  setApproveDialogOpen(true);
                                 }}
                                 className="rounded-md px-3 py-1 text-xs font-medium transition-colors hover:bg-brass-hover disabled:cursor-not-allowed disabled:opacity-50"
                                 style={{
@@ -394,7 +407,7 @@ export function RedeemOrdersTable() {
                                   color: "var(--bg-primary)",
                                 }}
                               >
-                                Finalize
+                                Approve
                               </button>
                             );
 
@@ -420,7 +433,7 @@ export function RedeemOrdersTable() {
                                     }
                                   >
                                     <p className="mb-1 font-medium text-red-400">
-                                      Cannot finalize
+                                      Cannot approve
                                     </p>
                                     <ul className="space-y-0.5 text-xs text-text-secondary">
                                       {blockReasons.map((reason) => (
@@ -448,6 +461,48 @@ export function RedeemOrdersTable() {
                             className="rounded-md bg-red-900/30 px-3 py-1 text-xs font-medium text-red-400 transition-colors hover:bg-red-900/50 disabled:cursor-not-allowed disabled:opacity-50"
                           >
                             Cancel
+                          </button>
+                        </div>
+                      )}
+                      {/* APPROVED → Awaiting user payment, can cancel */}
+                      {order.status === "APPROVED" && (
+                        <div className="flex items-center gap-2">
+                          <span
+                            className="text-xs"
+                            style={{ color: "var(--text-muted)" }}
+                          >
+                            Awaiting payment
+                          </span>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setCancelOrder(order);
+                              setCancelDialogOpen(true);
+                            }}
+                            className="rounded-md bg-red-900/30 px-3 py-1 text-xs font-medium text-red-400 transition-colors hover:bg-red-900/50"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      )}
+                      {/* PAID → Finalize (ship items, add tracking) */}
+                      {order.status === "PAID" && (
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedOrder(order);
+                              setDialogOpen(true);
+                            }}
+                            className="rounded-md px-3 py-1 text-xs font-medium transition-colors hover:bg-brass-hover"
+                            style={{
+                              backgroundColor: "var(--brass)",
+                              color: "var(--bg-primary)",
+                            }}
+                          >
+                            Finalize
                           </button>
                         </div>
                       )}
@@ -508,6 +563,18 @@ export function RedeemOrdersTable() {
         }}
         onActionComplete={handleDrawerAction}
       />
+
+      {approveOrder && (
+        <ApproveRedeemDialog
+          order={approveOrder}
+          open={approveDialogOpen}
+          onOpenChange={(open) => {
+            setApproveDialogOpen(open);
+            if (!open) setApproveOrder(null);
+          }}
+          onApproved={handleApproved}
+        />
+      )}
 
       {selectedOrder && (
         <FinalizeRedeemDialog
