@@ -27,6 +27,45 @@ export const AmmoFactoryAbi = [
   },
   {
     "type": "function",
+    "name": "DEFAULT_MINT_FEE_BPS",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "DEFAULT_MIN_REDEEM_AMOUNT",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "DEFAULT_REDEEM_FEE_BPS",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "caliberIds",
     "inputs": [
       {
@@ -86,21 +125,6 @@ export const AmmoFactoryAbi = [
         "name": "symbol",
         "type": "string",
         "internalType": "string"
-      },
-      {
-        "name": "mintFeeBps",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "redeemFeeBps",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "minMintRounds",
-        "type": "uint256",
-        "internalType": "uint256"
       }
     ],
     "outputs": [

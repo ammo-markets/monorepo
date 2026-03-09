@@ -38,10 +38,6 @@ interface IAmmoFactory {
     function createCaliber(
         bytes32 caliberId,
         string calldata name,
-        string calldata symbol,
-        address oracle,
-        uint256 mintFeeBps,
-        uint256 redeemFeeBps,
-        uint256 minMintRounds
+        string calldata symbol
     ) external returns (address market, address token);
 }

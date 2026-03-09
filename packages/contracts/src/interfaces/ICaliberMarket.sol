@@ -8,7 +8,7 @@ interface ICaliberMarket {
     // ── Enums ────────────────────────────────────────
 
     enum MintStatus { None, Started, Finalized, Refunded }
-    enum RedeemStatus { None, Requested, Finalized, Canceled }
+    enum RedeemStatus { None, Requested, Approved, Finalized, Canceled }
 
     // ── Structs ──────────────────────────────────────
 
@@ -29,9 +29,12 @@ interface ICaliberMarket {
         address user;
         uint256 tokenAmount;
         uint256 feeBps;
+        uint256 shippingCost;
+        uint256 protocolFee;
         uint64 deadline;
         uint64 createdAt;
         uint64 finalizedAt;
+        bool paid;
         RedeemStatus status;
     }
 
@@ -44,11 +47,12 @@ interface ICaliberMarket {
     error InvalidAmount();
     error InvalidBps();
     error InvalidPrice();
-    error MinMintNotMet();
-    error Slippage();
+    error MinRedeemNotMet();
     error DeadlineExpired();
     error DeadlineNotSet();
     error InvalidStatus();
+    error AlreadyPaid();
+    error NotPaid();
     error Reentrancy();
     error TreasuryNotSet();
 
@@ -61,11 +65,13 @@ interface ICaliberMarket {
     event MintFinalized(uint256 indexed orderId, address indexed user, uint256 tokenAmount, uint256 priceUsed);
     event MintRefunded(uint256 indexed orderId, address indexed user, uint256 refundAmount, uint8 reasonCode);
     event RedeemRequested(uint256 indexed orderId, address indexed user, uint256 tokenAmount, uint64 deadline);
-    event RedeemFinalized(uint256 indexed orderId, address indexed user, uint256 burnedTokens, uint256 feeTokens);
+    event RedeemApproved(uint256 indexed orderId, address indexed user, uint256 shippingCost, uint256 protocolFee);
+    event RedeemPaid(uint256 indexed orderId, address indexed user, uint256 shippingCost, uint256 protocolFee);
+    event RedeemFinalized(uint256 indexed orderId, address indexed user, uint256 burnedTokens);
     event RedeemCanceled(uint256 indexed orderId, address indexed user, uint256 unlockedTokens, uint8 reasonCode);
     event MintFeeUpdated(uint256 oldBps, uint256 newBps);
     event RedeemFeeUpdated(uint256 oldBps, uint256 newBps);
-    event MinMintUpdated(uint256 oldMin, uint256 newMin);
+    event MinRedeemUpdated(uint256 oldMin, uint256 newMin);
     event Paused(address indexed by);
     event Unpaused(address indexed by);
 
@@ -79,7 +85,7 @@ interface ICaliberMarket {
     function caliberId() external view returns (bytes32);
     function mintFeeBps() external view returns (uint256);
     function redeemFeeBps() external view returns (uint256);
-    function minMintRounds() external view returns (uint256);
+    function minRedeemAmount() external view returns (uint256);
     function paused() external view returns (bool);
     function nextOrderId() external view returns (uint256);
     function mintOrders(uint256 orderId)
@@ -100,7 +106,18 @@ interface ICaliberMarket {
     function redeemOrders(uint256 orderId)
         external
         view
-        returns (address user, uint256 tokenAmount, uint256 feeBps, uint64 deadline, uint64 createdAt, uint64 finalizedAt, RedeemStatus status);
+        returns (
+            address user,
+            uint256 tokenAmount,
+            uint256 feeBps,
+            uint256 shippingCost,
+            uint256 protocolFee,
+            uint64 deadline,
+            uint64 createdAt,
+            uint64 finalizedAt,
+            bool paid,
+            RedeemStatus status
+        );
     // ── User functions ───────────────────────────────
 
     function startMint(uint256 usdcAmount, uint256 maxSlippageBps, uint64 deadline) external returns (uint256 orderId);
@@ -110,6 +127,8 @@ interface ICaliberMarket {
 
     function finalizeMint(uint256 orderId, uint256 actualPriceX18) external;
     function refundMint(uint256 orderId, uint8 reasonCode) external;
+    function approveRedeem(uint256 orderId, uint256 shippingCost) external;
+    function payRedeem(uint256 orderId) external;
     function finalizeRedeem(uint256 orderId) external;
     function cancelRedeem(uint256 orderId, uint8 reasonCode) external;
 
@@ -117,7 +136,7 @@ interface ICaliberMarket {
 
     function setMintFee(uint256 bps) external;
     function setRedeemFee(uint256 bps) external;
-    function setMinMint(uint256 newMin) external;
+    function setMinRedeem(uint256 newMin) external;
     function pause() external;
     function unpause() external;
 }

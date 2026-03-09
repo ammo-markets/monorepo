@@ -21,7 +21,6 @@ export interface CaliberSpec {
   description: string;
   grainWeight: number;
   caseType: string;
-  minMintRounds: number;
   minRedeemRounds: number;
   tokenName: string;
   tokenSymbol: string;

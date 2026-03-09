@@ -34,7 +34,7 @@ contract CaliberMarketTest is Test {
         manager.setTreasury(treasury);
 
         market = new CaliberMarket(
-            address(manager), address(usdc), 6, address(oracle), CALIBER_9MM, "Ammo 9MM", "MO9MM", 150, 150, 50
+            address(manager), address(usdc), 6, address(oracle), CALIBER_9MM, "Ammo 9MM", "MO9MM", 150, 0, 50e18
         );
 
         ammoToken = market.token();
@@ -166,15 +166,15 @@ contract CaliberMarketTest is Test {
         market.mint(100e6);
     }
 
-    function testMintMinRoundsNotMet() public {
-        // $100 per round — 100 USDC can only get < 1 token (after fee)
-        oracle.setPrice(100e18);
+    function testMintZeroOutputReverts() public {
+        // Use an extreme price so integer division rounds the minted amount to zero.
+        oracle.setPrice(type(uint256).max);
 
         vm.prank(user);
         usdc.approve(address(market), 100e6);
 
         vm.prank(user);
-        vm.expectRevert(CaliberMarket.MinMintNotMet.selector);
+        vm.expectRevert(CaliberMarket.NoTokensMinted.selector);
         market.mint(100e6);
     }
 
@@ -203,7 +203,7 @@ contract CaliberMarketTest is Test {
         MockPriceOracle freshOracle = new MockPriceOracle(ORACLE_PRICE);
 
         CaliberMarket freshMarket = new CaliberMarket(
-            address(freshManager), address(usdc), 6, address(freshOracle), CALIBER_9MM, "Ammo 9MM", "MO9MM", 150, 150, 50
+            address(freshManager), address(usdc), 6, address(freshOracle), CALIBER_9MM, "Ammo 9MM", "MO9MM", 150, 0, 50e18
         );
 
         usdc.mint(user, 100e6);
@@ -217,7 +217,7 @@ contract CaliberMarketTest is Test {
 
     function testMintZeroFeeAllToTreasury() public {
         CaliberMarket zeroFeeMarket = new CaliberMarket(
-            address(manager), address(usdc), 6, address(oracle), CALIBER_9MM, "Ammo 9MM Zero", "MO9Z", 0, 150, 50
+            address(manager), address(usdc), 6, address(oracle), CALIBER_9MM, "Ammo 9MM Zero", "MO9Z", 0, 0, 50e18
         );
 
         usdc.mint(user, 100e6);
@@ -277,10 +277,10 @@ contract CaliberMarketTest is Test {
     }
 
     // ═══════════════════════════════════════════════
-    // ── Redeem (unchanged) ─────────────────────────
+    // ── Redeem (multi-step) ──────────────────────────
     // ═══════════════════════════════════════════════
 
-    function testRedeemFlowBurnsAndFees() public {
+    function testRedeemFullFlow() public {
         _mintTokensToUser(user);
         uint256 userBalance = ammoToken.balanceOf(user);
         assertTrue(userBalance > 100e18);
@@ -293,13 +293,170 @@ contract CaliberMarketTest is Test {
 
         assertEq(ammoToken.balanceOf(address(market)), 100e18);
 
+        // Keeper approves with $5 shipping cost
+        vm.prank(keeper);
+        market.approveRedeem(orderId, 5e6);
+
+        // Default redeem fee is zero, so the user only owes shipping.
+        (,,,uint256 shippingCost, uint256 protocolFee,,,,, ) = market.redeemOrders(orderId);
+        assertEq(shippingCost, 5e6);
+        assertEq(protocolFee, 0);
+
+        // User pays shipping + fee in USDT
+        uint256 totalPayment = shippingCost + protocolFee;
+        uint256 treasuryBefore = usdc.balanceOf(treasury);
+        uint256 feeRecipientBefore = usdc.balanceOf(feeRecipient);
+        usdc.mint(user, totalPayment);
+        vm.prank(user);
+        usdc.approve(address(market), totalPayment);
+        vm.prank(user);
+        market.payRedeem(orderId);
+
+        // Verify USDT distribution
+        assertEq(usdc.balanceOf(treasury) - treasuryBefore, shippingCost);
+        assertEq(usdc.balanceOf(feeRecipient) - feeRecipientBefore, protocolFee);
+        assertEq(usdc.balanceOf(address(market)), 0); // nothing left in market
+
+        // Keeper finalizes — all tokens burned, no token fee
         vm.prank(keeper);
         market.finalizeRedeem(orderId);
 
-        // fee = 100e18 * 150 / 10_000 = 1.5e18
-        // netTokens = 98.5e18 → burned
         assertEq(ammoToken.balanceOf(address(market)), 0);
-        assertEq(ammoToken.balanceOf(feeRecipient), 1.5e18);
+        // No tokens sent to feeRecipient (fees are in USDT now)
+    }
+
+    function testApproveRedeemSetsCorrectFee() public {
+        CaliberMarket feeMarket = new CaliberMarket(
+            address(manager), address(usdc), 6, address(oracle), CALIBER_9MM, "Ammo 9MM Fee", "MO9F", 150, 150, 50e18
+        );
+
+        usdc.mint(user, 100e6);
+        vm.prank(user);
+        usdc.approve(address(feeMarket), 100e6);
+        vm.prank(user);
+        feeMarket.mint(100e6);
+
+        AmmoToken feeToken = feeMarket.token();
+        vm.prank(user);
+        feeToken.approve(address(feeMarket), 100e18);
+        vm.prank(user);
+        uint256 orderId = feeMarket.startRedeem(100e18, 0);
+
+        vm.prank(keeper);
+        feeMarket.approveRedeem(orderId, 10e6);
+
+        (,,,uint256 shippingCost, uint256 protocolFee,,,,, ) = feeMarket.redeemOrders(orderId);
+        assertEq(shippingCost, 10e6);
+        assertEq(protocolFee, 315_000);
+    }
+
+    function testCannotFinalizeWithoutPayment() public {
+        _mintTokensToUser(user);
+
+        vm.prank(user);
+        ammoToken.approve(address(market), 100e18);
+        vm.prank(user);
+        uint256 orderId = market.startRedeem(100e18, 0);
+
+        vm.prank(keeper);
+        market.approveRedeem(orderId, 5e6);
+
+        // Try to finalize without payment
+        vm.prank(keeper);
+        vm.expectRevert(CaliberMarket.NotPaid.selector);
+        market.finalizeRedeem(orderId);
+    }
+
+    function testCannotFinalizeFromRequested() public {
+        _mintTokensToUser(user);
+
+        vm.prank(user);
+        ammoToken.approve(address(market), 100e18);
+        vm.prank(user);
+        uint256 orderId = market.startRedeem(100e18, 0);
+
+        // Try to finalize directly from Requested (skipping approve)
+        vm.prank(keeper);
+        vm.expectRevert(CaliberMarket.InvalidStatus.selector);
+        market.finalizeRedeem(orderId);
+    }
+
+    function testPayRedeemOnlyOrderUser() public {
+        _mintTokensToUser(user);
+
+        vm.prank(user);
+        ammoToken.approve(address(market), 100e18);
+        vm.prank(user);
+        uint256 orderId = market.startRedeem(100e18, 0);
+
+        vm.prank(keeper);
+        market.approveRedeem(orderId, 5e6);
+
+        address random = address(0xDEAD);
+        vm.prank(random);
+        vm.expectRevert(CaliberMarket.NotOrderUser.selector);
+        market.payRedeem(orderId);
+    }
+
+    function testCannotPayRedeemTwice() public {
+        _mintTokensToUser(user);
+
+        vm.prank(user);
+        ammoToken.approve(address(market), 100e18);
+        vm.prank(user);
+        uint256 orderId = market.startRedeem(100e18, 0);
+
+        vm.prank(keeper);
+        market.approveRedeem(orderId, 5e6);
+
+        (,,, uint256 shippingCost, uint256 protocolFee,,,,, ) = market.redeemOrders(orderId);
+        uint256 totalPayment = shippingCost + protocolFee;
+
+        usdc.mint(user, totalPayment * 2);
+        vm.prank(user);
+        usdc.approve(address(market), totalPayment * 2);
+        vm.prank(user);
+        market.payRedeem(orderId);
+
+        vm.prank(user);
+        vm.expectRevert(CaliberMarket.AlreadyPaid.selector);
+        market.payRedeem(orderId);
+    }
+
+    function testZeroRedeemFeeNoProtocolFee() public {
+        // Create market with 0% redeem fee
+        CaliberMarket zeroFeeMarket = new CaliberMarket(
+            address(manager), address(usdc), 6, address(oracle), CALIBER_9MM, "Ammo 9MM Z", "MO9Z2", 150, 0, 50e18
+        );
+
+        // Mint tokens on the zero-fee market
+        usdc.mint(user, 100e6);
+        vm.prank(user);
+        usdc.approve(address(zeroFeeMarket), 100e6);
+        vm.prank(user);
+        zeroFeeMarket.mint(100e6);
+
+        AmmoToken zToken = zeroFeeMarket.token();
+        vm.prank(user);
+        zToken.approve(address(zeroFeeMarket), 100e18);
+        vm.prank(user);
+        uint256 orderId = zeroFeeMarket.startRedeem(100e18, 0);
+
+        vm.prank(keeper);
+        zeroFeeMarket.approveRedeem(orderId, 5e6);
+
+        (,,,, uint256 protocolFee,,,,, ) = zeroFeeMarket.redeemOrders(orderId);
+        assertEq(protocolFee, 0); // No protocol fee
+
+        // User only pays shipping
+        usdc.mint(user, 5e6);
+        vm.prank(user);
+        usdc.approve(address(zeroFeeMarket), 5e6);
+        vm.prank(user);
+        zeroFeeMarket.payRedeem(orderId);
+
+        vm.prank(keeper);
+        zeroFeeMarket.finalizeRedeem(orderId);
     }
 
     // ── cancelRedeem ────────────────────────────────
@@ -350,9 +507,9 @@ contract CaliberMarketTest is Test {
         assertEq(market.redeemFeeBps(), 300);
     }
 
-    function testSetMinMint() public {
-        market.setMinMint(100);
-        assertEq(market.minMintRounds(), 100);
+    function testSetMinRedeem() public {
+        market.setMinRedeem(100e18);
+        assertEq(market.minRedeemAmount(), 100e18);
     }
 
     // ── State-machine integrity (redeem) ─────────
@@ -365,6 +522,15 @@ contract CaliberMarketTest is Test {
         vm.prank(user);
         uint256 orderId = market.startRedeem(100e18, 0);
 
+        // Full flow: approve → pay → finalize
+        vm.prank(keeper);
+        market.approveRedeem(orderId, 5e6);
+        (,,,uint256 sc, uint256 pf,,,,, ) = market.redeemOrders(orderId);
+        usdc.mint(user, sc + pf);
+        vm.prank(user);
+        usdc.approve(address(market), sc + pf);
+        vm.prank(user);
+        market.payRedeem(orderId);
         vm.prank(keeper);
         market.finalizeRedeem(orderId);
 
@@ -381,12 +547,40 @@ contract CaliberMarketTest is Test {
         vm.prank(user);
         uint256 orderId = market.startRedeem(100e18, 0);
 
+        // Full flow: approve → pay → finalize
+        vm.prank(keeper);
+        market.approveRedeem(orderId, 5e6);
+        (,,,uint256 sc, uint256 pf,,,,, ) = market.redeemOrders(orderId);
+        usdc.mint(user, sc + pf);
+        vm.prank(user);
+        usdc.approve(address(market), sc + pf);
+        vm.prank(user);
+        market.payRedeem(orderId);
         vm.prank(keeper);
         market.finalizeRedeem(orderId);
 
         vm.prank(keeper);
         vm.expectRevert(CaliberMarket.InvalidStatus.selector);
         market.cancelRedeem(orderId, 1);
+    }
+
+    function testCancelFromApprovedState() public {
+        _mintTokensToUser(user);
+        uint256 balBefore = ammoToken.balanceOf(user);
+
+        vm.prank(user);
+        ammoToken.approve(address(market), 100e18);
+        vm.prank(user);
+        uint256 orderId = market.startRedeem(100e18, 0);
+
+        vm.prank(keeper);
+        market.approveRedeem(orderId, 5e6);
+
+        // Keeper can cancel from Approved (before payment)
+        vm.prank(keeper);
+        market.cancelRedeem(orderId, 3);
+
+        assertEq(ammoToken.balanceOf(user), balBefore);
     }
 
     // ── Access control ──────────────────────────────
@@ -399,9 +593,32 @@ contract CaliberMarketTest is Test {
         vm.prank(user);
         uint256 orderId = market.startRedeem(100e18, 0);
 
+        // Approve and pay first
+        vm.prank(keeper);
+        market.approveRedeem(orderId, 5e6);
+        (,,,uint256 sc, uint256 pf,,,,, ) = market.redeemOrders(orderId);
+        usdc.mint(user, sc + pf);
+        vm.prank(user);
+        usdc.approve(address(market), sc + pf);
+        vm.prank(user);
+        market.payRedeem(orderId);
+
         vm.prank(user);
         vm.expectRevert(CaliberMarket.NotKeeper.selector);
         market.finalizeRedeem(orderId);
+    }
+
+    function testApproveRedeemOnlyKeeper() public {
+        _mintTokensToUser(user);
+
+        vm.prank(user);
+        ammoToken.approve(address(market), 100e18);
+        vm.prank(user);
+        uint256 orderId = market.startRedeem(100e18, 0);
+
+        vm.prank(user);
+        vm.expectRevert(CaliberMarket.NotKeeper.selector);
+        market.approveRedeem(orderId, 5e6);
     }
 
     function testCancelRedeemRejectsRandomCaller() public {
@@ -451,6 +668,16 @@ contract CaliberMarketTest is Test {
         vm.prank(user);
         uint256 orderId = market.startRedeem(100e18, 0);
 
+        // Approve and pay before pausing
+        vm.prank(keeper);
+        market.approveRedeem(orderId, 5e6);
+        (,,,uint256 sc, uint256 pf,,,,, ) = market.redeemOrders(orderId);
+        usdc.mint(user, sc + pf);
+        vm.prank(user);
+        usdc.approve(address(market), sc + pf);
+        vm.prank(user);
+        market.payRedeem(orderId);
+
         market.pause();
 
         vm.prank(keeper);
@@ -477,37 +704,77 @@ contract CaliberMarketTest is Test {
 
     // ── Redeem deadline ─────────────────────────────
 
-    function testFinalizeRedeemRespectsDeadline() public {
+    function testApproveRedeemUsesSnapshotFee() public {
+        CaliberMarket feeMarket = new CaliberMarket(
+            address(manager), address(usdc), 6, address(oracle), CALIBER_9MM, "Ammo 9MM Fee", "MO9F2", 150, 150, 50e18
+        );
+
+        usdc.mint(user, 100e6);
+        vm.prank(user);
+        usdc.approve(address(feeMarket), 100e6);
+        vm.prank(user);
+        feeMarket.mint(100e6);
+
+        AmmoToken feeToken = feeMarket.token();
+        vm.prank(user);
+        feeToken.approve(address(feeMarket), 100e18);
+        vm.prank(user);
+        uint256 orderId = feeMarket.startRedeem(100e18, 0);
+
+        // Admin changes redeem fee and oracle price after order creation.
+        feeMarket.setRedeemFee(500);
+        oracle.setPrice(30e16);
+
+        vm.prank(keeper);
+        feeMarket.approveRedeem(orderId, 5e6);
+
+        (,,,, uint256 protocolFee,,,,, ) = feeMarket.redeemOrders(orderId);
+        assertEq(protocolFee, 315_000);
+    }
+
+    function testRedeemBelowMinimumReverts() public {
         _mintTokensToUser(user);
 
         vm.prank(user);
+        ammoToken.approve(address(market), 49e18);
+        vm.prank(user);
+        vm.expectRevert(CaliberMarket.MinRedeemNotMet.selector);
+        market.startRedeem(49e18, 0);
+    }
+
+    function testApproveRedeemRespectsDeadline() public {
+        _mintTokensToUser(user);
+
+        uint64 deadline = uint64(block.timestamp + 60);
+        vm.prank(user);
         ammoToken.approve(address(market), 100e18);
         vm.prank(user);
-        uint256 orderId = market.startRedeem(100e18, uint64(block.timestamp + 60));
+        uint256 orderId = market.startRedeem(100e18, deadline);
 
-        vm.warp(block.timestamp + 120);
+        vm.warp(deadline + 1);
 
         vm.prank(keeper);
         vm.expectRevert(CaliberMarket.DeadlineExpired.selector);
-        market.finalizeRedeem(orderId);
+        market.approveRedeem(orderId, 5e6);
     }
 
-    function testFinalizeRedeemUsesSnapshotFee() public {
+    function testPayRedeemRespectsDeadline() public {
         _mintTokensToUser(user);
 
+        uint64 deadline = uint64(block.timestamp + 60);
         vm.prank(user);
         ammoToken.approve(address(market), 100e18);
         vm.prank(user);
-        uint256 orderId = market.startRedeem(100e18, 0);
-
-        // Admin changes redeem fee after order creation
-        market.setRedeemFee(500);
+        uint256 orderId = market.startRedeem(100e18, deadline);
 
         vm.prank(keeper);
-        market.finalizeRedeem(orderId);
+        market.approveRedeem(orderId, 5e6);
 
-        // Should use 150 bps (snapshot), NOT 500 bps
-        assertEq(ammoToken.balanceOf(feeRecipient), 1.5e18);
+        vm.warp(deadline + 1);
+
+        vm.prank(user);
+        vm.expectRevert(CaliberMarket.DeadlineExpired.selector);
+        market.payRedeem(orderId);
     }
 
     // ── User self-rescue after deadline ─────────────
@@ -528,6 +795,28 @@ contract CaliberMarketTest is Test {
         market.cancelRedeem(orderId, 0);
 
         assertEq(ammoToken.balanceOf(user), balBefore);
+    }
+
+    function testUserCanCancelApprovedRedeemAfterDeadline() public {
+        _mintTokensToUser(user);
+        uint256 balBefore = ammoToken.balanceOf(user);
+
+        uint64 deadline = uint64(block.timestamp + 60);
+        vm.prank(user);
+        ammoToken.approve(address(market), 100e18);
+        vm.prank(user);
+        uint256 orderId = market.startRedeem(100e18, deadline);
+
+        vm.prank(keeper);
+        market.approveRedeem(orderId, 5e6);
+
+        vm.warp(deadline + 1);
+
+        vm.prank(user);
+        market.cancelRedeem(orderId, 0);
+
+        assertEq(ammoToken.balanceOf(user), balBefore);
+        assertEq(ammoToken.balanceOf(address(market)), 0);
     }
 
     function testUserCannotCancelRedeemBeforeDeadline() public {

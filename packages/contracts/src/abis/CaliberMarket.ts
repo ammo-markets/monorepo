@@ -48,7 +48,7 @@ export const CaliberMarketAbi = [
         "internalType": "uint256"
       },
       {
-        "name": "minMintRounds_",
+        "name": "minRedeemAmount_",
         "type": "uint256",
         "internalType": "uint256"
       }
@@ -67,6 +67,24 @@ export const CaliberMarketAbi = [
       }
     ],
     "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "approveRedeem",
+    "inputs": [
+      {
+        "name": "orderId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "shippingCost",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
   },
   {
     "type": "function",
@@ -127,7 +145,7 @@ export const CaliberMarketAbi = [
   },
   {
     "type": "function",
-    "name": "minMintRounds",
+    "name": "minRedeemAmount",
     "inputs": [],
     "outputs": [
       {
@@ -212,6 +230,19 @@ export const CaliberMarketAbi = [
   },
   {
     "type": "function",
+    "name": "payRedeem",
+    "inputs": [
+      {
+        "name": "orderId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
     "name": "redeemFeeBps",
     "inputs": [],
     "outputs": [
@@ -250,6 +281,16 @@ export const CaliberMarketAbi = [
         "internalType": "uint256"
       },
       {
+        "name": "shippingCost",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "protocolFee",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
         "name": "deadline",
         "type": "uint64",
         "internalType": "uint64"
@@ -265,6 +306,11 @@ export const CaliberMarketAbi = [
         "internalType": "uint64"
       },
       {
+        "name": "paid",
+        "type": "bool",
+        "internalType": "bool"
+      },
+      {
         "name": "status",
         "type": "uint8",
         "internalType": "enum CaliberMarket.RedeemStatus"
@@ -274,7 +320,7 @@ export const CaliberMarketAbi = [
   },
   {
     "type": "function",
-    "name": "setMinMint",
+    "name": "setMinRedeem",
     "inputs": [
       {
         "name": "newMin",
@@ -383,7 +429,7 @@ export const CaliberMarketAbi = [
   },
   {
     "type": "event",
-    "name": "MinMintUpdated",
+    "name": "MinRedeemUpdated",
     "inputs": [
       {
         "name": "oldMin",
@@ -477,6 +523,37 @@ export const CaliberMarketAbi = [
   },
   {
     "type": "event",
+    "name": "RedeemApproved",
+    "inputs": [
+      {
+        "name": "orderId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "user",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "shippingCost",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "protocolFee",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
     "name": "RedeemCanceled",
     "inputs": [
       {
@@ -546,9 +623,34 @@ export const CaliberMarketAbi = [
         "type": "uint256",
         "indexed": false,
         "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "RedeemPaid",
+    "inputs": [
+      {
+        "name": "orderId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
       },
       {
-        "name": "feeTokens",
+        "name": "user",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "shippingCost",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "protocolFee",
         "type": "uint256",
         "indexed": false,
         "internalType": "uint256"
@@ -602,6 +704,11 @@ export const CaliberMarketAbi = [
   },
   {
     "type": "error",
+    "name": "AlreadyPaid",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "DeadlineExpired",
     "inputs": []
   },
@@ -637,7 +744,7 @@ export const CaliberMarketAbi = [
   },
   {
     "type": "error",
-    "name": "MinMintNotMet",
+    "name": "MinRedeemNotMet",
     "inputs": []
   },
   {
@@ -652,7 +759,17 @@ export const CaliberMarketAbi = [
   },
   {
     "type": "error",
+    "name": "NotOrderUser",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "NotOwner",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NotPaid",
     "inputs": []
   },
   {

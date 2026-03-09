@@ -3,7 +3,7 @@ import type { Caliber, CaliberSpec } from "../types/index";
 /** Fee constants in basis points (1 BPS = 0.01%) */
 export const FEES = {
   MINT_FEE_BPS: 150, // 1.5%
-  REDEEM_FEE_BPS: 150, // 1.5%
+  REDEEM_FEE_BPS: 0, // disabled by default
   MAX_FEE_BPS: 500, // 5% hard cap
   BPS_DENOMINATOR: 10_000,
 } as const;
@@ -15,7 +15,6 @@ export const CALIBER_SPECS: Record<Caliber, CaliberSpec> = {
     description: "9mm 115gr FMJ, brass case, factory-new",
     grainWeight: 115,
     caseType: "brass",
-    minMintRounds: 0,
     minRedeemRounds: 50,
     tokenName: "Ammo Exchange 9mm Practice",
     tokenSymbol: "ax9P",
@@ -27,7 +26,6 @@ export const CALIBER_SPECS: Record<Caliber, CaliberSpec> = {
     description: "9mm JHP self-defense, factory-new",
     grainWeight: 124,
     caseType: "brass",
-    minMintRounds: 0,
     minRedeemRounds: 50,
     tokenName: "Ammo Exchange 9mm Self Defense",
     tokenSymbol: "ax9SD",
@@ -39,7 +37,6 @@ export const CALIBER_SPECS: Record<Caliber, CaliberSpec> = {
     description: "5.56 NATO self-defense, factory-new",
     grainWeight: 62,
     caseType: "brass",
-    minMintRounds: 0,
     minRedeemRounds: 50,
     tokenName: "Ammo Exchange 5.56 Self Defense",
     tokenSymbol: "ax556SD",
@@ -51,7 +48,6 @@ export const CALIBER_SPECS: Record<Caliber, CaliberSpec> = {
     description: "5.56 NATO 55gr FMJ, brass case, factory-new",
     grainWeight: 55,
     caseType: "brass",
-    minMintRounds: 0,
     minRedeemRounds: 50,
     tokenName: "Ammo Exchange 5.56 NATO Practice",
     tokenSymbol: "ax556P",

@@ -31,8 +31,7 @@ contract AmmoFactoryTest is Test {
     // ── Create caliber ──────────────────────────────
 
     function testCreateCaliber() public {
-        (address market, address token) =
-            factory.createCaliber(CALIBER_9MM, "Ammo 9MM", "MO9MM", 150, 150, 50);
+        (address market, address token) = factory.createCaliber(CALIBER_9MM, "Ammo 9MM", "MO9MM");
 
         assertTrue(market != address(0));
         assertTrue(token != address(0));
@@ -47,8 +46,9 @@ contract AmmoFactoryTest is Test {
         assertEq(address(cm.manager()), address(manager));
         assertEq(address(cm.oracle()), address(oracle));
         assertEq(cm.caliberId(), CALIBER_9MM);
-        assertEq(cm.mintFeeBps(), 150);
-        assertEq(cm.minMintRounds(), 50);
+        assertEq(cm.mintFeeBps(), factory.DEFAULT_MINT_FEE_BPS());
+        assertEq(cm.redeemFeeBps(), factory.DEFAULT_REDEEM_FEE_BPS());
+        assertEq(cm.minRedeemAmount(), factory.DEFAULT_MIN_REDEEM_AMOUNT());
 
         // Verify market is registered with oracle
         (,, bool registered) = oracle.markets(market);
@@ -56,21 +56,21 @@ contract AmmoFactoryTest is Test {
     }
 
     function testCreateMultipleCalibers() public {
-        factory.createCaliber(CALIBER_9MM, "Ammo 9MM", "MO9MM", 150, 150, 50);
-        factory.createCaliber(CALIBER_556, "Ammo 5.56", "MO556", 200, 200, 25);
+        factory.createCaliber(CALIBER_9MM, "Ammo 9MM", "MO9MM");
+        factory.createCaliber(CALIBER_556, "Ammo 5.56", "MO556");
         assertEq(factory.getCaliberCount(), 2);
     }
 
     function testCannotCreateDuplicateCaliber() public {
-        factory.createCaliber(CALIBER_9MM, "Ammo 9MM", "MO9MM", 150, 150, 50);
+        factory.createCaliber(CALIBER_9MM, "Ammo 9MM", "MO9MM");
 
         vm.expectRevert(AmmoFactory.CaliberExists.selector);
-        factory.createCaliber(CALIBER_9MM, "Ammo 9MM v2", "MO9V2", 150, 150, 50);
+        factory.createCaliber(CALIBER_9MM, "Ammo 9MM v2", "MO9V2");
     }
 
     function testOnlyOwnerCanCreateCaliber() public {
         vm.prank(alice);
         vm.expectRevert(AmmoFactory.NotOwner.selector);
-        factory.createCaliber(CALIBER_9MM, "Ammo 9MM", "MO9MM", 150, 150, 50);
+        factory.createCaliber(CALIBER_9MM, "Ammo 9MM", "MO9MM");
     }
 }

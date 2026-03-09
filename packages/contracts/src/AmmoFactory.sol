@@ -10,6 +10,10 @@ import "./PriceOracle.sol";
 ///      isolated market contract and token. The shared oracle is passed at
 ///      construction and markets are auto-registered with it.
 contract AmmoFactory {
+    uint256 public constant DEFAULT_MINT_FEE_BPS = 150;
+    uint256 public constant DEFAULT_REDEEM_FEE_BPS = 0;
+    uint256 public constant DEFAULT_MIN_REDEEM_AMOUNT = 50e18;
+
     AmmoManager public immutable manager;
     address public immutable usdc;
     uint8 public immutable usdcDecimals;
@@ -48,15 +52,21 @@ contract AmmoFactory {
     function createCaliber(
         bytes32 caliberId,
         string calldata name,
-        string calldata symbol,
-        uint256 mintFeeBps,
-        uint256 redeemFeeBps,
-        uint256 minMintRounds
+        string calldata symbol
     ) external onlyOwner returns (address market, address token) {
         if (calibers[caliberId].market != address(0)) revert CaliberExists();
 
         CaliberMarket marketContract = new CaliberMarket(
-            address(manager), usdc, usdcDecimals, oracle, caliberId, name, symbol, mintFeeBps, redeemFeeBps, minMintRounds
+            address(manager),
+            usdc,
+            usdcDecimals,
+            oracle,
+            caliberId,
+            name,
+            symbol,
+            DEFAULT_MINT_FEE_BPS,
+            DEFAULT_REDEEM_FEE_BPS,
+            DEFAULT_MIN_REDEEM_AMOUNT
         );
 
         market = address(marketContract);

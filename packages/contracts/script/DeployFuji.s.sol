@@ -61,29 +61,26 @@ contract DeployFuji is Script {
     }
 
     function _deploy9mmPractice() internal {
-        (address market, address token) = factory.createCaliber(
-            bytes32("9MM_PRACTICE"), "Ammo Exchange 9mm Practice", "ax9P", 150, 150, 50
-        );
+        (address market, address token) =
+            factory.createCaliber(bytes32("9MM_PRACTICE"), "Ammo Exchange 9mm Practice", "ax9P");
         deployed9mmPractice = CaliberDeployment(market, token);
     }
 
     function _deploy9mmSelfDefense() internal {
-        (address market, address token) = factory.createCaliber(
-            bytes32("9MM_SELF_DEFENSE"), "Ammo Exchange 9mm Self Defense", "ax9SD", 150, 150, 50
-        );
+        (address market, address token) =
+            factory.createCaliber(bytes32("9MM_SELF_DEFENSE"), "Ammo Exchange 9mm Self Defense", "ax9SD");
         deployed9mmSelfDefense = CaliberDeployment(market, token);
     }
 
     function _deploy556SelfDefense() internal {
-        (address market, address token) = factory.createCaliber(
-            bytes32("556_SELF_DEFENSE"), "Ammo Exchange 5.56 Self Defense", "ax556SD", 150, 150, 50
-        );
+        (address market, address token) =
+            factory.createCaliber(bytes32("556_SELF_DEFENSE"), "Ammo Exchange 5.56 Self Defense", "ax556SD");
         deployed556SelfDefense = CaliberDeployment(market, token);
     }
 
     function _deploy556NatoPractice() internal {
         (address market, address token) = factory.createCaliber(
-            bytes32("556_NATO_PRACTICE"), "Ammo Exchange 5.56 NATO Practice", "ax556P", 150, 150, 50
+            bytes32("556_NATO_PRACTICE"), "Ammo Exchange 5.56 NATO Practice", "ax556P"
         );
         deployed556NatoPractice = CaliberDeployment(market, token);
     }
