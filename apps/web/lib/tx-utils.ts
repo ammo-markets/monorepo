@@ -1,7 +1,7 @@
 import { parseUnits, formatUnits } from "viem";
 
 /** Deadline as a Unix timestamp. Pass 0 for "no deadline" (contract skips expiry check). */
-export function getDeadline(hoursFromNow = 24): bigint {
+export function getDeadline(hoursFromNow = 168): bigint {
   if (hoursFromNow === 0) return BigInt(0);
   return BigInt(Math.floor(Date.now() / 1000) + hoursFromNow * 3600);
 }

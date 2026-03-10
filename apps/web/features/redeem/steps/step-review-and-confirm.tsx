@@ -145,7 +145,11 @@ export function StepReviewAndConfirm({
                 className="font-mono tabular-nums"
                 style={{ color: "var(--text-secondary)" }}
               >
-                {deadlineHours === 0 ? "None" : `${deadlineHours} hours`}
+                {deadlineHours === 0
+                  ? "None"
+                  : deadlineHours >= 24
+                    ? `${deadlineHours / 24} days`
+                    : `${deadlineHours} hours`}
               </span>
             </div>
           </div>

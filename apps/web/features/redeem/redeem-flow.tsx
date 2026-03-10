@@ -57,7 +57,7 @@ export function RedeemFlow({
     return null;
   });
   const [roundsAmount, setRoundsAmount] = useState("");
-  const [deadlineHours, setDeadlineHours] = useState(24);
+  const [deadlineHours, setDeadlineHours] = useState(168);
 
   const caliber =
     selectedCaliber && caliberDetailsMap

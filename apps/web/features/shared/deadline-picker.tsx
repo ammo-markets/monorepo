@@ -1,9 +1,9 @@
 import { Clock, Info } from "lucide-react";
 
 const PRESETS = [
-  { label: "24h", value: 24 },
-  { label: "36h", value: 36 },
-  { label: "48h", value: 48 },
+  { label: "7d", value: 168 },
+  { label: "10d", value: 240 },
+  { label: "14d", value: 336 },
   { label: "None", value: 0 },
 ] as const;
 
