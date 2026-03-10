@@ -211,11 +211,11 @@ export function StepCompose({
                   const next = Math.max(0, rounds - REDEEM_STEP);
                   setRoundsAmount(next === 0 ? "" : next.toString());
                 }}
-                className="flex h-12 w-12 shrink-0 items-center justify-center transition-none disabled:opacity-30"
+                className={`flex h-12 w-12 shrink-0 items-center justify-center transition-none ${rounds <= 0 ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:bg-brass-muted"}`}
                 style={{
                   backgroundColor: "var(--bg-tertiary)",
-                  border: "1.5px solid var(--border-default)",
-                  color: "var(--text-secondary)",
+                  border: "1.5px solid var(--brass)",
+                  color: "var(--brass)",
                 }}
               >
                 <Minus size={18} />
@@ -271,11 +271,11 @@ export function StepCompose({
                   const next = current + REDEEM_STEP;
                   setRoundsAmount(next.toString());
                 }}
-                className="flex h-12 w-12 shrink-0 items-center justify-center transition-none disabled:opacity-30"
+                className={`flex h-12 w-12 shrink-0 items-center justify-center transition-none ${rounds + REDEEM_STEP > Math.floor(balance) ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:bg-brass-muted"}`}
                 style={{
                   backgroundColor: "var(--bg-tertiary)",
-                  border: "1.5px solid var(--border-default)",
-                  color: "var(--text-secondary)",
+                  border: "1.5px solid var(--brass)",
+                  color: "var(--brass)",
                 }}
               >
                 <Plus size={18} />
