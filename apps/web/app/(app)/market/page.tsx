@@ -16,7 +16,7 @@ import { caliberIcons } from "@/features/shared/caliber-icons";
 import type { Caliber } from "@ammo-exchange/shared";
 
 export default function MarketPage() {
-  const [timeRange, setTimeRange] = useState<TimeRange>("7D");
+  const [timeRange, setTimeRange] = useState<TimeRange>("90D");
   const [selectedCaliber, setSelectedCaliber] = useState<Caliber | null>(null);
 
   const { data: calibers = [], isLoading: calibersLoading } = useMarketData();

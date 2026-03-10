@@ -81,7 +81,7 @@ export function PriceChart({
   currentPrice,
   data,
   isLoading,
-  timeRange = "7D",
+  timeRange = "90D",
   embedded = false,
 }: PriceChartProps) {
   const hasData = data && data.length > 0;

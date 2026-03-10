@@ -1,4 +1,4 @@
-import { Check, Wallet } from "lucide-react";
+import { Check, Minus, Plus, Wallet } from "lucide-react";
 import { caliberIcons } from "@/features/shared/caliber-icons";
 import type { CaliberDetailData } from "@/lib/types";
 import { PrimaryButton } from "@/features/shared";
@@ -7,6 +7,9 @@ import { FEES } from "@ammo-exchange/shared";
 import { formatUnits } from "viem";
 import { OrderSettingsMenu } from "@/features/shared/order-settings-menu";
 import { useMemo } from "react";
+
+const REDEEM_STEP = 1000;
+const PRESET_AMOUNTS = [1000, 2000, 5000, 10_000];
 
 export function StepCompose({
   selectedCaliber,
@@ -43,7 +46,7 @@ export function StepCompose({
   const fee = Math.ceil(rounds * (FEES.REDEEM_FEE_BPS / FEES.BPS_DENOMINATOR));
   const netRounds = rounds - fee;
   const estValue = netRounds * (caliber?.price ?? 0);
-  const minRedeem = caliber ? caliber.minRedeem : 50;
+  const minRedeem = caliber ? caliber.minRedeem : REDEEM_STEP;
 
   // Real on-chain balance for selected caliber (18 decimals -> number)
   const balance = useMemo(() => {
@@ -54,9 +57,15 @@ export function StepCompose({
   }, [selectedCaliber, tokenBalances]);
 
   const belowMin = rounds > 0 && rounds < minRedeem;
+  const notMultiple = rounds > 0 && rounds % REDEEM_STEP !== 0;
   const exceedsBalance = rounds > balance;
-  const isValid = rounds >= minRedeem && !exceedsBalance;
-  const hasError = belowMin || exceedsBalance;
+  const isValid =
+    rounds >= minRedeem && rounds % REDEEM_STEP === 0 && !exceedsBalance;
+  const hasError = belowMin || notMultiple || exceedsBalance;
+
+  // Floor balance to nearest REDEEM_STEP for MAX button
+  const maxRedeemable =
+    Math.floor(Math.floor(balance) / REDEEM_STEP) * REDEEM_STEP;
 
   const allCalibers = caliberDetailsMap ? Object.values(caliberDetailsMap) : [];
 
@@ -147,7 +156,7 @@ export function StepCompose({
                       className="text-[11px]"
                       style={{ color: "var(--text-muted)" }}
                     >
-                      Min: {cal.minRedeem} rds
+                      Min: {cal.minRedeem.toLocaleString("en-US")} rds
                     </span>
                   </div>
                 </button>
@@ -192,46 +201,129 @@ export function StepCompose({
             </div>
 
             <div
-              className="flex items-center px-4 py-3 transition-none"
-              style={{
-                backgroundColor: "var(--bg-tertiary)",
-                border: hasError
-                  ? "1.5px solid var(--red)"
-                  : isValid
-                    ? "1.5px solid var(--green)"
-                    : "1.5px solid var(--border-default)",
-              }}
+              className="flex items-center gap-2 transition-none"
             >
-              <input
-                type="text"
-                inputMode="numeric"
-                value={roundsAmount}
-                onChange={(e) => {
-                  const v = e.target.value;
-                  if (v === "" || /^\d+$/.test(v)) setRoundsAmount(v);
+              {/* Minus stepper */}
+              <button
+                type="button"
+                disabled={rounds <= 0}
+                onClick={() => {
+                  const next = Math.max(0, rounds - REDEEM_STEP);
+                  setRoundsAmount(next === 0 ? "" : next.toString());
                 }}
-                placeholder="0"
-                className="flex-1 bg-transparent font-mono text-2xl font-medium tabular-nums outline-none"
-                style={{ color: "var(--text-primary)" }}
-              />
-              <div className="flex items-center gap-2">
-                {(() => {
-                  const Icon = caliberIcons[caliber.id];
-                  return <Icon size={22} />;
-                })()}
-                <span
-                  className="text-sm font-medium"
-                  style={{ color: "var(--text-secondary)" }}
-                >
-                  {caliber.symbol}
-                </span>
+                className="flex h-12 w-12 shrink-0 items-center justify-center transition-none disabled:opacity-30"
+                style={{
+                  backgroundColor: "var(--bg-tertiary)",
+                  border: "1.5px solid var(--border-default)",
+                  color: "var(--text-secondary)",
+                }}
+              >
+                <Minus size={18} />
+              </button>
+
+              {/* Input */}
+              <div
+                className="flex flex-1 items-center px-4 py-3 transition-none"
+                style={{
+                  backgroundColor: "var(--bg-tertiary)",
+                  border: hasError
+                    ? "1.5px solid var(--red)"
+                    : isValid
+                      ? "1.5px solid var(--green)"
+                      : "1.5px solid var(--border-default)",
+                }}
+              >
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={roundsAmount}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    if (v === "" || /^\d+$/.test(v)) setRoundsAmount(v);
+                  }}
+                  placeholder="0"
+                  className="flex-1 bg-transparent font-mono text-2xl font-medium tabular-nums outline-none"
+                  style={{ color: "var(--text-primary)" }}
+                />
+                <div className="flex items-center gap-2">
+                  {(() => {
+                    const Icon = caliberIcons[caliber.id];
+                    return <Icon size={22} />;
+                  })()}
+                  <span
+                    className="text-sm font-medium"
+                    style={{ color: "var(--text-secondary)" }}
+                  >
+                    {caliber.symbol}
+                  </span>
+                </div>
               </div>
+
+              {/* Plus stepper */}
+              <button
+                type="button"
+                disabled={rounds + REDEEM_STEP > Math.floor(balance)}
+                onClick={() => {
+                  const current =
+                    rounds % REDEEM_STEP === 0
+                      ? rounds
+                      : Math.floor(rounds / REDEEM_STEP) * REDEEM_STEP;
+                  const next = current + REDEEM_STEP;
+                  setRoundsAmount(next.toString());
+                }}
+                className="flex h-12 w-12 shrink-0 items-center justify-center transition-none disabled:opacity-30"
+                style={{
+                  backgroundColor: "var(--bg-tertiary)",
+                  border: "1.5px solid var(--border-default)",
+                  color: "var(--text-secondary)",
+                }}
+              >
+                <Plus size={18} />
+              </button>
             </div>
+
+            {/* Preset amount chips */}
+            <div className="mt-3 flex gap-2">
+              {PRESET_AMOUNTS.filter((a) => a <= Math.floor(balance)).map(
+                (amount) => (
+                  <button
+                    key={amount}
+                    type="button"
+                    onClick={() => setRoundsAmount(amount.toString())}
+                    className="flex-1 py-1.5 text-center font-mono text-xs font-medium transition-none"
+                    style={{
+                      backgroundColor:
+                        rounds === amount
+                          ? "var(--brass-muted)"
+                          : "var(--bg-tertiary)",
+                      border:
+                        rounds === amount
+                          ? "1.5px solid var(--brass)"
+                          : "1.5px solid var(--border-default)",
+                      color:
+                        rounds === amount
+                          ? "var(--brass)"
+                          : "var(--text-secondary)",
+                    }}
+                  >
+                    {amount.toLocaleString("en-US")}
+                  </button>
+                ),
+              )}
+            </div>
+
             <div className="mt-1.5 flex items-center justify-between">
               <div>
                 {belowMin && (
                   <p className="text-xs" style={{ color: "var(--red)" }}>
-                    Minimum redeem is {minRedeem} rounds
+                    Minimum redeem is{" "}
+                    {minRedeem.toLocaleString("en-US")} rounds
+                  </p>
+                )}
+                {!belowMin && notMultiple && (
+                  <p className="text-xs" style={{ color: "var(--red)" }}>
+                    Must be in increments of{" "}
+                    {REDEEM_STEP.toLocaleString("en-US")}
                   </p>
                 )}
                 {exceedsBalance && (
@@ -251,16 +343,18 @@ export function StepCompose({
               <p className="text-xs" style={{ color: "var(--text-muted)" }}>
                 Balance: {Math.floor(balance).toLocaleString("en-US")}{" "}
                 {caliber.symbol}{" "}
-                <button
-                  type="button"
-                  onClick={() =>
-                    setRoundsAmount(Math.floor(balance).toString())
-                  }
-                  className="ml-1 font-semibold uppercase transition-none"
-                  style={{ color: "var(--brass)" }}
-                >
-                  MAX
-                </button>
+                {maxRedeemable > 0 && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setRoundsAmount(maxRedeemable.toString())
+                    }
+                    className="ml-1 font-semibold uppercase transition-none"
+                    style={{ color: "var(--brass)" }}
+                  >
+                    MAX
+                  </button>
+                )}
               </p>
             </div>
           </div>
