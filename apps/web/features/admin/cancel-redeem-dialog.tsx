@@ -49,9 +49,17 @@ export function CancelRedeemDialog({
     orderId: order.onChainOrderId ? BigInt(order.onChainOrderId) : undefined,
   });
 
-  // React to confirmation
+  // React to confirmation — persist the cancellation reason to the DB
   useEffect(() => {
     if (isConfirmed) {
+      const trimmed = reason.trim();
+      if (trimmed) {
+        void fetch(`/api/admin/orders/${order.id}/cancel-reason`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ reason: trimmed }),
+        });
+      }
       toast.success("Redeem order cancelled");
       void queryClient.invalidateQueries({
         queryKey: queryKeys.admin.orders.all("REDEEM"),
@@ -65,7 +73,7 @@ export function CancelRedeemDialog({
       setReason("");
       setReasonError("");
     }
-  }, [isConfirmed, order.id, onCancelled, onOpenChange, reset, queryClient]);
+  }, [isConfirmed, order.id, onCancelled, onOpenChange, reset, queryClient, reason]);
 
   // React to error
   useEffect(() => {

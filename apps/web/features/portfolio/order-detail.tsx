@@ -569,6 +569,14 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
             </DetailRow>
           )}
 
+          {order.cancellationReason && (
+            <DetailRow label="Cancellation Reason">
+              <span style={{ color: "var(--text-secondary)" }}>
+                {order.cancellationReason}
+              </span>
+            </DetailRow>
+          )}
+
           {order.trackingId && (
             <DetailRow label="Tracking">
               <a

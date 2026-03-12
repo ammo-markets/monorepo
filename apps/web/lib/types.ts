@@ -28,6 +28,7 @@ export interface OrderFromAPI {
   walletAddress: string | null;
   txHash: string | null;
   trackingId?: string | null;
+  cancellationReason?: string | null;
   chainId: number | null;
   mintPrice: string | null;
   refundAmount: string | null;

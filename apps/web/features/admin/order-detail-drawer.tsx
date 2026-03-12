@@ -479,6 +479,27 @@ export function OrderDetailDrawer({
               </div>
             )}
 
+            {/* Cancellation reason — only for cancelled redeem orders */}
+            {type === "REDEEM" &&
+              isRedeemOrder(order) &&
+              order.status === "CANCELLED" &&
+              order.cancellationReason && (
+                <div className="space-y-3">
+                  <h3
+                    className="text-xs font-semibold uppercase tracking-wider"
+                    style={{ color: "var(--text-muted)" }}
+                  >
+                    Cancellation Reason
+                  </h3>
+                  <p
+                    className="text-sm"
+                    style={{ color: "var(--text-secondary)" }}
+                  >
+                    {order.cancellationReason}
+                  </p>
+                </div>
+              )}
+
             {/* Tracking — only for finalized redeem orders */}
             {type === "REDEEM" &&
               isRedeemOrder(order) &&

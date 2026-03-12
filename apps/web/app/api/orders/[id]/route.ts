@@ -43,6 +43,7 @@ export async function GET(
       mintPrice: order.mintPrice,
       refundAmount: order.refundAmount,
       feeAmount: order.feeAmount,
+      cancellationReason: order.cancellationReason,
       createdAt: order.createdAt.toISOString(),
       updatedAt: order.updatedAt.toISOString(),
       shippingAddress: isOwner ? order.shippingAddress : null,

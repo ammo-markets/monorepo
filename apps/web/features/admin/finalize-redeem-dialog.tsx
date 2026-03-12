@@ -22,6 +22,7 @@ export interface AdminRedeemOrder {
   onChainOrderId: string | null;
   txHash: string | null;
   trackingId: string | null;
+  cancellationReason: string | null;
   shippingAddress: {
     id: string;
     orderId: string;
