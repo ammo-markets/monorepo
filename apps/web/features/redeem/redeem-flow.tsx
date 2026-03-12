@@ -20,6 +20,7 @@ import type { Caliber } from "@ammo-exchange/shared";
 import { contracts } from "@/lib/chain";
 import { usePendingOrders } from "@/hooks/use-pending-orders";
 import { useOrders } from "@/hooks/use-orders";
+import { useSaveShipping } from "@/hooks/use-save-shipping";
 
 import { StepCompose } from "./steps/step-compose";
 import { StepReviewAndConfirm } from "./steps/step-review-and-confirm";
@@ -70,6 +71,7 @@ export function RedeemFlow({
 
   // ── Pre-fill shipping from most recent redeem order ──
   const { data: pastOrders } = useOrders(wallet.address);
+  const { mutate: saveShipping } = useSaveShipping(wallet.address);
 
   const [localAddress, setLocalAddress] = useState<ShippingAddress>({
     fullName: "",
@@ -201,12 +203,10 @@ export function RedeemFlow({
       (o) => o.txHash === redeemTx.redeemHash && !o.id.startsWith("pending-"),
     );
 
-    if (order) {
+    if (order && wallet.address) {
       shippingSaved.current = true;
-      fetch("/api/redeem/shipping", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+      saveShipping(
+        {
           orderId: order.id,
           walletAddress: wallet.address,
           name: localAddress.fullName,
@@ -215,13 +215,21 @@ export function RedeemFlow({
           city: localAddress.city,
           state: localAddress.state,
           zip: localAddress.zip,
-        }),
-      }).catch(() => {
-        // Shipping save failed — user can update later
-        shippingSaved.current = false;
-      });
+        },
+        {
+          onError: () => {
+            shippingSaved.current = false;
+          },
+        },
+      );
     }
-  }, [pastOrders, redeemTx.redeemHash, localAddress, wallet.address]);
+  }, [
+    pastOrders,
+    redeemTx.redeemHash,
+    localAddress,
+    wallet.address,
+    saveShipping,
+  ]);
 
   // ── Toast on errors ──
   useEffect(() => {
