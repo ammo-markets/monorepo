@@ -23,9 +23,6 @@ export async function GET() {
       },
     );
   } catch {
-    return Response.json(
-      { error: "Failed to fetch prices" },
-      { status: 500 },
-    );
+    return Response.json({ error: "Failed to fetch prices" }, { status: 500 });
   }
 }

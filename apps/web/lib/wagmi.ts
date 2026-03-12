@@ -7,7 +7,10 @@ import { env } from "@/lib/env";
 export const wagmiConfig = getDefaultConfig({
   appName: "Ammo Exchange",
   projectId: env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
-  chains: [activeChain, ...(activeChain.id === avalancheFuji.id ? [avalanche] : [avalancheFuji])],
+  chains: [
+    activeChain,
+    ...(activeChain.id === avalancheFuji.id ? [avalanche] : [avalancheFuji]),
+  ],
   transports: {
     [avalanche.id]: http(),
     [avalancheFuji.id]: http(),

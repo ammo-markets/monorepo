@@ -326,8 +326,7 @@ export function RedeemOrdersTable() {
                       {order.status === "PENDING" && (
                         <div className="flex gap-2">
                           {(() => {
-                            const blockReasons =
-                              getFinalizeBlockReasons(order);
+                            const blockReasons = getFinalizeBlockReasons(order);
                             const isBlocked = blockReasons.length > 0;
 
                             const btn = (
@@ -367,9 +366,7 @@ export function RedeemOrdersTable() {
                                     side="top"
                                     className="max-w-xs border border-red-900/40 bg-ax-primary text-left"
                                     onClick={(e) => e.stopPropagation()}
-                                    onPointerDown={(e) =>
-                                      e.stopPropagation()
-                                    }
+                                    onPointerDown={(e) => e.stopPropagation()}
                                   >
                                     <p className="mb-1 font-medium text-red-400">
                                       Cannot finalize

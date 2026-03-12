@@ -200,9 +200,7 @@ export function StepCompose({
               />
             </div>
 
-            <div
-              className="flex items-center gap-2 transition-none"
-            >
+            <div className="flex items-center gap-2 transition-none">
               {/* Minus stepper */}
               <button
                 type="button"
@@ -316,8 +314,7 @@ export function StepCompose({
               <div>
                 {belowMin && (
                   <p className="text-xs" style={{ color: "var(--red)" }}>
-                    Minimum redeem is{" "}
-                    {minRedeem.toLocaleString("en-US")} rounds
+                    Minimum redeem is {minRedeem.toLocaleString("en-US")} rounds
                   </p>
                 )}
                 {!belowMin && notMultiple && (
@@ -346,9 +343,7 @@ export function StepCompose({
                 {maxRedeemable > 0 && (
                   <button
                     type="button"
-                    onClick={() =>
-                      setRoundsAmount(maxRedeemable.toString())
-                    }
+                    onClick={() => setRoundsAmount(maxRedeemable.toString())}
                     className="ml-1 font-semibold uppercase transition-none"
                     style={{ color: "var(--brass)" }}
                   >

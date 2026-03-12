@@ -1,10 +1,7 @@
 import { config } from "dotenv";
 import { resolve } from "node:path";
 import pg from "pg";
-import {
-  BASE_PRICES,
-  createAmmoPriceHistory,
-} from "./test-seed.js";
+import { BASE_PRICES, createAmmoPriceHistory } from "./test-seed.js";
 
 // Load .env from monorepo root
 config({ path: resolve(import.meta.dirname ?? ".", "../../../.env") });

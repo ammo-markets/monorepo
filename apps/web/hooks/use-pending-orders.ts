@@ -53,8 +53,9 @@ export function usePendingOrders(address: string | undefined) {
       );
 
       // Enable short polling (5s) for 2 minutes
-      const originalInterval =
-        queryClient.getQueryDefaults(queryKeys.orders.list(address!))?.refetchInterval;
+      const originalInterval = queryClient.getQueryDefaults(
+        queryKeys.orders.list(address!),
+      )?.refetchInterval;
 
       queryClient.setQueryDefaults(queryKeys.orders.list(address!), {
         refetchInterval: 5_000,

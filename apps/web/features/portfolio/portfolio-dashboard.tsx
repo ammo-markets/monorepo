@@ -16,7 +16,11 @@ import {
   OrdersTableSkeleton,
   ActiveOrdersSkeleton,
 } from "./portfolio-skeletons";
-import { EmptyHoldings, EmptyOrderHistory, EmptyFilteredOrders } from "./portfolio-empty-states";
+import {
+  EmptyHoldings,
+  EmptyOrderHistory,
+  EmptyFilteredOrders,
+} from "./portfolio-empty-states";
 import type { HoldingRow } from "./holdings-row";
 import { PortfolioHero } from "./portfolio-hero";
 import { OrdersDesktopRow, OrderMobileCard } from "./orders-row";
@@ -81,14 +85,21 @@ export function PortfolioDashboard() {
 
   // Split orders into active vs history
   const activeOrders = useMemo(
-    () => orders.filter((o: OrderFromAPI) => o.status === "PENDING" || o.status === "PROCESSING"),
+    () =>
+      orders.filter(
+        (o: OrderFromAPI) =>
+          o.status === "PENDING" || o.status === "PROCESSING",
+      ),
     [orders],
   );
 
   const historyOrders = useMemo(
     () =>
       orders.filter(
-        (o: OrderFromAPI) => o.status === "COMPLETED" || o.status === "FAILED" || o.status === "CANCELLED",
+        (o: OrderFromAPI) =>
+          o.status === "COMPLETED" ||
+          o.status === "FAILED" ||
+          o.status === "CANCELLED",
       ),
     [orders],
   );
@@ -96,11 +107,16 @@ export function PortfolioDashboard() {
   // Filter history by type/status + optional caliber
   const filteredHistory = useMemo(() => {
     let result = historyOrders;
-    if (historyFilter === "Mint") result = result.filter((o: OrderFromAPI) => o.type === "MINT");
-    else if (historyFilter === "Redeem") result = result.filter((o: OrderFromAPI) => o.type === "REDEEM");
+    if (historyFilter === "Mint")
+      result = result.filter((o: OrderFromAPI) => o.type === "MINT");
+    else if (historyFilter === "Redeem")
+      result = result.filter((o: OrderFromAPI) => o.type === "REDEEM");
     else if (historyFilter === "Failed")
-      result = result.filter((o: OrderFromAPI) => o.status === "FAILED" || o.status === "CANCELLED");
-    if (caliberFilter) result = result.filter((o: OrderFromAPI) => o.caliber === caliberFilter);
+      result = result.filter(
+        (o: OrderFromAPI) => o.status === "FAILED" || o.status === "CANCELLED",
+      );
+    if (caliberFilter)
+      result = result.filter((o: OrderFromAPI) => o.caliber === caliberFilter);
     return result;
   }, [historyOrders, historyFilter, caliberFilter]);
 
@@ -109,8 +125,12 @@ export function PortfolioDashboard() {
 
   // Tab counts computed from historyOrders
   const tabCounts = useMemo(() => {
-    const mint = historyOrders.filter((o: OrderFromAPI) => o.type === "MINT").length;
-    const redeem = historyOrders.filter((o: OrderFromAPI) => o.type === "REDEEM").length;
+    const mint = historyOrders.filter(
+      (o: OrderFromAPI) => o.type === "MINT",
+    ).length;
+    const redeem = historyOrders.filter(
+      (o: OrderFromAPI) => o.type === "REDEEM",
+    ).length;
     const failed = historyOrders.filter(
       (o: OrderFromAPI) => o.status === "FAILED" || o.status === "CANCELLED",
     ).length;
@@ -128,7 +148,10 @@ export function PortfolioDashboard() {
     setCaliberFilter(caliber);
     setVisibleCount(ORDERS_PAGE_SIZE);
     setTimeout(() => {
-      orderHistorySectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      orderHistorySectionRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
     }, 0);
   }, []);
 
@@ -166,7 +189,12 @@ export function PortfolioDashboard() {
   }
 
   const dataLoading = balancesLoading || marketLoading;
-  const historyFilterTabs: HistoryFilter[] = ["All", "Mint", "Redeem", "Failed"];
+  const historyFilterTabs: HistoryFilter[] = [
+    "All",
+    "Mint",
+    "Redeem",
+    "Failed",
+  ];
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 lg:px-8 lg:py-10">
@@ -230,7 +258,8 @@ export function PortfolioDashboard() {
               <span
                 className="ml-2 inline-flex items-center justify-center rounded-full px-2 py-0.5 text-xs font-semibold"
                 style={{
-                  backgroundColor: "color-mix(in srgb, var(--blue) 15%, transparent)",
+                  backgroundColor:
+                    "color-mix(in srgb, var(--blue) 15%, transparent)",
                   color: "var(--blue)",
                 }}
               >
@@ -271,7 +300,9 @@ export function PortfolioDashboard() {
                 className="whitespace-nowrap rounded-md px-3 py-2.5 text-xs font-medium transition-all duration-150"
                 style={{
                   backgroundColor:
-                    historyFilter === tab ? "var(--bg-tertiary)" : "transparent",
+                    historyFilter === tab
+                      ? "var(--bg-tertiary)"
+                      : "transparent",
                   color:
                     historyFilter === tab
                       ? "var(--text-primary)"
@@ -312,7 +343,8 @@ export function PortfolioDashboard() {
             <span
               className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium"
               style={{
-                backgroundColor: "color-mix(in srgb, var(--brass) 15%, transparent)",
+                backgroundColor:
+                  "color-mix(in srgb, var(--brass) 15%, transparent)",
                 color: "var(--brass)",
               }}
             >

@@ -212,11 +212,7 @@ async function processAndCommit(
 
         switch (event.eventName) {
           case "Minted":
-            await handleMinted(
-              tx,
-              event.args as unknown as MintedArgs,
-              meta,
-            );
+            await handleMinted(tx, event.args as unknown as MintedArgs, meta);
             break;
           case "RedeemRequested":
             await handleRedeemRequested(

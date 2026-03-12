@@ -84,9 +84,7 @@ export function AdminSidebar() {
                 href={href}
                 onClick={() => setMobileOpen(false)}
                 className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                  isActive
-                    ? ""
-                    : "hover:bg-ax-tertiary hover:text-text-primary"
+                  isActive ? "" : "hover:bg-ax-tertiary hover:text-text-primary"
                 }`}
                 style={
                   isActive
@@ -149,9 +147,7 @@ export function AdminSidebar() {
                 key={href}
                 href={href}
                 className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                  isActive
-                    ? ""
-                    : "hover:bg-ax-tertiary hover:text-text-primary"
+                  isActive ? "" : "hover:bg-ax-tertiary hover:text-text-primary"
                 }`}
                 style={
                   isActive

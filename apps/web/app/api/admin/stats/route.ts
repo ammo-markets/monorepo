@@ -25,7 +25,9 @@ export async function GET() {
     // Query actionable order counts from DB
     const [pendingRedeems, unbackedMints] = await Promise.all([
       prisma.order.count({ where: { type: "REDEEM", status: "PENDING" } }),
-      prisma.order.count({ where: { type: "MINT", status: "COMPLETED", backedAt: null } }),
+      prisma.order.count({
+        where: { type: "MINT", status: "COMPLETED", backedAt: null },
+      }),
     ]);
 
     return Response.json({

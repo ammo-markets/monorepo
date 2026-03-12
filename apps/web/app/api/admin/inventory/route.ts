@@ -46,9 +46,7 @@ export async function GET() {
         name: CALIBER_SPECS[caliber].name,
         rounds: data ? (data.rounds / 10n ** 18n).toString() : "0",
         orderCount: data?.orderCount ?? 0,
-        usdcTotal: data
-          ? (Number(data.usdcTotal) / 1e6).toFixed(2)
-          : "0.00",
+        usdcTotal: data ? (Number(data.usdcTotal) / 1e6).toFixed(2) : "0.00",
       };
     });
 
@@ -74,19 +72,13 @@ export async function POST(request: Request) {
 
     const body = (await request.json()) as { caliber?: string };
     if (!body.caliber) {
-      return Response.json(
-        { error: "caliber is required" },
-        { status: 400 },
-      );
+      return Response.json({ error: "caliber is required" }, { status: 400 });
     }
 
     // Validate caliber
     const validCalibers = new Set(CALIBERS);
     if (!validCalibers.has(body.caliber as Caliber)) {
-      return Response.json(
-        { error: "Invalid caliber" },
-        { status: 400 },
-      );
+      return Response.json({ error: "Invalid caliber" }, { status: 400 });
     }
 
     const caliber = body.caliber as Caliber;

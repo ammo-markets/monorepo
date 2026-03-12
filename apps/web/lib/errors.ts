@@ -8,8 +8,7 @@ import { BaseError, ContractFunctionRevertedError } from "viem";
  */
 export const CONTRACT_ERROR_MESSAGES: Record<string, string> = {
   InvalidAmount: "Amount must be greater than zero.",
-  MinMintNotMet:
-    "Amount is below the minimum requirement for this caliber.",
+  MinMintNotMet: "Amount is below the minimum requirement for this caliber.",
   MarketPaused: "This market is currently paused. Please try again later.",
   DeadlineExpired:
     "The transaction deadline has passed. Please submit a new order.",

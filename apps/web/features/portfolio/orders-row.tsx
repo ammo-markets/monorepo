@@ -7,9 +7,14 @@ import { timeAgo } from "@/lib/utils";
 import { StatusBadge, TypeBadge, mapOrderStatus } from "./portfolio-badges";
 import type { OrderFromAPI } from "@/lib/types";
 
-export function formatOrderAmount(order: OrderFromAPI): { value: string; label: string } {
+export function formatOrderAmount(order: OrderFromAPI): {
+  value: string;
+  label: string;
+} {
   if (order.type === "MINT") {
-    const val = order.usdcAmount ? (Number(order.usdcAmount) / 1e6).toFixed(2) : "\u2014";
+    const val = order.usdcAmount
+      ? (Number(order.usdcAmount) / 1e6).toFixed(2)
+      : "\u2014";
     return { value: val, label: "USDT spent" };
   }
   const val = order.tokenAmount
@@ -116,7 +121,10 @@ export function OrderMobileCard({ order }: { order: OrderFromAPI }) {
       role={order.id.startsWith("pending-") ? undefined : "link"}
       tabIndex={order.id.startsWith("pending-") ? undefined : 0}
       onKeyDown={(e) => {
-        if (!order.id.startsWith("pending-") && (e.key === "Enter" || e.key === " ")) {
+        if (
+          !order.id.startsWith("pending-") &&
+          (e.key === "Enter" || e.key === " ")
+        ) {
           e.preventDefault();
           router.push(`/portfolio/orders/${order.id}`);
         }

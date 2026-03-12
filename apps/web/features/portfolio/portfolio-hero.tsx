@@ -217,7 +217,9 @@ function CaliberCard({
       }}
       role="link"
       tabIndex={0}
-      onClick={() => router.push(`/exchange?caliber=${holding.caliber.toLowerCase()}`)}
+      onClick={() =>
+        router.push(`/exchange?caliber=${holding.caliber.toLowerCase()}`)
+      }
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
@@ -259,7 +261,10 @@ function CaliberCard({
       </div>
 
       {/* Actions */}
-      <div className="mt-3 flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="mt-3 flex items-center gap-2"
+        onClick={(e) => e.stopPropagation()}
+      >
         <Link
           href={`/exchange?tab=mint&caliber=${holding.caliber.toLowerCase()}`}
           className="flex-1 rounded-md px-2 py-1.5 text-center text-xs font-semibold transition-colors duration-150 bg-brass text-ax-primary hover:bg-brass-hover"

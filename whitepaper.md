@@ -63,6 +63,7 @@ User burns token ──► CaliberMarket contract ──► Locks tokens in cont
 ```
 
 **Price flow:**
+
 ```
 AmmoSquared ──► Chainlink Functions DON (every 4 hours) ──► PriceOracle contract
                                                           ──► CaliberMarket reads price at mint time
@@ -122,12 +123,12 @@ Note: redemption is **U.S.-only** and subject to shipping/legal constraints. Non
 
 Each supported ammunition caliber and load type has its own ERC-20 token. Rather than a single token per caliber, we separate by load type (e.g., practice vs. self-defense) because these have materially different prices, demand curves, and use cases:
 
-| Token    | Symbol    | Represents                                                            | Backed By                              |
-| -------- | --------- | --------------------------------------------------------------------- | -------------------------------------- |
-| `ax9P`   | ax9P      | 1 round of 9mm 115gr FMJ, brass case, factory‑new practice ammo       | Physical 9mm FMJ in warehouse          |
-| `ax9SD`  | ax9SD     | 1 round of 9mm 124gr JHP, brass case, factory‑new self‑defense ammo   | Physical 9mm JHP in warehouse          |
-| `ax556SD`| ax556SD   | 1 round of 5.56 62gr self‑defense, brass case, factory‑new            | Physical 5.56 SD in warehouse          |
-| `ax556P` | ax556P    | 1 round of 5.56 NATO 55gr FMJ, brass case, factory‑new practice ammo  | Physical 5.56 FMJ in warehouse         |
+| Token     | Symbol  | Represents                                                           | Backed By                      |
+| --------- | ------- | -------------------------------------------------------------------- | ------------------------------ |
+| `ax9P`    | ax9P    | 1 round of 9mm 115gr FMJ, brass case, factory‑new practice ammo      | Physical 9mm FMJ in warehouse  |
+| `ax9SD`   | ax9SD   | 1 round of 9mm 124gr JHP, brass case, factory‑new self‑defense ammo  | Physical 9mm JHP in warehouse  |
+| `ax556SD` | ax556SD | 1 round of 5.56 62gr self‑defense, brass case, factory‑new           | Physical 5.56 SD in warehouse  |
+| `ax556P`  | ax556P  | 1 round of 5.56 NATO 55gr FMJ, brass case, factory‑new practice ammo | Physical 5.56 FMJ in warehouse |
 
 **Why per-caliber-and-load tokens instead of an index or a single token per caliber?**
 
@@ -250,12 +251,12 @@ This mirrors how **Tether Gold (XAUT)** and **Paxos Gold (PAXG)** operate — bo
 
 ### 5.1 Fee Structure
 
-| Revenue Source   | Rate                    | Notes                                        |
-| ---------------- | ----------------------- | -------------------------------------------- |
+| Revenue Source   | Rate                        | Notes                                         |
+| ---------------- | --------------------------- | --------------------------------------------- |
 | Mint fee         | 1.5% (configurable, max 5%) | Charged on USDC deposit, deducted before mint |
 | Redeem fee       | 1.5% (configurable, max 5%) | Charged on token amount at finalization       |
-| Wholesale spread | 5-15%                  | Buy wholesale, mint at retail price           |
-| Shipping fee     | At cost + handling      | Passed through to redeemer                    |
+| Wholesale spread | 5-15%                       | Buy wholesale, mint at retail price           |
+| Shipping fee     | At cost + handling          | Passed through to redeemer                    |
 
 **Why no storage fee (demurrage)?**
 

@@ -179,7 +179,13 @@ export function RedeemFlow({
         });
       }
     }
-  }, [redeemTx.isRedeemConfirmed, activeCaliber, redeemTx.redeemHash, addPendingOrder, parsedTokenAmount]);
+  }, [
+    redeemTx.isRedeemConfirmed,
+    activeCaliber,
+    redeemTx.redeemHash,
+    addPendingOrder,
+    parsedTokenAmount,
+  ]);
 
   // ── Toast on errors ──
   useEffect(() => {
@@ -232,7 +238,10 @@ export function RedeemFlow({
   const visualStep = step === 0 ? 0 : step === 3 ? 2 : 1;
 
   return (
-    <div ref={containerRef} className="mx-auto w-full max-w-xl px-4 py-8 md:py-12">
+    <div
+      ref={containerRef}
+      className="mx-auto w-full max-w-xl px-4 py-8 md:py-12"
+    >
       <RedeemProgress
         currentStep={visualStep}
         isEmbedded={isEmbedded}

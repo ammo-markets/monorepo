@@ -139,7 +139,9 @@ function MobileCaliberCard({
     <div
       className="block cursor-pointer rounded-xl border p-4 transition-all duration-150"
       style={{
-        backgroundColor: isSelected ? "var(--bg-tertiary)" : "var(--bg-secondary)",
+        backgroundColor: isSelected
+          ? "var(--bg-tertiary)"
+          : "var(--bg-secondary)",
         borderColor: isSelected ? "var(--brass)" : "var(--border-default)",
         borderLeftWidth: isSelected ? "3px" : "1px",
       }}

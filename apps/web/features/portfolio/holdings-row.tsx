@@ -69,7 +69,10 @@ export function HoldingsDesktopRow({
       </td>
       {/* Actions */}
       <td className="px-6 py-4 text-right">
-        <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="flex items-center justify-end gap-2"
+          onClick={(e) => e.stopPropagation()}
+        >
           <Link
             href={`/exchange?tab=mint&caliber=${holding.caliber.toLowerCase()}`}
             className="rounded-md px-3 py-1.5 text-xs font-semibold transition-colors duration-150 bg-brass text-ax-primary hover:bg-brass-hover"
@@ -116,7 +119,9 @@ export function HoldingsMobileCard({
       }}
       role="link"
       tabIndex={0}
-      onClick={() => router.push(`/exchange?caliber=${holding.caliber.toLowerCase()}`)}
+      onClick={() =>
+        router.push(`/exchange?caliber=${holding.caliber.toLowerCase()}`)
+      }
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
@@ -184,7 +189,10 @@ export function HoldingsMobileCard({
       </div>
 
       {/* Actions */}
-      <div className="mt-4 flex flex-col gap-2" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="mt-4 flex flex-col gap-2"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex items-center gap-2">
           <Link
             href={`/exchange?tab=mint&caliber=${holding.caliber.toLowerCase()}`}

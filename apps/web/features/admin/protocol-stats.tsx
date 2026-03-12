@@ -1,11 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {
-  ArrowDownCircle,
-  RefreshCw,
-  Package,
-} from "lucide-react";
+import { ArrowDownCircle, RefreshCw, Package } from "lucide-react";
 import { useAdminStats } from "@/hooks/use-admin-stats";
 
 export function ProtocolStats() {

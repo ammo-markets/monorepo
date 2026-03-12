@@ -9,11 +9,7 @@ export const env = createEnv({
     ALLOWED_ORIGINS: z.string().optional(),
     APP_DOMAIN: z.string().min(1),
     APP_URL: z.url(),
-    FAUCET_PRIVATE_KEY: z
-      .string()
-      .startsWith("0x")
-      .length(66)
-      .optional(),
+    FAUCET_PRIVATE_KEY: z.string().startsWith("0x").length(66).optional(),
   },
   client: {
     NEXT_PUBLIC_CHAIN: z.enum(["fuji", "mainnet"]).default("fuji"),

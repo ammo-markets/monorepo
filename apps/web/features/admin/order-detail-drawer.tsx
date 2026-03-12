@@ -393,18 +393,18 @@ export function OrderDetailDrawer({
 
                   {(order as AdminMintOrder).refundAmount != null &&
                     (order as AdminMintOrder).refundAmount !== "0" && (
-                    <div className="flex justify-between">
-                      <span style={{ color: "var(--text-secondary)" }}>
-                        Refund Amount
-                      </span>
-                      <span
-                        className="font-mono"
-                        style={{ color: "var(--text-primary)" }}
-                      >
-                        {(order as AdminMintOrder).refundAmount}
-                      </span>
-                    </div>
-                  )}
+                      <div className="flex justify-between">
+                        <span style={{ color: "var(--text-secondary)" }}>
+                          Refund Amount
+                        </span>
+                        <span
+                          className="font-mono"
+                          style={{ color: "var(--text-primary)" }}
+                        >
+                          {(order as AdminMintOrder).refundAmount}
+                        </span>
+                      </div>
+                    )}
                 </div>
               </div>
             )}

@@ -6,7 +6,11 @@ import type { OrderFromAPI } from "@/lib/types";
 import type { Caliber } from "@ammo-exchange/shared";
 import { caliberIcons } from "@/features/shared/caliber-icons";
 import { timeAgo } from "@/lib/utils";
-import { StatusBadge, TypeBadge, mapOrderStatus } from "@/features/portfolio/portfolio-badges";
+import {
+  StatusBadge,
+  TypeBadge,
+  mapOrderStatus,
+} from "@/features/portfolio/portfolio-badges";
 
 /* ────────────── Skeleton ────────────── */
 

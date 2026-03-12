@@ -48,17 +48,11 @@ export async function GET(request: Request) {
   const range = (searchParams.get("range")?.toUpperCase() || "7D") as TimeRange;
 
   if (!caliber || !VALID_CALIBERS.includes(caliber)) {
-    return NextResponse.json(
-      { error: "Invalid caliber" },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: "Invalid caliber" }, { status: 400 });
   }
 
   if (!VALID_RANGES.includes(range)) {
-    return NextResponse.json(
-      { error: "Invalid range" },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: "Invalid range" }, { status: 400 });
   }
 
   const prismaCaliber = CALIBER_TO_PRISMA[caliber];

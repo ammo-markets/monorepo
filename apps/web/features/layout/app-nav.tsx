@@ -2,13 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  ArrowLeftRight,
-  BarChart3,
-  Wallet,
-  User,
-  Shield,
-} from "lucide-react";
+import { ArrowLeftRight, BarChart3, Wallet, User, Shield } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { AmmoLogo } from "./logo";
 import { useKeeperCheck } from "@/hooks/use-keeper-check";

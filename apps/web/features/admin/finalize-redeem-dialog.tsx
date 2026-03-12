@@ -184,7 +184,12 @@ export function FinalizeRedeemDialog({
           </div>
           {order.shippingAddress ? (
             <div>
-              <span className="text-xs" style={{ color: "var(--text-secondary)" }}>Ship To</span>
+              <span
+                className="text-xs"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                Ship To
+              </span>
               <div
                 className="mt-1 rounded-lg border p-3 text-xs leading-relaxed"
                 style={{
@@ -195,8 +200,13 @@ export function FinalizeRedeemDialog({
               >
                 <p className="font-medium">{order.shippingAddress.name}</p>
                 <p>{order.shippingAddress.line1}</p>
-                {order.shippingAddress.line2 && <p>{order.shippingAddress.line2}</p>}
-                <p>{order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.zip}</p>
+                {order.shippingAddress.line2 && (
+                  <p>{order.shippingAddress.line2}</p>
+                )}
+                <p>
+                  {order.shippingAddress.city}, {order.shippingAddress.state}{" "}
+                  {order.shippingAddress.zip}
+                </p>
               </div>
             </div>
           ) : (

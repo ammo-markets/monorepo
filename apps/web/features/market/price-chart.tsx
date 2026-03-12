@@ -58,7 +58,10 @@ function CustomTooltip({
         border: "1px solid var(--border-default)",
       }}
     >
-      <div className="font-mono font-semibold" style={{ color: "var(--brass)" }}>
+      <div
+        className="font-mono font-semibold"
+        style={{ color: "var(--brass)" }}
+      >
         ${point.value.toFixed(4)}
       </div>
       <div style={{ color: "var(--text-muted)" }}>
@@ -107,83 +110,87 @@ export function PriceChart({
             }
       }
     >
-        {isLoading ? (
-          <div className="flex h-full w-full flex-col items-center justify-center gap-3">
-            <div
-              className="h-6 w-6 animate-spin rounded-full border-2 border-current border-t-transparent"
-              style={{ color: "var(--brass)" }}
-            />
-            <span className="text-xs" style={{ color: "var(--text-muted)" }}>
-              Loading chart…
-            </span>
-          </div>
-        ) : !hasData ? (
-          <div className="flex h-full w-full flex-col items-center justify-center">
-            {currentPrice !== undefined && currentPrice > 0 && (
-              <span
-                className="mb-3 font-mono text-3xl font-bold tabular-nums"
-                style={{ color: "var(--brass)" }}
-              >
-                ${currentPrice.toFixed(2)}
-              </span>
-            )}
-            <span className="text-sm" style={{ color: "var(--text-muted)" }}>
-              No price history yet
-            </span>
+      {isLoading ? (
+        <div className="flex h-full w-full flex-col items-center justify-center gap-3">
+          <div
+            className="h-6 w-6 animate-spin rounded-full border-2 border-current border-t-transparent"
+            style={{ color: "var(--brass)" }}
+          />
+          <span className="text-xs" style={{ color: "var(--text-muted)" }}>
+            Loading chart…
+          </span>
+        </div>
+      ) : !hasData ? (
+        <div className="flex h-full w-full flex-col items-center justify-center">
+          {currentPrice !== undefined && currentPrice > 0 && (
             <span
-              className="mt-1 text-xs"
-              style={{ color: "var(--text-muted)", opacity: 0.6 }}
+              className="mb-3 font-mono text-3xl font-bold tabular-nums"
+              style={{ color: "var(--brass)" }}
             >
-              Current oracle price for {caliberId}
+              ${currentPrice.toFixed(2)}
             </span>
-          </div>
-        ) : (
-          <div className="h-full w-full p-4">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={data}>
-                <defs>
-                  <linearGradient id="priceGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="var(--brass)" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="var(--brass)" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <XAxis
-                  dataKey="timestamp"
-                  tickFormatter={(ts: string) => formatXAxis(ts, timeRange)}
-                  tick={{ fill: "var(--text-muted)", fontSize: 11 }}
-                  axisLine={false}
-                  tickLine={false}
-                  minTickGap={40}
-                />
-                <YAxis
-                  domain={yDomain}
-                  tickFormatter={(v: number) => `$${v.toFixed(2)}`}
-                  tick={{ fill: "var(--text-muted)", fontSize: 11 }}
-                  axisLine={false}
-                  tickLine={false}
-                  width={60}
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Area
-                  type="monotone"
-                  dataKey="price"
-                  stroke="var(--brass)"
-                  strokeWidth={2}
-                  fill="url(#priceGradient)"
-                  dot={false}
-                  activeDot={{
-                    r: 4,
-                    fill: "var(--brass)",
-                    stroke: "var(--bg-primary)",
-                    strokeWidth: 2,
-                  }}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        )}
-      </div>
-    );
+          )}
+          <span className="text-sm" style={{ color: "var(--text-muted)" }}>
+            No price history yet
+          </span>
+          <span
+            className="mt-1 text-xs"
+            style={{ color: "var(--text-muted)", opacity: 0.6 }}
+          >
+            Current oracle price for {caliberId}
+          </span>
+        </div>
+      ) : (
+        <div className="h-full w-full p-4">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={data}>
+              <defs>
+                <linearGradient id="priceGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop
+                    offset="5%"
+                    stopColor="var(--brass)"
+                    stopOpacity={0.3}
+                  />
+                  <stop offset="95%" stopColor="var(--brass)" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <XAxis
+                dataKey="timestamp"
+                tickFormatter={(ts: string) => formatXAxis(ts, timeRange)}
+                tick={{ fill: "var(--text-muted)", fontSize: 11 }}
+                axisLine={false}
+                tickLine={false}
+                minTickGap={40}
+              />
+              <YAxis
+                domain={yDomain}
+                tickFormatter={(v: number) => `$${v.toFixed(2)}`}
+                tick={{ fill: "var(--text-muted)", fontSize: 11 }}
+                axisLine={false}
+                tickLine={false}
+                width={60}
+              />
+              <Tooltip content={<CustomTooltip />} />
+              <Area
+                type="monotone"
+                dataKey="price"
+                stroke="var(--brass)"
+                strokeWidth={2}
+                fill="url(#priceGradient)"
+                dot={false}
+                activeDot={{
+                  r: 4,
+                  fill: "var(--brass)",
+                  stroke: "var(--bg-primary)",
+                  strokeWidth: 2,
+                }}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      )}
+    </div>
+  );
 
   if (embedded) return chartContent;
 

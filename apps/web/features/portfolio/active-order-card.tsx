@@ -28,12 +28,18 @@ function MiniStepper({ steps }: { steps: OrderStep[] }) {
         if (step.status === "completed") {
           dotStyle = { backgroundColor: "var(--brass)" };
         } else if (step.status === "current") {
-          dotStyle = { border: "2px solid var(--brass)", backgroundColor: "transparent" };
+          dotStyle = {
+            border: "2px solid var(--brass)",
+            backgroundColor: "transparent",
+          };
           dotClass = "relative";
         } else if (step.status === "failed") {
           dotStyle = { backgroundColor: "var(--red)" };
         } else {
-          dotStyle = { border: "1.5px solid var(--text-muted)", backgroundColor: "transparent" };
+          dotStyle = {
+            border: "1.5px solid var(--text-muted)",
+            backgroundColor: "transparent",
+          };
         }
 
         const lineColor =
@@ -96,7 +102,10 @@ export function ActiveOrderCard({ order }: { order: OrderFromAPI }) {
       <div className="hidden items-center gap-4 sm:flex">
         <Icon size={20} />
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
+          <span
+            className="text-sm font-medium"
+            style={{ color: "var(--text-primary)" }}
+          >
             {order.caliber}
           </span>
           <TypeBadge type={order.type} />
@@ -105,7 +114,10 @@ export function ActiveOrderCard({ order }: { order: OrderFromAPI }) {
           className="font-mono text-sm tabular-nums"
           style={{ color: "var(--text-secondary)" }}
         >
-          {amount.value} <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>{amount.label}</span>
+          {amount.value}{" "}
+          <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>
+            {amount.label}
+          </span>
         </span>
         <div className="ml-auto flex items-center gap-4">
           <MiniStepper steps={steps} />
@@ -130,7 +142,10 @@ export function ActiveOrderCard({ order }: { order: OrderFromAPI }) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Icon size={18} />
-            <span className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
+            <span
+              className="text-sm font-medium"
+              style={{ color: "var(--text-primary)" }}
+            >
               {order.caliber}
             </span>
             <TypeBadge type={order.type} />
@@ -154,7 +169,10 @@ export function ActiveOrderCard({ order }: { order: OrderFromAPI }) {
             style={{ color: "var(--text-secondary)" }}
           >
             {amount.value}{" "}
-            <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>
+            <span
+              className="text-[11px]"
+              style={{ color: "var(--text-muted)" }}
+            >
               {amount.label}
             </span>
           </span>

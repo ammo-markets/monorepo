@@ -68,11 +68,7 @@ export function MintFlow({
   const { addPendingOrder } = usePendingOrders(wallet.address);
   const { usdc: usdcBalanceRaw } = useTokenBalances();
   const marketAddress = contracts.calibers[activeCaliber].market;
-  const allowance = useAllowance(
-    contracts.usdc,
-    wallet.address,
-    marketAddress,
-  );
+  const allowance = useAllowance(contracts.usdc, wallet.address, marketAddress);
 
   // ── Format real USDC balance (6 decimals -> number) ──
   const usdcBalance = useMemo(() => {
@@ -144,7 +140,13 @@ export function MintFlow({
         });
       }
     }
-  }, [mintTx.isMintConfirmed, activeCaliber, mintTx.mintHash, addPendingOrder, parsedUsdcAmount]);
+  }, [
+    mintTx.isMintConfirmed,
+    activeCaliber,
+    mintTx.mintHash,
+    addPendingOrder,
+    parsedUsdcAmount,
+  ]);
 
   // ── Toast on errors ──
   useEffect(() => {
@@ -193,7 +195,10 @@ export function MintFlow({
   }, [mintTx, isEmbedded, preselected]);
 
   return (
-    <div ref={containerRef} className="mx-auto w-full max-w-xl px-4 py-8 md:py-12">
+    <div
+      ref={containerRef}
+      className="mx-auto w-full max-w-xl px-4 py-8 md:py-12"
+    >
       <MintProgress
         currentStep={step}
         isEmbedded={isEmbedded}

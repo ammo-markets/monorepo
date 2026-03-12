@@ -24,7 +24,10 @@ type GeneratorOptions = {
   seed?: number; // deterministic output if provided
 };
 
-export function createAmmoPriceHistory(basePrices: Record<AmmoType, number>, options: GeneratorOptions = {}): PriceHistory {
+export function createAmmoPriceHistory(
+  basePrices: Record<AmmoType, number>,
+  options: GeneratorOptions = {},
+): PriceHistory {
   const days = options.days ?? 90;
   const endDate = options.endDate ?? new Date();
   const rng = mulberry32(options.seed ?? 123456789);
@@ -111,10 +114,12 @@ export function createAmmoPriceHistory(basePrices: Record<AmmoType, number>, opt
       promoShock[ammo] *= 0.72;
 
       // Mean-reverting idiosyncratic movement around base.
-      const idiosyncratic = state[ammo] * (1 - p.reversion) + gaussian(rng, 0, p.volatility);
+      const idiosyncratic =
+        state[ammo] * (1 - p.reversion) + gaussian(rng, 0, p.volatility);
 
       // Combine product-specific behavior + broad market movement + temporary shock.
-      let deviation = idiosyncratic + commonFactor * p.marketBeta + promoShock[ammo];
+      let deviation =
+        idiosyncratic + commonFactor * p.marketBeta + promoShock[ammo];
 
       // Hard bound to requested ±10% around base.
       deviation = clamp(deviation, -0.1, 0.1);
@@ -196,7 +201,8 @@ function softSmooth(points: PricePoint[], strength = 0.2): PricePoint[] {
     const nextPoint = out[i + 1]!;
 
     const neighborAvg = (prevPoint.priceCents + nextPoint.priceCents) / 2;
-    const blended = currPoint.priceCents * (1 - strength) + neighborAvg * strength;
+    const blended =
+      currPoint.priceCents * (1 - strength) + neighborAvg * strength;
 
     out[i] = {
       date: currPoint.date,

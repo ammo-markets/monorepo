@@ -30,9 +30,7 @@ export function MintProgress({
         className="grid items-center"
         style={{
           gridTemplateColumns: displaySteps
-            .map((_, i) =>
-              i < displaySteps.length - 1 ? "auto 1fr" : "auto",
-            )
+            .map((_, i) => (i < displaySteps.length - 1 ? "auto 1fr" : "auto"))
             .join(" "),
         }}
       >

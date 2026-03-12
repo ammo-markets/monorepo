@@ -2,7 +2,14 @@
 
 import { Fragment, type ReactNode } from "react";
 import Link from "next/link";
-import { ArrowLeft, Check, X, ExternalLink, MessageSquare, AlertTriangle } from "lucide-react";
+import {
+  ArrowLeft,
+  Check,
+  X,
+  ExternalLink,
+  MessageSquare,
+  AlertTriangle,
+} from "lucide-react";
 import { toast } from "sonner";
 import { useOrderDetail } from "@/hooks/use-orders";
 import type { OrderFromAPI, OrderStep, StepStatus } from "@/lib/types";
@@ -29,7 +36,11 @@ function StepIcon({ status }: { status: StepStatus }) {
           backgroundColor: "var(--brass)",
         }}
       >
-        <Check size={16} strokeWidth={3} style={{ color: "var(--bg-primary)" }} />
+        <Check
+          size={16}
+          strokeWidth={3}
+          style={{ color: "var(--bg-primary)" }}
+        />
       </div>
     );
   }
@@ -50,7 +61,10 @@ function StepIcon({ status }: { status: StepStatus }) {
           className="absolute h-3 w-3 animate-ping rounded-full opacity-60"
           style={{ backgroundColor: "var(--brass)" }}
         />
-        <span className="relative h-2.5 w-2.5 rounded-full" style={{ backgroundColor: "var(--brass)" }} />
+        <span
+          className="relative h-2.5 w-2.5 rounded-full"
+          style={{ backgroundColor: "var(--brass)" }}
+        />
       </div>
     );
   }
@@ -81,7 +95,10 @@ function StepIcon({ status }: { status: StepStatus }) {
         backgroundColor: "transparent",
       }}
     >
-      <span className="h-2 w-2 rounded-full" style={{ backgroundColor: "var(--text-muted)" }} />
+      <span
+        className="h-2 w-2 rounded-full"
+        style={{ backgroundColor: "var(--text-muted)" }}
+      />
     </div>
   );
 }
@@ -103,10 +120,15 @@ function DesktopStepper({ steps }: { steps: OrderStep[] }) {
                   ? "var(--red)"
                   : "var(--text-muted)";
 
-          const lineColor = step.status === "completed" ? "var(--brass)" : "var(--text-muted)";
+          const lineColor =
+            step.status === "completed" ? "var(--brass)" : "var(--text-muted)";
 
           return (
-            <div key={step.label} className="flex flex-1 flex-col items-center" style={{ minWidth: 0 }}>
+            <div
+              key={step.label}
+              className="flex flex-1 flex-col items-center"
+              style={{ minWidth: 0 }}
+            >
               {/* Icon + line row */}
               <div className="flex w-full items-center">
                 {/* Left half line */}
@@ -114,7 +136,10 @@ function DesktopStepper({ steps }: { steps: OrderStep[] }) {
                   <div
                     className="h-0.5 flex-1"
                     style={{
-                      backgroundColor: steps[i - 1]?.status === "completed" ? "var(--brass)" : "var(--text-muted)",
+                      backgroundColor:
+                        steps[i - 1]?.status === "completed"
+                          ? "var(--brass)"
+                          : "var(--text-muted)",
                       opacity: steps[i - 1]?.status === "completed" ? 1 : 0.3,
                     }}
                   />
@@ -154,7 +179,10 @@ function DesktopStepper({ steps }: { steps: OrderStep[] }) {
                 <span
                   className="mt-1 max-w-[120px] text-center text-[11px] leading-snug"
                   style={{
-                    color: step.status === "failed" ? "var(--red)" : "var(--text-muted)",
+                    color:
+                      step.status === "failed"
+                        ? "var(--red)"
+                        : "var(--text-muted)",
                   }}
                 >
                   {step.link ? (
@@ -206,7 +234,10 @@ function MobileStepper({ steps }: { steps: OrderStep[] }) {
                   <div
                     className="my-1 w-0.5 flex-1"
                     style={{
-                      backgroundColor: step.status === "completed" ? "var(--brass)" : "var(--text-muted)",
+                      backgroundColor:
+                        step.status === "completed"
+                          ? "var(--brass)"
+                          : "var(--text-muted)",
                       opacity: step.status === "completed" ? 1 : 0.3,
                       minHeight: 24,
                     }}
@@ -230,7 +261,10 @@ function MobileStepper({ steps }: { steps: OrderStep[] }) {
                   <div
                     className="mt-1 text-xs"
                     style={{
-                      color: step.status === "failed" ? "var(--red)" : "var(--text-muted)",
+                      color:
+                        step.status === "failed"
+                          ? "var(--red)"
+                          : "var(--text-muted)",
                     }}
                   >
                     {step.link ? (
@@ -315,10 +349,19 @@ function OrderDetailSkeleton() {
 
 /* ────────────── Detail Row ────────────── */
 
-function DetailRow({ label, children }: { label: string; children: ReactNode }) {
+function DetailRow({
+  label,
+  children,
+}: {
+  label: string;
+  children: ReactNode;
+}) {
   return (
     <div className="flex flex-col gap-1">
-      <span className="text-[11px] font-medium uppercase tracking-wider" style={{ color: "var(--text-muted)" }}>
+      <span
+        className="text-[11px] font-medium uppercase tracking-wider"
+        style={{ color: "var(--text-muted)" }}
+      >
         {label}
       </span>
       <div className="text-sm" style={{ color: "var(--text-primary)" }}>
@@ -331,7 +374,11 @@ function DetailRow({ label, children }: { label: string; children: ReactNode }) 
 /* ────────────── Main Component ────────────── */
 
 export function OrderDetailView({ orderId }: { orderId: string }) {
-  const { data: order, isLoading: loading, error: queryError } = useOrderDetail(orderId);
+  const {
+    data: order,
+    isLoading: loading,
+    error: queryError,
+  } = useOrderDetail(orderId);
   const error = queryError ? (queryError as Error).message : null;
 
   if (loading) {
@@ -356,8 +403,15 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
             border: "1px solid var(--border-default)",
           }}
         >
-          <AlertTriangle size={36} className="mb-4" style={{ color: "var(--text-muted)" }} />
-          <p className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
+          <AlertTriangle
+            size={36}
+            className="mb-4"
+            style={{ color: "var(--text-muted)" }}
+          />
+          <p
+            className="text-sm font-medium"
+            style={{ color: "var(--text-secondary)" }}
+          >
             {"Order not found."}
           </p>
           <p className="mt-1 text-sm" style={{ color: "var(--text-muted)" }}>
@@ -369,7 +423,8 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
   }
 
   const displayStatus = mapOrderStatus(order.status);
-  const steps = order.type === "MINT" ? buildMintSteps(order) : buildRedeemSteps(order);
+  const steps =
+    order.type === "MINT" ? buildMintSteps(order) : buildRedeemSteps(order);
   const spec = CALIBER_SPECS[order.caliber as Caliber];
   const Icon = caliberIcons[order.caliber as Caliber];
   const amountDisplay =
@@ -402,7 +457,10 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
       >
         {/* Card header */}
         <div className="mb-6 flex flex-wrap items-center gap-3">
-          <h2 className="text-base font-semibold" style={{ color: "var(--text-primary)" }}>
+          <h2
+            className="text-base font-semibold"
+            style={{ color: "var(--text-primary)" }}
+          >
             Order Progress
           </h2>
           <StatusBadge status={displayStatus} />
@@ -421,13 +479,18 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
           border: "1px solid var(--border-default)",
         }}
       >
-        <h3 className="mb-6 text-base font-semibold" style={{ color: "var(--text-primary)" }}>
+        <h3
+          className="mb-6 text-base font-semibold"
+          style={{ color: "var(--text-primary)" }}
+        >
           Order Details
         </h3>
 
         <div className="grid grid-cols-1 gap-x-8 gap-y-5 sm:grid-cols-2">
           <DetailRow label="Order ID">
-            <span className="font-mono">#{order.onChainOrderId ?? order.id.slice(0, 8)}</span>
+            <span className="font-mono">
+              #{order.onChainOrderId ?? order.id.slice(0, 8)}
+            </span>
           </DetailRow>
 
           <DetailRow label="Type">
@@ -455,13 +518,15 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
             </DetailRow>
           )}
 
-          {order.type === "MINT" && order.refundAmount && order.refundAmount !== "0" && (
-            <DetailRow label="Refund">
-              <span className="font-mono tabular-nums">
-                {order.refundAmount}
-              </span>
-            </DetailRow>
-          )}
+          {order.type === "MINT" &&
+            order.refundAmount &&
+            order.refundAmount !== "0" && (
+              <DetailRow label="Refund">
+                <span className="font-mono tabular-nums">
+                  {order.refundAmount}
+                </span>
+              </DetailRow>
+            )}
 
           <DetailRow label="Status">
             <StatusBadge status={displayStatus} />
@@ -493,8 +558,11 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
             <DetailRow label="Shipping Address">
               <span style={{ color: "var(--text-secondary)" }}>
                 {order.shippingAddress.name}, {order.shippingAddress.line1}
-                {order.shippingAddress.line2 ? `, ${order.shippingAddress.line2}` : ""}, {order.shippingAddress.city},{" "}
-                {order.shippingAddress.state} {order.shippingAddress.zip}
+                {order.shippingAddress.line2
+                  ? `, ${order.shippingAddress.line2}`
+                  : ""}
+                , {order.shippingAddress.city}, {order.shippingAddress.state}{" "}
+                {order.shippingAddress.zip}
               </span>
             </DetailRow>
           )}
@@ -511,7 +579,10 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
       >
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
+            <p
+              className="text-sm font-medium"
+              style={{ color: "var(--text-secondary)" }}
+            >
               Having issues with this order?
             </p>
             <button
@@ -532,7 +603,8 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
             type="button"
             onClick={() =>
               toast.info("Coming Soon", {
-                description: "Problem reporting is under development. Stay tuned!",
+                description:
+                  "Problem reporting is under development. Stay tuned!",
               })
             }
             className="inline-flex items-center gap-2 self-start rounded-lg px-4 py-2.5 text-sm font-medium transition-colors duration-150 sm:self-auto bg-transparent border border-border-hover text-text-secondary hover:bg-ax-secondary hover:text-text-primary"

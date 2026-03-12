@@ -14,10 +14,7 @@ import {
 import { toast } from "sonner";
 import { truncateAddress } from "@/lib/utils";
 import { useAdminMintOrders } from "@/hooks/use-admin-orders";
-import {
-  useUnbackedTotals,
-  useMarkBacked,
-} from "@/hooks/use-admin-inventory";
+import { useUnbackedTotals, useMarkBacked } from "@/hooks/use-admin-inventory";
 import type { UnbackedCaliber } from "@/hooks/use-admin-inventory";
 import { OrderDetailDrawer } from "./order-detail-drawer";
 import type { AdminMintOrder } from "./finalize-mint-dialog";
@@ -91,14 +88,11 @@ function ConfirmBackedDialog({
         >
           Confirm Backing
         </h3>
-        <p
-          className="mt-2 text-sm"
-          style={{ color: "var(--text-secondary)" }}
-        >
-          Mark <strong>{cal.orderCount}</strong> unbacked {cal.name} orders
-          as backed? This covers{" "}
-          <strong>{Number(cal.rounds).toLocaleString()} rounds</strong>{" "}
-          (${cal.usdcTotal} USDT).
+        <p className="mt-2 text-sm" style={{ color: "var(--text-secondary)" }}>
+          Mark <strong>{cal.orderCount}</strong> unbacked {cal.name} orders as
+          backed? This covers{" "}
+          <strong>{Number(cal.rounds).toLocaleString()} rounds</strong> ($
+          {cal.usdcTotal} USDT).
         </p>
         <div className="mt-4 flex justify-end gap-3">
           <button

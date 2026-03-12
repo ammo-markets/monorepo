@@ -133,12 +133,47 @@ export function EmptyFilteredOrders({ filter }: { filter: string }) {
         aria-hidden="true"
         className="mb-4"
       >
-        <rect x="4" y="8" width="32" height="24" rx="3" stroke="var(--text-muted)" strokeWidth="1.5" />
-        <line x1="4" y1="16" x2="36" y2="16" stroke="var(--text-muted)" strokeWidth="1" opacity="0.4" />
-        <line x1="4" y1="22" x2="36" y2="22" stroke="var(--text-muted)" strokeWidth="1" opacity="0.4" />
-        <line x1="4" y1="28" x2="36" y2="28" stroke="var(--text-muted)" strokeWidth="1" opacity="0.4" />
+        <rect
+          x="4"
+          y="8"
+          width="32"
+          height="24"
+          rx="3"
+          stroke="var(--text-muted)"
+          strokeWidth="1.5"
+        />
+        <line
+          x1="4"
+          y1="16"
+          x2="36"
+          y2="16"
+          stroke="var(--text-muted)"
+          strokeWidth="1"
+          opacity="0.4"
+        />
+        <line
+          x1="4"
+          y1="22"
+          x2="36"
+          y2="22"
+          stroke="var(--text-muted)"
+          strokeWidth="1"
+          opacity="0.4"
+        />
+        <line
+          x1="4"
+          y1="28"
+          x2="36"
+          y2="28"
+          stroke="var(--text-muted)"
+          strokeWidth="1"
+          opacity="0.4"
+        />
       </svg>
-      <p className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
+      <p
+        className="text-sm font-medium"
+        style={{ color: "var(--text-secondary)" }}
+      >
         No {filter.toLowerCase()} orders
       </p>
       <p className="mt-1 text-sm" style={{ color: "var(--text-muted)" }}>
@@ -166,12 +201,47 @@ export function EmptyOrderHistory() {
         aria-hidden="true"
         className="mb-4"
       >
-        <rect x="4" y="8" width="32" height="24" rx="3" stroke="var(--text-muted)" strokeWidth="1.5" />
-        <line x1="4" y1="16" x2="36" y2="16" stroke="var(--text-muted)" strokeWidth="1" opacity="0.4" />
-        <line x1="4" y1="22" x2="36" y2="22" stroke="var(--text-muted)" strokeWidth="1" opacity="0.4" />
-        <line x1="4" y1="28" x2="36" y2="28" stroke="var(--text-muted)" strokeWidth="1" opacity="0.4" />
+        <rect
+          x="4"
+          y="8"
+          width="32"
+          height="24"
+          rx="3"
+          stroke="var(--text-muted)"
+          strokeWidth="1.5"
+        />
+        <line
+          x1="4"
+          y1="16"
+          x2="36"
+          y2="16"
+          stroke="var(--text-muted)"
+          strokeWidth="1"
+          opacity="0.4"
+        />
+        <line
+          x1="4"
+          y1="22"
+          x2="36"
+          y2="22"
+          stroke="var(--text-muted)"
+          strokeWidth="1"
+          opacity="0.4"
+        />
+        <line
+          x1="4"
+          y1="28"
+          x2="36"
+          y2="28"
+          stroke="var(--text-muted)"
+          strokeWidth="1"
+          opacity="0.4"
+        />
       </svg>
-      <p className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
+      <p
+        className="text-sm font-medium"
+        style={{ color: "var(--text-secondary)" }}
+      >
         No order history yet
       </p>
       <p className="mt-1 text-sm" style={{ color: "var(--text-muted)" }}>

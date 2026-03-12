@@ -125,10 +125,7 @@ export function CaliberPillNav({
   }
 
   return (
-    <div
-      ref={scrollRef}
-      className="flex gap-2 overflow-x-auto scrollbar-hide"
-    >
+    <div ref={scrollRef} className="flex gap-2 overflow-x-auto scrollbar-hide">
       {calibers.map((c) => {
         const isActive = c.caliber === selectedCaliber;
 
@@ -143,9 +140,7 @@ export function CaliberPillNav({
               backgroundColor: isActive
                 ? "var(--brass)"
                 : "var(--bg-secondary)",
-              color: isActive
-                ? "var(--ax-primary)"
-                : "var(--text-secondary)",
+              color: isActive ? "var(--ax-primary)" : "var(--text-secondary)",
               border: isActive
                 ? "1px solid var(--brass)"
                 : "1px solid var(--border-default)",

@@ -35,9 +35,7 @@ export default function MarketPage() {
     timeRange,
   );
 
-  const SelectedIcon = selectedCaliber
-    ? caliberIcons[selectedCaliber]
-    : null;
+  const SelectedIcon = selectedCaliber ? caliberIcons[selectedCaliber] : null;
 
   return (
     <div className="px-4 py-8 lg:py-12">
@@ -152,7 +150,6 @@ export default function MarketPage() {
                 style={{ backgroundColor: "var(--bg-secondary)" }}
               />
             )}
-
           </div>
         </div>
 

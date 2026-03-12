@@ -59,9 +59,7 @@ export function useMintTransaction(
     abi: CaliberMarketAbi,
     functionName: "mint",
     args:
-      actionArgs.usdcAmount !== undefined
-        ? [actionArgs.usdcAmount]
-        : undefined,
+      actionArgs.usdcAmount !== undefined ? [actionArgs.usdcAmount] : undefined,
     query: { enabled: simulationEnabled },
   });
 

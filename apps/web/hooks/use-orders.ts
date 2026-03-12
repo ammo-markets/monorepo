@@ -28,9 +28,7 @@ export function useOrders(address: string | undefined) {
           .map((o) => o.txHash),
       );
       return orders.filter(
-        (o) =>
-          !o.id.startsWith("pending-") ||
-          !realTxHashes.has(o.txHash),
+        (o) => !o.id.startsWith("pending-") || !realTxHashes.has(o.txHash),
       );
     },
   });

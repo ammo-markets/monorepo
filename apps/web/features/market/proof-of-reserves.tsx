@@ -42,14 +42,19 @@ export function ProofOfReserves() {
             />
           </svg>
           <div>
-            <p className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
-              All tokens are backed 1:1 by physical ammunition in insured, audited storage.
+            <p
+              className="text-sm font-medium"
+              style={{ color: "var(--text-primary)" }}
+            >
+              All tokens are backed 1:1 by physical ammunition in insured,
+              audited storage.
             </p>
             <button
               type="button"
               onClick={() =>
                 toast.info("Coming Soon", {
-                  description: "Attestation reports are under development. Stay tuned!",
+                  description:
+                    "Attestation reports are under development. Stay tuned!",
                 })
               }
               className="mt-1 inline-flex items-center gap-1 text-xs font-medium transition-colors duration-150 hover:opacity-80"

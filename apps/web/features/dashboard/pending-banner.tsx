@@ -7,7 +7,10 @@ interface PendingBannerProps {
   onViewOrders?: () => void;
 }
 
-export function PendingBanner({ pendingCount, onViewOrders }: PendingBannerProps) {
+export function PendingBanner({
+  pendingCount,
+  onViewOrders,
+}: PendingBannerProps) {
   if (pendingCount === 0) return null;
 
   return (
@@ -20,8 +23,7 @@ export function PendingBanner({ pendingCount, onViewOrders }: PendingBannerProps
     >
       <AlertTriangle size={18} style={{ color: "var(--amber)" }} />
       <p className="flex-1 text-sm" style={{ color: "var(--amber)" }}>
-        You have {pendingCount} order{pendingCount > 1 ? "s" : ""} being
-        indexed
+        You have {pendingCount} order{pendingCount > 1 ? "s" : ""} being indexed
       </p>
       {onViewOrders && (
         <button

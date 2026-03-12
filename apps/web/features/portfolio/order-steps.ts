@@ -11,7 +11,9 @@ export function buildMintSteps(order: OrderFromAPI): OrderStep[] {
       label: "Tokens Minted",
       status: isCompleted ? "completed" : isFailed ? "failed" : "current",
       meta: order.txHash ? `Tx: ${truncateAddress(order.txHash)}` : undefined,
-      link: order.txHash ? { url: snowtraceUrl(order.txHash), label: "View on Snowtrace" } : undefined,
+      link: order.txHash
+        ? { url: snowtraceUrl(order.txHash), label: "View on Snowtrace" }
+        : undefined,
     },
     {
       label: "Completed",
@@ -34,8 +36,12 @@ export function buildRedeemSteps(order: OrderFromAPI): OrderStep[] {
     {
       label: "Tokens Burned",
       status: hasTx ? "completed" : isFailed ? "failed" : "current",
-      meta: order.txHash ? `Tx: ${truncateAddress(order.txHash)}` : "Awaiting confirmation...",
-      link: order.txHash ? { url: snowtraceUrl(order.txHash), label: "View on Snowtrace" } : undefined,
+      meta: order.txHash
+        ? `Tx: ${truncateAddress(order.txHash)}`
+        : "Awaiting confirmation...",
+      link: order.txHash
+        ? { url: snowtraceUrl(order.txHash), label: "View on Snowtrace" }
+        : undefined,
     },
     {
       label: "Completed",
@@ -48,10 +54,14 @@ export function buildRedeemSteps(order: OrderFromAPI): OrderStep[] {
 /* ── Convenience wrappers ── */
 
 export function buildOrderSteps(order: OrderFromAPI): OrderStep[] {
-  return order.type === "MINT" ? buildMintSteps(order) : buildRedeemSteps(order);
+  return order.type === "MINT"
+    ? buildMintSteps(order)
+    : buildRedeemSteps(order);
 }
 
 export function getCurrentStepIndex(steps: OrderStep[]): number {
-  const idx = steps.findIndex((s) => s.status === "current" || s.status === "failed");
+  const idx = steps.findIndex(
+    (s) => s.status === "current" || s.status === "failed",
+  );
   return idx === -1 ? steps.length - 1 : idx;
 }

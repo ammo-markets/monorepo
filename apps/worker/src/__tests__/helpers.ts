@@ -157,7 +157,8 @@ export function buildMintedArgs(
 ): MintedArgs {
   return {
     user: DEFAULT_USER,
-    caliberId: "0x394d4d5f50524143544943450000000000000000000000000000000000000000" as `0x${string}`,
+    caliberId:
+      "0x394d4d5f50524143544943450000000000000000000000000000000000000000" as `0x${string}`,
     usdcAmount: 50_000_000n, // 50 USDC (6 decimals)
     tokenAmount: 50_000_000_000_000_000_000n, // 50 tokens (18 decimals)
     priceUsed: 1_000_000n,

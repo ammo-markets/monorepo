@@ -43,7 +43,12 @@ function formatPriceX18(priceStr: string): string {
   return `$${(Number(priceStr) / 1e18).toFixed(4)}/round`;
 }
 
-export function FinalizeMintDialog({ order, open, onOpenChange, onFinalized }: FinalizeMintDialogProps) {
+export function FinalizeMintDialog({
+  order,
+  open,
+  onOpenChange,
+  onFinalized,
+}: FinalizeMintDialogProps) {
   const queryClient = useQueryClient();
   const [price, setPrice] = useState("");
   const [priceError, setPriceError] = useState("");
@@ -54,13 +59,19 @@ export function FinalizeMintDialog({ order, open, onOpenChange, onFinalized }: F
     return parseUnits(price, 18);
   }, [price]);
 
-  const { write, hash, error, isPending, isConfirming, isConfirmed, isReady, reset } = useFinalizeMint(
-    order.caliber as Caliber,
-    {
-      orderId: order.onChainOrderId ? BigInt(order.onChainOrderId) : undefined,
-      actualPriceX18,
-    },
-  );
+  const {
+    write,
+    hash,
+    error,
+    isPending,
+    isConfirming,
+    isConfirmed,
+    isReady,
+    reset,
+  } = useFinalizeMint(order.caliber as Caliber, {
+    orderId: order.onChainOrderId ? BigInt(order.onChainOrderId) : undefined,
+    actualPriceX18,
+  });
 
   // React to confirmation
   useEffect(() => {
@@ -100,12 +111,19 @@ export function FinalizeMintDialog({ order, open, onOpenChange, onFinalized }: F
 
   if (!open) return null;
 
-  const buttonLabel = isPending ? "Submitting..." : isConfirming ? "Confirming..." : "Finalize Mint";
+  const buttonLabel = isPending
+    ? "Submitting..."
+    : isConfirming
+      ? "Confirming..."
+      : "Finalize Mint";
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-xs" onClick={() => onOpenChange(false)} />
+      <div
+        className="absolute inset-0 bg-black/60 backdrop-blur-xs"
+        onClick={() => onOpenChange(false)}
+      />
 
       {/* Dialog */}
       <div
@@ -116,7 +134,10 @@ export function FinalizeMintDialog({ order, open, onOpenChange, onFinalized }: F
         }}
       >
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold" style={{ color: "var(--text-primary)" }}>
+          <h2
+            className="text-lg font-semibold"
+            style={{ color: "var(--text-primary)" }}
+          >
             Finalize Mint Order
           </h2>
           <button
@@ -133,30 +154,44 @@ export function FinalizeMintDialog({ order, open, onOpenChange, onFinalized }: F
         <div className="mt-4 space-y-3 text-sm">
           <div className="flex justify-between">
             <span style={{ color: "var(--text-secondary)" }}>Order ID</span>
-            <span className="font-mono" style={{ color: "var(--text-primary)" }}>
+            <span
+              className="font-mono"
+              style={{ color: "var(--text-primary)" }}
+            >
               {order.id.slice(0, 8)}
             </span>
           </div>
           <div className="flex justify-between">
             <span style={{ color: "var(--text-secondary)" }}>Wallet</span>
-            <span className="font-mono text-xs" style={{ color: "var(--text-primary)" }}>
+            <span
+              className="font-mono text-xs"
+              style={{ color: "var(--text-primary)" }}
+            >
               {order.walletAddress ?? "N/A"}
             </span>
           </div>
           <div className="flex justify-between">
             <span style={{ color: "var(--text-secondary)" }}>Caliber</span>
-            <span style={{ color: "var(--text-primary)" }}>{order.caliber}</span>
+            <span style={{ color: "var(--text-primary)" }}>
+              {order.caliber}
+            </span>
           </div>
           <div className="flex justify-between">
             <span style={{ color: "var(--text-secondary)" }}>USDT Amount</span>
-            <span className="font-mono" style={{ color: "var(--text-primary)" }}>
+            <span
+              className="font-mono"
+              style={{ color: "var(--text-primary)" }}
+            >
               {formatUsdc(order.usdcAmount ?? "0")} USDT
             </span>
           </div>
           {order.mintPrice && (
             <div className="flex justify-between">
               <span style={{ color: "var(--text-secondary)" }}>Mint Price</span>
-              <span className="font-mono" style={{ color: "var(--text-primary)" }}>
+              <span
+                className="font-mono"
+                style={{ color: "var(--text-primary)" }}
+              >
                 {formatPriceX18(order.mintPrice)}
               </span>
             </div>
@@ -165,7 +200,11 @@ export function FinalizeMintDialog({ order, open, onOpenChange, onFinalized }: F
 
         {/* Price input */}
         <div className="mt-5">
-          <label htmlFor="actual-price" className="block text-sm font-medium" style={{ color: "var(--text-primary)" }}>
+          <label
+            htmlFor="actual-price"
+            className="block text-sm font-medium"
+            style={{ color: "var(--text-primary)" }}
+          >
             Actual Price Per Round (USD)
           </label>
           <input
@@ -185,11 +224,16 @@ export function FinalizeMintDialog({ order, open, onOpenChange, onFinalized }: F
               color: "var(--text-primary)",
             }}
           />
-          {priceError && <p className="mt-1 text-xs text-red-400">{priceError}</p>}
+          {priceError && (
+            <p className="mt-1 text-xs text-red-400">{priceError}</p>
+          )}
         </div>
 
         {hash && (
-          <p className="mt-3 break-all text-xs" style={{ color: "var(--text-muted)" }}>
+          <p
+            className="mt-3 break-all text-xs"
+            style={{ color: "var(--text-muted)" }}
+          >
             Tx: {hash}
           </p>
         )}
