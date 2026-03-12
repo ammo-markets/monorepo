@@ -10,6 +10,7 @@ export const env = createEnv({
     APP_DOMAIN: z.string().min(1),
     APP_URL: z.url(),
     FAUCET_PRIVATE_KEY: z.string().startsWith("0x").length(66).optional(),
+    SHIPPO_API_KEY: z.string().min(1).optional(),
   },
   client: {
     NEXT_PUBLIC_CHAIN: z.enum(["fuji", "mainnet"]).default("fuji"),
@@ -23,6 +24,7 @@ export const env = createEnv({
     APP_DOMAIN: process.env.APP_DOMAIN,
     APP_URL: process.env.APP_URL,
     FAUCET_PRIVATE_KEY: process.env.FAUCET_PRIVATE_KEY,
+    SHIPPO_API_KEY: process.env.SHIPPO_API_KEY,
     NEXT_PUBLIC_CHAIN: process.env.NEXT_PUBLIC_CHAIN,
     NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID:
       process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
