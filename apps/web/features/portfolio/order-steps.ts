@@ -24,18 +24,23 @@ export function buildMintSteps(order: OrderFromAPI): OrderStep[] {
 }
 
 export function buildRedeemSteps(order: OrderFromAPI): OrderStep[] {
-  const hasTx = !!order.txHash;
-  const isCompleted = order.status === "COMPLETED";
+  const isProcessing = order.status === "PROCESSING";
+  const isShipped = order.status === "COMPLETED";
   const isFailed = order.status === "FAILED" || order.status === "CANCELLED";
   return [
     {
-      label: "Redemption Initiated",
+      label: "Redeem Requested",
       status: "completed",
       meta: formatDate(order.createdAt),
     },
     {
       label: "Tokens Burned",
-      status: hasTx ? "completed" : isFailed ? "failed" : "current",
+      status:
+        isProcessing || isShipped
+          ? "completed"
+          : isFailed
+            ? "failed"
+            : "current",
       meta: order.txHash
         ? `Tx: ${truncateAddress(order.txHash)}`
         : "Awaiting confirmation...",
@@ -44,9 +49,19 @@ export function buildRedeemSteps(order: OrderFromAPI): OrderStep[] {
         : undefined,
     },
     {
-      label: "Completed",
-      status: isCompleted ? "completed" : isFailed ? "failed" : "future",
-      meta: isCompleted ? formatDate(order.updatedAt) : undefined,
+      label: "Shipped",
+      status: isShipped
+        ? "completed"
+        : isFailed
+          ? "failed"
+          : isProcessing
+            ? "current"
+            : "future",
+      meta: isShipped
+        ? order.trackingId ?? formatDate(order.updatedAt)
+        : isProcessing
+          ? "Awaiting shipment..."
+          : undefined,
     },
   ];
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Package } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -15,6 +15,7 @@ import { FinalizeMintDialog } from "./finalize-mint-dialog";
 import { FinalizeRedeemDialog } from "./finalize-redeem-dialog";
 import { RejectMintDialog } from "./reject-mint-dialog";
 import { CancelRedeemDialog } from "./cancel-redeem-dialog";
+import { UpdateTrackingDialog, UPS_TRACKING_URL } from "./update-tracking-dialog";
 import type { AdminMintOrder } from "./finalize-mint-dialog";
 import type { AdminRedeemOrder } from "./finalize-redeem-dialog";
 
@@ -26,7 +27,19 @@ type OrderDetailDrawerProps = {
   onActionComplete: () => void;
 };
 
-function StatusBadge({ status }: { status: string }) {
+const REDEEM_STATUS_LABELS: Record<string, string> = {
+  PENDING: "PENDING",
+  PROCESSING: "FINALIZED",
+  COMPLETED: "SHIPPED",
+};
+
+function StatusBadge({
+  status,
+  type,
+}: {
+  status: string;
+  type: "MINT" | "REDEEM";
+}) {
   const styles: Record<string, string> = {
     PENDING: "bg-yellow-900/30 text-yellow-400 border-yellow-800",
     PROCESSING: "bg-blue-900/30 text-blue-400 border-blue-800",
@@ -35,11 +48,16 @@ function StatusBadge({ status }: { status: string }) {
     CANCELLED: "bg-red-900/30 text-red-400 border-red-800",
   };
 
+  const label =
+    type === "REDEEM"
+      ? (REDEEM_STATUS_LABELS[status] ?? status)
+      : status;
+
   return (
     <span
       className={`inline-block rounded-full border px-3 py-1 text-sm font-medium ${styles[status] ?? "bg-gray-900/30 text-gray-400 border-gray-800"}`}
     >
-      {status}
+      {label}
     </span>
   );
 }
@@ -111,11 +129,7 @@ function TimelineStep({
   );
 }
 
-function OrderTimeline({
-  order,
-}: {
-  order: AdminMintOrder | AdminRedeemOrder;
-}) {
+function MintTimeline({ order }: { order: AdminMintOrder }) {
   const status = order.status;
 
   if (status === "COMPLETED") {
@@ -124,12 +138,6 @@ function OrderTimeline({
         <TimelineStep
           label="Order Created"
           timestamp={order.createdAt}
-          dotColor="var(--brass)"
-          isLast={false}
-          isActive
-        />
-        <TimelineStep
-          label="Processing"
           dotColor="var(--brass)"
           isLast={false}
           isActive
@@ -166,33 +174,7 @@ function OrderTimeline({
     );
   }
 
-  if (status === "PROCESSING") {
-    return (
-      <div>
-        <TimelineStep
-          label="Order Created"
-          timestamp={order.createdAt}
-          dotColor="var(--brass)"
-          isLast={false}
-          isActive
-        />
-        <TimelineStep
-          label="Processing"
-          dotColor="var(--brass)"
-          isLast={false}
-          isActive
-        />
-        <TimelineStep
-          label="Completed"
-          dotColor="rgb(74 222 128)"
-          isLast
-          isActive={false}
-        />
-      </div>
-    );
-  }
-
-  // PENDING
+  // PENDING / PROCESSING
   return (
     <div>
       <TimelineStep
@@ -201,12 +183,6 @@ function OrderTimeline({
         dotColor="var(--brass)"
         isLast={false}
         isActive
-      />
-      <TimelineStep
-        label="Processing"
-        dotColor="var(--brass)"
-        isLast={false}
-        isActive={false}
       />
       <TimelineStep
         label="Completed"
@@ -218,6 +194,72 @@ function OrderTimeline({
   );
 }
 
+function RedeemTimeline({ order }: { order: AdminRedeemOrder }) {
+  const status = order.status;
+
+  if (status === "CANCELLED" || status === "FAILED") {
+    return (
+      <div>
+        <TimelineStep
+          label="Redeem Requested"
+          timestamp={order.createdAt}
+          dotColor="var(--brass)"
+          isLast={false}
+          isActive
+        />
+        <TimelineStep
+          label={status === "CANCELLED" ? "Cancelled" : "Failed"}
+          timestamp={order.updatedAt}
+          dotColor="rgb(248 113 113)"
+          isLast
+          isActive
+        />
+      </div>
+    );
+  }
+
+  const isFinalized = status === "PROCESSING" || status === "COMPLETED";
+  const isShipped = status === "COMPLETED";
+
+  return (
+    <div>
+      <TimelineStep
+        label="Redeem Requested"
+        timestamp={order.createdAt}
+        dotColor="var(--brass)"
+        isLast={false}
+        isActive
+      />
+      <TimelineStep
+        label="Finalized"
+        dotColor="var(--brass)"
+        isLast={false}
+        isActive={isFinalized}
+      />
+      <TimelineStep
+        label="Shipped"
+        timestamp={isShipped ? order.updatedAt : undefined}
+        dotColor="rgb(74 222 128)"
+        isLast
+        isActive={isShipped}
+      />
+    </div>
+  );
+}
+
+function OrderTimeline({
+  order,
+  type,
+}: {
+  order: AdminMintOrder | AdminRedeemOrder;
+  type: "MINT" | "REDEEM";
+}) {
+  if (type === "REDEEM") {
+    return <RedeemTimeline order={order as AdminRedeemOrder} />;
+  }
+  return <MintTimeline order={order as AdminMintOrder} />;
+}
+
 export function OrderDetailDrawer({
   order,
   type,
@@ -227,6 +269,7 @@ export function OrderDetailDrawer({
 }: OrderDetailDrawerProps) {
   const [finalizeOpen, setFinalizeOpen] = useState(false);
   const [rejectOpen, setRejectOpen] = useState(false);
+  const [trackingOpen, setTrackingOpen] = useState(false);
 
   if (!order) return null;
 
@@ -244,7 +287,7 @@ export function OrderDetailDrawer({
         <SheetContent side="right" className="sm:max-w-lg overflow-y-auto">
           <SheetHeader>
             <div className="mb-2">
-              <StatusBadge status={order.status} />
+              <StatusBadge status={order.status} type={type} />
             </div>
             <SheetTitle>
               {type === "MINT" ? "Mint Order" : "Redeem Order"}
@@ -436,6 +479,57 @@ export function OrderDetailDrawer({
               </div>
             )}
 
+            {/* Tracking — only for finalized redeem orders */}
+            {type === "REDEEM" &&
+              isRedeemOrder(order) &&
+              (order.status === "PROCESSING" ||
+                order.status === "COMPLETED") && (
+                <div className="space-y-3">
+                  <h3
+                    className="text-xs font-semibold uppercase tracking-wider"
+                    style={{ color: "var(--text-muted)" }}
+                  >
+                    Shipment Tracking
+                  </h3>
+                  {order.trackingId ? (
+                    <div
+                      className="flex items-center justify-between rounded-lg border p-3"
+                      style={{
+                        borderColor: "var(--border-default)",
+                        backgroundColor: "var(--bg-secondary)",
+                      }}
+                    >
+                      <div className="flex items-center gap-2">
+                        <Package
+                          className="h-4 w-4"
+                          style={{ color: "var(--green)" }}
+                        />
+                        <span
+                          className="font-mono text-sm"
+                          style={{ color: "var(--text-primary)" }}
+                        >
+                          {order.trackingId}
+                        </span>
+                      </div>
+                      <a
+                        href={`${UPS_TRACKING_URL}${order.trackingId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-xs hover:underline"
+                        style={{ color: "var(--brass)" }}
+                      >
+                        Track
+                        <ExternalLink className="h-3 w-3" />
+                      </a>
+                    </div>
+                  ) : (
+                    <p className="text-sm" style={{ color: "var(--text-muted)" }}>
+                      No tracking ID yet — add one below.
+                    </p>
+                  )}
+                </div>
+              )}
+
             {/* Timeline */}
             <div className="space-y-3">
               <h3
@@ -444,7 +538,7 @@ export function OrderDetailDrawer({
               >
                 Timeline
               </h3>
-              <OrderTimeline order={order} />
+              <OrderTimeline order={order} type={type} />
             </div>
           </div>
 
@@ -479,13 +573,29 @@ export function OrderDetailDrawer({
 
           {!isPending && (
             <SheetFooter
-              className="border-t"
+              className="flex-row gap-3 border-t"
               style={{ borderColor: "var(--border-default)" }}
             >
+              {type === "REDEEM" &&
+                isRedeemOrder(order) &&
+                (order.status === "PROCESSING" ||
+                  order.status === "COMPLETED") && (
+                  <button
+                    type="button"
+                    onClick={() => setTrackingOpen(true)}
+                    className="flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors hover:bg-brass-hover"
+                    style={{
+                      backgroundColor: "var(--brass)",
+                      color: "var(--bg-primary)",
+                    }}
+                  >
+                    {order.trackingId ? "Update Tracking" : "Add Tracking"}
+                  </button>
+                )}
               <button
                 type="button"
                 onClick={() => onOpenChange(false)}
-                className="w-full rounded-lg border px-4 py-2 text-sm font-medium transition-colors hover:bg-ax-tertiary"
+                className="flex-1 rounded-lg border px-4 py-2 text-sm font-medium transition-colors hover:bg-ax-tertiary"
                 style={{
                   borderColor: "var(--border-hover)",
                   color: "var(--text-primary)",
@@ -529,6 +639,14 @@ export function OrderDetailDrawer({
             open={rejectOpen}
             onOpenChange={setRejectOpen}
             onCancelled={handleActionDone}
+          />
+          <UpdateTrackingDialog
+            order={order as AdminRedeemOrder}
+            open={trackingOpen}
+            onOpenChange={(open) => {
+              setTrackingOpen(open);
+              if (!open) onActionComplete();
+            }}
           />
         </>
       )}

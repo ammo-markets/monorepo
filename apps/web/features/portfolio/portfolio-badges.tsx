@@ -1,14 +1,24 @@
 import type { OrderFromAPI } from "@/lib/types";
 
-export type DisplayStatus = "Processing" | "Completed" | "Failed";
+export type DisplayStatus =
+  | "Pending"
+  | "Processing"
+  | "Approved"
+  | "Shipped"
+  | "Completed"
+  | "Failed";
 
-export function mapOrderStatus(status: OrderFromAPI["status"]): DisplayStatus {
+export function mapOrderStatus(
+  status: OrderFromAPI["status"],
+  type?: "MINT" | "REDEEM",
+): DisplayStatus {
   switch (status) {
     case "PENDING":
+      return type === "REDEEM" ? "Pending" : "Processing";
     case "PROCESSING":
-      return "Processing";
+      return type === "REDEEM" ? "Approved" : "Processing";
     case "COMPLETED":
-      return "Completed";
+      return type === "REDEEM" ? "Shipped" : "Completed";
     case "FAILED":
     case "CANCELLED":
       return "Failed";
@@ -16,7 +26,10 @@ export function mapOrderStatus(status: OrderFromAPI["status"]): DisplayStatus {
 }
 
 export const statusColors: Record<DisplayStatus, string> = {
+  Pending: "var(--amber)",
   Processing: "var(--blue)",
+  Approved: "var(--blue)",
+  Shipped: "var(--green)",
   Completed: "var(--green)",
   Failed: "var(--red)",
 };

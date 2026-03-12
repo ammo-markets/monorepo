@@ -32,7 +32,7 @@ export function OrdersDesktopRow({
 }) {
   const Icon = caliberIcons[order.caliber];
   const router = useRouter();
-  const displayStatus = mapOrderStatus(order.status);
+  const displayStatus = mapOrderStatus(order.status, order.type);
   const amount = formatOrderAmount(order);
   return (
     <tr
@@ -108,7 +108,7 @@ export function OrdersDesktopRow({
 export function OrderMobileCard({ order }: { order: OrderFromAPI }) {
   const Icon = caliberIcons[order.caliber];
   const router = useRouter();
-  const displayStatus = mapOrderStatus(order.status);
+  const displayStatus = mapOrderStatus(order.status, order.type);
   const amount = formatOrderAmount(order);
   return (
     <div

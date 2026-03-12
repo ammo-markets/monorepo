@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowLeftRight, BarChart3, Wallet, User, Shield } from "lucide-react";
+import { ArrowLeftRight, BarChart3, Wallet, Shield } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { AmmoLogo } from "./logo";
 import { useKeeperCheck } from "@/hooks/use-keeper-check";
@@ -17,7 +17,6 @@ const navItems: NavItem[] = [
   { label: "Mint / Redeem", href: "/exchange", icon: ArrowLeftRight },
   { label: "Portfolio", href: "/portfolio", icon: Wallet },
   { label: "Market", href: "/market", icon: BarChart3 },
-  { label: "Profile", href: "/profile", icon: User },
 ];
 
 function isActiveLink(pathname: string, href: string): boolean {
@@ -94,7 +93,7 @@ export function AppNav() {
         }}
       >
         <div
-          className={`grid h-16 w-full ${isKeeper ? "grid-cols-5" : "grid-cols-4"}`}
+          className={`grid h-16 w-full ${isKeeper ? "grid-cols-4" : "grid-cols-3"}`}
         >
           {navItems.map((item) => {
             const active = isActiveLink(pathname, item.href);

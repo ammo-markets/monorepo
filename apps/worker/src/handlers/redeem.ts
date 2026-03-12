@@ -141,10 +141,10 @@ export async function handleRedeemFinalized(
       onChainOrderId: args.orderId.toString(),
       caliber: prismaCaliber,
       type: "REDEEM",
-      status: { in: ["PENDING", "COMPLETED"] },
+      status: { in: ["PENDING", "PROCESSING", "COMPLETED"] },
     },
     data: {
-      status: "COMPLETED",
+      status: "PROCESSING",
       tokenAmount: args.burnedTokens.toString(),
     },
   });
@@ -161,7 +161,7 @@ export async function handleRedeemFinalized(
       },
       create: {
         type: "REDEEM",
-        status: "COMPLETED",
+        status: "PROCESSING",
         caliber: prismaCaliber,
         tokenAmount: args.burnedTokens.toString(),
         // usdcAmount unknown from finalization event alone -- leave null
@@ -189,7 +189,7 @@ export async function handleRedeemFinalized(
         onChainOrderId: args.orderId.toString(),
         caliber: prismaCaliber,
         type: "REDEEM",
-        status: "COMPLETED",
+        status: "PROCESSING",
       },
       select: {
         id: true,

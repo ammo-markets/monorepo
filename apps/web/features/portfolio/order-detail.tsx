@@ -424,7 +424,7 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
     );
   }
 
-  const displayStatus = mapOrderStatus(order.status);
+  const displayStatus = mapOrderStatus(order.status, order.type);
   const steps =
     order.type === "MINT" ? buildMintSteps(order) : buildRedeemSteps(order);
   const spec = CALIBER_SPECS[order.caliber as Caliber];

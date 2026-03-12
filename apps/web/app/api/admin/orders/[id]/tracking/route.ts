@@ -40,9 +40,19 @@ export async function POST(
       );
     }
 
+    if (order.status !== "PROCESSING" && order.status !== "COMPLETED") {
+      return Response.json(
+        { error: "Order must be finalized before adding tracking" },
+        { status: 400 },
+      );
+    }
+
     const updated = await prisma.order.update({
       where: { id },
-      data: { trackingId: parsed.data.trackingId },
+      data: {
+        trackingId: parsed.data.trackingId,
+        status: "COMPLETED",
+      },
     });
 
     return Response.json({

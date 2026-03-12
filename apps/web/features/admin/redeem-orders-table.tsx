@@ -55,20 +55,40 @@ function formatTokenAmount(amount: string): string {
   return Math.floor(Number(amount) / 1e18).toLocaleString();
 }
 
+const STATUS_CONFIG: Record<string, { style: string; label: string }> = {
+  PENDING: {
+    style: "bg-yellow-900/30 text-yellow-400 border-yellow-800",
+    label: "PENDING",
+  },
+  PROCESSING: {
+    style: "bg-blue-900/30 text-blue-400 border-blue-800",
+    label: "FINALIZED",
+  },
+  COMPLETED: {
+    style: "bg-green-900/30 text-green-400 border-green-800",
+    label: "SHIPPED",
+  },
+  FAILED: {
+    style: "bg-red-900/30 text-red-400 border-red-800",
+    label: "FAILED",
+  },
+  CANCELLED: {
+    style: "bg-red-900/30 text-red-400 border-red-800",
+    label: "CANCELLED",
+  },
+};
+
 function StatusBadge({ status }: { status: string }) {
-  const styles: Record<string, string> = {
-    PENDING: "bg-yellow-900/30 text-yellow-400 border-yellow-800",
-    PROCESSING: "bg-blue-900/30 text-blue-400 border-blue-800",
-    COMPLETED: "bg-green-900/30 text-green-400 border-green-800",
-    FAILED: "bg-red-900/30 text-red-400 border-red-800",
-    CANCELLED: "bg-red-900/30 text-red-400 border-red-800",
+  const config = STATUS_CONFIG[status] ?? {
+    style: "bg-gray-900/30 text-gray-400 border-gray-800",
+    label: status,
   };
 
   return (
     <span
-      className={`inline-block rounded-full border px-2 py-0.5 text-xs font-medium ${styles[status] ?? "bg-gray-900/30 text-gray-400 border-gray-800"}`}
+      className={`inline-block rounded-full border px-2 py-0.5 text-xs font-medium ${config.style}`}
     >
-      {status}
+      {config.label}
     </span>
   );
 }
@@ -329,9 +349,9 @@ export function RedeemOrdersTable() {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex gap-2">
-                        {/* Tracking button — available for any non-cancelled order */}
-                        {order.status !== "CANCELLED" &&
-                          order.status !== "FAILED" && (
+                        {/* Tracking button — only after finalization (PROCESSING/COMPLETED) */}
+                        {(order.status === "PROCESSING" ||
+                          order.status === "COMPLETED") && (
                             <button
                               type="button"
                               onClick={(e) => {
