@@ -52,4 +52,4 @@ export const US_STATES = [
   { value: "WY", label: "Wyoming" },
 ];
 
-export const RESTRICTED_STATES = ["CA", "NY", "IL", "DC", "NJ"];
+export { RESTRICTED_STATES } from "@ammo-exchange/shared";

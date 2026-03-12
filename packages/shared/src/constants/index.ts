@@ -62,13 +62,16 @@ export const CALIBER_SPECS: Record<Caliber, CaliberSpec> = {
 /** All supported calibers derived from CALIBER_SPECS — single source of truth */
 export const CALIBERS = Object.keys(CALIBER_SPECS) as Caliber[];
 
-/** States where direct-to-consumer ammunition shipping is restricted */
+/** States where online ammunition shipping is blocked (any restriction) */
 export const RESTRICTED_STATES = [
-  "CA", // Background check at point of sale
-  "NY", // Must pick up from licensed dealer
+  "CA", // Background check + licensed dealer pickup required
+  "CT", // Permit required for handgun ammo, restrictions on online sales
+  "DC", // Effectively prohibited for civilians
+  "HI", // Permit required to purchase ammunition
   "IL", // FOID card required
-  "DC", // Must pick up from dealer
-  "NJ", // FID card required
+  "MA", // FID/LTC required
+  "NJ", // FID required for handgun ammo, restricted online sales
+  "NY", // Must ship to licensed dealer
 ] as const;
 
 /** All valid US state codes (50 states + DC + territories) */

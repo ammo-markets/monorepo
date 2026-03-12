@@ -75,7 +75,9 @@ export function StepShipping({
   } = useSaveProfile();
   const saveError = saveErrorObj?.message ?? null;
 
-  const isRestricted = RESTRICTED_STATES.includes(address.state);
+  const isRestricted = (RESTRICTED_STATES as readonly string[]).includes(
+    address.state,
+  );
   const restrictedStateName =
     US_STATES.find((s) => s.value === address.state)?.label ?? address.state;
 
@@ -135,14 +137,14 @@ export function StepShipping({
               className="font-mono text-sm font-bold uppercase tracking-widest"
               style={{ color: "var(--red)" }}
             >
-              Direct shipping is not available in {restrictedStateName}.
+              Shipping unavailable in {restrictedStateName}.
             </p>
             <p
               className="mt-1 text-xs leading-relaxed"
               style={{ color: "var(--text-secondary)" }}
             >
-              Ammunition must be shipped to a licensed dealer. Contact support
-              for dealer pickup options.
+              Due to state regulations, we cannot ship ammunition to this state
+              at this time.
             </p>
           </div>
         </div>
@@ -231,8 +233,17 @@ export function StepShipping({
             >
               <option value="">Select</option>
               {US_STATES.map((s) => (
-                <option key={s.value} value={s.value}>
+                <option
+                  key={s.value}
+                  value={s.value}
+                  disabled={(RESTRICTED_STATES as readonly string[]).includes(
+                    s.value,
+                  )}
+                >
                   {s.label}
+                  {(RESTRICTED_STATES as readonly string[]).includes(s.value)
+                    ? " (unavailable)"
+                    : ""}
                 </option>
               ))}
             </select>
