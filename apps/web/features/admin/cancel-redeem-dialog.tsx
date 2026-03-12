@@ -8,6 +8,10 @@ import { useCancelRedeem } from "@/hooks/use-cancel-redeem";
 import { useSaveCancelReason } from "@/hooks/use-save-cancel-reason";
 import { parseContractError } from "@/lib/errors";
 import {
+  updateRedeemOrderInCache,
+  decrementPendingRedeems,
+} from "@/lib/optimistic-updates";
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -51,13 +55,19 @@ export function CancelRedeemDialog({
     orderId: order.onChainOrderId ? BigInt(order.onChainOrderId) : undefined,
   });
 
-  // React to confirmation — persist the cancellation reason to the DB
+  // React to confirmation — optimistically update cache, then reconcile via invalidation
   useEffect(() => {
     if (isConfirmed) {
       const trimmed = reason.trim();
       if (trimmed) {
         saveCancelReason.mutate({ orderId: order.id, reason: trimmed });
       }
+      updateRedeemOrderInCache(queryClient, order.id, {
+        status: "CANCELLED",
+        cancellationReason: trimmed || null,
+        updatedAt: new Date().toISOString(),
+      });
+      decrementPendingRedeems(queryClient);
       toast.success("Redeem order cancelled");
       void queryClient.invalidateQueries({
         queryKey: queryKeys.admin.orders.all("REDEEM"),

@@ -7,6 +7,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
 import { useFinalizeRedeem } from "@/hooks/use-finalize-redeem";
 import { parseContractError } from "@/lib/errors";
+import {
+  updateRedeemOrderInCache,
+  decrementPendingRedeems,
+} from "@/lib/optimistic-updates";
 import type { Caliber } from "@ammo-exchange/shared";
 import { RESTRICTED_STATES } from "@ammo-exchange/shared";
 
@@ -66,9 +70,14 @@ export function FinalizeRedeemDialog({
     orderId: order.onChainOrderId ? BigInt(order.onChainOrderId) : undefined,
   });
 
-  // React to confirmation
+  // React to confirmation — optimistically update cache, then reconcile via invalidation
   useEffect(() => {
     if (isConfirmed) {
+      updateRedeemOrderInCache(queryClient, order.id, {
+        status: "PROCESSING",
+        updatedAt: new Date().toISOString(),
+      });
+      decrementPendingRedeems(queryClient);
       toast.success("Redeem order finalized");
       void queryClient.invalidateQueries({
         queryKey: queryKeys.admin.orders.all("REDEEM"),

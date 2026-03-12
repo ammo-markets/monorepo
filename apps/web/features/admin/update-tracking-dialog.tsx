@@ -5,6 +5,7 @@ import { X, Package, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
+import { updateRedeemOrderInCache } from "@/lib/optimistic-updates";
 import type { AdminRedeemOrder } from "./finalize-redeem-dialog";
 import { isTestnet } from "@/lib/chain";
 
@@ -50,6 +51,21 @@ export function UpdateTrackingDialog({
 
       return res.json();
     },
+    onMutate: async (input) => {
+      await queryClient.cancelQueries({
+        queryKey: queryKeys.admin.orders.all("REDEEM"),
+      });
+
+      const snapshot = { status: order.status, trackingId: order.trackingId };
+
+      updateRedeemOrderInCache(queryClient, order.id, {
+        status: "COMPLETED",
+        trackingId: input.trackingId,
+        updatedAt: new Date().toISOString(),
+      });
+
+      return { snapshot };
+    },
     onSuccess: () => {
       toast.success("Tracking ID updated");
       void queryClient.invalidateQueries({
@@ -57,7 +73,13 @@ export function UpdateTrackingDialog({
       });
       onOpenChange(false);
     },
-    onError: (error: Error) => {
+    onError: (error: Error, _input, context) => {
+      if (context?.snapshot) {
+        updateRedeemOrderInCache(queryClient, order.id, {
+          status: context.snapshot.status,
+          trackingId: context.snapshot.trackingId,
+        });
+      }
       toast.error(error.message);
     },
   });
