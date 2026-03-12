@@ -33,6 +33,36 @@ export function useUnbackedTotals() {
   });
 }
 
+interface MarkOrderBackedResponse {
+  backedAt: string;
+  backedBy: string;
+}
+
+export function useMarkOrderBacked() {
+  const queryClient = useQueryClient();
+
+  return useMutation<MarkOrderBackedResponse, Error, { orderId: string }>({
+    mutationFn: async ({ orderId }) => {
+      const res = await fetch(`/api/admin/orders/${orderId}/backed`, {
+        method: "POST",
+      });
+      if (!res.ok) {
+        const data = (await res.json()) as { error?: string };
+        throw new Error(data.error ?? "Failed to mark as backed");
+      }
+      return (await res.json()) as MarkOrderBackedResponse;
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: queryKeys.admin.inventory.all,
+      });
+      void queryClient.invalidateQueries({
+        queryKey: queryKeys.admin.orders.all("MINT"),
+      });
+    },
+  });
+}
+
 export function useMarkBacked() {
   const queryClient = useQueryClient();
 

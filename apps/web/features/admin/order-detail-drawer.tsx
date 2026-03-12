@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { ExternalLink, Package } from "lucide-react";
+import { Check, ExternalLink, Package } from "lucide-react";
+import { toast } from "sonner";
 import {
   Sheet,
   SheetContent,
@@ -19,6 +20,7 @@ import {
   UpdateTrackingDialog,
   UPS_TRACKING_URL,
 } from "./update-tracking-dialog";
+import { useMarkOrderBacked } from "@/hooks/use-admin-inventory";
 import type { AdminMintOrder } from "./finalize-mint-dialog";
 import type { AdminRedeemOrder } from "./finalize-redeem-dialog";
 
@@ -271,11 +273,14 @@ export function OrderDetailDrawer({
   const [finalizeOpen, setFinalizeOpen] = useState(false);
   const [rejectOpen, setRejectOpen] = useState(false);
   const [trackingOpen, setTrackingOpen] = useState(false);
+  const markOrderBacked = useMarkOrderBacked();
 
   if (!order) return null;
 
   const isPending = order.status === "PENDING";
   const hasOnChainId = !!order.onChainOrderId;
+  const isMintCompleted = type === "MINT" && order.status === "COMPLETED";
+  const isUnbacked = isMintCompleted && !(order as AdminMintOrder).backedAt;
 
   function handleActionDone() {
     onActionComplete();
@@ -453,6 +458,54 @@ export function OrderDetailDrawer({
               </div>
             )}
 
+            {/* Backing status — for completed mint orders */}
+            {isMintCompleted && (
+              <div className="space-y-3">
+                <h3
+                  className="text-xs font-semibold uppercase tracking-wider"
+                  style={{ color: "var(--text-muted)" }}
+                >
+                  Backing Status
+                </h3>
+                {(order as AdminMintOrder).backedAt ? (
+                  <div
+                    className="flex items-center justify-between rounded-lg border p-3"
+                    style={{
+                      borderColor: "var(--border-default)",
+                      backgroundColor: "var(--bg-secondary)",
+                    }}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Check
+                        className="h-4 w-4"
+                        style={{ color: "var(--green, #22c55e)" }}
+                      />
+                      <span
+                        className="text-sm font-medium"
+                        style={{ color: "var(--green, #22c55e)" }}
+                      >
+                        Backed
+                      </span>
+                    </div>
+                    <span
+                      className="text-xs"
+                      style={{ color: "var(--text-muted)" }}
+                    >
+                      {formatDate((order as AdminMintOrder).backedAt!)}
+                    </span>
+                  </div>
+                ) : (
+                  <div
+                    className="rounded-lg border border-yellow-800 bg-yellow-900/20 p-3"
+                  >
+                    <span className="text-sm text-yellow-400">
+                      Not yet backed — mark as backed below.
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Redeem-specific details */}
             {type === "REDEEM" && isRedeemOrder(order) && (
               <div className="space-y-3">
@@ -601,6 +654,33 @@ export function OrderDetailDrawer({
               className="flex-row gap-3 border-t"
               style={{ borderColor: "var(--border-default)" }}
             >
+              {isUnbacked && (
+                <button
+                  type="button"
+                  disabled={markOrderBacked.isPending}
+                  onClick={() => {
+                    markOrderBacked.mutate(
+                      { orderId: order.id },
+                      {
+                        onSuccess: () => {
+                          toast.success("Order marked as backed");
+                          handleActionDone();
+                        },
+                        onError: (err) => {
+                          toast.error(err.message);
+                        },
+                      },
+                    );
+                  }}
+                  className="flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors hover:opacity-90 disabled:opacity-50"
+                  style={{
+                    backgroundColor: "var(--brass)",
+                    color: "var(--bg-primary)",
+                  }}
+                >
+                  {markOrderBacked.isPending ? "Marking..." : "Mark as Backed"}
+                </button>
+              )}
               {type === "REDEEM" &&
                 isRedeemOrder(order) &&
                 (order.status === "PROCESSING" ||
