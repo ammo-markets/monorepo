@@ -6,8 +6,13 @@ import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
 import type { AdminRedeemOrder } from "./finalize-redeem-dialog";
+import { isTestnet } from "@/lib/chain";
 
 const UPS_TRACKING_URL = "https://www.ups.com/track?loc=en_US&tracknum=";
+const UPS_TEST_TRACKING_IDS = [
+  "1ZCIETST0422222228",
+  "1ZCIETST0111111114",
+] as const;
 
 interface UpdateTrackingDialogProps {
   order: AdminRedeemOrder;
@@ -21,7 +26,12 @@ export function UpdateTrackingDialog({
   onOpenChange,
 }: UpdateTrackingDialogProps) {
   const queryClient = useQueryClient();
-  const [trackingId, setTrackingId] = useState(order.trackingId ?? "");
+  const [trackingId, setTrackingId] = useState(
+    order.trackingId ??
+      (isTestnet
+        ? (UPS_TEST_TRACKING_IDS[Math.floor(Math.random() * 2)] ?? "")
+        : ""),
+  );
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (input: { trackingId: string }) => {
@@ -119,6 +129,12 @@ export function UpdateTrackingDialog({
               }}
             />
           </div>
+
+          {isTestnet && !order.trackingId && (
+            <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+              Pre-filled with UPS test tracking number (Fuji testnet)
+            </p>
+          )}
 
           {trackingId && (
             <a
