@@ -63,11 +63,26 @@ export async function POST(request: NextRequest) {
       return Response.json({ error: "Not your order" }, { status: 403 });
     }
 
-    const shipping = await prisma.shippingAddress.upsert({
-      where: { orderId },
-      create: { orderId, ...address },
-      update: address,
-    });
+    const [shipping] = await Promise.all([
+      prisma.shippingAddress.upsert({
+        where: { orderId },
+        create: { orderId, ...address },
+        update: address,
+      }),
+      // Also update user's default shipping so the worker uses the latest
+      // address for future orders.
+      prisma.user.update({
+        where: { walletAddress: walletAddress.toLowerCase() },
+        data: {
+          defaultShippingName: address.name,
+          defaultShippingLine1: address.line1,
+          defaultShippingLine2: address.line2 ?? null,
+          defaultShippingCity: address.city,
+          defaultShippingState: address.state,
+          defaultShippingZip: address.zip,
+        },
+      }),
+    ]);
 
     return Response.json({ shipping }, { status: 201 });
   } catch (error) {

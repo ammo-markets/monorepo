@@ -10,7 +10,10 @@ interface OrderDetailResponse {
   order: OrderFromAPI;
 }
 
-export function useOrders(address: string | undefined) {
+export function useOrders(
+  address: string | undefined,
+  options?: { refetchInterval?: number },
+) {
   return useQuery<OrderFromAPI[]>({
     queryKey: queryKeys.orders.list(address!),
     queryFn: async () => {
@@ -20,6 +23,7 @@ export function useOrders(address: string | undefined) {
       return data.orders ?? [];
     },
     enabled: !!address,
+    refetchInterval: options?.refetchInterval,
     select: (orders) => {
       // Deduplicate: remove synthetic pending orders when a real order with matching txHash exists
       const realTxHashes = new Set(

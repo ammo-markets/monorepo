@@ -5,6 +5,7 @@ import type { CaliberDetailData } from "@/lib/types";
 import type { ReactNode } from "react";
 import { US_STATES, RESTRICTED_STATES } from "@/lib/us-states";
 import { useValidateAddress } from "@/hooks/use-validate-address";
+import { useSaveDefaultShipping } from "@/hooks/use-save-default-shipping";
 import type { AddressValidationResult } from "@/app/api/address/validate/route";
 
 export interface ShippingAddress {
@@ -98,10 +99,23 @@ export function StepShipping({
 
   // ── Address validation ──
   const validateAddress = useValidateAddress();
+  const saveDefaultShipping = useSaveDefaultShipping();
   const [validation, setValidation] = useState<AddressValidationResult | null>(
     null,
   );
   const [signingIn, setSigningIn] = useState(false);
+
+  /** Fire-and-forget save of the user's default shipping address. */
+  function persistDefault(addr: ShippingAddress) {
+    saveDefaultShipping.mutate({
+      name: addr.fullName,
+      line1: addr.address1,
+      line2: addr.address2 || undefined,
+      city: addr.city,
+      state: addr.state,
+      zip: addr.zip,
+    });
+  }
 
   async function ensureSignedIn(): Promise<boolean> {
     if (isSignedIn) return true;
@@ -137,6 +151,7 @@ export function StepShipping({
         onSuccess: (result) => {
           // Valid with no suggestions — go straight through
           if (result.isValid && !result.suggested) {
+            persistDefault(address);
             onNext();
             return;
           }
@@ -145,6 +160,7 @@ export function StepShipping({
         },
         onError: () => {
           // Validation service unreachable — don't block the user
+          persistDefault(address);
           onNext();
         },
       },
@@ -155,14 +171,15 @@ export function StepShipping({
     if (!validation?.suggested) return;
     const suggested = validation.suggested;
 
-    setAddress({
+    const updatedAddress: ShippingAddress = {
       ...address,
       address1: suggested.street1,
       address2: suggested.street2,
       city: suggested.city,
       state: suggested.state,
       zip: suggested.zip,
-    });
+    };
+    setAddress(updatedAddress);
 
     // Don't proceed if the suggested address is in a restricted state
     if (
@@ -172,12 +189,14 @@ export function StepShipping({
       return;
     }
 
+    persistDefault(updatedAddress);
     onNext();
   }
 
   function handleKeepMine() {
     // Mark as "validated" so next Continue click proceeds
     setValidation({ isValid: true, suggested: null, messages: [] });
+    persistDefault(address);
     onNext();
   }
 

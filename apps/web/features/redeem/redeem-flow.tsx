@@ -72,7 +72,12 @@ export function RedeemFlow({
   const { addPendingOrder } = usePendingOrders(wallet.address);
 
   // ── Pre-fill shipping from most recent redeem order ──
-  const { data: pastOrders } = useOrders(wallet.address);
+  // Poll orders every 3s after tx confirms so save-shipping effect can find the new order.
+  const shippingSaved = useRef(false);
+  const [pollOrders, setPollOrders] = useState(false);
+  const { data: pastOrders } = useOrders(wallet.address, {
+    refetchInterval: pollOrders && !shippingSaved.current ? 3_000 : undefined,
+  });
   const { mutate: saveShipping } = useSaveShipping(wallet.address);
 
   const [localAddress, setLocalAddress] = useState<ShippingAddress>({
@@ -177,6 +182,7 @@ export function RedeemFlow({
   useEffect(() => {
     if (redeemTx.isRedeemConfirmed) {
       setStep(3);
+      setPollOrders(true); // Start polling so save-shipping can find the new order
       toast.success(`Redeemed ${activeCaliber} tokens`);
       if (redeemTx.redeemHash) {
         addPendingOrder({
@@ -196,7 +202,6 @@ export function RedeemFlow({
   ]);
 
   // ── Auto-save shipping address once the order appears in DB ──
-  const shippingSaved = useRef(false);
   useEffect(() => {
     if (shippingSaved.current || !redeemTx.redeemHash || !pastOrders) return;
     if (!localAddress.fullName || !localAddress.address1) return;
