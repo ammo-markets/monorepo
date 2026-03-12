@@ -3,7 +3,6 @@ import { queryKeys } from "@/lib/query-keys";
 
 interface SaveShippingInput {
   orderId: string;
-  walletAddress: string;
   name: string;
   line1: string;
   line2?: string;

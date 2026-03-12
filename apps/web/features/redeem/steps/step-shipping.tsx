@@ -1,8 +1,11 @@
-import { BackButton, PrimaryButton } from "@/features/shared";
-import { AlertTriangle, Truck } from "lucide-react";
+import { useState } from "react";
+import { BackButton, PrimaryButton, SpinnerButton } from "@/features/shared";
+import { AlertTriangle, CheckCircle, Truck } from "lucide-react";
 import type { CaliberDetailData } from "@/lib/types";
 import type { ReactNode } from "react";
 import { US_STATES, RESTRICTED_STATES } from "@/lib/us-states";
+import { useValidateAddress } from "@/hooks/use-validate-address";
+import type { AddressValidationResult } from "@/app/api/address/validate/route";
 
 export interface ShippingAddress {
   fullName: string;
@@ -56,6 +59,8 @@ export function StepShipping({
   ageVerified,
   setAgeVerified,
   caliber,
+  isSignedIn,
+  onSignIn,
   onNext,
   onBack,
 }: {
@@ -64,6 +69,8 @@ export function StepShipping({
   ageVerified: boolean;
   setAgeVerified: (v: boolean) => void;
   caliber: CaliberDetailData;
+  isSignedIn: boolean;
+  onSignIn: () => Promise<boolean>;
   onNext: () => void;
   onBack: () => void;
 }) {
@@ -85,7 +92,94 @@ export function StepShipping({
 
   const update = (field: keyof ShippingAddress, value: string) => {
     setAddress({ ...address, [field]: value });
+    // Clear previous validation when user edits address
+    if (validation) setValidation(null);
   };
+
+  // ── Address validation ──
+  const validateAddress = useValidateAddress();
+  const [validation, setValidation] = useState<AddressValidationResult | null>(
+    null,
+  );
+  const [signingIn, setSigningIn] = useState(false);
+
+  async function ensureSignedIn(): Promise<boolean> {
+    if (isSignedIn) return true;
+    setSigningIn(true);
+    try {
+      return await onSignIn();
+    } finally {
+      setSigningIn(false);
+    }
+  }
+
+  async function handleContinue() {
+    // Ensure SIWE session exists before proceeding
+    const ok = await ensureSignedIn();
+    if (!ok) return;
+
+    // If already validated (user chose "Keep Mine" or accepted suggestion), proceed
+    if (validation) {
+      onNext();
+      return;
+    }
+
+    validateAddress.mutate(
+      {
+        name: address.fullName,
+        street1: address.address1,
+        street2: address.address2,
+        city: address.city,
+        state: address.state,
+        zip: address.zip,
+      },
+      {
+        onSuccess: (result) => {
+          // Valid with no suggestions — go straight through
+          if (result.isValid && !result.suggested) {
+            onNext();
+            return;
+          }
+          // Show suggestion or warning inline
+          setValidation(result);
+        },
+        onError: () => {
+          // Validation service unreachable — don't block the user
+          onNext();
+        },
+      },
+    );
+  }
+
+  function handleUseSuggested() {
+    if (!validation?.suggested) return;
+    const suggested = validation.suggested;
+
+    setAddress({
+      ...address,
+      address1: suggested.street1,
+      address2: suggested.street2,
+      city: suggested.city,
+      state: suggested.state,
+      zip: suggested.zip,
+    });
+
+    // Don't proceed if the suggested address is in a restricted state
+    if (
+      (RESTRICTED_STATES as readonly string[]).includes(suggested.state)
+    ) {
+      setValidation(null);
+      return;
+    }
+
+    onNext();
+  }
+
+  function handleKeepMine() {
+    // Mark as "validated" so next Continue click proceeds
+    setValidation({ isValid: true, suggested: null, messages: [] });
+    onNext();
+  }
 
   const inputStyle = (hasValue: boolean) => ({
     backgroundColor: "var(--bg-tertiary)",
@@ -287,9 +381,122 @@ export function StepShipping({
         </label>
       </div>
 
-      <PrimaryButton disabled={!formComplete} onClick={onNext}>
-        Continue
-      </PrimaryButton>
+      {/* ── Address validation result ── */}
+      {validation?.suggested && (
+        <div
+          className="mt-5 rounded-lg border p-4"
+          style={{
+            borderColor: "var(--brass)",
+            backgroundColor: "rgba(184, 156, 78, 0.06)",
+          }}
+        >
+          <p
+            className="mb-2 text-xs font-semibold uppercase tracking-wide"
+            style={{ color: "var(--brass)" }}
+          >
+            Suggested address
+          </p>
+          <div
+            className="text-sm leading-relaxed"
+            style={{ color: "var(--text-primary)" }}
+          >
+            <p>{validation.suggested.street1}</p>
+            {validation.suggested.street2 && (
+              <p>{validation.suggested.street2}</p>
+            )}
+            <p>
+              {validation.suggested.city}, {validation.suggested.state}{" "}
+              {validation.suggested.zip}
+            </p>
+          </div>
+          <div className="mt-3 flex gap-2">
+            <button
+              type="button"
+              onClick={handleUseSuggested}
+              className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold transition-colors hover:opacity-90"
+              style={{
+                backgroundColor: "var(--brass)",
+                color: "var(--bg-primary)",
+              }}
+            >
+              <CheckCircle size={14} />
+              Use Suggested
+            </button>
+            <button
+              type="button"
+              onClick={handleKeepMine}
+              className="rounded-lg border px-3 py-2 text-xs font-semibold transition-colors hover:bg-ax-tertiary"
+              style={{
+                borderColor: "var(--border-hover)",
+                color: "var(--text-primary)",
+              }}
+            >
+              Keep Mine
+            </button>
+          </div>
+        </div>
+      )}
+
+      {validation && !validation.isValid && !validation.suggested && (
+        <div
+          className="mt-5 flex gap-3 rounded-lg px-4 py-3"
+          style={{
+            backgroundColor: "rgba(231, 76, 60, 0.08)",
+            borderLeft: "3px solid var(--red)",
+          }}
+        >
+          <AlertTriangle
+            size={16}
+            className="mt-0.5 shrink-0"
+            style={{ color: "var(--red)" }}
+          />
+          <div>
+            <p
+              className="text-xs font-semibold"
+              style={{ color: "var(--red)" }}
+            >
+              Address could not be verified
+            </p>
+            {validation.messages.length > 0 && (
+              <ul className="mt-1 space-y-0.5">
+                {validation.messages.map((msg, i) => (
+                  <li
+                    key={i}
+                    className="text-xs"
+                    style={{ color: "var(--text-secondary)" }}
+                  >
+                    {msg}
+                  </li>
+                ))}
+              </ul>
+            )}
+            <button
+              type="button"
+              onClick={handleKeepMine}
+              className="mt-2 text-xs font-medium underline underline-offset-2"
+              style={{ color: "var(--text-secondary)" }}
+            >
+              Continue anyway
+            </button>
+          </div>
+        </div>
+      )}
+
+      {signingIn ? (
+        <div className="mt-6">
+          <SpinnerButton label="Waiting for signature..." />
+        </div>
+      ) : validateAddress.isPending ? (
+        <div className="mt-6">
+          <SpinnerButton label="Verifying address..." />
+        </div>
+      ) : (
+        !validation?.suggested && (
+          <PrimaryButton disabled={!formComplete} onClick={handleContinue}>
+            Continue
+          </PrimaryButton>
+        )
+      )}
     </div>
   );
 }

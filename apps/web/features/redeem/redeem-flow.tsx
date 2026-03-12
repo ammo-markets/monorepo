@@ -9,6 +9,7 @@ import type { RedeemTxStatus } from "@/hooks/use-tx-status";
 import { useTxStatus } from "@/hooks/use-tx-status";
 
 import { useWallet } from "@/hooks/use-wallet";
+import { useAuth } from "@/contexts/auth-context";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useRedeemTransaction } from "@/hooks/use-redeem-transaction";
 import { useAllowance } from "@/hooks/use-allowance";
@@ -65,6 +66,7 @@ export function RedeemFlow({
   // ── Real hooks ──
   const activeCaliber: Caliber = selectedCaliber ?? "9MM_PRACTICE";
   const wallet = useWallet();
+  const { isSignedIn, signIn } = useAuth();
   const { openConnectModal } = useConnectModal();
   const balances = useTokenBalances();
   const { addPendingOrder } = usePendingOrders(wallet.address);
@@ -198,17 +200,17 @@ export function RedeemFlow({
   useEffect(() => {
     if (shippingSaved.current || !redeemTx.redeemHash || !pastOrders) return;
     if (!localAddress.fullName || !localAddress.address1) return;
+    if (!isSignedIn) return;
 
     const order = pastOrders.find(
       (o) => o.txHash === redeemTx.redeemHash && !o.id.startsWith("pending-"),
     );
 
-    if (order && wallet.address) {
+    if (order) {
       shippingSaved.current = true;
       saveShipping(
         {
           orderId: order.id,
-          walletAddress: wallet.address,
           name: localAddress.fullName,
           line1: localAddress.address1,
           line2: localAddress.address2 || undefined,
@@ -223,13 +225,7 @@ export function RedeemFlow({
         },
       );
     }
-  }, [
-    pastOrders,
-    redeemTx.redeemHash,
-    localAddress,
-    wallet.address,
-    saveShipping,
-  ]);
+  }, [pastOrders, redeemTx.redeemHash, localAddress, isSignedIn, saveShipping]);
 
   // ── Toast on errors ──
   useEffect(() => {
@@ -353,6 +349,8 @@ export function RedeemFlow({
           ageVerified={ageVerified}
           setAgeVerified={setAgeVerified}
           caliber={caliber}
+          isSignedIn={isSignedIn}
+          onSignIn={signIn}
           onNext={() => setStep(1)}
           onBack={() => setStep(1)}
         />

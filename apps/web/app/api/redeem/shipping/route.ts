@@ -2,13 +2,10 @@ import type { NextRequest } from "next/server";
 import { z } from "zod";
 import { prisma } from "@ammo-exchange/db";
 import { RESTRICTED_STATES, VALID_US_STATE_CODES } from "@ammo-exchange/shared";
-import { isAddress } from "viem";
+import { requireSession } from "@/lib/auth";
 
 const shippingSchema = z.object({
   orderId: z.string().min(1),
-  walletAddress: z.string().refine((s) => isAddress(s), {
-    message: "Invalid wallet address",
-  }),
   name: z.string().min(1).max(100),
   line1: z.string().min(1).max(200),
   line2: z.string().max(200).optional(),
@@ -30,6 +27,8 @@ const shippingSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    const { address: walletAddress } = await requireSession();
+
     const body = await request.json().catch(() => null);
 
     if (!body) {
@@ -45,7 +44,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { orderId, walletAddress, ...address } = parsed.data;
+    const { orderId, ...address } = parsed.data;
 
     // Verify order exists and is a REDEEM order
     const order = await prisma.order.findUnique({
@@ -59,7 +58,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verify caller owns this order (matched by wallet address)
+    // Verify caller owns this order (session address vs order wallet)
     if (order.walletAddress?.toLowerCase() !== walletAddress.toLowerCase()) {
       return Response.json({ error: "Not your order" }, { status: 403 });
     }
