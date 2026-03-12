@@ -15,7 +15,10 @@ import { FinalizeMintDialog } from "./finalize-mint-dialog";
 import { FinalizeRedeemDialog } from "./finalize-redeem-dialog";
 import { RejectMintDialog } from "./reject-mint-dialog";
 import { CancelRedeemDialog } from "./cancel-redeem-dialog";
-import { UpdateTrackingDialog, UPS_TRACKING_URL } from "./update-tracking-dialog";
+import {
+  UpdateTrackingDialog,
+  UPS_TRACKING_URL,
+} from "./update-tracking-dialog";
 import type { AdminMintOrder } from "./finalize-mint-dialog";
 import type { AdminRedeemOrder } from "./finalize-redeem-dialog";
 
@@ -49,9 +52,7 @@ function StatusBadge({
   };
 
   const label =
-    type === "REDEEM"
-      ? (REDEEM_STATUS_LABELS[status] ?? status)
-      : status;
+    type === "REDEEM" ? (REDEEM_STATUS_LABELS[status] ?? status) : status;
 
   return (
     <span
@@ -544,7 +545,10 @@ export function OrderDetailDrawer({
                       </a>
                     </div>
                   ) : (
-                    <p className="text-sm" style={{ color: "var(--text-muted)" }}>
+                    <p
+                      className="text-sm"
+                      style={{ color: "var(--text-muted)" }}
+                    >
                       No tracking ID yet — add one below.
                     </p>
                   )}

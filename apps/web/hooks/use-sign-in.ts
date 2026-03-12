@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAccount, useSignMessage } from "wagmi";
 import { SiweMessage } from "siwe";
 import { chainId } from "@/lib/chain";
+import { queryKeys } from "@/lib/query-keys";
 
 /**
  * Imperative SIWE sign-in hook.
@@ -15,13 +16,12 @@ import { chainId } from "@/lib/chain";
 export function useSignIn() {
   const { address } = useAccount();
   const { signMessageAsync } = useSignMessage();
-  const [isPending, setIsPending] = useState(false);
+  const queryClient = useQueryClient();
 
-  const signIn = useCallback(async (): Promise<boolean> => {
-    if (!address) return false;
+  const mutation = useMutation({
+    mutationFn: async () => {
+      if (!address) throw new Error("No wallet connected");
 
-    setIsPending(true);
-    try {
       // 1. Get nonce from server
       const nonceRes = await fetch("/api/auth/nonce");
       const { nonce } = await nonceRes.json();
@@ -47,14 +47,26 @@ export function useSignIn() {
         body: JSON.stringify({ message, signature }),
       });
 
-      return verifyRes.ok;
-    } catch {
-      // User rejected signature or network error
-      return false;
-    } finally {
-      setIsPending(false);
-    }
-  }, [address, signMessageAsync]);
+      if (!verifyRes.ok) throw new Error("Verification failed");
 
-  return { signIn, isPending };
+      return { address, chainId };
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData(queryKeys.auth.session, {
+        address: data.address,
+      });
+    },
+  });
+
+  // Preserve the `signIn: () => Promise<boolean>` API for consumers
+  const signIn = async (): Promise<boolean> => {
+    try {
+      await mutation.mutateAsync();
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  return { signIn, isPending: mutation.isPending };
 }

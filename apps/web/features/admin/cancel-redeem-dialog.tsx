@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
 import { useCancelRedeem } from "@/hooks/use-cancel-redeem";
+import { useSaveCancelReason } from "@/hooks/use-save-cancel-reason";
 import { parseContractError } from "@/lib/errors";
 import {
   AlertDialog,
@@ -33,6 +34,7 @@ export function CancelRedeemDialog({
   onCancelled,
 }: CancelRedeemDialogProps) {
   const queryClient = useQueryClient();
+  const saveCancelReason = useSaveCancelReason();
   const [reason, setReason] = useState("");
   const [reasonError, setReasonError] = useState("");
 
@@ -54,11 +56,7 @@ export function CancelRedeemDialog({
     if (isConfirmed) {
       const trimmed = reason.trim();
       if (trimmed) {
-        void fetch(`/api/admin/orders/${order.id}/cancel-reason`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ reason: trimmed }),
-        });
+        saveCancelReason.mutate({ orderId: order.id, reason: trimmed });
       }
       toast.success("Redeem order cancelled");
       void queryClient.invalidateQueries({
@@ -73,7 +71,16 @@ export function CancelRedeemDialog({
       setReason("");
       setReasonError("");
     }
-  }, [isConfirmed, order.id, onCancelled, onOpenChange, reset, queryClient, reason]);
+  }, [
+    isConfirmed,
+    order.id,
+    onCancelled,
+    onOpenChange,
+    reset,
+    queryClient,
+    reason,
+    saveCancelReason,
+  ]);
 
   // React to error
   useEffect(() => {

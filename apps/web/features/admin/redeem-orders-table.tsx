@@ -352,24 +352,24 @@ export function RedeemOrdersTable() {
                         {/* Tracking button — only after finalization (PROCESSING/COMPLETED) */}
                         {(order.status === "PROCESSING" ||
                           order.status === "COMPLETED") && (
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setTrackingOrder(order);
-                                setTrackingDialogOpen(true);
-                              }}
-                              className="rounded-md border px-3 py-1 text-xs font-medium transition-colors hover:bg-ax-tertiary"
-                              style={{
-                                borderColor: "var(--border-hover)",
-                                color: order.trackingId
-                                  ? "var(--green)"
-                                  : "var(--text-secondary)",
-                              }}
-                            >
-                              {order.trackingId ? "Tracked" : "Tracking"}
-                            </button>
-                          )}
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setTrackingOrder(order);
+                              setTrackingDialogOpen(true);
+                            }}
+                            className="rounded-md border px-3 py-1 text-xs font-medium transition-colors hover:bg-ax-tertiary"
+                            style={{
+                              borderColor: "var(--border-hover)",
+                              color: order.trackingId
+                                ? "var(--green)"
+                                : "var(--text-secondary)",
+                            }}
+                          >
+                            {order.trackingId ? "Tracked" : "Tracking"}
+                          </button>
+                        )}
                         {order.status === "PENDING" && (
                           <>
                             {(() => {

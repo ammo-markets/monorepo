@@ -18,7 +18,7 @@ export function useOrders(
     queryKey: queryKeys.orders.list(address!),
     queryFn: async () => {
       const res = await fetch(`/api/orders?address=${address}`);
-      if (!res.ok) return [];
+      if (!res.ok) throw new Error("Failed to load orders");
       const data = (await res.json()) as OrdersResponse;
       return data.orders ?? [];
     },

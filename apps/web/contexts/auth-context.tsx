@@ -6,11 +6,12 @@ import {
   useContext,
   useEffect,
   useRef,
-  useState,
 } from "react";
 import type { ReactNode } from "react";
 import { useWallet } from "@/hooks/use-wallet";
 import { useSignIn } from "@/hooks/use-sign-in";
+import { useSession } from "@/hooks/use-session";
+import { useLogout } from "@/hooks/use-logout";
 
 interface AuthContextValue {
   address: `0x${string}` | undefined;
@@ -35,30 +36,11 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const wallet = useWallet();
   const { signIn: doSignIn, isPending: isSignInPending } = useSignIn();
+  const session = useSession();
+  const logout = useLogout();
 
-  const [isSignedIn, setIsSignedIn] = useState(false);
-  const [isSessionLoading, setIsSessionLoading] = useState(true);
+  const isSignedIn = !!session.data?.address;
   const prevAddressRef = useRef<`0x${string}` | undefined>(wallet.address);
-
-  // Check for existing session on mount
-  useEffect(() => {
-    let cancelled = false;
-    async function check() {
-      try {
-        const res = await fetch("/api/auth/session");
-        const data = await res.json();
-        if (!cancelled) setIsSignedIn(!!data.address);
-      } catch {
-        if (!cancelled) setIsSignedIn(false);
-      } finally {
-        if (!cancelled) setIsSessionLoading(false);
-      }
-    }
-    check();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   // Invalidate session when wallet address changes
   useEffect(() => {
@@ -66,25 +48,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     prevAddressRef.current = wallet.address;
 
     if (isSignedIn && prev !== undefined && wallet.address !== prev) {
-      setIsSignedIn(false);
-      fetch("/api/auth/logout", { method: "POST" }).catch(() => {});
+      logout.mutate();
     }
-  }, [wallet.address, isSignedIn]);
+  }, [wallet.address, isSignedIn, logout]);
 
   const signIn = useCallback(async (): Promise<boolean> => {
-    const ok = await doSignIn();
-    setIsSignedIn(ok);
-    return ok;
+    return doSignIn();
   }, [doSignIn]);
 
   const signOut = useCallback(async () => {
-    try {
-      await fetch("/api/auth/logout", { method: "POST" });
-    } catch {
-      // Clear client state regardless
-    }
-    setIsSignedIn(false);
-  }, []);
+    await logout.mutateAsync();
+  }, [logout]);
 
   const value: AuthContextValue = {
     address: wallet.address,
@@ -95,7 +69,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     switchNetwork: wallet.switchNetwork,
     isSwitching: wallet.isSwitching,
     isSignedIn,
-    isAuthLoading: isSessionLoading || isSignInPending,
+    isAuthLoading: session.isLoading || isSignInPending,
     signIn,
     signOut,
   };

@@ -42,4 +42,8 @@ export const queryKeys = {
   activity: {
     all: ["activity"] as const,
   },
+
+  auth: {
+    session: ["auth", "session"] as const,
+  },
 } as const;

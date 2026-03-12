@@ -182,9 +182,7 @@ export function StepShipping({
     setAddress(updatedAddress);
 
     // Don't proceed if the suggested address is in a restricted state
-    if (
-      (RESTRICTED_STATES as readonly string[]).includes(suggested.state)
-    ) {
+    if ((RESTRICTED_STATES as readonly string[]).includes(suggested.state)) {
       setValidation(null);
       return;
     }

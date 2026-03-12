@@ -2,7 +2,12 @@
 
 import { useState } from "react";
 import type { ReactNode } from "react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+  MutationCache,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
+import { toast } from "sonner";
 import { WagmiProvider } from "wagmi";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { wagmiConfig } from "@/lib/wagmi";
@@ -21,6 +26,13 @@ function makeQueryClient() {
         refetchOnWindowFocus: true,
       },
     },
+    mutationCache: new MutationCache({
+      onError: (error, _variables, _context, mutation) => {
+        // Skip if the mutation handles its own errors
+        if (mutation.options.onError) return;
+        toast.error(error.message || "Something went wrong");
+      },
+    }),
   });
 }
 

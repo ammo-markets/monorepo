@@ -58,7 +58,7 @@ export function buildRedeemSteps(order: OrderFromAPI): OrderStep[] {
             ? "current"
             : "future",
       meta: isShipped
-        ? order.trackingId ?? formatDate(order.updatedAt)
+        ? (order.trackingId ?? formatDate(order.updatedAt))
         : isProcessing
           ? "Awaiting shipment..."
           : undefined,
