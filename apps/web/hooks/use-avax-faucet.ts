@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { useWaitForTransactionReceipt } from "wagmi";
+import { useAccount, useWaitForTransactionReceipt } from "wagmi";
 
 type Status = "idle" | "requesting" | "confirming" | "done";
 
@@ -17,11 +17,16 @@ export function useAvaxFaucet(onSuccess?: () => void): {
   status: Status;
   error: string | null;
 } {
+  const { address } = useAccount();
   const [hash, setHash] = useState<`0x${string}` | undefined>();
 
   const mutation = useMutation({
     mutationFn: async () => {
-      const res = await fetch("/api/faucet/avax", { method: "POST" });
+      const res = await fetch("/api/faucet/avax", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ address }),
+      });
       const data = (await res.json()) as FaucetResponse;
 
       if (!res.ok) {

@@ -3,7 +3,6 @@ import { AlertTriangle, Truck } from "lucide-react";
 import type { CaliberDetailData } from "@/lib/types";
 import type { ReactNode } from "react";
 import { US_STATES, RESTRICTED_STATES } from "@/lib/us-states";
-import { useSaveProfile } from "@/hooks/use-save-profile";
 
 export interface ShippingAddress {
   fullName: string;
@@ -68,13 +67,6 @@ export function StepShipping({
   onNext: () => void;
   onBack: () => void;
 }) {
-  const {
-    mutateAsync: saveProfile,
-    isPending: isSaving,
-    error: saveErrorObj,
-  } = useSaveProfile();
-  const saveError = saveErrorObj?.message ?? null;
-
   const isRestricted = (RESTRICTED_STATES as readonly string[]).includes(
     address.state,
   );
@@ -295,31 +287,8 @@ export function StepShipping({
         </label>
       </div>
 
-      {saveError && (
-        <p className="mt-2 text-xs" style={{ color: "var(--red)" }}>
-          {saveError}
-        </p>
-      )}
-
-      <PrimaryButton
-        disabled={!formComplete || isSaving}
-        onClick={async () => {
-          try {
-            await saveProfile({
-              defaultShippingName: address.fullName,
-              defaultShippingLine1: address.address1,
-              defaultShippingLine2: address.address2 || "",
-              defaultShippingCity: address.city,
-              defaultShippingState: address.state,
-              defaultShippingZip: address.zip,
-            });
-            onNext();
-          } catch {
-            // error captured by mutation state
-          }
-        }}
-      >
-        {isSaving ? "Saving..." : "Save and Continue"}
+      <PrimaryButton disabled={!formComplete} onClick={onNext}>
+        Continue
       </PrimaryButton>
     </div>
   );

@@ -3,14 +3,14 @@ import { prisma } from "@ammo-exchange/db";
 import { PRISMA_TO_CALIBER } from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
 import { serializeBigInts } from "@/lib/serialize";
-import { requireSession } from "@/lib/auth";
+import { isAddress } from "viem";
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const session = await requireSession();
+    const address = request.nextUrl.searchParams.get("address");
     const { id } = await params;
 
     const order = await prisma.order.findUnique({
@@ -22,10 +22,11 @@ export async function GET(
       return Response.json({ error: "Order not found" }, { status: 404 });
     }
 
-    // Verify caller owns this order
-    if (order.walletAddress?.toLowerCase() !== session.address.toLowerCase()) {
-      return Response.json({ error: "Forbidden" }, { status: 403 });
-    }
+    // If caller provides address, verify ownership; otherwise omit shipping
+    const isOwner =
+      address &&
+      isAddress(address) &&
+      order.walletAddress?.toLowerCase() === address.toLowerCase();
 
     const mapped = {
       id: order.id,
@@ -37,13 +38,14 @@ export async function GET(
       onChainOrderId: order.onChainOrderId,
       walletAddress: order.walletAddress,
       txHash: order.txHash,
+      trackingId: order.trackingId,
       chainId: order.chainId,
       mintPrice: order.mintPrice,
       refundAmount: order.refundAmount,
       feeAmount: order.feeAmount,
       createdAt: order.createdAt.toISOString(),
       updatedAt: order.updatedAt.toISOString(),
-      shippingAddress: order.shippingAddress,
+      shippingAddress: isOwner ? order.shippingAddress : null,
     };
 
     return Response.json({ order: serializeBigInts(mapped) });

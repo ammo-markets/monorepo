@@ -11,6 +11,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useAccount } from "wagmi";
 import { useOrderDetail } from "@/hooks/use-orders";
 import type { OrderFromAPI, OrderStep, StepStatus } from "@/lib/types";
 import type { Caliber } from "@ammo-exchange/shared";
@@ -374,11 +375,12 @@ function DetailRow({
 /* ────────────── Main Component ────────────── */
 
 export function OrderDetailView({ orderId }: { orderId: string }) {
+  const { address } = useAccount();
   const {
     data: order,
     isLoading: loading,
     error: queryError,
-  } = useOrderDetail(orderId);
+  } = useOrderDetail(orderId, address);
   const error = queryError ? (queryError as Error).message : null;
 
   if (loading) {

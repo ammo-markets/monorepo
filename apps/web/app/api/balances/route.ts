@@ -1,18 +1,25 @@
-import { erc20Abi } from "viem";
+import type { NextRequest } from "next/server";
+import { erc20Abi, isAddress } from "viem";
 import { publicClient } from "@/lib/viem";
 import { AmmoTokenAbi } from "@ammo-exchange/contracts/abis";
 import type { Caliber } from "@ammo-exchange/shared";
-import { requireSession } from "@/lib/auth";
 import { contracts } from "@/lib/chain";
 
 const CALIBERS = Object.keys(contracts.calibers) as Caliber[];
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const session = await requireSession();
-    const address = session.address as `0x${string}`;
+    const addressParam = request.nextUrl.searchParams.get("address");
 
-    // Use separate multicalls to avoid tuple type inference issues with spread
+    if (!addressParam || !isAddress(addressParam)) {
+      return Response.json(
+        { error: "Valid address query parameter required" },
+        { status: 400 },
+      );
+    }
+
+    const address = addressParam as `0x${string}`;
+
     const usdcResult = await publicClient.readContract({
       address: contracts.usdc,
       abi: erc20Abi,

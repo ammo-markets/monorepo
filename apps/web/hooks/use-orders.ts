@@ -14,7 +14,7 @@ export function useOrders(address: string | undefined) {
   return useQuery<OrderFromAPI[]>({
     queryKey: queryKeys.orders.list(address!),
     queryFn: async () => {
-      const res = await fetch("/api/orders");
+      const res = await fetch(`/api/orders?address=${address}`);
       if (!res.ok) return [];
       const data = (await res.json()) as OrdersResponse;
       return data.orders ?? [];
@@ -34,11 +34,12 @@ export function useOrders(address: string | undefined) {
   });
 }
 
-export function useOrderDetail(orderId: string) {
+export function useOrderDetail(orderId: string, address?: string) {
   return useQuery<OrderFromAPI | null>({
     queryKey: queryKeys.orders.detail(orderId),
     queryFn: async () => {
-      const res = await fetch(`/api/orders/${orderId}`);
+      const params = address ? `?address=${address}` : "";
+      const res = await fetch(`/api/orders/${orderId}${params}`);
       if (!res.ok) throw new Error("Order not found");
       const data = (await res.json()) as OrderDetailResponse;
       return data.order;

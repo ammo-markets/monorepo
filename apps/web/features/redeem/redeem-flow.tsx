@@ -18,10 +18,8 @@ import { parseContractError } from "@/lib/errors";
 import { getDeadline, parseTokenAmount } from "@/lib/tx-utils";
 import type { Caliber } from "@ammo-exchange/shared";
 import { contracts } from "@/lib/chain";
-import { useQueryClient } from "@tanstack/react-query";
-import { useProfile } from "@/hooks/use-profile";
-import { queryKeys } from "@/lib/query-keys";
 import { usePendingOrders } from "@/hooks/use-pending-orders";
+import { useOrders } from "@/hooks/use-orders";
 
 import { StepCompose } from "./steps/step-compose";
 import { StepReviewAndConfirm } from "./steps/step-review-and-confirm";
@@ -35,7 +33,6 @@ export function RedeemFlow({
 }) {
   const searchParams = useSearchParams();
   const containerRef = useRef<HTMLDivElement>(null);
-  const queryClient = useQueryClient();
 
   const preselected =
     caliberFromProp ??
@@ -71,16 +68,8 @@ export function RedeemFlow({
   const balances = useTokenBalances();
   const { addPendingOrder } = usePendingOrders(wallet.address);
 
-  // ── User Profile (Shipping) ──
-  const { data: profile } = useProfile(!!wallet.isConnected);
-
-  const hasAddress = !!(
-    profile?.defaultShippingName &&
-    profile?.defaultShippingLine1 &&
-    profile?.defaultShippingCity &&
-    profile?.defaultShippingState &&
-    profile?.defaultShippingZip
-  );
+  // ── Pre-fill shipping from most recent redeem order ──
+  const { data: pastOrders } = useOrders(wallet.address);
 
   const [localAddress, setLocalAddress] = useState<ShippingAddress>({
     fullName: "",
@@ -91,19 +80,34 @@ export function RedeemFlow({
     zip: "",
   });
 
-  // Sync profile to local address so it pre-fills the form if they edit
+  const hasAddress = !!(
+    localAddress.fullName &&
+    localAddress.address1 &&
+    localAddress.city &&
+    localAddress.state &&
+    localAddress.zip
+  );
+
+  // Pre-fill from most recent redeem order's shipping address
+  const prefillApplied = useRef(false);
   useEffect(() => {
-    if (profile) {
+    if (prefillApplied.current || !pastOrders) return;
+    const lastRedeem = pastOrders.find(
+      (o) => o.type === "REDEEM" && o.shippingAddress,
+    );
+    if (lastRedeem?.shippingAddress) {
+      const sa = lastRedeem.shippingAddress;
       setLocalAddress({
-        fullName: profile.defaultShippingName || "",
-        address1: profile.defaultShippingLine1 || "",
-        address2: profile.defaultShippingLine2 || "",
-        city: profile.defaultShippingCity || "",
-        state: profile.defaultShippingState || "",
-        zip: profile.defaultShippingZip || "",
+        fullName: sa.name,
+        address1: sa.line1,
+        address2: sa.line2 ?? "",
+        city: sa.city,
+        state: sa.state,
+        zip: sa.zip,
       });
+      prefillApplied.current = true;
     }
-  }, [profile]);
+  }, [pastOrders]);
 
   const [ageVerified, setAgeVerified] = useState(false);
 
@@ -186,6 +190,38 @@ export function RedeemFlow({
     addPendingOrder,
     parsedTokenAmount,
   ]);
+
+  // ── Auto-save shipping address once the order appears in DB ──
+  const shippingSaved = useRef(false);
+  useEffect(() => {
+    if (shippingSaved.current || !redeemTx.redeemHash || !pastOrders) return;
+    if (!localAddress.fullName || !localAddress.address1) return;
+
+    const order = pastOrders.find(
+      (o) => o.txHash === redeemTx.redeemHash && !o.id.startsWith("pending-"),
+    );
+
+    if (order) {
+      shippingSaved.current = true;
+      fetch("/api/redeem/shipping", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderId: order.id,
+          walletAddress: wallet.address,
+          name: localAddress.fullName,
+          line1: localAddress.address1,
+          line2: localAddress.address2 || undefined,
+          city: localAddress.city,
+          state: localAddress.state,
+          zip: localAddress.zip,
+        }),
+      }).catch(() => {
+        // Shipping save failed — user can update later
+        shippingSaved.current = false;
+      });
+    }
+  }, [pastOrders, redeemTx.redeemHash, localAddress, wallet.address]);
 
   // ── Toast on errors ──
   useEffect(() => {
@@ -309,10 +345,7 @@ export function RedeemFlow({
           ageVerified={ageVerified}
           setAgeVerified={setAgeVerified}
           caliber={caliber}
-          onNext={() => {
-            queryClient.invalidateQueries({ queryKey: queryKeys.profile.all });
-            setStep(1);
-          }}
+          onNext={() => setStep(1)}
           onBack={() => setStep(1)}
         />
       )}

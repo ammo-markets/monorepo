@@ -1,18 +1,26 @@
-import { parseEther } from "viem";
-import { requireSession } from "@/lib/auth";
+import type { NextRequest } from "next/server";
+import { isAddress, parseEther } from "viem";
 import { publicClient, faucetWalletClient } from "@/lib/viem";
 
 const DRIP_AMOUNT = parseEther("0.05");
 
-export async function POST() {
+export async function POST(request: NextRequest) {
   try {
     if (!faucetWalletClient) {
       return Response.json({ error: "Faucet not configured" }, { status: 503 });
     }
 
-    const session = await requireSession();
-    const address = session.address as `0x${string}`;
+    const body = await request.json().catch(() => null);
+    const addressParam = body?.address as string | undefined;
 
+    if (!addressParam || !isAddress(addressParam)) {
+      return Response.json(
+        { error: "Valid address required" },
+        { status: 400 },
+      );
+    }
+
+    const address = addressParam as `0x${string}`;
     const balance = await publicClient.getBalance({ address });
 
     if (balance > BigInt(0)) {
