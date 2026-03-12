@@ -27,6 +27,7 @@ export interface OrderFromAPI {
   onChainOrderId: string | null;
   walletAddress: string | null;
   txHash: string | null;
+  trackingId?: string | null;
   chainId: number | null;
   mintPrice: string | null;
   refundAmount: string | null;

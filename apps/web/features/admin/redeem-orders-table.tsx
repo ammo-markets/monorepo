@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/tooltip";
 import { FinalizeRedeemDialog } from "./finalize-redeem-dialog";
 import { CancelRedeemDialog } from "./cancel-redeem-dialog";
+import { UpdateTrackingDialog } from "./update-tracking-dialog";
 import { OrderDetailDrawer } from "./order-detail-drawer";
 import type { AdminRedeemOrder } from "./finalize-redeem-dialog";
 
@@ -79,6 +80,10 @@ export function RedeemOrdersTable() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [cancelOrder, setCancelOrder] = useState<AdminRedeemOrder | null>(null);
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [trackingOrder, setTrackingOrder] = useState<AdminRedeemOrder | null>(
+    null,
+  );
+  const [trackingDialogOpen, setTrackingDialogOpen] = useState(false);
 
   // Drawer state
   const [drawerOrder, setDrawerOrder] = useState<AdminRedeemOrder | null>(null);
@@ -323,83 +328,107 @@ export function RedeemOrdersTable() {
                       })}
                     </td>
                     <td className="px-4 py-3">
-                      {order.status === "PENDING" && (
-                        <div className="flex gap-2">
-                          {(() => {
-                            const blockReasons = getFinalizeBlockReasons(order);
-                            const isBlocked = blockReasons.length > 0;
+                      <div className="flex gap-2">
+                        {/* Tracking button — available for any non-cancelled order */}
+                        {order.status !== "CANCELLED" &&
+                          order.status !== "FAILED" && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setTrackingOrder(order);
+                                setTrackingDialogOpen(true);
+                              }}
+                              className="rounded-md border px-3 py-1 text-xs font-medium transition-colors hover:bg-ax-tertiary"
+                              style={{
+                                borderColor: "var(--border-hover)",
+                                color: order.trackingId
+                                  ? "var(--green)"
+                                  : "var(--text-secondary)",
+                              }}
+                            >
+                              {order.trackingId ? "Tracked" : "Tracking"}
+                            </button>
+                          )}
+                        {order.status === "PENDING" && (
+                          <>
+                            {(() => {
+                              const blockReasons =
+                                getFinalizeBlockReasons(order);
+                              const isBlocked = blockReasons.length > 0;
 
-                            const btn = (
-                              <button
-                                type="button"
-                                disabled={isBlocked}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  if (isBlocked) return;
-                                  setSelectedOrder(order);
-                                  setDialogOpen(true);
-                                }}
-                                className="rounded-md px-3 py-1 text-xs font-medium transition-colors hover:bg-brass-hover disabled:cursor-not-allowed disabled:opacity-50"
-                                style={{
-                                  backgroundColor: "var(--brass)",
-                                  color: "var(--bg-primary)",
-                                }}
-                              >
-                                Finalize
-                              </button>
-                            );
+                              const btn = (
+                                <button
+                                  type="button"
+                                  disabled={isBlocked}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (isBlocked) return;
+                                    setSelectedOrder(order);
+                                    setDialogOpen(true);
+                                  }}
+                                  className="rounded-md px-3 py-1 text-xs font-medium transition-colors hover:bg-brass-hover disabled:cursor-not-allowed disabled:opacity-50"
+                                  style={{
+                                    backgroundColor: "var(--brass)",
+                                    color: "var(--bg-primary)",
+                                  }}
+                                >
+                                  Finalize
+                                </button>
+                              );
 
-                            if (!isBlocked) return btn;
+                              if (!isBlocked) return btn;
 
-                            return (
-                              <TooltipProvider>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <span
-                                      className="inline-flex"
+                              return (
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <span
+                                        className="inline-flex"
+                                        onClick={(e) => e.stopPropagation()}
+                                      >
+                                        {btn}
+                                      </span>
+                                    </TooltipTrigger>
+                                    <TooltipContent
+                                      side="top"
+                                      className="max-w-xs border border-red-900/40 bg-ax-primary text-left"
                                       onClick={(e) => e.stopPropagation()}
+                                      onPointerDown={(e) => e.stopPropagation()}
                                     >
-                                      {btn}
-                                    </span>
-                                  </TooltipTrigger>
-                                  <TooltipContent
-                                    side="top"
-                                    className="max-w-xs border border-red-900/40 bg-ax-primary text-left"
-                                    onClick={(e) => e.stopPropagation()}
-                                    onPointerDown={(e) => e.stopPropagation()}
-                                  >
-                                    <p className="mb-1 font-medium text-red-400">
-                                      Cannot finalize
-                                    </p>
-                                    <ul className="space-y-0.5 text-xs text-text-secondary">
-                                      {blockReasons.map((reason) => (
-                                        <li key={reason}>• {reason}</li>
-                                      ))}
-                                    </ul>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
-                            );
-                          })()}
-                          <button
-                            type="button"
-                            disabled={!order.onChainOrderId}
-                            title={
-                              order.onChainOrderId
-                                ? "Cancel this redeem order"
-                                : "Awaiting on-chain order ID"
-                            }
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setCancelOrder(order);
-                              setCancelDialogOpen(true);
-                            }}
-                            className="rounded-md bg-red-900/30 px-3 py-1 text-xs font-medium text-red-400 transition-colors hover:bg-red-900/50 disabled:cursor-not-allowed disabled:opacity-50"
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      )}
+                                      <p className="mb-1 font-medium text-red-400">
+                                        Cannot finalize
+                                      </p>
+                                      <ul className="space-y-0.5 text-xs text-text-secondary">
+                                        {blockReasons.map((reason) => (
+                                          <li key={reason}>• {reason}</li>
+                                        ))}
+                                      </ul>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              );
+                            })()}
+                            <button
+                              type="button"
+                              disabled={!order.onChainOrderId}
+                              title={
+                                order.onChainOrderId
+                                  ? "Cancel this redeem order"
+                                  : "Awaiting on-chain order ID"
+                              }
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setCancelOrder(order);
+                                setCancelDialogOpen(true);
+                              }}
+                              className="rounded-md bg-red-900/30 px-3 py-1 text-xs font-medium text-red-400 transition-colors hover:bg-red-900/50 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                              Cancel
+                            </button>
+                          </>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -467,6 +496,17 @@ export function RedeemOrdersTable() {
             if (!open) setSelectedOrder(null);
           }}
           onFinalized={handleFinalized}
+        />
+      )}
+
+      {trackingOrder && (
+        <UpdateTrackingDialog
+          order={trackingOrder}
+          open={trackingDialogOpen}
+          onOpenChange={(open) => {
+            setTrackingDialogOpen(open);
+            if (!open) setTrackingOrder(null);
+          }}
         />
       )}
 
