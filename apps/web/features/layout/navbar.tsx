@@ -9,7 +9,6 @@ import { UsdcIcon } from "./usdc-icon";
 import { useWallet } from "@/hooks/use-wallet";
 import { useTokenBalances } from "@/hooks/use-token-balances";
 import { useKeeperCheck } from "@/hooks/use-keeper-check";
-import { useSiwe } from "@/hooks/use-siwe";
 
 const navLinks = [
   { label: "Market", href: "/market" },
@@ -23,18 +22,14 @@ export function Navbar() {
   const { isConnected, isWrongNetwork, isReconnecting } = useWallet();
   const { usdc } = useTokenBalances();
   const { isKeeper } = useKeeperCheck();
-  const { isSignedIn } = useSiwe();
 
   const allLinks = useMemo(() => {
     const links = [...navLinks];
-    if (isSignedIn) {
-      links.push({ label: "Profile", href: "/profile" });
-    }
     if (isKeeper) {
       links.push({ label: "Admin", href: "/admin" });
     }
     return links;
-  }, [isSignedIn, isKeeper]);
+  }, [isKeeper]);
 
   // Network badge label and status dot color
   const networkLabel = "Avalanche Fuji";

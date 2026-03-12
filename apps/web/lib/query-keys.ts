@@ -1,8 +1,4 @@
 export const queryKeys = {
-  profile: {
-    all: ["profile"] as const,
-  },
-
   orders: {
     all: ["orders"] as const,
     list: (address: string) => ["orders", address] as const,

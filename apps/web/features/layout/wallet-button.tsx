@@ -45,8 +45,6 @@ export function WalletButton() {
     disconnect,
     switchNetwork,
     isSwitching,
-    isSignedIn,
-    signOut,
   } = useAuth();
   const { usdc } = useTokenBalances();
 
@@ -93,22 +91,7 @@ export function WalletButton() {
     );
   }
 
-  // Connected but not signed in — prompt handled by RainbowKit adapter
-  if (!isSignedIn) {
-    return (
-      <button
-        type="button"
-        className="flex items-center gap-2 rounded-lg border border-brass-border bg-transparent px-4 py-2 text-sm font-medium text-brass transition-all duration-150 hover:bg-brass-muted"
-        onClick={openConnectModal}
-        aria-label="Sign in with wallet"
-      >
-        <Wallet size={16} />
-        <span className="hidden sm:inline">Sign In</span>
-      </button>
-    );
-  }
-
-  // Connected, correct network, and signed in
+  // Connected and on correct network
   return (
     <>
       <DropdownMenu>
@@ -178,8 +161,8 @@ export function WalletButton() {
           <AlertDialogHeader>
             <AlertDialogTitle>Disconnect Wallet?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will sign you out and disconnect your wallet. You&apos;ll
-              need to reconnect and sign in again to continue.
+              This will disconnect your wallet. You&apos;ll need to reconnect to
+              continue.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -187,7 +170,6 @@ export function WalletButton() {
             <AlertDialogAction
               variant="destructive"
               onClick={() => {
-                signOut();
                 disconnect();
               }}
             >
