@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, type ReactNode } from "react";
+import { Fragment, useEffect, type ReactNode } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -9,9 +9,11 @@ import {
   ExternalLink,
   MessageSquare,
   AlertTriangle,
+  Clock,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAccount } from "wagmi";
+import { useCancelRedeem } from "@/hooks/use-cancel-redeem";
 import { useOrderDetail } from "@/hooks/use-orders";
 import type { OrderFromAPI, OrderStep, StepStatus } from "@/lib/types";
 import type { Caliber } from "@ammo-exchange/shared";
@@ -372,6 +374,86 @@ function DetailRow({
   );
 }
 
+/* ────────────── User Self-Cancel Card ────────────── */
+
+function UserCancelCard({
+  caliber,
+  onChainOrderId,
+  orderId,
+}: {
+  caliber: Caliber;
+  onChainOrderId: string;
+  orderId: string;
+}) {
+  const {
+    write,
+    error,
+    isPending,
+    isConfirming,
+    isConfirmed,
+    isReady,
+    reset,
+  } = useCancelRedeem(caliber, {
+    orderId: BigInt(onChainOrderId),
+    reasonCode: 0, // user-initiated
+  });
+
+  useEffect(() => {
+    if (isConfirmed) {
+      toast.success("Redeem cancelled — your tokens have been returned");
+      reset();
+    }
+  }, [isConfirmed, reset]);
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error.message);
+    }
+  }, [error]);
+
+  const buttonLabel = isPending
+    ? "Submitting..."
+    : isConfirming
+      ? "Confirming..."
+      : "Cancel & Reclaim Tokens";
+
+  return (
+    <div
+      className="mb-6 rounded-xl p-5 sm:p-6"
+      style={{
+        backgroundColor: "rgba(239,68,68,0.06)",
+        border: "1px solid rgba(239,68,68,0.2)",
+      }}
+    >
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p
+            className="text-sm font-semibold"
+            style={{ color: "var(--text-primary)" }}
+          >
+            Order deadline has expired
+          </p>
+          <p
+            className="mt-1 text-sm"
+            style={{ color: "var(--text-secondary)" }}
+          >
+            The admin has not finalized this order in time. You can cancel and
+            reclaim your tokens.
+          </p>
+        </div>
+        <button
+          type="button"
+          disabled={isPending || isConfirming || !isReady}
+          onClick={() => write()}
+          className="shrink-0 self-start rounded-lg bg-red-900/30 px-5 py-2.5 text-sm font-medium text-red-400 transition-colors hover:bg-red-900/50 disabled:cursor-not-allowed disabled:opacity-50 sm:self-auto"
+        >
+          {buttonLabel}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /* ────────────── Main Component ────────────── */
 
 export function OrderDetailView({ orderId }: { orderId: string }) {
@@ -437,6 +519,16 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
       : order.tokenAmount
         ? `${Math.floor(Number(order.tokenAmount) / 1e18).toLocaleString()} rounds`
         : "\u2014";
+
+  // Deadline state for redeem orders
+  const hasDeadline = order.type === "REDEEM" && !!order.deadline;
+  const deadlineDate = hasDeadline ? new Date(order.deadline!) : null;
+  const isExpired = deadlineDate ? deadlineDate.getTime() < Date.now() : false;
+  const canSelfCancel =
+    order.type === "REDEEM" &&
+    order.status === "PENDING" &&
+    isExpired &&
+    !!order.onChainOrderId;
 
   return (
     <div className="mx-auto max-w-[720px] px-4 py-8 sm:py-12">
@@ -569,6 +661,22 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
             </DetailRow>
           )}
 
+          {hasDeadline && deadlineDate && (
+            <DetailRow label="Deadline">
+              <div className="flex items-center gap-1.5">
+                <Clock size={14} style={{ color: isExpired ? "var(--red)" : "var(--text-muted)" }} />
+                <span style={{ color: isExpired ? "var(--red)" : "var(--text-primary)" }}>
+                  {formatDate(deadlineDate.toISOString())}
+                </span>
+                {isExpired && order.status === "PENDING" && (
+                  <span className="ml-1 text-xs font-medium" style={{ color: "var(--red)" }}>
+                    (Expired)
+                  </span>
+                )}
+              </div>
+            </DetailRow>
+          )}
+
           {order.cancellationReason && (
             <DetailRow label="Cancellation Reason">
               <span style={{ color: "var(--text-secondary)" }}>
@@ -604,6 +712,15 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
           )}
         </div>
       </div>
+
+      {/* Self-cancel card — visible when redeem deadline has expired */}
+      {canSelfCancel && (
+        <UserCancelCard
+          caliber={order.caliber as Caliber}
+          onChainOrderId={order.onChainOrderId!}
+          orderId={order.id}
+        />
+      )}
 
       {/* Support Section */}
       <div

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, ExternalLink, Package } from "lucide-react";
+import { Check, Clock, ExternalLink, Package } from "lucide-react";
 import { toast } from "sonner";
 import {
   Sheet,
@@ -529,6 +529,31 @@ export function OrderDetailDrawer({
                         : "Not provided"}
                     </span>
                   </div>
+
+                  {order.deadline && (
+                    <div className="flex justify-between">
+                      <span style={{ color: "var(--text-secondary)" }}>
+                        Deadline
+                      </span>
+                      <span
+                        className="flex items-center gap-1 text-xs"
+                        style={{
+                          color:
+                            order.status === "PENDING" &&
+                            new Date(order.deadline).getTime() < Date.now()
+                              ? "var(--red, rgb(248 113 113))"
+                              : "var(--text-primary)",
+                        }}
+                      >
+                        <Clock className="h-3 w-3" />
+                        {formatDate(order.deadline)}
+                        {order.status === "PENDING" &&
+                          new Date(order.deadline).getTime() < Date.now() && (
+                            <span className="ml-1 font-medium">(Expired)</span>
+                          )}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
             )}

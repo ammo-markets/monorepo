@@ -29,6 +29,7 @@ export interface OrderFromAPI {
   txHash: string | null;
   trackingId?: string | null;
   cancellationReason?: string | null;
+  deadline?: string | null;      // ISO date string — redeem expiry. Null = no deadline.
   chainId: number | null;
   mintPrice: string | null;
   refundAmount: string | null;

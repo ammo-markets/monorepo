@@ -44,6 +44,7 @@ export async function GET(
       refundAmount: order.refundAmount,
       feeAmount: order.feeAmount,
       cancellationReason: order.cancellationReason,
+      deadline: order.deadline?.toISOString() ?? null,
       createdAt: order.createdAt.toISOString(),
       updatedAt: order.updatedAt.toISOString(),
       shippingAddress: isOwner ? order.shippingAddress : null,

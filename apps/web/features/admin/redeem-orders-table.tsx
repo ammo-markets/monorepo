@@ -25,6 +25,10 @@ import { OrderDetailDrawer } from "./order-detail-drawer";
 import type { AdminRedeemOrder } from "./finalize-redeem-dialog";
 
 /** Returns all reasons the order cannot be finalized, or an empty array if it can. */
+function isDeadlineExpired(order: AdminRedeemOrder): boolean {
+  return !!order.deadline && new Date(order.deadline).getTime() < Date.now();
+}
+
 function getFinalizeBlockReasons(order: AdminRedeemOrder): string[] {
   const reasons: string[] = [];
 
@@ -39,6 +43,9 @@ function getFinalizeBlockReasons(order: AdminRedeemOrder): string[] {
     reasons.push(
       `Shipping address: ${order.shippingAddress.state} is a restricted state`,
     );
+
+  if (isDeadlineExpired(order))
+    reasons.push("Deadline has expired — user can self-cancel");
 
   return reasons;
 }
