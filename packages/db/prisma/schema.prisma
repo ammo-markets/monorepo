@@ -88,6 +88,7 @@ model Order {
   feeAmount       String?     // Fee charged (18-decimal string)
   trackingId      String?     // UPS tracking ID added by admin after shipping
   cancellationReason String?  // Admin-provided reason when cancelling a redeem order
+  deadline        DateTime?   // User-set expiry for redeem orders. After this, user can self-cancel.
   backedAt        DateTime?   // null = unbacked, set = physically backed
   backedBy        String?     // keeper wallet who marked it backed
   logIndex        Int

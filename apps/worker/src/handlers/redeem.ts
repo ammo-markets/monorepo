@@ -57,6 +57,10 @@ export async function handleRedeemRequested(
       txHash: meta.transactionHash,
       logIndex: meta.logIndex,
       chainId: CHAIN_ID,
+      deadline:
+        args.deadline > 0n
+          ? new Date(Number(args.deadline) * 1000)
+          : null,
       createdAt: meta.blockTimestamp,
       user: {
         connectOrCreate: {
