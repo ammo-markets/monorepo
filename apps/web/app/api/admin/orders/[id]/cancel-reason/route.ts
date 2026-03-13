@@ -36,9 +36,11 @@ export async function POST(
       return Response.json({ error: "Order not found" }, { status: 404 });
     }
 
-    if (order.status !== "CANCELLED") {
+    // Accept reason for PENDING or CANCELLED orders — the on-chain cancel tx
+    // may have confirmed but the worker hasn't updated the DB status yet.
+    if (order.status !== "CANCELLED" && order.status !== "PENDING") {
       return Response.json(
-        { error: "Order is not cancelled" },
+        { error: "Order cannot be cancelled in its current state" },
         { status: 400 },
       );
     }

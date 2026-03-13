@@ -59,9 +59,12 @@ export function CancelRedeemDialog({
   useEffect(() => {
     if (isConfirmed) {
       const trimmed = reason.trim();
-      if (trimmed) {
-        saveCancelReason.mutate({ orderId: order.id, reason: trimmed });
-      }
+
+      // Cancel in-flight refetches so they don't overwrite our optimistic update
+      // before the worker has processed the on-chain event.
+      void queryClient.cancelQueries({
+        queryKey: queryKeys.admin.orders.all("REDEEM"),
+      });
       updateRedeemOrderInCache(queryClient, order.id, {
         status: "CANCELLED",
         cancellationReason: trimmed || null,
@@ -69,12 +72,10 @@ export function CancelRedeemDialog({
       });
       decrementPendingRedeems(queryClient);
       toast.success("Redeem order cancelled");
-      void queryClient.invalidateQueries({
-        queryKey: queryKeys.admin.orders.all("REDEEM"),
-      });
-      void queryClient.invalidateQueries({
-        queryKey: queryKeys.admin.stats.all,
-      });
+
+      if (trimmed) {
+        saveCancelReason.mutate({ orderId: order.id, reason: trimmed });
+      }
       onCancelled(order.id);
       onOpenChange(false);
       reset();

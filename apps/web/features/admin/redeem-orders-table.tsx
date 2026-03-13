@@ -139,19 +139,12 @@ export function RedeemOrdersTable() {
   const totalPages = data?.totalPages ?? 1;
   const total = data?.total ?? 0;
 
-  const handleFinalized = useCallback(
-    (_orderId: string) => {
-      void refetch();
-    },
-    [refetch],
-  );
+  // Don't refetch immediately — the worker hasn't processed the on-chain event yet,
+  // so the DB still has stale status. The optimistic cache update handles the UI;
+  // the 30s polling interval will reconcile once the worker catches up.
+  const handleFinalized = useCallback((_orderId: string) => {}, []);
 
-  const handleCancelled = useCallback(
-    (_orderId: string) => {
-      void refetch();
-    },
-    [refetch],
-  );
+  const handleCancelled = useCallback((_orderId: string) => {}, []);
 
   const handleDrawerAction = useCallback(() => {
     void refetch();

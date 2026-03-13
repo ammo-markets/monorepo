@@ -73,18 +73,17 @@ export function FinalizeRedeemDialog({
   // React to confirmation — optimistically update cache, then reconcile via invalidation
   useEffect(() => {
     if (isConfirmed) {
+      // Cancel in-flight refetches so they don't overwrite our optimistic update
+      // before the worker has processed the on-chain event.
+      void queryClient.cancelQueries({
+        queryKey: queryKeys.admin.orders.all("REDEEM"),
+      });
       updateRedeemOrderInCache(queryClient, order.id, {
         status: "PROCESSING",
         updatedAt: new Date().toISOString(),
       });
       decrementPendingRedeems(queryClient);
       toast.success("Redeem order finalized");
-      void queryClient.invalidateQueries({
-        queryKey: queryKeys.admin.orders.all("REDEEM"),
-      });
-      void queryClient.invalidateQueries({
-        queryKey: queryKeys.admin.stats.all,
-      });
       onFinalized(order.id);
       onOpenChange(false);
       reset();
