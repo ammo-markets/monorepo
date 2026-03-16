@@ -32,6 +32,36 @@ chainlink_deploy:
 		--verifier-url "https://api.avascan.info/v2/network/testnet/evm/43113/etherscan" \
 		--etherscan-api-key $(SNOWTRACE_API_KEY) -vv
 
+# ── Mainnet deployment ──────────────────────────
+
+mainnet_check:
+	@cd $(CONTRACTS_DIR) && forge clean
+	@cd $(CONTRACTS_DIR) && forge script script/DeployMainnet.s.sol:DeployMainnet \
+		--rpc-url $(AVALANCHE_RPC_URL) \
+		--private-key $(PRIVATE_KEY) -vv
+
+mainnet_deploy:
+	@cd $(CONTRACTS_DIR) && forge clean
+	@cd $(CONTRACTS_DIR) && forge script script/DeployMainnet.s.sol:DeployMainnet \
+		--rpc-url $(AVALANCHE_RPC_URL) \
+		--private-key $(PRIVATE_KEY) \
+		--broadcast --verify --slow \
+		--verifier-url "https://api.avascan.info/v2/network/mainnet/evm/43114/etherscan" \
+		--etherscan-api-key $(SNOWTRACE_API_KEY) -vv
+
+mainnet_chainlink_check:
+	@cd $(CONTRACTS_DIR) && forge script script/DeployChainlinkFunctions.s.sol:DeployChainlinkFunctions \
+		--rpc-url $(AVALANCHE_RPC_URL) \
+		--private-key $(PRIVATE_KEY) -vv
+
+mainnet_chainlink_deploy:
+	@cd $(CONTRACTS_DIR) && forge script script/DeployChainlinkFunctions.s.sol:DeployChainlinkFunctions \
+		--rpc-url $(AVALANCHE_RPC_URL) \
+		--private-key $(PRIVATE_KEY) \
+		--broadcast --verify --slow \
+		--verifier-url "https://api.avascan.info/v2/network/mainnet/evm/43114/etherscan" \
+		--etherscan-api-key $(SNOWTRACE_API_KEY) -vv
+
 # ── Keeper management ────────────────────────────
 MANAGER := 0x74994498D05358502C56e491A1fd68bdC3F5177c
 
