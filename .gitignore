@@ -15,6 +15,9 @@ packages/contracts/broadcast/
 # Prisma
 packages/db/generated/
 
+# Fumadocs MDX (generated content source)
+.source/
+
 # Environment
 .env
 .env.*

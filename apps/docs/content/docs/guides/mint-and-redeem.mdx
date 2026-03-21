@@ -1,0 +1,75 @@
+---
+title: Mint & Redeem
+description: How to mint ammunition tokens and redeem them for physical delivery.
+---
+
+## Minting
+
+Minting converts stablecoins (currently USDT) into ammunition tokens. Each token represents one physical round of ammunition.
+
+Navigate to **Exchange → Mint**, select a caliber, enter the amount of USDT you want to spend, and confirm the transaction. The app handles wallet connection and network switching automatically. If it's your first time minting a caliber, you'll need to approve the token spend first (one-time per caliber).
+
+A **1.5% mint fee** is deducted from your deposit. The remaining amount is converted to tokens at the current oracle price.
+
+---
+
+## Redeeming
+
+Redeeming converts your ammunition tokens back into physical rounds, shipped to your doorstep. Unlike minting, redeeming is a multi-step process that spans both on-chain and off-chain actions.
+
+### How the Redeem Flow Works
+
+```
+┌─────────────┐     ┌──────────────────┐     ┌─────────────────┐
+│   START      │     │  TOKENS LOCKED   │     │    SIGN IN      │
+│  Select      │────▶│  On-chain tx     │────▶│  SIWE wallet    │
+│  caliber &   │     │  confirmed.      │     │  signature.     │
+│  amount      │     │  Tokens held in  │     │  (if needed)    │
+│              │     │  contract.       │     │                 │
+└─────────────┘     └──────────────────┘     └────────┬────────┘
+                                                       │
+                                                       ▼
+┌─────────────┐     ┌──────────────────┐     ┌─────────────────┐
+│  SHIPPED     │     │   PROCESSING     │     │ SHIPPING INFO   │
+│  UPS Ground  │◀────│   Order accepted │◀────│ Address + age   │
+│  tracking    │     │   by warehouse.  │     │ verification.   │
+│  provided.   │     │                  │     │                 │
+└──────┬──────┘     └──────────────────┘     └─────────────────┘
+       │
+       ▼
+┌─────────────┐
+│  DELIVERED   │
+│  Tokens      │
+│  burned.     │
+│  Order       │
+│  complete.   │
+└─────────────┘
+```
+
+### Step by Step
+
+1. **Select caliber and amount** — Go to **Exchange → Redeem**, pick your caliber, and enter the number of rounds. Redemptions are in **increments of 1,000 rounds** — the minimum is 1,000, then 2,000, 3,000, and so on.
+
+2. **Choose a deadline** — Select how long the protocol has to fulfill your order. Default is **168 hours (7 days)**. If the deadline expires unfulfilled, you can cancel and get your tokens back (self-rescue).
+
+3. **Approve and confirm** — Approve the token spend (one-time per caliber), then confirm the redemption. Your tokens are now **locked in the contract**.
+
+4. **Sign in** — If you haven't already, sign in with your wallet (SIWE). This is a free signature request, not a transaction. This is the only flow in the app that requires sign-in.
+
+5. **Enter shipping address** — Provide your U.S. delivery address. It's validated against the USPS database. Only the **48 contiguous states** are supported — see [State Restrictions](/regulatory/state-restrictions) for details. If you've redeemed before, your last address is pre-filled.
+
+6. **Fulfillment** — Ammo Exchange reviews and ships your order via **UPS Ground**. Age verification happens at delivery — the recipient must be present and meet the federal age requirement (**21+** for 9mm, **18+** for 5.56 NATO). Track your order in [Portfolio](/guides/portfolio).
+
+### Self-Rescue
+
+If your deadline expires without fulfillment, you can **cancel the redemption** directly from the smart contract. Your tokens are returned to your wallet automatically — no support ticket needed. This is a trustless safety mechanism built into the protocol.
+
+### Order Statuses
+
+| Status | Meaning |
+|--------|---------|
+| **Pending** | On-chain redemption confirmed, awaiting review |
+| **Processing** | Order accepted, ammunition being prepared for shipment |
+| **Completed** | Delivery confirmed, order finalized |
+| **Failed** | Order could not be fulfilled |
+| **Cancelled** | Redemption cancelled — tokens returned to your wallet |

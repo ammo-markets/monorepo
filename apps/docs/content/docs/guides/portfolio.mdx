@@ -1,0 +1,59 @@
+---
+title: Portfolio & Order Tracking
+description: View your token holdings, track orders, and monitor your portfolio.
+---
+
+The Portfolio page gives you a complete view of your ammunition token holdings and order history.
+
+## Token Holdings
+
+Your portfolio displays:
+
+- **Each caliber you hold** with the current token balance (number of rounds)
+- **Price per round** based on the latest oracle price
+- **Total value** of each holding in USD
+- **Total portfolio value** across all calibers
+- **Stablecoin balance** in your wallet
+- Quick links to **Mint** or **Redeem** for each caliber
+
+If your wallet isn't connected, you'll see a prompt to connect.
+
+## Active Orders
+
+Any pending or in-progress orders appear in the active orders section:
+
+- **Order type** — Mint or Redeem
+- **Caliber** and amount
+- **Status badge** — Pending or Processing
+- **Timestamp** — when the order was created
+- Click any order to view full details
+
+## Order History
+
+A filterable log of all your past transactions:
+
+- **Filter by type** — All, Mint, Redeem, or Failed
+- **Filter by caliber** — narrow to a specific ammunition type
+- **Columns**: Type, Caliber, Amount, Status, Date
+- Click any row to view the full order detail page
+- Paginated — loads 10 orders at a time
+
+## Order Detail Page
+
+Click any order to see:
+
+- **Visual progress stepper** showing the order's journey
+- **Order summary** — caliber, amount, price, fees
+- **Transaction details** — on-chain order ID, tx hash (links to Snowtrace explorer)
+- **Shipping address** (for redemptions)
+- **Tracking ID** (once shipped)
+
+## Order Statuses
+
+| Status | Description |
+|--------|-------------|
+| **Pending** | Transaction confirmed on-chain. Awaiting review. |
+| **Processing** | Order accepted. Being prepared for fulfillment. |
+| **Completed** | Order finalized. Tokens minted or ammo shipped. |
+| **Failed** | Order could not be fulfilled. |
+| **Cancelled** | Order was cancelled — tokens returned to your wallet. |

@@ -1,0 +1,74 @@
+---
+title: FAQ
+description: Frequently asked questions about Ammo Exchange.
+---
+
+## General
+
+### What is Ammo Exchange?
+
+Ammo Exchange is a protocol that tokenizes physical ammunition on the blockchain. You can mint tokens representing real rounds, hold them for price exposure, and redeem them for physical delivery.
+
+### What calibers are supported?
+
+Currently: **9mm Practice**, **9mm Self-Defense**, **5.56 NATO Practice**, and **5.56 Self-Defense**. More calibers (.22 LR, .308 Win, .45 ACP) are planned.
+
+### Can international users participate?
+
+International users can mint and hold tokens. When DEX trading launches, they'll be able to trade as well. However, physical redemption is **U.S. only** (48 contiguous states).
+
+---
+
+## Minting
+
+### Is there a minimum mint amount?
+
+There is no minimum amount for minting. However, very small amounts may not be practical due to gas fees.
+
+### How is the price determined?
+
+Prices come from a **price oracle** that pulls data from AmmoSquared, updated every 4 hours. The oracle price determines how many tokens you receive per dollar deposited.
+
+### What happens if the price is stale?
+
+If the oracle price hasn't been updated within the allowed threshold, minting is temporarily paused. You'll see a "price is stale" message. Wait for the next price update and try again.
+
+---
+
+## Redeeming
+
+### Is there a minimum redemption amount?
+
+Yes. Redemptions are in **increments of 1,000 rounds** — the minimum is 1,000, then 2,000, 3,000, and so on.
+
+### How long does redemption take?
+
+After confirming the on-chain transaction, fulfillment depends on your chosen deadline (24h, 72h, or 168h). Typical processing takes 2–5 business days plus UPS Ground shipping time.
+
+### What happens if my deadline expires?
+
+If Ammo Exchange doesn't fulfill your order before the deadline, you can **cancel the redemption** directly from the smart contract. Your tokens are returned to your wallet automatically — no support ticket needed.
+
+### Can I redeem in California or New York?
+
+Not currently. These states require ammunition to be shipped to a licensed dealer. We're working on dealer partnerships to enable this in the future. See [State Restrictions](/regulatory/state-restrictions).
+
+### What shipping method is used?
+
+**UPS Ground only**. USPS prohibits ammunition shipping, and UPS Ground is the industry standard. See [Shipping](/regulatory/shipping) for details.
+
+---
+
+## Trust & Security
+
+### How do I know physical ammo actually backs my tokens?
+
+Today, you can verify the total on-chain token supply by querying the smart contracts. A full [Proof of Reserves](/protocol/proof-of-reserves) system with third-party audits is planned.
+
+### What happens to my tokens if Ammo Exchange shuts down?
+
+Your tokens are ERC-20s that you hold in your own wallet — they can't be taken from you. The smart contracts include a self-rescue mechanism: if the protocol fails to fulfill a redemption, you can cancel and recover your tokens after the deadline expires.
+
+### Are the smart contracts audited?
+
+A professional audit is planned before mainnet launch. The contracts are open-source and available for community review.
