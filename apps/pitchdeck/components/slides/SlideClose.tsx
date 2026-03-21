@@ -45,6 +45,15 @@ export function SlideClose() {
           Global price exposure &middot; Tokenized trading &middot; Optional
           physical delivery
         </motion.p>
+        <motion.a
+          variants={fadeUp}
+          href="https://docs.ammomarkets.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-sm text-brass underline underline-offset-4 transition-opacity hover:opacity-80 sm:text-base"
+        >
+          docs.ammomarkets.com
+        </motion.a>
       </motion.div>
     </SlideLayout>
   );

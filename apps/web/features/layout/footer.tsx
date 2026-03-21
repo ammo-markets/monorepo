@@ -11,8 +11,8 @@ const productLinks = [
 
 const resourceLinks = [
   { label: "Whitepaper", href: "#" },
-  { label: "Docs", href: "#" },
-  { label: "GitHub", href: "#" },
+  { label: "Docs", href: "https://docs.ammomarkets.com" },
+  { label: "GitHub", href: "https://github.com/ammo-markets/monorepo" },
 ];
 
 const socialLinks = [{ label: "X / Twitter", href: "#" }];
@@ -80,7 +80,7 @@ export function Footer() {
           <div className="flex flex-col gap-4">
             <AmmoLogo size="small" />
             <span className="text-xs" style={{ color: "var(--text-muted)" }}>
-              &copy; 2026 Ammo Exchange
+              &copy; 2026 AmmoMarkets
             </span>
           </div>
 
