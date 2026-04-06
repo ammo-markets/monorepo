@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <style>
+      .s { fill: none; stroke: #C6A44E; stroke-width: 12; stroke-linecap: round; stroke-linejoin: round; }
+    </style>
+  </defs>
+
+  <g>
+    <!--
+      Cartridge-A logo.
+      Top to bottom: ogive tip -> neck -> shoulder/crossbar -> casing legs -> rim
+
+      Key coordinates:
+        Tip apex:       256, 38
+        Neck top:       232/280, 150  (where ogive ends)
+        Neck bottom:    232/280, 215  (shoulder starts)
+        Shoulder/xbar:  180/332, 268  (A crossbar + cartridge shoulder)
+        Leg bottom:     180/332, 460  (base of casing)
+        Rim:            extends 20px outward on each side
+    -->
+
+    <!-- Ogive bullet tip (filled for visual weight) -->
+    <path fill="#C6A44E" stroke="#C6A44E" stroke-width="8" stroke-linejoin="round" d="
+      M 256 38
+      C 250 68, 238 115, 232 150
+      L 280 150
+      C 274 115, 262 68, 256 38
+      Z
+    "/>
+
+    <!-- Left contour: neck -> shoulder -> leg (single continuous path) -->
+    <path class="s" d="
+      M 232 150
+      L 232 215
+      L 180 268
+      L 180 460
+    "/>
+
+    <!-- Right contour: neck -> shoulder -> leg -->
+    <path class="s" d="
+      M 280 150
+      L 280 215
+      L 332 268
+      L 332 460
+    "/>
+
+    <!-- Crossbar at shoulder height -->
+    <line class="s" x1="194" y1="268" x2="318" y2="268"/>
+
+    <!-- Left rim -->
+    <line class="s" x1="160" y1="460" x2="200" y2="460"/>
+
+    <!-- Right rim -->
+    <line class="s" x1="312" y1="460" x2="352" y2="460"/>
+  </g>
+</svg>
