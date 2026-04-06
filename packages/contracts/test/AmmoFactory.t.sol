@@ -22,7 +22,7 @@ contract AmmoFactoryTest is Test {
 
     function setUp() public {
         usdc = new MockERC20("USD Coin", "USDC", 6);
-        manager = new AmmoManager(feeRecipient);
+        manager = new AmmoManager(feeRecipient, address(0xAA0C));
         oracle = new PriceOracle(address(manager));
         factory = new AmmoFactory(address(manager), address(usdc), 6, address(oracle));
         oracle.setFactory(address(factory));

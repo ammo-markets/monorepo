@@ -19,6 +19,11 @@ contract DeployMainnet is Script {
     address constant USDT = 0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7;
     uint8 constant USDT_DECIMALS = 6;
 
+    /// @dev WAVAX on Avalanche mainnet.
+    address constant WAVAX = 0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7;
+    /// @dev Trader Joe LBRouter V2.2 on Avalanche mainnet.
+    address constant LB_ROUTER = 0x18556DA13313f3532c54711497A8FedAC273220E;
+
     AmmoManager public manager;
     PriceOracle public oracle;
     AmmoFactory public factory;
@@ -41,9 +46,10 @@ contract DeployMainnet is Script {
         vm.startBroadcast();
 
         // 1. Deploy AmmoManager (owner + initial keeper = deployer)
-        manager = new AmmoManager(feeRecipient);
+        manager = new AmmoManager(feeRecipient, WAVAX);
         manager.setTreasury(treasury);
         manager.setGuardian(guardian);
+        manager.setDexRouter(LB_ROUTER);
 
         // 2. Deploy PriceOracle
         oracle = new PriceOracle(address(manager));
@@ -70,28 +76,28 @@ contract DeployMainnet is Script {
 
     function _deploy9mmPractice() internal {
         (address market, address token) = factory.createCaliber(
-            bytes32("9MM_PRACTICE"), "Ammo Exchange 9mm Practice", "ax9P", 150, 150, 50
+            bytes32("9MM_PRACTICE"), "Ammo Exchange 9mm Practice", "9MM-P", 150, 150, 50
         );
         deployed9mmPractice = CaliberDeployment(market, token);
     }
 
     function _deploy9mmSelfDefense() internal {
         (address market, address token) = factory.createCaliber(
-            bytes32("9MM_SELF_DEFENSE"), "Ammo Exchange 9mm Self Defense", "ax9SD", 150, 150, 50
+            bytes32("9MM_SELF_DEFENSE"), "Ammo Exchange 9mm Self Defense", "9MM-SD", 150, 150, 50
         );
         deployed9mmSelfDefense = CaliberDeployment(market, token);
     }
 
     function _deploy556SelfDefense() internal {
         (address market, address token) = factory.createCaliber(
-            bytes32("556_SELF_DEFENSE"), "Ammo Exchange 5.56 Self Defense", "ax556SD", 150, 150, 50
+            bytes32("556_SELF_DEFENSE"), "Ammo Exchange 5.56 Self Defense", "556-SD", 150, 150, 50
         );
         deployed556SelfDefense = CaliberDeployment(market, token);
     }
 
     function _deploy556NatoPractice() internal {
         (address market, address token) = factory.createCaliber(
-            bytes32("556_NATO_PRACTICE"), "Ammo Exchange 5.56 NATO Practice", "ax556P", 150, 150, 50
+            bytes32("556_NATO_PRACTICE"), "Ammo Exchange 5.56 NATO Practice", "556-P", 150, 150, 50
         );
         deployed556NatoPractice = CaliberDeployment(market, token);
     }

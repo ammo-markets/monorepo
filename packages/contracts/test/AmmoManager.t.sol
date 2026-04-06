@@ -10,9 +10,10 @@ contract AmmoManagerTest is Test {
     address feeRecipient = address(0xFEE1);
     address alice = address(0xA11CE);
     address bob = address(0xB0B);
+    address wavax = address(0xAA0C);
 
     function setUp() public {
-        manager = new AmmoManager(feeRecipient);
+        manager = new AmmoManager(feeRecipient, wavax);
     }
 
     // ── Constructor ─────────────────────────────────

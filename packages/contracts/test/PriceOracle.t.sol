@@ -17,7 +17,7 @@ contract PriceOracleTest is Test {
     address random = address(0xDEAD);
 
     function setUp() public {
-        manager = new AmmoManager(owner);
+        manager = new AmmoManager(owner, address(0xAA0C));
         manager.setKeeper(keeper, true);
 
         oracle = new PriceOracle(address(manager));

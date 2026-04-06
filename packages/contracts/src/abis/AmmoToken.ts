@@ -16,6 +16,11 @@ export const AmmoTokenAbi = [
         "name": "market_",
         "type": "address",
         "internalType": "address"
+      },
+      {
+        "name": "manager_",
+        "type": "address",
+        "internalType": "address"
       }
     ],
     "stateMutability": "nonpayable"
@@ -114,6 +119,19 @@ export const AmmoTokenAbi = [
         "name": "",
         "type": "uint8",
         "internalType": "uint8"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "manager",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "contract AmmoManager"
       }
     ],
     "stateMutability": "view"
@@ -259,6 +277,25 @@ export const AmmoTokenAbi = [
       },
       {
         "name": "amount",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "TaxesSwapped",
+    "inputs": [
+      {
+        "name": "tokensSwapped",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "avaxReceived",
         "type": "uint256",
         "indexed": false,
         "internalType": "uint256"

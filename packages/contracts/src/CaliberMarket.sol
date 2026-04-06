@@ -4,11 +4,7 @@ pragma solidity ^0.8.24;
 import "./AmmoToken.sol";
 import "./AmmoManager.sol";
 import "./IPriceOracle.sol";
-
-interface IERC20 {
-    function transfer(address to, uint256 amount) external returns (bool);
-    function transferFrom(address from, address to, uint256 amount) external returns (bool);
-}
+import {IERC20} from "./interfaces/IERC20.sol";
 
 /// @notice Per-caliber market with 1-step instant mint and 2-step keeper-finalized redeem.
 /// @dev Deployed by AmmoFactory. Each instance manages exactly one caliber.
@@ -121,7 +117,7 @@ contract CaliberMarket {
         redeemFeeBps = redeemFeeBps_;
         minMintRounds = minMintRounds_;
 
-        token = new AmmoToken(tokenName_, tokenSymbol_, address(this));
+        token = new AmmoToken(tokenName_, tokenSymbol_, address(this), manager_);
     }
 
     // ── User functions ──────────────────────────────

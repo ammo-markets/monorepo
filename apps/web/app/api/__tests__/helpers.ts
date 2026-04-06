@@ -48,7 +48,7 @@ export function createForbiddenResponse(): Response {
  * Each method is a vi.fn() that can be configured per test via mockResolvedValue.
  */
 export function createMockPrisma(): {
-  user: { findUnique: Mock; upsert: Mock };
+  user: { findUnique: Mock; upsert: Mock; update: Mock };
   order: { findUnique: Mock; findMany: Mock; count: Mock };
   shippingAddress: { upsert: Mock };
 } {
@@ -56,6 +56,7 @@ export function createMockPrisma(): {
     user: {
       findUnique: vi.fn(),
       upsert: vi.fn(),
+      update: vi.fn(),
     },
     order: {
       findUnique: vi.fn(),

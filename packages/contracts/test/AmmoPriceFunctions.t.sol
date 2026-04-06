@@ -35,7 +35,7 @@ contract AmmoPriceFunctionsTest is Test {
 
     function setUp() public {
         // Protocol setup
-        manager = new AmmoManager(owner);
+        manager = new AmmoManager(owner, address(0xAA0C));
         oracle = new PriceOracle(address(manager));
         oracle.setFactory(factoryAddr);
 

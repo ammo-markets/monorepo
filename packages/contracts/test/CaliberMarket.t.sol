@@ -28,7 +28,7 @@ contract CaliberMarketTest is Test {
         usdc = new MockERC20("USD Coin", "USDC", 6);
         oracle = new MockPriceOracle(ORACLE_PRICE);
 
-        manager = new AmmoManager(feeRecipient);
+        manager = new AmmoManager(feeRecipient, address(0xAA0C));
         manager.setKeeper(keeper, true);
         manager.setGuardian(guardian);
         manager.setTreasury(treasury);
@@ -196,7 +196,7 @@ contract CaliberMarketTest is Test {
     }
 
     function testMintTreasuryNotSetReverts() public {
-        AmmoManager freshManager = new AmmoManager(feeRecipient);
+        AmmoManager freshManager = new AmmoManager(feeRecipient, address(0xAA0C));
         freshManager.setKeeper(keeper, true);
         // treasury not set
 

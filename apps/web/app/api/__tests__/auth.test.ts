@@ -57,16 +57,17 @@ describe("API Auth - Protected routes (TEST-03)", () => {
     vi.clearAllMocks();
   });
 
-  it("GET /api/orders returns 401 when unauthenticated", async () => {
-    mockRequireSession.mockRejectedValue(createUnauthenticatedResponse());
+  it("GET /api/orders returns 200 without auth (public route filtered by address)", async () => {
+    mockPrisma.order.findMany.mockResolvedValue([]);
 
     const { GET } = await import("../orders/route");
-    const request = buildRequest("http://localhost:3000/api/orders");
+    const url = new URL("http://localhost:3000/api/orders?address=0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef");
+    const request = Object.assign(buildRequest(url.toString()), { nextUrl: url });
     const response = await GET(request as never);
 
-    expect(response.status).toBe(401);
+    expect(response.status).toBe(200);
     const body = await response.json();
-    expect(body.error).toBe("Not authenticated");
+    expect(body.orders).toEqual([]);
   });
 
   it("GET /api/admin/orders returns 401 when unauthenticated", async () => {
@@ -101,7 +102,7 @@ describe("API Auth - Protected routes (TEST-03)", () => {
     mockPrisma.order.findMany.mockResolvedValue([]);
 
     const { GET } = await import("../orders/route");
-    const url = new URL("http://localhost:3000/api/orders");
+    const url = new URL("http://localhost:3000/api/orders?address=0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef");
     const request = Object.assign(buildRequest(url.toString()), {
       nextUrl: url,
     });
