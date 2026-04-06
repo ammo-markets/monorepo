@@ -152,27 +152,3 @@ export const CALIBER_TO_PRISMA = {
   "556_SELF_DEFENSE": "FIVE_FIVE_SIX_SELF_DEFENSE",
   "556_NATO_PRACTICE": "FIVE_FIVE_SIX_NATO_PRACTICE",
 } as const satisfies Record<Caliber, string>;
-
-// ---------------------------------------------------------------------------
-// BlackBasin / ammopricesnow price data config
-// ---------------------------------------------------------------------------
-
-export const AMMOPRICESNOW_BASE = "https://ammopricesnow.com/ammodata";
-export const BLACKBASIN_BASE = "https://blackbasin.com/ammo-prices";
-
-/** Practice calibers have direct JSON data from ammopricesnow */
-export const BLACKBASIN_SLUGS = {
-  "9MM_PRACTICE": { jsonFile: "9mm.json", htmlSlug: "9mm" },
-  "556_NATO_PRACTICE": { jsonFile: "556nato.json", htmlSlug: "5-56-nato" },
-} as const;
-
-/**
- * Self-defense calibers are derived from practice prices × a multiplier.
- * Ratios sourced from AmmoSquared market data (2,000+ retailers, March 2026):
- *   9mm:  $0.65 SD / $0.28 Practice = 2.32×
- *   5.56: $1.49 SD / $0.57 Practice = 2.61×
- */
-export const SD_MULTIPLIERS = {
-  "9MM_SELF_DEFENSE": { practiceKey: "9MM_PRACTICE" as Caliber, multiplier: 2.32 },
-  "556_SELF_DEFENSE": { practiceKey: "556_NATO_PRACTICE" as Caliber, multiplier: 2.61 },
-} as const;

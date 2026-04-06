@@ -1,10 +1,10 @@
-import { scrapeBlackBasinPrices } from "./scraper";
+import { scrapeAmmoSquaredPrices } from "./scraper";
 import { prisma } from "@ammo-exchange/db";
 import { CALIBER_TO_PRISMA } from "@ammo-exchange/shared";
 import type { Caliber as PrismaCaliber } from "@ammo-exchange/db";
 
 /**
- * Fetch current ammo prices from BlackBasin/ammopricesnow and sync to DB.
+ * Scrape current ammo prices from AmmoSquared and sync to DB.
  *
  * For each caliber:
  * - Upserts CaliberPrice (latest price, unique per caliber)
@@ -15,7 +15,7 @@ import type { Caliber as PrismaCaliber } from "@ammo-exchange/db";
 export async function syncPrices(): Promise<void> {
   console.log("[priceSync] Starting price sync...");
 
-  const prices = await scrapeBlackBasinPrices();
+  const prices = await scrapeAmmoSquaredPrices();
 
   if (prices.length === 0) {
     console.warn("[priceSync] No prices scraped — skipping sync");
@@ -35,19 +35,16 @@ export async function syncPrices(): Promise<void> {
             caliber: prismaCaliber,
             price: priceCents.toString(),
             priceX18,
-            source: "blackbasin",
           },
           update: {
             price: priceCents.toString(),
             priceX18,
-            source: "blackbasin",
           },
         }),
         prisma.priceSnapshot.create({
           data: {
             caliber: prismaCaliber,
             price: priceCents.toString(),
-            source: "blackbasin",
           },
         }),
       ]);

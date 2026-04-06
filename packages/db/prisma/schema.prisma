@@ -193,7 +193,7 @@ model CaliberPrice {
   caliber   Caliber  @unique
   price     String               // cents string e.g. "57" for $0.57
   priceX18  String               // 18-decimal for on-chain: "570000000000000000"
-  source    String   @default("blackbasin")
+  source    String   @default("ammosquared")
   updatedAt DateTime @updatedAt
 
   @@index([caliber])
@@ -203,7 +203,7 @@ model PriceSnapshot {
   id        String   @id @default(cuid())
   caliber   Caliber
   price     String               // cents string
-  source    String   @default("blackbasin")
+  source    String   @default("ammosquared")
   createdAt DateTime @default(now())
 
   @@index([caliber, createdAt])
