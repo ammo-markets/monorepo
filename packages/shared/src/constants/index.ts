@@ -18,7 +18,7 @@ export const CALIBER_SPECS: Record<Caliber, CaliberSpec> = {
     minMintRounds: 0,
     minRedeemRounds: 1000,
     tokenName: "Ammo Exchange 9mm Practice",
-    tokenSymbol: "ax9P",
+    tokenSymbol: "9MM-P",
     sku: "HG-9MM-PRTC",
   },
   "9MM_SELF_DEFENSE": {
@@ -30,7 +30,7 @@ export const CALIBER_SPECS: Record<Caliber, CaliberSpec> = {
     minMintRounds: 0,
     minRedeemRounds: 1000,
     tokenName: "Ammo Exchange 9mm Self Defense",
-    tokenSymbol: "ax9SD",
+    tokenSymbol: "9MM-SD",
     sku: "HG-9MM-SLFD",
   },
   "556_SELF_DEFENSE": {
@@ -42,7 +42,7 @@ export const CALIBER_SPECS: Record<Caliber, CaliberSpec> = {
     minMintRounds: 0,
     minRedeemRounds: 1000,
     tokenName: "Ammo Exchange 5.56 Self Defense",
-    tokenSymbol: "ax556SD",
+    tokenSymbol: "556-SD",
     sku: "RF-223556-SLFD",
   },
   "556_NATO_PRACTICE": {
@@ -54,7 +54,7 @@ export const CALIBER_SPECS: Record<Caliber, CaliberSpec> = {
     minMintRounds: 0,
     minRedeemRounds: 1000,
     tokenName: "Ammo Exchange 5.56 NATO Practice",
-    tokenSymbol: "ax556P",
+    tokenSymbol: "556-P",
     sku: "RF-223556-PRTC-556",
   },
 } as const;
