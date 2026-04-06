@@ -64,10 +64,11 @@ export const CALIBERS = Object.keys(CALIBER_SPECS) as Caliber[];
 
 /** States where online ammunition shipping is blocked (any restriction) */
 export const RESTRICTED_STATES = [
+  "AK", // No UPS Ground service
   "CA", // Background check + licensed dealer pickup required
   "CT", // Permit required for handgun ammo, restrictions on online sales
   "DC", // Effectively prohibited for civilians
-  "HI", // Permit required to purchase ammunition
+  "HI", // Permit required to purchase ammunition, no UPS Ground
   "IL", // FOID card required
   "MA", // FID/LTC required
   "NJ", // FID required for handgun ammo, restricted online sales

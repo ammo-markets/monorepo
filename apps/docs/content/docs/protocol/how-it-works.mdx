@@ -7,13 +7,13 @@ description: End-to-end overview of the AmmoMarkets protocol.
 
 AmmoMarkets connects the physical ammunition market to the blockchain through a simple cycle:
 
-1. **User deposits stablecoins** → the smart contract mints ammunition tokens at the current oracle price.
-2. **Tokens are freely held** → each token represents one physical round of ammunition, stored in a warehouse.
+1. **User deposits stablecoins** → the smart contract mints ammunition tokens at the current oracle price. AmmoMarkets purchases the corresponding ammunition to maintain full backing.
+2. **Tokens are freely held** → each token represents one physical round of ammunition, stored in our warehouse.
 3. **User redeems tokens** → tokens are burned, and physical ammunition is shipped to the user.
 
 ## Price Oracle
 
-Token prices are determined by a **price oracle** that pulls data from AmmoSquared, a leading ammunition pricing service. Prices are updated every 4 hours to reflect real-world market conditions.
+Token prices are determined by a **price oracle** that reflects real-world ammunition market prices. Prices are updated every 4 hours to track current market conditions.
 
 Each caliber has its own price feed. When you mint, the oracle price determines how many tokens you receive per dollar deposited. When you redeem, the same oracle determines the USD value of your tokens.
 
@@ -21,15 +21,7 @@ If the oracle price is stale (older than the allowed threshold), minting is temp
 
 ## Physical Backing
 
-Every token in circulation is backed 1:1 by physical ammunition stored in a secure warehouse facility. When you mint tokens, AmmoMarkets purchases the corresponding ammunition to maintain full backing. When you redeem, ammunition is pulled from the warehouse and shipped to you.
-
-## The Role of the Warehouse
-
-The warehouse serves as the custodian of all physical ammunition backing the tokens. It handles:
-
-- **Storage** — secure, climate-controlled ammunition storage
-- **Fulfillment** — picking, packing, and shipping redeemed orders
-- **Inventory management** — tracking stock levels against on-chain token supply
+Every token in circulation is backed 1:1 by physical ammunition stored in our warehouse. When you mint tokens, AmmoMarkets purchases the corresponding ammunition to maintain full backing. When you redeem, ammunition is pulled from the warehouse and shipped to you.
 
 ## Smart Contracts
 
