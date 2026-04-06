@@ -53,7 +53,7 @@ Ammo Exchange differs by supporting **multiple calibers and load types**, deploy
 
 ```
 User sends USDC ──► CaliberMarket contract ──► Deducts fee (1.5%), sends net USDC to treasury
-                                             ──► Mints caliber-specific ERC-20 tokens instantly (e.g., ax9P, ax556SD)
+                                             ──► Mints caliber-specific ERC-20 tokens instantly (e.g., 9MM-P, 556-SD)
                                              ──► Ammo Exchange purchases physical ammo to maintain backing
 
 User burns token ──► CaliberMarket contract ──► Locks tokens in contract (startRedeem)
@@ -65,7 +65,7 @@ User burns token ──► CaliberMarket contract ──► Locks tokens in cont
 **Price flow:**
 
 ```
-AmmoSquared ──► Chainlink Functions DON (every 4 hours) ──► PriceOracle contract
+Market data ──► Chainlink Functions DON (every 4 hours) ──► PriceOracle contract
                                                           ──► CaliberMarket reads price at mint time
 ```
 
@@ -86,7 +86,7 @@ Physical backing is maintained off-chain: Ammo Exchange purchases equivalent amm
 **Minimum mint:** None (any non-zero amount accepted)
 **Processing fee:** 1.5% of order value (configurable, max 5%)
 **Price staleness:** Mint reverts if the oracle price is older than 6 hours
-**Price source:** AmmoSquared market data, fetched by Chainlink Functions DON every 4 hours via Chainlink Automation
+**Price source:** Real-world ammunition market data, fetched by Chainlink Functions DON every 4 hours via Chainlink Automation
 
 ### 2.3 Redemption (Burn)
 
@@ -94,14 +94,14 @@ Redemption is a 2-step process because it requires off-chain verification and ph
 
 1. User calls `startRedeem(tokenAmount, deadline)` — tokens are locked in the contract
 2. A `RedeemRequested` event is emitted; the worker indexes it and begins off-chain processing
-3. User completes KYC/age verification off-chain (required for physical shipment)
+3. User provides shipping address off-chain, admin reviews
 4. Ammo Exchange reserves and ships ammunition from the warehouse
 5. Keeper calls `finalizeRedeem(orderId)`, permanently burning the locked tokens (minus fee)
 6. If the keeper does not act before the user-set deadline, the user can call `cancelRedeem()` to recover their tokens (self-rescue mechanism)
 
 **Redemption fee:** 1.5% (configurable) + shipping costs
-**Age verification:** Required at redemption, per federal law (21+ for handgun ammo, 18+ for rifle/shotgun ammo)
-**Shipping:** Via **UPS Ground only** within the 48 contiguous states (USPS prohibits ammunition shipping). Limited Quantity labeling applied per DOT regulations.
+**Eligibility:** Redemption available in 39 U.S. states without shipping restrictions
+**Shipping:** Via **UPS Ground only** (USPS prohibits ammunition shipping). Limited Quantity labeling applied per DOT regulations.
 
 ### 2.4 Trading
 
@@ -123,12 +123,12 @@ Note: redemption is **U.S.-only** and subject to shipping/legal constraints. Non
 
 Each supported ammunition caliber and load type has its own ERC-20 token. Rather than a single token per caliber, we separate by load type (e.g., practice vs. self-defense) because these have materially different prices, demand curves, and use cases:
 
-| Token     | Symbol  | Represents                                                           | Backed By                      |
-| --------- | ------- | -------------------------------------------------------------------- | ------------------------------ |
-| `ax9P`    | ax9P    | 1 round of 9mm 115gr FMJ, brass case, factory‑new practice ammo      | Physical 9mm FMJ in warehouse  |
-| `ax9SD`   | ax9SD   | 1 round of 9mm 124gr JHP, brass case, factory‑new self‑defense ammo  | Physical 9mm JHP in warehouse  |
-| `ax556SD` | ax556SD | 1 round of 5.56 62gr self‑defense, brass case, factory‑new           | Physical 5.56 SD in warehouse  |
-| `ax556P`  | ax556P  | 1 round of 5.56 NATO 55gr FMJ, brass case, factory‑new practice ammo | Physical 5.56 FMJ in warehouse |
+| Token    | Symbol | Represents                                                           | Backed By                      |
+| -------- | ------ | -------------------------------------------------------------------- | ------------------------------ |
+| `9MM-P`  | 9MM-P  | 1 round of 9mm 115gr FMJ, brass case, factory‑new practice ammo      | Physical 9mm FMJ in warehouse  |
+| `9MM-SD` | 9MM-SD | 1 round of 9mm 124gr JHP, brass case, factory‑new self‑defense ammo  | Physical 9mm JHP in warehouse  |
+| `556-SD` | 556-SD | 1 round of 5.56 62gr self‑defense, brass case, factory‑new           | Physical 5.56 SD in warehouse  |
+| `556-P`  | 556-P  | 1 round of 5.56 NATO 55gr FMJ, brass case, factory‑new practice ammo | Physical 5.56 FMJ in warehouse |
 
 **Why per-caliber-and-load tokens instead of an index or a single token per caliber?**
 
@@ -151,7 +151,7 @@ The protocol uses a factory pattern with per-caliber isolation:
 - **CaliberMarket** — Per-caliber market handling mint/redeem logic
 - **AmmoToken** — Minimal ERC-20 (mint/burn restricted to its CaliberMarket)
 - **PriceOracle** — Shared price registry, keeper-only writes
-- **AmmoPriceFunctions** — Chainlink Functions + Automation consumer for automated price updates from external sources (currently AmmoSquared)
+- **AmmoPriceFunctions** — Chainlink Functions + Automation consumer for automated price updates from real-world market data
 
 Owner is a multisig in production. Critical addresses (manager, oracle, USDC, token) are immutable post-deployment. The protocol is deployed on **Avalanche C-Chain** (Fuji testnet for development, mainnet for production).
 
@@ -207,10 +207,10 @@ On-chain pricing uses a two-layer system:
 
 2. **AmmoPriceFunctions contract** — Chainlink Functions + Automation consumer that automates price updates:
    - **Chainlink Automation** checks every 4 hours whether an update is needed (`checkUpkeep`/`performUpkeep`)
-   - **Chainlink Functions** sends JavaScript to the Decentralized Oracle Network (DON) to fetch current ammunition prices from the protocol API (sourced from AmmoSquared market data)
+   - **Chainlink Functions** sends JavaScript to the Decentralized Oracle Network (DON) to fetch current ammunition prices from the protocol API
    - The DON returns prices for all calibers in a single callback, which calls `oracle.setBatchPrices()` to update all markets atomically
 
-**Off-chain price pipeline:** A worker service scrapes AmmoSquared prices hourly, stores them in the database (CaliberPrice for latest, PriceSnapshot for history), and exposes them via the protocol API that Chainlink Functions reads from.
+**Off-chain price pipeline:** A worker service collects real-world ammunition market prices hourly, stores them in the database (CaliberPrice for latest, PriceSnapshot for history), and exposes them via the protocol API that Chainlink Functions reads from.
 
 **Staleness protection:** CaliberMarket reverts any mint if the oracle price is older than 6 hours, protecting users from stale pricing.
 
@@ -229,21 +229,20 @@ Physical ammunition is stored in a **climate-controlled, insured warehouse facil
 
 ### 4.2 Supplier Relationship
 
-For MVP, Ammo Exchange operates via a supply partnership model:
+Ammo Exchange operates its own warehouse and purchases ammunition directly:
 
-1. **Phase 1 (MVP):** Purchase from established suppliers (potential AmmoSquared partnership for storage infrastructure). Orders batched daily for efficiency.
-2. **Phase 2 (Scale):** Direct wholesale purchasing from manufacturers (Federal/Vista Outdoor, Winchester, Hornady) for better margins.
-3. **Phase 3 (Maturity):** Own warehouse operations for maximum margin and control.
+1. **Phase 1 (Launch):** Purchase from established wholesale suppliers, stored in our own warehouse facility. Orders batched daily for efficiency.
+2. **Phase 2 (Scale):** Direct wholesale purchasing from manufacturers (Federal/Vista Outdoor, Winchester, Hornady) for better margins and volume pricing.
 
 ### 4.3 Proof of Reserves
 
 Transparency is critical. The protocol publishes:
 
 - **On-chain:** Total token supply per caliber (verifiable by anyone)
-- **Off-chain:** Monthly warehouse audit reports with round counts by caliber
-- **Attestation:** Third-party auditor signs off that physical inventory ≥ token supply
+- **Off-chain:** Trust is built initially by reliably fulfilling redemptions — every successful delivery demonstrates backing is real
+- **Future:** Independent third-party warehouse audits are an ideal next step as the protocol scales
 
-This mirrors how **Tether Gold (XAUT)** and **Paxos Gold (PAXG)** operate — both publish attestations that physical holdings match token supply. For example, Tether’s Q1 2025 attestation reports **~7.7 tons** of gold backing XAUT, and Paxos publishes a fee schedule showing **no storage fees** with variable creation/destruction fees by order size.
+This mirrors how **Tether Gold (XAUT)** and **Paxos Gold (PAXG)** operate — both publish attestations that physical holdings match token supply. Paxos publishes a fee schedule showing **no storage fees** with variable creation/destruction fees by order size.
 
 ---
 
@@ -313,7 +312,7 @@ The protocol may introduce a token after demonstrating product-market fit. Until
 ### 7.1 Federal Ammunition Law
 
 - **No FFL required** to sell ammunition at the federal level (only needed for manufacturing/importing ammo or dealing firearms)
-- **Age restrictions:** 21+ for handgun ammunition, 18+ for rifle/shotgun ammunition (enforced at redemption)
+- **No age verification required on shipments** — redemption is restricted to states without shipping restrictions
 - **No federal background check** required for ammunition purchases
 - **Online sales** are legal at the federal level
 
@@ -329,12 +328,12 @@ Key state-level considerations for redemption/shipping:
 | Washington D.C. | Must be picked up from dealer                                                       |
 | New Jersey      | Certain ammo types restricted; FID card required                                    |
 
-For MVP, Ammo Exchange ships to states where direct‑to‑consumer delivery is legal. Restricted state support is added in Phase 2 via dealer partnerships. **State rules are volatile and litigation‑prone**, so eligibility must be continuously updated.
+Ammo Exchange ships to the **39 U.S. states** without shipping restrictions. Restricted state support is planned via dealer partnerships. **State rules are volatile and litigation‑prone**, so eligibility must be continuously updated.
 
 ### 7.3 Shipping Compliance
 
 - Ammunition qualifies as **Limited Quantity** hazardous material when it meets “cartridges, small arms” criteria
-- **UPS Ground only** within the 48 contiguous states (plus specific intra‑state services); **no international shipments**
+- **UPS Ground only** within the 39 eligible U.S. states; **no international shipments**
 - Requires proper packaging: new corrugated boxes, internal partitioning, and Limited Quantity labeling
 - Cannot ship via air freight
 
@@ -355,7 +354,7 @@ PAXG is issued by Paxos Trust, a NYDFS‑regulated trust company. However, this 
 | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
 | Minting (buy tokens)           | **Case‑by‑case** — may require compliance checks/geo‑fencing depending on state law and legal interpretation of “sale” |
 | Trading on DEX                 | No — peer-to-peer token transfer                                                                                       |
-| Redemption (physical delivery) | **Yes** — age verification, shipping address, state compliance                                                         |
+| Redemption (physical delivery) | **Yes** — shipping address, state compliance (39 eligible states)                                                      |
 
 This mirrors how commodity‑backed tokens generally operate: secondary market trading can be permissionless, while physical redemption requires identity and compliance checks.
 
@@ -396,12 +395,11 @@ Even conservative penetration represents a significant market given near-zero co
 
 - ✅ Deploy mint/redeem contracts for **4 caliber markets** (9mm practice, 9mm self-defense, 5.56 self-defense, 5.56 NATO practice) on Avalanche Fuji testnet
 - ✅ Factory pattern for deploying new caliber markets
-- ✅ Chainlink Functions + Automation for automated on-chain price updates (sourced from AmmoSquared)
+- ✅ Chainlink Functions + Automation for automated on-chain price updates
 - ✅ Full web frontend: mint, redeem, portfolio, caliber browsing, admin dashboard
 - ✅ Event indexer worker for order tracking and protocol statistics
-- ✅ KYC flow with admin review panel
 - ✅ Wallet-based authentication (SIWE pattern via iron-session)
-- Establish warehouse/supplier partnership
+- Establish own warehouse facility and supplier relationships
 - Seed initial DEX liquidity pools on Avalanche (e.g., Trader Joe)
 - Launch Primers program for LPs
 
@@ -410,8 +408,8 @@ Even conservative penetration represents a significant market given near-zero co
 - Deploy to Avalanche C-Chain mainnet
 - Add calibers: .22 LR, .308 Win, .45 ACP (via factory — no contract changes needed)
 - Dealer partnerships for restricted-state shipping (CA, NY, IL, DC, NJ)
-- Proof of reserves dashboard
-- Integrate additional price sources beyond AmmoSquared (AmmoSeek, AmmoStats)
+- Proof of reserves dashboard with third-party audits
+- Integrate additional price sources (AmmoSeek, AmmoStats)
 
 ### Phase 3: DeFi Integration (Months 9-12)
 
@@ -422,7 +420,7 @@ Even conservative penetration represents a significant market given near-zero co
 
 ### Phase 4: Scale (Year 2+)
 
-- Own warehouse operations
+- Expand warehouse operations to multiple locations
 - Direct manufacturer partnerships for wholesale pricing
 - Ammo index token (basket of calibers and load types)
 - Smart account support for simplified UX

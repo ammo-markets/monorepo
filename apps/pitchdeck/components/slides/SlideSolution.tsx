@@ -21,7 +21,7 @@ const STEPS = [
     icon: "📦",
     title: "We Buy the Underlying",
     description:
-      "Physical ammunition is purchased and stored via our AmmoSquared partnership.",
+      "Physical ammunition is purchased and stored in our warehouse.",
   },
   {
     step: "4",
