@@ -63,7 +63,9 @@ export interface OrderStep {
 export interface MarketCaliberFromAPI {
   caliber: Caliber;
   name: string;
+  tokenSymbol: string;
   pricePerRound: number;
   priceX18: string;
   totalSupply: string;
+  monthlyChangePercent: number | null;
 }

@@ -1,24 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import { Manrope, Rajdhani, JetBrains_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { Providers } from "./providers";
 import "./globals.css";
-
-const manrope = Manrope({
-  subsets: ["latin"],
-  variable: "--font-manrope",
-});
-
-const rajdhani = Rajdhani({
-  weight: ["300", "400", "500", "600", "700"],
-  subsets: ["latin"],
-  variable: "--font-rajdhani",
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-jetbrains",
-});
 
 export const metadata: Metadata = {
   title: "Ammo Exchange | Tokenized Ammunition Trading",
@@ -27,7 +10,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0A0A0F",
+  themeColor: "#080808",
   width: "device-width",
   initialScale: 1,
 };
@@ -39,10 +22,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
-      <body
-        className={`${manrope.variable} ${rajdhani.variable} ${jetbrainsMono.variable} font-sans antialiased`}
-        suppressHydrationWarning
-      >
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className="font-sans antialiased" suppressHydrationWarning>
         <Providers>{children}</Providers>
         <Toaster theme="dark" />
       </body>

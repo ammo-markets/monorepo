@@ -1,15 +1,24 @@
-import { Faq, Hero, HowItWorks, ProtocolStats } from "@/features/home";
-import { MarketTicker, MarketCards } from "@/features/market";
+import {
+  GuaranteeSection,
+  LandingFaqSection,
+  LandingFooter,
+  LandingHero,
+  LandingHowSection,
+  LandingShell,
+  PillarsSection,
+  TokenSection,
+} from "@/features/home/landing";
 
 export default function Page() {
   return (
-    <>
-      <Hero />
-      <MarketTicker />
-      <HowItWorks />
-      <MarketCards />
-      <Faq />
-      <ProtocolStats />
-    </>
+    <LandingShell>
+      <LandingHero />
+      <PillarsSection />
+      <GuaranteeSection />
+      <LandingHowSection />
+      <TokenSection />
+      <LandingFaqSection />
+      <LandingFooter />
+    </LandingShell>
   );
 }

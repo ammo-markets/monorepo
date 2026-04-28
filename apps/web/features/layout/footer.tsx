@@ -10,7 +10,6 @@ const productLinks = [
 ];
 
 const resourceLinks = [
-  { label: "Whitepaper", href: "#" },
   { label: "Docs", href: "https://docs.ammomarkets.com" },
   { label: "GitHub", href: "https://github.com/ammo-markets/monorepo" },
 ];

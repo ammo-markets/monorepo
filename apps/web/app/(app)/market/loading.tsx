@@ -35,13 +35,10 @@ export default function MarketLoading() {
           </div>
         </div>
         {/* Data rows */}
-        {[1, 2, 3, 4].map((i) => (
+        {[1].map((i) => (
           <div
             key={i}
             className="flex items-center gap-4 px-6 py-5"
-            style={{
-              borderBottom: i < 4 ? "1px solid var(--border-default)" : "none",
-            }}
           >
             <div className="h-6 w-6 rounded shimmer" />
             <div className="h-5 w-28 rounded shimmer" />

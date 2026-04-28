@@ -1,4 +1,4 @@
-import { CALIBER_SPECS, CALIBERS } from "@ammo-exchange/shared";
+import { CALIBER_SPECS, LAUNCH_CALIBERS } from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
 import type { MarketCaliberFromAPI } from "@/lib/types";
 
@@ -18,7 +18,7 @@ export function buildTokens(marketData: MarketCaliberFromAPI[]): Token[] {
   const base: Token[] = [
     { id: "USDT", symbol: "USDT", name: "Tether USD", price: 1.0, balance: 0 },
   ];
-  for (const cal of CALIBERS) {
+  for (const cal of LAUNCH_CALIBERS) {
     const market = marketData.find((m) => m.caliber === cal);
     base.push({
       id: cal,

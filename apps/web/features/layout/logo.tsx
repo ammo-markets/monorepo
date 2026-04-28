@@ -15,6 +15,7 @@ export function AmmoLogo({ size = "default" }: { size?: "small" | "default" }) {
     >
       {/* Geometric mark: bullet casing cross-section with exchange/rotation primer */}
       <svg
+        className="text-brass shrink-0"
         width={markSize}
         height={markSize}
         viewBox="0 0 36 36"
@@ -29,7 +30,7 @@ export function AmmoLogo({ size = "default" }: { size?: "small" | "default" }) {
           width="28"
           height="32"
           rx="3"
-          stroke="#C6A44E"
+          stroke="currentColor"
           strokeWidth="1.5"
           fill="none"
         />
@@ -39,7 +40,7 @@ export function AmmoLogo({ size = "default" }: { size?: "small" | "default" }) {
           y1="10"
           x2="32"
           y2="10"
-          stroke="#C6A44E"
+          stroke="currentColor"
           strokeWidth="1"
           opacity="0.4"
         />
@@ -48,14 +49,14 @@ export function AmmoLogo({ size = "default" }: { size?: "small" | "default" }) {
           cx="18"
           cy="24"
           r="6.5"
-          stroke="#C6A44E"
+          stroke="currentColor"
           strokeWidth="1.5"
           fill="none"
         />
         {/* Exchange arrows inside primer */}
         <path
           d="M15 22.5L18 20L21 22.5"
-          stroke="#C6A44E"
+          stroke="currentColor"
           strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -63,7 +64,7 @@ export function AmmoLogo({ size = "default" }: { size?: "small" | "default" }) {
         />
         <path
           d="M21 25.5L18 28L15 25.5"
-          stroke="#C6A44E"
+          stroke="currentColor"
           strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -73,7 +74,7 @@ export function AmmoLogo({ size = "default" }: { size?: "small" | "default" }) {
       {/* Wordmark */}
       <span className={`${textClass} font-semibold leading-none select-none`}>
         <span style={{ color: "var(--brass)" }}>AMMO</span>
-        <span className="text-ax-primary ml-1">EXCHANGE</span>
+        <span className="ml-1 text-text-primary">EXCHANGE</span>
       </span>
     </Link>
   );

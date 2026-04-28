@@ -289,7 +289,7 @@ export function MarketTable({
         >
           <table className="w-full">
             <tbody>
-              {[1, 2, 3, 4].map((i) => (
+              {[1].map((i) => (
                 <TableRowSkeleton key={i} />
               ))}
             </tbody>
@@ -297,7 +297,7 @@ export function MarketTable({
         </div>
         {/* Mobile skeleton */}
         <div className="flex flex-col gap-3 md:hidden">
-          {[1, 2, 3, 4].map((i) => (
+          {[1].map((i) => (
             <CardSkeleton key={i} />
           ))}
         </div>

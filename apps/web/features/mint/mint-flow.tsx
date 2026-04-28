@@ -56,7 +56,7 @@ export function MintFlow({
   });
   const [usdcAmount, setUsdcAmount] = useState("");
 
-  const activeCaliber: Caliber = selectedCaliber ?? "9MM_PRACTICE";
+  const activeCaliber: Caliber = selectedCaliber ?? "556_NATO_PRACTICE";
   const caliber =
     selectedCaliber && caliberDetailsMap
       ? caliberDetailsMap[selectedCaliber]

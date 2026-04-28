@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <defs>
     <style>
-      .s { fill: none; stroke: #C6A44E; stroke-width: 12; stroke-linecap: round; stroke-linejoin: round; }
+      .s { fill: none; stroke: currentColor; stroke-width: 12; stroke-linecap: round; stroke-linejoin: round; }
     </style>
   </defs>
 
@@ -20,7 +20,7 @@
     -->
 
     <!-- Ogive bullet tip (filled for visual weight) -->
-    <path fill="#C6A44E" stroke="#C6A44E" stroke-width="8" stroke-linejoin="round" d="
+    <path fill="currentColor" stroke="currentColor" stroke-width="8" stroke-linejoin="round" d="
       M 256 38
       C 250 68, 238 115, 232 150
       L 280 150

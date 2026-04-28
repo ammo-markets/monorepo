@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useAuth } from "@/contexts/auth-context";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { ChevronDown, ChevronUp, ArrowDownUp } from "lucide-react";
+import { LAUNCH_CALIBERS } from "@ammo-exchange/shared";
 import type { TokenId, Token } from "./swap-types";
 import { getToken } from "./swap-types";
 import { TokenSelector } from "./token-selector";
@@ -11,11 +12,16 @@ import { UniswapLogo } from "./token-icons";
 
 /* ── Swap Tab Content ── */
 
+const DEFAULT_RECEIVE_TOKEN: TokenId =
+  LAUNCH_CALIBERS[0] ?? "556_NATO_PRACTICE";
+
 export function SwapTab({ tokens }: { tokens: Token[] }) {
   const { isConnected } = useAuth();
   const { openConnectModal } = useConnectModal();
   const [payToken, setPayToken] = useState<TokenId>("USDT");
-  const [receiveToken, setReceiveToken] = useState<TokenId>("9MM_PRACTICE");
+  const [receiveToken, setReceiveToken] = useState<TokenId>(
+    DEFAULT_RECEIVE_TOKEN,
+  );
   const [payAmount, setPayAmount] = useState("");
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [rotated, setRotated] = useState(false);

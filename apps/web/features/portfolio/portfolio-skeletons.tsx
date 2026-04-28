@@ -32,7 +32,7 @@ export function PortfolioHeroSkeleton() {
         </div>
 
         {/* Caliber card skeletons */}
-        {[1, 2, 3, 4].map((i) => (
+        {[1].map((i) => (
           <div
             key={i}
             className="rounded-xl p-4"

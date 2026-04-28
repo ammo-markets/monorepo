@@ -64,7 +64,7 @@ export function RedeemFlow({
       : null;
 
   // ── Real hooks ──
-  const activeCaliber: Caliber = selectedCaliber ?? "9MM_PRACTICE";
+  const activeCaliber: Caliber = selectedCaliber ?? "556_NATO_PRACTICE";
   const wallet = useWallet();
   const { isSignedIn, signIn } = useAuth();
   const { openConnectModal } = useConnectModal();

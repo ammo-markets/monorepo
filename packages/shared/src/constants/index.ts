@@ -62,6 +62,11 @@ export const CALIBER_SPECS: Record<Caliber, CaliberSpec> = {
 /** All supported calibers derived from CALIBER_SPECS — single source of truth */
 export const CALIBERS = Object.keys(CALIBER_SPECS) as Caliber[];
 
+/** Calibers exposed to users at launch. Subset of CALIBERS — flip to add more. */
+export const LAUNCH_CALIBERS: readonly Caliber[] = [
+  "556_NATO_PRACTICE",
+] as const;
+
 /** States where online ammunition shipping is blocked (any restriction) */
 export const RESTRICTED_STATES = [
   "AK", // No UPS Ground service

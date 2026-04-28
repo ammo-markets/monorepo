@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { formatUnits } from "viem";
 import type { Caliber } from "@ammo-exchange/shared";
-import { CALIBER_SPECS, CALIBERS } from "@ammo-exchange/shared";
+import { CALIBER_SPECS, LAUNCH_CALIBERS } from "@ammo-exchange/shared";
 import type { MarketCaliberFromAPI } from "@/lib/types";
 import { caliberIcons } from "@/features/shared/caliber-icons";
 
@@ -24,7 +24,7 @@ function computeHoldings(
 ) {
   const priceMap = new Map(marketData.map((m) => [m.caliber, m.pricePerRound]));
 
-  return CALIBERS.map((caliber) => {
+  return LAUNCH_CALIBERS.map((caliber) => {
     const raw = balances[caliber] ?? BigInt(0);
     const balance = Math.floor(Number(formatUnits(raw, 18)));
     const price = priceMap.get(caliber) ?? 0;
@@ -52,8 +52,8 @@ function BalanceCardsSkeleton() {
         <div className="mt-1 h-4 w-28 rounded shimmer" />
       </div>
       {/* Grid skeleton */}
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        {[1, 2, 3, 4].map((i) => (
+      <div className="grid grid-cols-1 gap-3">
+        {[1].map((i) => (
           <div
             key={i}
             className="rounded-xl p-4"
@@ -122,7 +122,7 @@ export function BalanceCards({
       </div>
 
       {/* Caliber Cards Grid */}
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3">
         {holdings.map((h) => {
           const Icon = caliberIcons[h.caliber];
           return (

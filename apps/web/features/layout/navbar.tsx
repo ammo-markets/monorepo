@@ -9,6 +9,7 @@ import { UsdcIcon } from "./usdc-icon";
 import { useWallet } from "@/hooks/use-wallet";
 import { useTokenBalances } from "@/hooks/use-token-balances";
 import { useKeeperCheck } from "@/hooks/use-keeper-check";
+import { activeChain } from "@/lib/chain";
 
 const navLinks = [
   { label: "Market", href: "/market" },
@@ -32,7 +33,7 @@ export function Navbar() {
   }, [isKeeper]);
 
   // Network badge label and status dot color
-  const networkLabel = "Avalanche Fuji";
+  const networkLabel = activeChain.name;
   const dotColor =
     isConnected && !isReconnecting && isWrongNetwork
       ? "var(--amber)"

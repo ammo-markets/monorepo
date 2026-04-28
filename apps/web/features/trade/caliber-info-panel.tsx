@@ -1,7 +1,7 @@
 "use client";
 
 import { formatUnits } from "viem";
-import { CALIBER_SPECS, CALIBERS } from "@ammo-exchange/shared";
+import { CALIBER_SPECS, LAUNCH_CALIBERS } from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
 import type { MarketCaliberFromAPI } from "@/lib/types";
 import { caliberIcons } from "@/features/shared/caliber-icons";
@@ -66,8 +66,14 @@ export function CaliberInfoPanel({
         </p>
       )}
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {CALIBERS.map((cal) => {
+      <div
+        className={
+          LAUNCH_CALIBERS.length === 1
+            ? "grid grid-cols-1 gap-3"
+            : "grid grid-cols-2 gap-3 sm:grid-cols-4"
+        }
+      >
+        {LAUNCH_CALIBERS.map((cal) => {
           const spec = CALIBER_SPECS[cal];
           const market = marketData.find((m) => m.caliber === cal);
           const isSelected = selectedCaliber === cal;
@@ -120,8 +126,8 @@ export function CaliberInfoPanel({
                 </span>
               </div>
 
-              {/* Balance — per-card in redeem mode only */}
-              {balances && mode === "redeem" && isConnected && (
+              {/* Balance */}
+              {balances && isConnected && (
                 <div
                   className="text-[11px] font-medium"
                   style={{ color: "var(--text-secondary)" }}

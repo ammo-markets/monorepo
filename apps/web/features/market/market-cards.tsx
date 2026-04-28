@@ -33,7 +33,7 @@ function CaliberCard({ caliber }: { caliber: MarketCaliberFromAPI }) {
   return (
     <Link
       href={`/exchange?caliber=${caliber.caliber.toLowerCase()}`}
-      className="group block rounded-xl border border-border-default bg-ax-secondary p-5 transition-all duration-150 hover:border-brass-border hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.2),0_0_20px_rgba(198,164,78,0.05)]"
+      className="group block rounded-xl border border-border-default bg-ax-secondary p-5 transition-all duration-150 hover:border-brass-border hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.2)]"
     >
       {/* Header */}
       <div className="flex items-center gap-3">
@@ -136,9 +136,9 @@ export function MarketCards() {
       <div className="mx-auto max-w-6xl">
         <SectionTitle>Live Market</SectionTitle>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-1">
           {loading
-            ? [1, 2, 3, 4].map((i) => <CaliberCardSkeleton key={i} />)
+            ? [1].map((i) => <CaliberCardSkeleton key={i} />)
             : calibers.map((caliber) => (
                 <CaliberCard key={caliber.caliber} caliber={caliber} />
               ))}
@@ -156,8 +156,8 @@ export function MarketCardsSkeleton() {
     >
       <div className="mx-auto max-w-6xl">
         <SectionTitle>Live Market</SectionTitle>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {[1, 2, 3, 4].map((i) => (
+        <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-1">
+          {[1].map((i) => (
             <CaliberCardSkeleton key={i} />
           ))}
         </div>

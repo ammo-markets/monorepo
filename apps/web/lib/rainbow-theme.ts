@@ -39,7 +39,7 @@ export const ammoTheme: Theme = {
     actionButtonBorderMobile: "var(--border-default)",
   },
   fonts: {
-    body: "var(--font-manrope), ui-sans-serif, system-ui, sans-serif",
+    body: "Space Mono, ui-monospace, monospace",
   },
   radii: {
     actionButton: "var(--radius-xl)",

@@ -1,15 +1,10 @@
-import { LandingNavbar, Footer } from "@/features/layout";
+import type { ReactNode } from "react";
+import "./landing.css";
 
 export default function LandingLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
-  return (
-    <div className="flex min-h-screen flex-col">
-      <LandingNavbar />
-      <main className="flex-1">{children}</main>
-      <Footer />
-    </div>
-  );
+  return <>{children}</>;
 }

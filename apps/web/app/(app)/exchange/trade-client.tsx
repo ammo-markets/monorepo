@@ -6,9 +6,20 @@ import { useMarketData } from "@/hooks/use-market-data";
 import { useTokenBalances } from "@/hooks/use-token-balances";
 import { useAuth } from "@/contexts/auth-context";
 import { TradeTabs } from "@/features/trade";
-import type { Caliber } from "@ammo-exchange/shared";
+import { LAUNCH_CALIBERS, type Caliber } from "@ammo-exchange/shared";
 
 type TradeTab = "mint" | "redeem";
+
+const DEFAULT_CALIBER = LAUNCH_CALIBERS[0] ?? "556_NATO_PRACTICE";
+
+function getInitialCaliber(param: string | null): Caliber {
+  const caliber = param?.toUpperCase();
+  if (caliber && LAUNCH_CALIBERS.includes(caliber as Caliber)) {
+    return caliber as Caliber;
+  }
+
+  return DEFAULT_CALIBER;
+}
 
 export function TradePageClient() {
   const { data: marketData = [] } = useMarketData();
@@ -17,10 +28,9 @@ export function TradePageClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const [selectedCaliber, setSelectedCaliber] = useState<Caliber | null>(() => {
-    const param = searchParams.get("caliber")?.toUpperCase() as Caliber | null;
-    return param ?? "9MM_PRACTICE";
-  });
+  const [selectedCaliber, setSelectedCaliber] = useState<Caliber>(() =>
+    getInitialCaliber(searchParams.get("caliber")),
+  );
   const [activeTab, setActiveTab] = useState<TradeTab>(() => {
     const tab = searchParams.get("tab") as TradeTab | null;
     if (tab === "mint" || tab === "redeem") return tab;
