@@ -124,6 +124,10 @@
   opacity: 0.6;
 }
 
+.landing-page .tick-dot-soon {
+  opacity: 0.3;
+}
+
 .landing-page .tick-val {
   color: var(--lp-white);
 }
