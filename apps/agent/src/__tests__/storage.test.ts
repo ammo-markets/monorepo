@@ -91,6 +91,7 @@ describe("posted-tweet storage", () => {
     variantIdx: 0,
     approvedByTgUserId: 1,
     postedAt: new Date(2026, 0, n + 1).toISOString(),
+    dryRun: false,
   });
 
   it("returns empty array when nothing has been posted", async () => {

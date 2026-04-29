@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx --env-file=../../.env --watch src/index.ts",
+    "dev:once": "tsx --env-file=../../.env src/index.ts",
     "build": "tsup",
     "start": "node --env-file=../../.env dist/index.js",
     "check": "tsc",

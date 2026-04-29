@@ -9,12 +9,18 @@ export type PostedTweet = {
   variantIdx: number;
   approvedByTgUserId: number;
   postedAt: string;
+  dryRun: boolean;
 };
 
 const POSTED_FILE = join(env.DATA_DIR, "posted.json");
 const MEMORY_FILE = join(env.DATA_DIR, "memory.md");
 const ACTIVE_CHARACTER_FILE = join(env.DATA_DIR, "active_character.txt");
-const CONTEXT_FILES = ["brand.md", "guardrails.md", "campaigns.md", "examples.md"];
+const CONTEXT_FILES = [
+  "brand.md",
+  "guardrails.md",
+  "campaigns.md",
+  "examples.md",
+];
 const DEFAULT_CHARACTER_NAME = "default";
 const CHARACTER_NAME_RE = /^[a-z0-9][a-z0-9-]*$/;
 
@@ -91,7 +97,9 @@ export async function readContext(): Promise<string> {
   const sections: string[] = [];
   for (const file of CONTEXT_FILES) {
     try {
-      const content = (await readFile(join(env.CONTEXT_DIR, file), "utf8")).trim();
+      const content = (
+        await readFile(join(env.CONTEXT_DIR, file), "utf8")
+      ).trim();
       if (content) sections.push(content);
     } catch (err) {
       if ((err as NodeJS.ErrnoException).code === "ENOENT") continue;

@@ -23,6 +23,10 @@ packages/db/generated/
 .env.*
 !.env.example
 
+# Agent runtime data
+/apps/agent/data/
+/data/
+
 # IDE
 .vscode/
 .idea/

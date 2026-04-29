@@ -83,7 +83,9 @@ function getTelegramMedia(ctx: Context): {
 
   if ("video" in msg && msg.video) {
     const mimeType =
-      msg.video.mime_type === "video/quicktime" ? "video/quicktime" : "video/mp4";
+      msg.video.mime_type === "video/quicktime"
+        ? "video/quicktime"
+        : "video/mp4";
     return [
       {
         fileId: msg.video.file_id,
@@ -104,7 +106,8 @@ async function downloadTelegramMedia(ctx: Context): Promise<TweetMedia[]> {
   const out: TweetMedia[] = [];
   for (const item of media) {
     const file = await ctx.api.getFile(item.fileId);
-    if (!file.file_path) throw new Error("Telegram did not return a file path.");
+    if (!file.file_path)
+      throw new Error("Telegram did not return a file path.");
     const url = `https://api.telegram.org/file/bot${env.TELEGRAM_BOT_TOKEN}/${file.file_path}`;
     const res = await fetch(url);
     if (!res.ok) {
@@ -129,9 +132,9 @@ function toDraftMediaContext(media: TweetMedia[]): DraftMediaContext[] {
   }));
 }
 
-function parseCaptionCommand(caption: string | undefined):
-  | { command: "draft" | "tweet"; args: string }
-  | null {
+function parseCaptionCommand(
+  caption: string | undefined,
+): { command: "draft" | "tweet"; args: string } | null {
   const match = caption
     ?.trim()
     .match(/^\/(draft|tweet)(?:@[A-Za-z0-9_]+)?(?:\s+([\s\S]*))?$/i);
@@ -174,6 +177,7 @@ async function handleRawTweet(ctx: Context, rawArgs: string): Promise<void> {
       variantIdx: 0,
       approvedByTgUserId: ctx.from.id,
       postedAt: new Date().toISOString(),
+      dryRun: result.dryRun,
     });
     const prefix = result.dryRun ? "DRY_RUN — would have posted:" : "Posted:";
     const suffix = media.length > 0 ? `\nMedia attached: ${media.length}` : "";
@@ -254,7 +258,9 @@ async function handleDraft(ctx: Context, topic: string): Promise<void> {
     media.length > 0 ? `Media attached: ${media.length}` : "",
     "",
     ...set.variants.map((v, i) => `${i + 1}. ${v}\n(${v.length} chars)`),
-  ].filter(Boolean).join("\n\n");
+  ]
+    .filter(Boolean)
+    .join("\n\n");
 
   const kb = new InlineKeyboard()
     .text("Post 1", `approve:${set.id}:0`)
@@ -490,6 +496,7 @@ export function createBot(): Bot {
         variantIdx: idx,
         approvedByTgUserId: ctx.from.id,
         postedAt: new Date().toISOString(),
+        dryRun: result.dryRun,
       });
       drafts.delete(draftId!);
       const prefix = result.dryRun ? "DRY_RUN — would have posted:" : "Posted:";

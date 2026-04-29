@@ -4,6 +4,7 @@
   "packageManager": "pnpm@10.4.1",
   "scripts": {
     "dev": "turbo dev",
+    "agent:dev": "pnpm --filter @ammo-exchange/agent dev:once",
     "build": "turbo build",
     "start": "turbo start",
     "check": "turbo check",
