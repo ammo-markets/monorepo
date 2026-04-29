@@ -28,6 +28,23 @@ export interface CaliberSpec {
   sku: string;
 }
 
+/** Icon key used by frontend to map an upcoming caliber to a rendered icon. */
+export type UpcomingIconKey = "9MM" | "556" | "308" | "22LR" | "default";
+
+/**
+ * A caliber on the protocol's roadmap that is not yet deployable. Has no
+ * Caliber-typed id (no contracts, no Prisma row, no token) — surfaces consume
+ * it for marketing/preview purposes only.
+ */
+export interface UpcomingCaliberSpec {
+  id: string;
+  displayName: string;
+  description: string;
+  grainWeight?: number;
+  caseType?: "brass" | "steel" | "shotshell";
+  iconKey: UpcomingIconKey;
+}
+
 export interface RedeemRequest {
   caliber: Caliber;
   tokenAmount: bigint;

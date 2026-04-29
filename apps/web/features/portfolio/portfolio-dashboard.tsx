@@ -66,7 +66,7 @@ export function PortfolioDashboard() {
       const spec = CALIBER_SPECS[caliber];
       return {
         caliber,
-        symbol: caliber,
+        symbol: spec.tokenSymbol,
         name: spec.name,
         balance,
         price,

@@ -216,3 +216,14 @@ export const caliberIcons: Record<
   "556_SELF_DEFENSE": Icon556,
   "556_NATO_PRACTICE": Icon556,
 };
+
+export const upcomingCaliberIcons: Record<
+  import("@ammo-exchange/shared").UpcomingIconKey,
+  React.FC<CaliberIconProps>
+> = {
+  "9MM": Icon9MM,
+  "556": Icon556,
+  "308": Icon308,
+  "22LR": Icon22LR,
+  default: Icon556,
+};

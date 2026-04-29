@@ -1,4 +1,8 @@
-import type { Caliber, CaliberSpec } from "../types/index";
+import type {
+  Caliber,
+  CaliberSpec,
+  UpcomingCaliberSpec,
+} from "../types/index";
 
 /** Fee constants in basis points (1 BPS = 0.01%) */
 export const FEES = {
@@ -47,7 +51,7 @@ export const CALIBER_SPECS: Record<Caliber, CaliberSpec> = {
   },
   "556_NATO_PRACTICE": {
     caliber: "556_NATO_PRACTICE",
-    name: "5.56 NATO Practice",
+    name: "5.56 NATO",
     description: "5.56 NATO 55gr FMJ, brass case, factory-new",
     grainWeight: 55,
     caseType: "brass",
@@ -65,6 +69,69 @@ export const CALIBERS = Object.keys(CALIBER_SPECS) as Caliber[];
 /** Calibers exposed to users at launch. Subset of CALIBERS — flip to add more. */
 export const LAUNCH_CALIBERS: readonly Caliber[] = [
   "556_NATO_PRACTICE",
+] as const;
+
+/**
+ * Calibers on the roadmap that are not yet deployable. Surfaced in the
+ * landing ticker and exchange caliber panel as greyed-out previews.
+ * When one ships, promote it: add to Caliber union + CALIBER_SPECS +
+ * LAUNCH_CALIBERS, then remove from this list.
+ */
+export const UPCOMING_CALIBERS: readonly UpcomingCaliberSpec[] = [
+  {
+    id: "9MM_115GR",
+    displayName: "9mm 115gr",
+    description: "9mm 115gr FMJ practice",
+    grainWeight: 115,
+    caseType: "brass",
+    iconKey: "9MM",
+  },
+  {
+    id: "308_WIN_147GR",
+    displayName: ".308 Win 147gr",
+    description: ".308 Winchester FMJ",
+    grainWeight: 147,
+    caseType: "brass",
+    iconKey: "308",
+  },
+  {
+    id: "223_REM_55GR",
+    displayName: ".223 Rem 55gr",
+    description: ".223 Remington FMJ",
+    grainWeight: 55,
+    caseType: "brass",
+    iconKey: "556",
+  },
+  {
+    id: "45_ACP_230GR",
+    displayName: ".45 ACP 230gr",
+    description: ".45 ACP 230gr FMJ",
+    grainWeight: 230,
+    caseType: "brass",
+    iconKey: "9MM",
+  },
+  {
+    id: "12GA_00_BUCK",
+    displayName: "12ga 00 Buck",
+    description: "12 gauge 00 buckshot",
+    caseType: "shotshell",
+    iconKey: "default",
+  },
+  {
+    id: "65_CREEDMOOR",
+    displayName: "6.5 Creedmoor",
+    description: "6.5 Creedmoor rifle ammunition",
+    caseType: "brass",
+    iconKey: "308",
+  },
+  {
+    id: "22_LR_40GR",
+    displayName: ".22 LR 40gr",
+    description: ".22 LR 40gr rimfire",
+    grainWeight: 40,
+    caseType: "brass",
+    iconKey: "22LR",
+  },
 ] as const;
 
 /** States where online ammunition shipping is blocked (any restriction) */

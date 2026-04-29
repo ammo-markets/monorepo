@@ -1,21 +1,15 @@
 "use client";
 
-import { CALIBER_SPECS } from "@ammo-exchange/shared";
+import {
+  CALIBER_SPECS,
+  UPCOMING_CALIBERS,
+} from "@ammo-exchange/shared";
 import type { Caliber } from "@ammo-exchange/shared";
 import { useMarketData } from "@/hooks/use-market-data";
 
 const LIVE_TICKER_CALIBER = "556_NATO_PRACTICE" satisfies Caliber;
 
-const UPCOMING_TICKER_ITEMS = [
-  "9MM 115GR",
-  ".308 WIN 147GR",
-  ".223 REM 55GR",
-  ".45 ACP 230GR",
-  "12GA 00 BUCK",
-  "6.5 CREEDMOOR",
-  ".22 LR 40GR",
-  "MORE CALIBERS ADDED AS THE PROTOCOL GROWS",
-] as const;
+const ROADMAP_TAGLINE = "MORE CALIBERS ADDED AS THE PROTOCOL GROWS";
 
 function formatPrice(price?: number) {
   if (typeof price !== "number" || !Number.isFinite(price)) return "$--";
@@ -28,12 +22,20 @@ function formatMonthlyChange(change: number | null | undefined) {
   return `${sign}${change.toFixed(1)}%`;
 }
 
+interface TickerItem {
+  label: string;
+  value: string;
+  change: string;
+  changeValue: number | null | undefined;
+  live: boolean;
+}
+
 function TickerItems() {
   const { data: marketData = [] } = useMarketData();
   const marketByCaliber = new Map(marketData.map((m) => [m.caliber, m]));
   const liveMarket = marketByCaliber.get(LIVE_TICKER_CALIBER);
   const liveSpec = CALIBER_SPECS[LIVE_TICKER_CALIBER];
-  const liveItem = {
+  const liveItem: TickerItem = {
     label: `${liveMarket?.tokenSymbol ?? liveSpec.tokenSymbol} ${
       liveMarket?.name ?? liveSpec.name
     }`,
@@ -42,40 +44,27 @@ function TickerItems() {
     changeValue: liveMarket?.monthlyChangePercent,
     live: true,
   };
-  const items = [
+
+  // Interleave the live item between each upcoming caliber, then close with the
+  // roadmap tagline so the marquee feels alive even when only one caliber ships.
+  const items: TickerItem[] = UPCOMING_CALIBERS.flatMap((cal) => [
     liveItem,
-    ...UPCOMING_TICKER_ITEMS.slice(0, 2).map((label) => ({
-      label,
+    {
+      label: cal.displayName.toUpperCase(),
       value: "Coming Soon",
       change: "",
       changeValue: null,
       live: false,
-    })),
-    liveItem,
-    ...UPCOMING_TICKER_ITEMS.slice(2, 4).map((label) => ({
-      label,
-      value: "Coming Soon",
-      change: "",
-      changeValue: null,
-      live: false,
-    })),
-    liveItem,
-    ...UPCOMING_TICKER_ITEMS.slice(4, 6).map((label) => ({
-      label,
-      value: "Coming Soon",
-      change: "",
-      changeValue: null,
-      live: false,
-    })),
-    liveItem,
-    ...UPCOMING_TICKER_ITEMS.slice(6).map((label) => ({
-      label,
-      value: label === "MORE CALIBERS ADDED AS THE PROTOCOL GROWS" ? "" : "Coming Soon",
-      change: "",
-      changeValue: null,
-      live: false,
-    })),
-  ];
+    },
+  ]);
+  items.push(liveItem, {
+    label: ROADMAP_TAGLINE,
+    value: "",
+    change: "",
+    changeValue: null,
+    live: false,
+  });
+
   // Repeat enough times to fill the marquee track regardless of item count.
   const doubled = [...items, ...items];
 

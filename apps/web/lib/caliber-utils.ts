@@ -9,7 +9,7 @@ export function buildCaliberDetail(
   const spec = CALIBER_SPECS[caliber];
   return {
     id: caliber,
-    symbol: caliber,
+    symbol: spec.tokenSymbol,
     name: spec.name,
     specLine: spec.description,
     price: market.pricePerRound,

@@ -31,7 +31,7 @@ function computeHoldings(
     const value = balance * price;
     return {
       caliber,
-      symbol: caliber,
+      symbol: CALIBER_SPECS[caliber].tokenSymbol,
       name: CALIBER_SPECS[caliber].name,
       balance,
       price,

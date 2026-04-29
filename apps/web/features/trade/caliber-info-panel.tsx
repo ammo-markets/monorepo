@@ -1,10 +1,17 @@
 "use client";
 
 import { formatUnits } from "viem";
-import { CALIBER_SPECS, LAUNCH_CALIBERS } from "@ammo-exchange/shared";
-import type { Caliber } from "@ammo-exchange/shared";
+import {
+  CALIBER_SPECS,
+  LAUNCH_CALIBERS,
+  UPCOMING_CALIBERS,
+} from "@ammo-exchange/shared";
+import type { Caliber, UpcomingCaliberSpec } from "@ammo-exchange/shared";
 import type { MarketCaliberFromAPI } from "@/lib/types";
-import { caliberIcons } from "@/features/shared/caliber-icons";
+import {
+  caliberIcons,
+  upcomingCaliberIcons,
+} from "@/features/shared/caliber-icons";
 
 interface TokenBalances {
   usdc: bigint | undefined;
@@ -19,6 +26,8 @@ interface CaliberInfoPanelProps {
   balances?: TokenBalances;
   mode?: "mint" | "redeem";
   isConnected?: boolean;
+  selectedUpcomingId?: string | null;
+  onSelectUpcoming?: (spec: UpcomingCaliberSpec) => void;
 }
 
 function formatBalance(
@@ -44,6 +53,8 @@ export function CaliberInfoPanel({
   balances,
   mode,
   isConnected,
+  selectedUpcomingId,
+  onSelectUpcoming,
 }: CaliberInfoPanelProps) {
   return (
     <div>
@@ -66,13 +77,7 @@ export function CaliberInfoPanel({
         </p>
       )}
 
-      <div
-        className={
-          LAUNCH_CALIBERS.length === 1
-            ? "grid grid-cols-1 gap-3"
-            : "grid grid-cols-2 gap-3 sm:grid-cols-4"
-        }
-      >
+      <div className="flex max-w-full gap-3 overflow-x-auto pb-2 [scrollbar-width:thin]">
         {LAUNCH_CALIBERS.map((cal) => {
           const spec = CALIBER_SPECS[cal];
           const market = marketData.find((m) => m.caliber === cal);
@@ -86,7 +91,7 @@ export function CaliberInfoPanel({
               aria-label={`Select ${cal} - ${spec.name}`}
               aria-pressed={isSelected}
               onClick={() => onSelectCaliber(cal)}
-              className={`group flex flex-col gap-2 rounded-xl p-3 text-left transition-all duration-150 ${
+              className={`group flex w-[min(72vw,12rem)] flex-none flex-col gap-2 rounded-xl p-3 text-left transition-all duration-150 sm:w-44 ${
                 isSelected
                   ? "bg-brass-muted border-[1.5px] border-brass"
                   : "bg-ax-secondary border-[1.5px] border-border-default hover:border-border-hover"
@@ -100,13 +105,13 @@ export function CaliberInfoPanel({
                     className="text-sm font-bold"
                     style={{ color: "var(--text-primary)" }}
                   >
-                    {cal}
+                    {spec.name}
                   </div>
                   <div
                     className="text-[11px]"
                     style={{ color: "var(--text-secondary)" }}
                   >
-                    {spec.name}
+                    {spec.tokenSymbol}
                   </div>
                 </div>
               </div>
@@ -133,7 +138,7 @@ export function CaliberInfoPanel({
                   style={{ color: "var(--text-secondary)" }}
                 >
                   Your balance:{" "}
-                  {`${formatBalance(balances.tokens[cal], 18, balances.isLoading)} ${cal}`}
+                  {`${formatBalance(balances.tokens[cal], 18, balances.isLoading)} ${spec.tokenSymbol}`}
                 </div>
               )}
 
@@ -155,6 +160,68 @@ export function CaliberInfoPanel({
                   Tap to select
                 </div>
               )}
+            </button>
+          );
+        })}
+
+        {UPCOMING_CALIBERS.map((upcoming) => {
+          const Icon = upcomingCaliberIcons[upcoming.iconKey];
+          const isSelected = selectedUpcomingId === upcoming.id;
+          const caseLabel =
+            upcoming.caseType === "shotshell"
+              ? "Shotshell"
+              : upcoming.caseType === "steel"
+                ? "Steel"
+                : "Brass";
+
+          return (
+            <button
+              key={upcoming.id}
+              type="button"
+              aria-label={`Preview ${upcoming.displayName} — coming soon`}
+              aria-pressed={isSelected}
+              onClick={() => onSelectUpcoming?.(upcoming)}
+              className={`group relative flex w-[min(72vw,12rem)] flex-none flex-col gap-2 rounded-xl p-3 text-left transition-all duration-150 sm:w-44 ${
+                isSelected
+                  ? "bg-brass-muted border-[1.5px] border-brass"
+                  : "bg-ax-secondary border-[1.5px] border-border-default hover:border-border-hover"
+              }`}
+            >
+              {/* Icon + Symbol */}
+              <div className="flex items-center gap-2">
+                <Icon size={28} />
+                <div className="min-w-0">
+                  <div
+                    className="text-sm font-bold"
+                    style={{ color: "var(--text-muted)" }}
+                  >
+                    {upcoming.displayName}
+                  </div>
+                  <div
+                    className="text-[11px]"
+                    style={{ color: "var(--text-primary)" }}
+                  >
+                    Coming soon
+                  </div>
+                </div>
+              </div>
+
+              {/* Price placeholder */}
+              <div
+                className="font-mono text-sm font-semibold tabular-nums"
+                style={{ color: "var(--text-muted)" }}
+              >
+                — /rd
+              </div>
+
+              {/* Specs line */}
+              <div
+                className="text-[10px] leading-tight"
+                style={{ color: "var(--text-muted)" }}
+              >
+                {upcoming.grainWeight ? `${upcoming.grainWeight}gr | ` : ""}
+                {caseLabel}
+              </div>
             </button>
           );
         })}

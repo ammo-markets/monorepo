@@ -1,7 +1,11 @@
 import { Check } from "lucide-react";
-import { caliberIcons } from "@/features/shared/caliber-icons";
+import {
+  caliberIcons,
+  upcomingCaliberIcons,
+} from "@/features/shared/caliber-icons";
 import type { CaliberDetailData } from "@/lib/types";
 import type { Caliber } from "@ammo-exchange/shared";
+import { UPCOMING_CALIBERS } from "@ammo-exchange/shared";
 
 export function StepSelectCaliber({
   selected,
@@ -89,6 +93,59 @@ export function StepSelectCaliber({
                 </span>
               </div>
             </button>
+          );
+        })}
+
+        {UPCOMING_CALIBERS.map((upcoming) => {
+          const Icon = upcomingCaliberIcons[upcoming.iconKey];
+
+          return (
+            <div
+              key={upcoming.id}
+              aria-disabled="true"
+              title={`${upcoming.displayName} — coming soon`}
+              className="group relative flex cursor-not-allowed flex-col gap-3 border-2 border-dashed p-4 text-left opacity-60"
+              style={{
+                backgroundColor: "var(--bg-secondary)",
+                borderColor: "var(--border-default)",
+              }}
+            >
+              <span
+                className="absolute right-3 top-3 rounded-sm px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-widest"
+                style={{
+                  color: "var(--text-muted)",
+                  border: "1px solid var(--border-default)",
+                }}
+              >
+                Soon
+              </span>
+
+              <div className="flex items-center gap-3">
+                <Icon size={40} />
+                <div>
+                  <div
+                    className="text-sm font-bold"
+                    style={{ color: "var(--text-secondary)" }}
+                  >
+                    {upcoming.displayName}
+                  </div>
+                  <div
+                    className="text-xs"
+                    style={{ color: "var(--text-muted)" }}
+                  >
+                    Coming soon
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <span
+                  className="font-mono text-sm font-bold uppercase tracking-widest tabular-nums"
+                  style={{ color: "var(--text-muted)" }}
+                >
+                  — / round
+                </span>
+              </div>
+            </div>
           );
         })}
       </div>

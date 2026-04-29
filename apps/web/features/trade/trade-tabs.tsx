@@ -1,13 +1,14 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { Plus, ArrowDownToLine } from "lucide-react";
 import { MintFlow } from "@/features/mint";
 import { RedeemFlow } from "@/features/redeem";
 import { ErrorBoundary } from "@/components/error-boundary";
 
 import { CaliberInfoPanel } from "@/features/trade/caliber-info-panel";
-import type { Caliber } from "@ammo-exchange/shared";
+import { ComingSoonPreview } from "@/features/trade/coming-soon-preview";
+import type { Caliber, UpcomingCaliberSpec } from "@ammo-exchange/shared";
 import type { MarketCaliberFromAPI } from "@/lib/types";
 
 type TradeTab = "mint" | "redeem";
@@ -42,6 +43,23 @@ export function TradeTabs({
   tokenBalances,
   isConnected,
 }: TradeTabsProps) {
+  const [selectedUpcoming, setSelectedUpcoming] =
+    useState<UpcomingCaliberSpec | null>(null);
+
+  const handleSelectCaliber = (cal: Caliber) => {
+    setSelectedUpcoming(null);
+    onSelectCaliber(cal);
+  };
+
+  const handleSelectUpcoming = (spec: UpcomingCaliberSpec) => {
+    setSelectedUpcoming(spec);
+  };
+
+  const handleBackToLive = (cal: Caliber) => {
+    setSelectedUpcoming(null);
+    onSelectCaliber(cal);
+  };
+
   return (
     <div>
       {/* Tab buttons */}
@@ -76,19 +94,27 @@ export function TradeTabs({
       {/* Caliber selection */}
       <div className="mb-6">
         <CaliberInfoPanel
-          selectedCaliber={selectedCaliber}
-          onSelectCaliber={onSelectCaliber}
+          selectedCaliber={selectedUpcoming ? null : selectedCaliber}
+          onSelectCaliber={handleSelectCaliber}
           marketData={marketData}
           balances={tokenBalances}
           mode={activeTab}
           isConnected={isConnected}
+          selectedUpcomingId={selectedUpcoming?.id ?? null}
+          onSelectUpcoming={handleSelectUpcoming}
         />
       </div>
 
       {/* Tab content */}
       <div>
-        {activeTab === "mint" &&
-          (selectedCaliber ? (
+        {selectedUpcoming ? (
+          <ComingSoonPreview
+            upcoming={selectedUpcoming}
+            currentLiveCaliber={selectedCaliber}
+            onBackToLive={handleBackToLive}
+          />
+        ) : activeTab === "mint" ? (
+          selectedCaliber ? (
             <ErrorBoundary>
               <Suspense
                 fallback={
@@ -113,35 +139,33 @@ export function TradeTabs({
             >
               Select a caliber above to start minting
             </div>
-          ))}
-
-        {activeTab === "redeem" &&
-          (selectedCaliber ? (
-            <ErrorBoundary>
-              <Suspense
-                fallback={
-                  <div
-                    className="py-12 text-center text-sm"
-                    style={{ color: "var(--text-muted)" }}
-                  >
-                    Loading...
-                  </div>
-                }
-              >
-                <RedeemFlow
-                  key={selectedCaliber}
-                  selectedCaliber={selectedCaliber!}
-                />
-              </Suspense>
-            </ErrorBoundary>
-          ) : (
-            <div
-              className="py-12 text-center text-sm"
-              style={{ color: "var(--text-muted)" }}
+          )
+        ) : selectedCaliber ? (
+          <ErrorBoundary>
+            <Suspense
+              fallback={
+                <div
+                  className="py-12 text-center text-sm"
+                  style={{ color: "var(--text-muted)" }}
+                >
+                  Loading...
+                </div>
+              }
             >
-              Select a caliber above to start redeeming
-            </div>
-          ))}
+              <RedeemFlow
+                key={selectedCaliber}
+                selectedCaliber={selectedCaliber!}
+              />
+            </Suspense>
+          </ErrorBoundary>
+        ) : (
+          <div
+            className="py-12 text-center text-sm"
+            style={{ color: "var(--text-muted)" }}
+          >
+            Select a caliber above to start redeeming
+          </div>
+        )}
       </div>
     </div>
   );

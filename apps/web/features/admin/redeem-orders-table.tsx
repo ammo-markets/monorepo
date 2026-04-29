@@ -55,7 +55,7 @@ const CALIBER_OPTIONS = [
   { label: "9mm Practice", value: "9MM_PRACTICE" },
   { label: "9mm Self Defense", value: "9MM_SELF_DEFENSE" },
   { label: "5.56 Self Defense", value: "556_SELF_DEFENSE" },
-  { label: "5.56 NATO Practice", value: "556_NATO_PRACTICE" },
+  { label: "5.56 NATO", value: "556_NATO_PRACTICE" },
 ] as const;
 
 function formatTokenAmount(amount: string): string {
