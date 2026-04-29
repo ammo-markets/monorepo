@@ -4,9 +4,36 @@ import { Providers } from "./providers";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Ammo Exchange | Tokenized Ammunition Trading",
+  title: {
+    template: "%s | Ammo Markets",
+    default: "Ammo Markets — Bullets on the Blockchain",
+  },
   description:
-    "Buy, hold, and trade tokenized ammunition backed 1:1 by physical rounds in insured storage. Mint with USDC, trade on DEXes, redeem for delivery.",
+    "Bullets on the blockchain. Buy, hold, and trade tokenized ammunition backed 1:1 by physical rounds in insured storage. Mint with USDC on Avalanche, trade on DEXes, redeem for delivery.",
+  applicationName: "Ammo Markets",
+  keywords: [
+    "bullets on the blockchain",
+    "tokenized ammunition",
+    "ammo tokens",
+    "ammunition DeFi",
+    "Avalanche",
+    "tokenized commodities",
+    "ammunition trading",
+    "5.56 NATO token",
+  ],
+  openGraph: {
+    title: "Ammo Markets — Bullets on the Blockchain",
+    description:
+      "Bullets on the blockchain. Tokenized ammunition backed 1:1 by physical rounds in insured storage. Trade on Avalanche.",
+    siteName: "Ammo Markets",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Ammo Markets — Bullets on the Blockchain",
+    description:
+      "Bullets on the blockchain. Tokenized ammunition backed 1:1 by physical rounds.",
+  },
 };
 
 export const viewport: Viewport = {

@@ -10,7 +10,7 @@ import { syncPrices } from "./priceSync";
 const PRICE_SYNC_INTERVAL_MS = 60 * 60 * 1000; // 1 hour
 
 async function main() {
-  console.log("[worker] Starting Ammo Exchange event indexer...");
+  console.log("[worker] Starting Ammo Markets event indexer...");
   console.log(`[worker] Chain: ${client.chain?.name} (${client.chain?.id})`);
 
   const blockNumber = await client.getBlockNumber();

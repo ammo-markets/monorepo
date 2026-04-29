@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { OrderDetailView } from "@/features/portfolio";
 
 export const metadata: Metadata = {
-  title: "Order Detail | Ammo Exchange",
+  title: "Order Detail",
   description:
-    "Track the status of your mint or redemption order on Ammo Exchange.",
+    "Bullets on the blockchain. Track the status of your mint or redemption order on Ammo Markets.",
 };
 
 export default async function OrderDetailPage({

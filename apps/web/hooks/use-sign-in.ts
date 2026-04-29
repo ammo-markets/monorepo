@@ -30,7 +30,7 @@ export function useSignIn() {
       const message = new SiweMessage({
         domain: window.location.host,
         address,
-        statement: "Sign in to Ammo Exchange",
+        statement: "Sign in to Ammo Markets",
         uri: window.location.origin,
         version: "1",
         chainId,

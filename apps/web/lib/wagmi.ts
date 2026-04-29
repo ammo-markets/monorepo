@@ -5,7 +5,7 @@ import { activeChain } from "@/lib/chain";
 import { env } from "@/lib/env";
 
 export const wagmiConfig = getDefaultConfig({
-  appName: "Ammo Exchange",
+  appName: "Ammo Markets",
   projectId: env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
   chains: [
     activeChain,

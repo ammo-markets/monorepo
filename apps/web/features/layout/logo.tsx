@@ -11,7 +11,7 @@ export function AmmoLogo({ size = "default" }: { size?: "small" | "default" }) {
     <Link
       href="/"
       className="flex items-center gap-2.5"
-      aria-label="Ammo Exchange Home"
+      aria-label="Ammo Markets Home"
     >
       {/* Geometric mark: bullet casing cross-section with exchange/rotation primer */}
       <svg
@@ -74,7 +74,7 @@ export function AmmoLogo({ size = "default" }: { size?: "small" | "default" }) {
       {/* Wordmark */}
       <span className={`${textClass} font-semibold leading-none select-none`}>
         <span style={{ color: "var(--brass)" }}>AMMO</span>
-        <span className="ml-1 text-text-primary">EXCHANGE</span>
+        <span className="ml-1 text-text-primary">MARKETS</span>
       </span>
     </Link>
   );
