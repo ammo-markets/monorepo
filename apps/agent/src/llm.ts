@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import { z } from "zod";
 import { env } from "./env";
 
 const client = new OpenAI({
@@ -25,6 +26,10 @@ export type DraftContext = {
   recentPosts: string[];
   media?: DraftMediaContext[];
 };
+
+const draftResponseSchema = z.object({
+  variants: z.array(z.string().trim().min(1)).length(3),
+});
 
 function newId(): string {
   return Math.random().toString(36).slice(2, 10);
@@ -77,7 +82,10 @@ Write exactly 3 distinct tweet drafts on this topic. They should differ in angle
 
 If media is attached, write the tweet as copy/caption that fits the media. Do not describe visual details you cannot actually infer.
 
-Return ONLY the 3 drafts, numbered 1., 2., 3., with no preamble, no explanation, no closing remarks. Each draft on its own line or short block.`;
+Return ONLY valid JSON in this exact shape:
+{"variants":["draft one","draft two","draft three"]}
+
+Do not include markdown fences, preamble, explanation, or closing remarks.`;
 
   const imageInputs =
     ctx.media
@@ -87,10 +95,12 @@ Return ONLY the 3 drafts, numbered 1., 2., 3., with no preamble, no explanation,
         image_url: { url: item.dataUrl! },
       })) ?? [];
 
-  const userContent: string | (
-    | { type: "text"; text: string }
-    | { type: "image_url"; image_url: { url: string } }
-  )[] =
+  const userContent:
+    | string
+    | (
+        | { type: "text"; text: string }
+        | { type: "image_url"; image_url: { url: string } }
+      )[] =
     imageInputs.length > 0
       ? [{ type: "text", text: userPrompt }, ...imageInputs]
       : userPrompt;
@@ -99,6 +109,7 @@ Return ONLY the 3 drafts, numbered 1., 2., 3., with no preamble, no explanation,
     {
       model: env.LLM_MODEL,
       max_tokens: 1024,
+      response_format: { type: "json_object" },
       messages: [
         { role: "system", content: system },
         { role: "user", content: userContent },
@@ -110,7 +121,7 @@ Return ONLY the 3 drafts, numbered 1., 2., 3., with no preamble, no explanation,
   );
 
   const text = response.choices[0]?.message?.content?.trim() ?? "";
-  const variants = parseNumberedList(text);
+  const variants = parseDraftResponse(text);
   if (variants.length < 3) {
     throw new Error(
       `Model returned fewer than 3 drafts. Served by: ${response.model}. Raw output:\n${text}`,
@@ -118,6 +129,15 @@ Return ONLY the 3 drafts, numbered 1., 2., 3., with no preamble, no explanation,
   }
 
   return { id: newId(), topic, variants: variants.slice(0, 3) };
+}
+
+export function parseDraftResponse(text: string): string[] {
+  try {
+    const parsed = draftResponseSchema.parse(JSON.parse(text));
+    return parsed.variants;
+  } catch {
+    return parseNumberedList(text);
+  }
 }
 
 // Robust against:

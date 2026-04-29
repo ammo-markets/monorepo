@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { assembleSystemPrompt, parseNumberedList } from "../llm";
+import {
+  assembleSystemPrompt,
+  parseDraftResponse,
+  parseNumberedList,
+} from "../llm";
 
 const SAMPLE_CHARACTER =
   "You write tweets for Ammo Markets. Sharp and dry voice.";
@@ -48,6 +52,23 @@ describe("parseNumberedList", () => {
     const text = "1.\n2. real content";
     const parsed = parseNumberedList(text);
     expect(parsed).toEqual(["real content"]);
+  });
+});
+
+describe("parseDraftResponse", () => {
+  it("parses validated JSON draft output", () => {
+    const text = JSON.stringify({
+      variants: ["first", "second", "third"],
+    });
+    expect(parseDraftResponse(text)).toEqual(["first", "second", "third"]);
+  });
+
+  it("falls back to numbered text for non-JSON responses", () => {
+    expect(parseDraftResponse("1. first\n2. second\n3. third")).toEqual([
+      "first",
+      "second",
+      "third",
+    ]);
   });
 });
 

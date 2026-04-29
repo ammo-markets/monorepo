@@ -1,21 +1,26 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { mkdirSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { env } from "../env";
 import {
-  appendPosted,
-  appendToMemory,
-  appendTelegramHistory,
-  clearMemory,
   getActiveCharacterName,
   isValidCharacterName,
   listCharacters,
-  listPosted,
-  listTelegramHistory,
   readActiveCharacter,
-  readMemory,
   setActiveCharacter,
-} from "../storage";
+} from "../characters";
+import {
+  deletePendingDraft,
+  listPendingDrafts,
+  readPendingDraft,
+  upsertPendingDraft,
+} from "../draft-storage";
+import { env } from "../env";
+import { appendToMemory, clearMemory, readMemory } from "../memory-store";
+import { appendPosted, listPosted } from "../posted-store";
+import {
+  appendTelegramHistory,
+  listTelegramHistory,
+} from "../telegram-history-store";
 
 // Wipe DATA_DIR contents between tests so each test starts clean. The directory
 // itself is created by vitest.config.ts (mkdtempSync) and reused.
@@ -125,6 +130,50 @@ describe("posted-tweet storage", () => {
     expect(list).toHaveLength(20);
     expect(list[0]?.tweetId).toBe("tweet-25");
     expect(list[19]?.tweetId).toBe("tweet-6");
+  });
+});
+
+describe("pending draft storage", () => {
+  beforeEach(wipeDataDir);
+  afterEach(wipeDataDir);
+
+  it("persists draft text and attached media", async () => {
+    await upsertPendingDraft({
+      set: {
+        id: "draft-1",
+        topic: "launch",
+        variants: ["one", "two", "three"],
+      },
+      media: [{ data: Buffer.from("image-bytes"), mimeType: "image/jpeg" }],
+      expiresAt: Date.now() + 60_000,
+    });
+
+    const draft = await readPendingDraft("draft-1");
+    expect(draft?.set.variants).toEqual(["one", "two", "three"]);
+    expect(draft?.media[0]?.mimeType).toBe("image/jpeg");
+    expect(draft?.media[0]?.data.toString()).toBe("image-bytes");
+  });
+
+  it("filters expired drafts when reading and listing", async () => {
+    await upsertPendingDraft({
+      set: { id: "expired", topic: "old", variants: ["a", "b", "c"] },
+      media: [],
+      expiresAt: Date.now() - 1,
+    });
+
+    expect(await readPendingDraft("expired")).toBeNull();
+    expect(await listPendingDrafts()).toEqual([]);
+  });
+
+  it("deletes a pending draft by id", async () => {
+    await upsertPendingDraft({
+      set: { id: "draft-2", topic: "launch", variants: ["a", "b", "c"] },
+      media: [],
+      expiresAt: Date.now() + 60_000,
+    });
+
+    await deletePendingDraft("draft-2");
+    expect(await readPendingDraft("draft-2")).toBeNull();
   });
 });
 

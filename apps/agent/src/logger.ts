@@ -22,7 +22,11 @@ function serialize(value: unknown): string {
   }
 }
 
-export async function log(level: LogLevel, message: string, meta?: unknown): Promise<void> {
+export async function log(
+  level: LogLevel,
+  message: string,
+  meta?: unknown,
+): Promise<void> {
   try {
     await mkdir(env.DATA_DIR, { recursive: true });
     const line = [

@@ -6,7 +6,7 @@
     "moduleResolution": "bundler",
     "types": ["node"],
     "noEmit": true,
-    "verbatimModuleSyntax": false
+    "verbatimModuleSyntax": true
   },
   "include": ["src/**/*"]
 }
