@@ -1,4 +1,11 @@
-import { mkdir, readFile, readdir, rename, writeFile } from "node:fs/promises";
+import {
+  appendFile,
+  mkdir,
+  readFile,
+  readdir,
+  rename,
+  writeFile,
+} from "node:fs/promises";
 import { join } from "node:path";
 import { env } from "./env";
 
@@ -12,9 +19,24 @@ export type PostedTweet = {
   dryRun: boolean;
 };
 
+export type TelegramHistoryEntry = {
+  timestamp: string;
+  kind: "command" | "callback";
+  command?: string;
+  args?: string;
+  callbackData?: string;
+  authorized: boolean;
+  tgUserId?: number;
+  tgUsername?: string;
+  chatId?: number;
+  messageId?: number;
+  hasMedia?: boolean;
+};
+
 const POSTED_FILE = join(env.DATA_DIR, "posted.json");
 const MEMORY_FILE = join(env.DATA_DIR, "memory.md");
 const ACTIVE_CHARACTER_FILE = join(env.DATA_DIR, "active_character.txt");
+const TELEGRAM_HISTORY_FILE = join(env.DATA_DIR, "telegram-history.jsonl");
 const CONTEXT_FILES = [
   "brand.md",
   "guardrails.md",
@@ -50,6 +72,43 @@ async function writeTextAtomic(path: string, value: string): Promise<void> {
   const tmp = `${path}.tmp`;
   await writeFile(tmp, value, "utf8");
   await rename(tmp, path);
+}
+
+export async function appendTelegramHistory(
+  entry: TelegramHistoryEntry,
+): Promise<void> {
+  await ensureDataDir();
+  await appendFile(TELEGRAM_HISTORY_FILE, `${JSON.stringify(entry)}\n`, "utf8");
+}
+
+export async function listTelegramHistory(opts?: {
+  limit?: number;
+  tgUserId?: number;
+}): Promise<TelegramHistoryEntry[]> {
+  let raw = "";
+  try {
+    raw = await readFile(TELEGRAM_HISTORY_FILE, "utf8");
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code === "ENOENT") return [];
+    throw err;
+  }
+
+  const entries = raw
+    .split("\n")
+    .filter(Boolean)
+    .flatMap((line) => {
+      try {
+        return [JSON.parse(line) as TelegramHistoryEntry];
+      } catch {
+        return [];
+      }
+    })
+    .filter((entry) =>
+      opts?.tgUserId === undefined ? true : entry.tgUserId === opts.tgUserId,
+    );
+
+  const limit = opts?.limit ?? 20;
+  return entries.slice(-limit).reverse();
 }
 
 export async function appendPosted(entry: PostedTweet): Promise<void> {

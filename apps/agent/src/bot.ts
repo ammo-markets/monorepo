@@ -11,8 +11,10 @@ import {
 import {
   appendPosted,
   appendToMemory,
+  appendTelegramHistory,
   clearMemory,
   getActiveCharacterName,
+  listTelegramHistory,
   listCharacters,
   listPosted,
   readActiveCharacter,
@@ -143,6 +145,84 @@ function parseCaptionCommand(
     command: match[1]!.toLowerCase() as "draft" | "tweet",
     args: match[2]?.trim() ?? "",
   };
+}
+
+function parseCommandText(
+  text: string,
+): { command: string; args: string } | null {
+  const match = text
+    .trim()
+    .match(/^\/([A-Za-z0-9_]+)(?:@[A-Za-z0-9_]+)?(?:\s+([\s\S]*))?$/);
+  if (!match) return null;
+  return {
+    command: match[1]!.toLowerCase(),
+    args: match[2]?.trim() ?? "",
+  };
+}
+
+function hasTelegramMedia(ctx: Context): boolean {
+  return getTelegramMedia(ctx).length > 0;
+}
+
+async function recordTelegramHistory(ctx: Context, authorized: boolean) {
+  const user = ctx.from;
+  const base = {
+    timestamp: new Date().toISOString(),
+    authorized,
+    tgUserId: user?.id,
+    tgUsername: user?.username,
+    chatId: ctx.chat?.id,
+  };
+
+  const message = ctx.message;
+  if (message) {
+    const text =
+      "text" in message
+        ? message.text
+        : "caption" in message
+          ? message.caption
+          : undefined;
+    const parsed = text ? parseCommandText(text) : null;
+    if (!parsed) return;
+    await appendTelegramHistory({
+      ...base,
+      kind: "command",
+      command: parsed.command,
+      args: parsed.args,
+      messageId: message.message_id,
+      hasMedia: hasTelegramMedia(ctx),
+    });
+    return;
+  }
+
+  const callbackData = ctx.callbackQuery?.data;
+  if (callbackData) {
+    await appendTelegramHistory({
+      ...base,
+      kind: "callback",
+      callbackData,
+      messageId: ctx.callbackQuery?.message?.message_id,
+      hasMedia: false,
+    });
+  }
+}
+
+function formatHistoryLine(
+  entry: Awaited<ReturnType<typeof listTelegramHistory>>[number],
+): string {
+  const who = entry.tgUsername
+    ? `@${entry.tgUsername}`
+    : entry.tgUserId
+      ? `tg:${entry.tgUserId}`
+      : "unknown";
+  const when = entry.timestamp.slice(0, 16).replace("T", " ");
+  const auth = entry.authorized ? "ok" : "blocked";
+  if (entry.kind === "callback") {
+    return `${when} ${auth} ${who} callback:${entry.callbackData ?? ""}`;
+  }
+  const args = entry.args ? ` ${entry.args}` : "";
+  const media = entry.hasMedia ? " [media]" : "";
+  return `${when} ${auth} ${who} /${entry.command ?? "unknown"}${args}${media}`;
 }
 
 async function handleRawTweet(ctx: Context, rawArgs: string): Promise<void> {
@@ -277,7 +357,11 @@ export function createBot(): Bot {
 
   bot.use(async (ctx, next) => {
     const userId = ctx.from?.id;
-    if (!userId || !ALLOWED.has(userId)) {
+    const authorized = !!userId && ALLOWED.has(userId);
+    await recordTelegramHistory(ctx, authorized).catch((err) =>
+      logger.error("telegram history write failed", err),
+    );
+    if (!authorized) {
       await logger.warn("unauthorized telegram update", {
         userId,
         chatId: ctx.chat?.id,
@@ -316,9 +400,23 @@ export function createBot(): Bot {
         "/forget - clear saved memory",
         "/character - show available voices",
         "/character <name> - switch voice",
+        "/history - show recent command history",
         "/status - bot status",
       ].join("\n"),
     );
+  });
+
+  bot.command("history", async (ctx) => {
+    const arg = ctx.match?.trim();
+    const limit = Math.min(Math.max(Number(arg) || 20, 1), 50);
+    const history = await listTelegramHistory({ limit });
+    if (history.length === 0) {
+      await ctx.reply("History is empty.");
+      return;
+    }
+    for (const part of chunk(history.map(formatHistoryLine).join("\n"))) {
+      await ctx.reply(part);
+    }
   });
 
   bot.command("status", async (ctx) => {

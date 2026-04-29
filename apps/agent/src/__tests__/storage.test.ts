@@ -5,11 +5,13 @@ import { env } from "../env";
 import {
   appendPosted,
   appendToMemory,
+  appendTelegramHistory,
   clearMemory,
   getActiveCharacterName,
   isValidCharacterName,
   listCharacters,
   listPosted,
+  listTelegramHistory,
   readActiveCharacter,
   readMemory,
   setActiveCharacter,
@@ -123,6 +125,64 @@ describe("posted-tweet storage", () => {
     expect(list).toHaveLength(20);
     expect(list[0]?.tweetId).toBe("tweet-25");
     expect(list[19]?.tweetId).toBe("tweet-6");
+  });
+});
+
+describe("telegram history storage", () => {
+  beforeEach(wipeDataDir);
+  afterEach(wipeDataDir);
+
+  it("returns empty history when no entries exist", async () => {
+    expect(await listTelegramHistory()).toEqual([]);
+  });
+
+  it("appends and lists command history in reverse chronological order", async () => {
+    await appendTelegramHistory({
+      timestamp: "2026-01-01T00:00:00.000Z",
+      kind: "command",
+      command: "help",
+      args: "",
+      authorized: true,
+      tgUserId: 1,
+      chatId: 1,
+      messageId: 10,
+      hasMedia: false,
+    });
+    await appendTelegramHistory({
+      timestamp: "2026-01-01T00:01:00.000Z",
+      kind: "command",
+      command: "draft",
+      args: "test",
+      authorized: true,
+      tgUserId: 2,
+      chatId: 2,
+      messageId: 11,
+      hasMedia: true,
+    });
+
+    const history = await listTelegramHistory();
+    expect(history.map((entry) => entry.command)).toEqual(["draft", "help"]);
+  });
+
+  it("filters history by Telegram user ID", async () => {
+    await appendTelegramHistory({
+      timestamp: "2026-01-01T00:00:00.000Z",
+      kind: "command",
+      command: "help",
+      authorized: true,
+      tgUserId: 1,
+    });
+    await appendTelegramHistory({
+      timestamp: "2026-01-01T00:01:00.000Z",
+      kind: "callback",
+      callbackData: "approve:abc:0",
+      authorized: true,
+      tgUserId: 2,
+    });
+
+    const history = await listTelegramHistory({ tgUserId: 2 });
+    expect(history).toHaveLength(1);
+    expect(history[0]?.callbackData).toBe("approve:abc:0");
   });
 });
 
