@@ -12,11 +12,18 @@ export type DraftSet = {
   variants: string[];
 };
 
+export type DraftMediaContext = {
+  mimeType: string;
+  dataUrl?: string;
+};
+
 export type DraftContext = {
   // Full content of the active character file. Replaces the brand prompt entirely.
   character: string;
+  context?: string;
   memory: string;
   recentPosts: string[];
+  media?: DraftMediaContext[];
 };
 
 function newId(): string {
@@ -26,10 +33,19 @@ function newId(): string {
 export function assembleSystemPrompt(ctx: DraftContext): string {
   const parts = [ctx.character.trim()];
 
+  if (ctx.context?.trim()) {
+    parts.push(
+      "## Shared Ammo Markets context",
+      "These are durable brand facts, campaign state, and global guardrails. Follow them across every character:",
+      "",
+      ctx.context.trim(),
+    );
+  }
+
   if (ctx.memory.trim()) {
     parts.push(
-      "## Product context and ongoing guidance",
-      "The user has told you the following. Treat as load-bearing facts and constraints:",
+      "## Manual memory",
+      "The user has explicitly remembered the following. Treat as load-bearing facts and constraints:",
       "",
       ctx.memory.trim(),
     );
@@ -50,11 +66,34 @@ export async function generateDrafts(
   ctx: DraftContext,
 ): Promise<DraftSet> {
   const system = assembleSystemPrompt(ctx);
+  const mediaSummary =
+    ctx.media && ctx.media.length > 0
+      ? `\n\nAttached media: ${ctx.media.map((item) => item.mimeType).join(", ")}`
+      : "";
   const userPrompt = `Topic: ${topic}
+${mediaSummary}
 
 Write exactly 3 distinct tweet drafts on this topic. They should differ in angle, not just wording — e.g., one informational, one provocative/thought-provoking, one with a concrete example or number.
 
+If media is attached, write the tweet as copy/caption that fits the media. Do not describe visual details you cannot actually infer.
+
 Return ONLY the 3 drafts, numbered 1., 2., 3., with no preamble, no explanation, no closing remarks. Each draft on its own line or short block.`;
+
+  const imageInputs =
+    ctx.media
+      ?.filter((item) => item.dataUrl && item.mimeType.startsWith("image/"))
+      .map((item) => ({
+        type: "image_url" as const,
+        image_url: { url: item.dataUrl! },
+      })) ?? [];
+
+  const userContent: string | (
+    | { type: "text"; text: string }
+    | { type: "image_url"; image_url: { url: string } }
+  )[] =
+    imageInputs.length > 0
+      ? [{ type: "text", text: userPrompt }, ...imageInputs]
+      : userPrompt;
 
   const response = await client.chat.completions.create(
     {
@@ -62,7 +101,7 @@ Return ONLY the 3 drafts, numbered 1., 2., 3., with no preamble, no explanation,
       max_tokens: 1024,
       messages: [
         { role: "system", content: system },
-        { role: "user", content: userPrompt },
+        { role: "user", content: userContent },
       ],
       // @ts-expect-error — OpenRouter-specific extension; OpenAI SDK tolerates unknown fields.
       models: [env.LLM_MODEL, ...env.LLM_FALLBACK_MODELS],

@@ -41,6 +41,7 @@ const envSchema = z
 
     DATA_DIR: z.string().default("./data"),
     CHARACTERS_DIR: z.string().default("./characters"),
+    CONTEXT_DIR: z.string().default("./context"),
 
     // When true, /draft -> approve logs the would-be tweet instead of calling X.
     // Useful for testing the bot end-to-end without an X dev account.

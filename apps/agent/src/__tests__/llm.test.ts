@@ -59,8 +59,19 @@ describe("assembleSystemPrompt", () => {
       recentPosts: [],
     });
     expect(prompt).toContain("Ammo Markets");
-    expect(prompt).not.toContain("Product context");
+    expect(prompt).not.toContain("Shared Ammo Markets context");
     expect(prompt).not.toContain("Recently posted");
+  });
+
+  it("includes shared context when context is non-empty", () => {
+    const prompt = assembleSystemPrompt({
+      character: SAMPLE_CHARACTER,
+      context: "- Public website: ammomarkets.com.",
+      memory: "",
+      recentPosts: [],
+    });
+    expect(prompt).toContain("Shared Ammo Markets context");
+    expect(prompt).toContain("ammomarkets.com");
   });
 
   it("includes the memory section when memory is non-empty", () => {
@@ -69,7 +80,7 @@ describe("assembleSystemPrompt", () => {
       memory: "- We migrated to Pharaoh Exchange.",
       recentPosts: [],
     });
-    expect(prompt).toContain("Product context and ongoing guidance");
+    expect(prompt).toContain("Manual memory");
     expect(prompt).toContain("Pharaoh Exchange");
     expect(prompt).not.toContain("Recently posted");
   });
@@ -83,7 +94,7 @@ describe("assembleSystemPrompt", () => {
     expect(prompt).toContain("Recently posted tweets");
     expect(prompt).toContain("1. First past tweet.");
     expect(prompt).toContain("2. Second past tweet.");
-    expect(prompt).not.toContain("Product context");
+    expect(prompt).not.toContain("Manual memory");
   });
 
   it("includes both sections when both are populated", () => {
@@ -92,7 +103,7 @@ describe("assembleSystemPrompt", () => {
       memory: "- A fact.",
       recentPosts: ["A tweet."],
     });
-    expect(prompt).toContain("Product context");
+    expect(prompt).toContain("Manual memory");
     expect(prompt).toContain("A fact.");
     expect(prompt).toContain("Recently posted");
     expect(prompt).toContain("A tweet.");
@@ -104,7 +115,7 @@ describe("assembleSystemPrompt", () => {
       memory: "   \n\n  \n",
       recentPosts: [],
     });
-    expect(prompt).not.toContain("Product context");
+    expect(prompt).not.toContain("Manual memory");
   });
 
   it("uses the character as the first section of the prompt", () => {
