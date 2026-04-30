@@ -12,6 +12,7 @@ const CONTRACTS_TO_EXPORT = [
   "MockUSDC",
   "PriceOracle",
   "AmmoPriceFunctions",
+  "AmmoMarketLPFarm",
 ];
 
 if (!existsSync(ABI_DIR)) {
