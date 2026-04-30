@@ -145,6 +145,19 @@ export const AmmoMarketLPFarmAbi = [
   },
   {
     "type": "function",
+    "name": "farmShutdown",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "farmingStarted",
     "inputs": [],
     "outputs": [
@@ -181,6 +194,19 @@ export const AmmoMarketLPFarmAbi = [
     ],
     "outputs": [],
     "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "hasActivePools",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "view"
   },
   {
     "type": "function",
@@ -327,6 +353,50 @@ export const AmmoMarketLPFarmAbi = [
   },
   {
     "type": "function",
+    "name": "recoverUnreservedRewards",
+    "inputs": [
+      {
+        "name": "to",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "amount",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "recoverableRewardBalance",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "rewardReserve",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "rewardToken",
     "inputs": [],
     "outputs": [
@@ -368,6 +438,26 @@ export const AmmoMarketLPFarmAbi = [
     ],
     "outputs": [],
     "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "shutdownFarm",
+    "inputs": [],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "shutdownTime",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
   },
   {
     "type": "function",
@@ -520,6 +610,19 @@ export const AmmoMarketLPFarmAbi = [
   },
   {
     "type": "event",
+    "name": "FarmShutdown",
+    "inputs": [
+      {
+        "name": "timestamp",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
     "name": "Harvested",
     "inputs": [
       {
@@ -589,6 +692,25 @@ export const AmmoMarketLPFarmAbi = [
   },
   {
     "type": "event",
+    "name": "RewardTokensRecovered",
+    "inputs": [
+      {
+        "name": "to",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "amount",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
     "name": "RewardsFunded",
     "inputs": [
       {
@@ -638,7 +760,27 @@ export const AmmoMarketLPFarmAbi = [
   },
   {
     "type": "error",
+    "name": "FarmAlreadyShutdown",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "FarmIsShutdown",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "FarmNotShutdown",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "InsufficientFunding",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InsufficientRecoverableRewards",
     "inputs": []
   },
   {

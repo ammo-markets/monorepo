@@ -204,6 +204,11 @@ contract AmmoMarketLPFarmTest is Test {
         farm.addPool(CALIBER_556, address(lp9mm));
     }
 
+    function testRewardTokenCannotBeAddedAsPool() public {
+        vm.expectRevert(AmmoMarketLPFarm.InvalidPool.selector);
+        farm.addPool(CALIBER_9MM, address(reward));
+    }
+
     function testStaggeredDepositsAndPartialWithdrawKeepRewardDebtConsistent() public {
         _add9mmPool();
         _deposit(alice, 0, 30e18);
@@ -343,11 +348,13 @@ contract AmmoMarketLPFarmTest is Test {
         assertEq(lp9mm.balanceOf(alice), 100e18);
         assertEq(reward.balanceOf(alice), 0);
         assertEq(farm.pendingRewards(0, bob), 475e18);
+        assertEq(farm.rewardReserve(), 475e18);
 
         vm.prank(bob);
         farm.harvest(0);
 
         assertEq(reward.balanceOf(bob), 475e18);
+        assertEq(farm.rewardReserve(), 0);
     }
 
     function testUnderfundedRewardsRevertOnFirstDeposit() public {
@@ -506,6 +513,98 @@ contract AmmoMarketLPFarmTest is Test {
 
         vm.expectRevert(AmmoMarketLPFarm.InvalidPool.selector);
         farm.recoverToken(address(lp9mm), bob, 1);
+    }
+
+    function testShutdownAllowsOnlyUnreservedRewardRecovery() public {
+        _addTwoPools();
+        _deposit(alice, 0, 10e18);
+        _deposit(bob, 1, 10e18);
+
+        assertTrue(farm.hasActivePools());
+
+        vm.expectRevert(AmmoMarketLPFarm.FarmNotShutdown.selector);
+        farm.recoverUnreservedRewards(bob, 1e18);
+
+        vm.warp(startTime + 1 days);
+        farm.shutdownFarm();
+
+        assertTrue(farm.farmShutdown());
+        assertEq(farm.shutdownTime(), startTime + 1 days);
+        assertFalse(farm.hasActivePools());
+        assertEq(farm.rewardReserve(), 950e18);
+
+        uint256 recoverable = farm.recoverableRewardBalance();
+        vm.expectRevert(AmmoMarketLPFarm.InsufficientRecoverableRewards.selector);
+        farm.recoverUnreservedRewards(bob, recoverable + 1);
+
+        farm.recoverUnreservedRewards(bob, recoverable);
+
+        assertEq(reward.balanceOf(bob), recoverable);
+        assertEq(reward.balanceOf(address(farm)), farm.rewardReserve());
+
+        vm.warp(startTime + 2 days);
+
+        assertEq(farm.pendingRewards(0, alice), 475e18);
+        assertEq(farm.pendingRewards(1, bob), 475e18);
+        assertEq(farm.recoverableRewardBalance(), 0);
+
+        vm.prank(alice);
+        farm.harvest(0);
+
+        vm.prank(bob);
+        farm.harvest(1);
+
+        assertEq(reward.balanceOf(alice), 475e18);
+        assertEq(reward.balanceOf(bob), recoverable + 475e18);
+        assertEq(farm.rewardReserve(), 0);
+    }
+
+    function testShutdownAndRecoverRewardTokenRejectInvalidCallersAndAmounts() public {
+        _add9mmPool();
+
+        vm.expectRevert(AmmoMarketLPFarm.ZeroAddress.selector);
+        farm.recoverUnreservedRewards(address(0), 1e18);
+
+        vm.prank(alice);
+        vm.expectRevert(AmmoMarketLPFarm.NotOwner.selector);
+        farm.recoverUnreservedRewards(alice, 1e18);
+
+        vm.prank(alice);
+        vm.expectRevert(AmmoMarketLPFarm.NotOwner.selector);
+        farm.shutdownFarm();
+
+        farm.shutdownFarm();
+
+        vm.expectRevert(AmmoMarketLPFarm.InvalidAmount.selector);
+        farm.recoverUnreservedRewards(bob, 0);
+
+        vm.expectRevert(AmmoMarketLPFarm.FarmAlreadyShutdown.selector);
+        farm.shutdownFarm();
+    }
+
+    function testShutdownBlocksPoolManagementAndDepositsButAllowsWithdraw() public {
+        _add9mmPool();
+        _deposit(alice, 0, 10e18);
+
+        vm.warp(startTime + 1 days);
+        farm.shutdownFarm();
+
+        vm.expectRevert(AmmoMarketLPFarm.FarmIsShutdown.selector);
+        farm.addPool(CALIBER_556, address(lp556));
+
+        vm.expectRevert(AmmoMarketLPFarm.FarmIsShutdown.selector);
+        farm.setPoolActive(0, true);
+
+        vm.prank(bob);
+        vm.expectRevert(AmmoMarketLPFarm.FarmIsShutdown.selector);
+        farm.deposit(0, 10e18);
+
+        vm.prank(alice);
+        farm.withdraw(0, 10e18);
+
+        assertEq(lp9mm.balanceOf(alice), 100e18);
+        assertEq(reward.balanceOf(alice), 950e18);
+        assertEq(farm.rewardReserve(), 0);
     }
 
     function testRecoverTokenRejectsNonGuardianOrOwner() public {

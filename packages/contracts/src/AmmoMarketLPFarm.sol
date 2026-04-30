@@ -30,6 +30,9 @@ contract AmmoMarketLPFarm {
     uint256 public immutable duration;
     uint256 public immutable startRewardPerDay;
     bool public farmingStarted;
+    bool public farmShutdown;
+    uint256 public shutdownTime;
+    uint256 public rewardReserve;
 
     uint256 private _locked;
 
@@ -45,7 +48,11 @@ contract AmmoMarketLPFarm {
     error DuplicatePool();
     error InvalidPool();
     error PoolInactive();
+    error FarmIsShutdown();
+    error FarmNotShutdown();
+    error FarmAlreadyShutdown();
     error InsufficientFunding();
+    error InsufficientRecoverableRewards();
     error Reentrancy();
 
     event PoolAdded(uint256 indexed pid, bytes32 indexed caliberId, address indexed stakingToken);
@@ -55,6 +62,8 @@ contract AmmoMarketLPFarm {
     event Harvested(address indexed user, uint256 indexed pid, uint256 amount);
     event EmergencyWithdrawn(address indexed user, uint256 indexed pid, uint256 amount);
     event RewardsFunded(address indexed funder, uint256 amount);
+    event FarmShutdown(uint256 timestamp);
+    event RewardTokensRecovered(address indexed to, uint256 amount);
 
     modifier onlyOwner() {
         if (!manager.isOwner(msg.sender)) revert NotOwner();
@@ -98,7 +107,9 @@ contract AmmoMarketLPFarm {
     }
 
     function addPool(bytes32 caliberId, address stakingToken) external onlyOwner returns (uint256 pid) {
+        if (farmShutdown) revert FarmIsShutdown();
         if (stakingToken == address(0)) revert ZeroAddress();
+        if (stakingToken == address(rewardToken)) revert InvalidPool();
         if (isPoolToken[stakingToken]) revert DuplicatePool();
 
         massUpdatePools();
@@ -123,6 +134,7 @@ contract AmmoMarketLPFarm {
     /// @notice Disable or re-enable a pool. A disabled pool stops earning new rewards.
     /// @dev Pools with existing stake can be disabled, but deposits remain blocked until re-enabled.
     function setPoolActive(uint256 pid, bool active) external onlyOwner {
+        if (farmShutdown) revert FarmIsShutdown();
         if (pid >= pools.length) revert InvalidPool();
         PoolInfo storage pool = pools[pid];
         if (pool.active == active) return;
@@ -144,6 +156,7 @@ contract AmmoMarketLPFarm {
     }
 
     function deposit(uint256 pid, uint256 amount) external nonReentrant {
+        if (farmShutdown) revert FarmIsShutdown();
         if (pid >= pools.length) revert InvalidPool();
         PoolInfo storage pool = pools[pid];
         if (!pool.active) revert PoolInactive();
@@ -227,6 +240,11 @@ contract AmmoMarketLPFarm {
             massUpdatePools();
         }
 
+        uint256 pending = (user.amount * pool.accRewardPerShare) / ACC_REWARD_PRECISION - user.rewardDebt;
+        if (pending > 0) {
+            rewardReserve -= pending;
+        }
+
         user.amount = 0;
         user.rewardDebt = 0;
         pool.totalStaked -= amount;
@@ -243,6 +261,51 @@ contract AmmoMarketLPFarm {
         if (token == address(0) || to == address(0)) revert ZeroAddress();
         if (token == address(rewardToken) || isPoolToken[token]) revert InvalidPool();
         _safeTransfer(IERC20(token), to, amount);
+    }
+
+    /// @notice Permanently stop farming and checkpoint rewards accrued up to this timestamp.
+    /// @dev Users can still harvest, withdraw, or emergency withdraw after shutdown.
+    function shutdownFarm() external onlyOwner nonReentrant {
+        if (farmShutdown) revert FarmAlreadyShutdown();
+
+        massUpdatePools();
+        farmShutdown = true;
+        shutdownTime = block.timestamp;
+
+        uint256 length = pools.length;
+        for (uint256 pid = 0; pid < length; pid++) {
+            if (pools[pid].active) {
+                pools[pid].active = false;
+                emit PoolActiveUpdated(pid, false);
+            }
+        }
+
+        emit FarmShutdown(block.timestamp);
+    }
+
+    /// @notice Recover reward tokens not reserved for already-accrued user rewards.
+    /// @dev LP tokens are never recoverable.
+    function recoverUnreservedRewards(address to, uint256 amount) external onlyOwner nonReentrant {
+        if (to == address(0)) revert ZeroAddress();
+        if (amount == 0) revert InvalidAmount();
+        if (!farmShutdown) revert FarmNotShutdown();
+        if (amount > recoverableRewardBalance()) revert InsufficientRecoverableRewards();
+        _safeTransfer(rewardToken, to, amount);
+        emit RewardTokensRecovered(to, amount);
+    }
+
+    function hasActivePools() public view returns (bool) {
+        uint256 length = pools.length;
+        for (uint256 pid = 0; pid < length; pid++) {
+            if (pools[pid].active) return true;
+        }
+        return false;
+    }
+
+    function recoverableRewardBalance() public view returns (uint256) {
+        uint256 balance = rewardToken.balanceOf(address(this));
+        if (balance <= rewardReserve) return 0;
+        return balance - rewardReserve;
     }
 
     function massUpdatePools() public {
@@ -271,6 +334,7 @@ contract AmmoMarketLPFarm {
         }
 
         uint256 poolReward = _emitted(pool.lastRewardTime, current) / rewardableCount;
+        rewardReserve += poolReward;
         pool.accRewardPerShare += (poolReward * ACC_REWARD_PRECISION) / pool.totalStaked;
         pool.lastRewardTime = current;
     }
@@ -319,6 +383,7 @@ contract AmmoMarketLPFarm {
     {
         pending = (user.amount * pool.accRewardPerShare) / ACC_REWARD_PRECISION - user.rewardDebt;
         if (pending > 0) {
+            rewardReserve -= pending;
             _safeTransfer(rewardToken, to, pending);
             emit Harvested(to, pid, pending);
         }
