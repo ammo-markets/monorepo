@@ -4,6 +4,7 @@ pragma solidity ^0.8.24;
 import "./AmmoToken.sol";
 import "./AmmoManager.sol";
 import "./IPriceOracle.sol";
+import {IProtocolEmissionController} from "./interfaces/IProtocolEmissionController.sol";
 import {IERC20} from "./interfaces/IERC20.sol";
 
 /// @notice Per-caliber market with 1-step instant mint and 2-step keeper-finalized redeem.
@@ -11,6 +12,20 @@ import {IERC20} from "./interfaces/IERC20.sol";
 ///      Mint reads price from a shared PriceOracle; redeem is keeper-finalized.
 contract CaliberMarket {
     enum RedeemStatus { None, Requested, Finalized, Canceled }
+
+    struct MarketConfig {
+        address manager;
+        address usdc;
+        uint8 usdcDecimals;
+        address oracle;
+        address emissionController;
+        bytes32 caliberId;
+        string tokenName;
+        string tokenSymbol;
+        uint256 mintFeeBps;
+        uint256 redeemFeeBps;
+        uint256 minMintRounds;
+    }
 
     struct RedeemOrder {
         address user;
@@ -58,6 +73,7 @@ contract CaliberMarket {
     IERC20 public immutable usdc;
     uint8 public immutable usdcDecimals;
     IPriceOracle public immutable oracle;
+    IProtocolEmissionController public immutable emissionController;
     AmmoToken public immutable token;
     bytes32 public immutable caliberId;
 
@@ -92,32 +108,27 @@ contract CaliberMarket {
         _locked = 0;
     }
 
-    constructor(
-        address manager_,
-        address usdc_,
-        uint8 usdcDecimals_,
-        address oracle_,
-        bytes32 caliberId_,
-        string memory tokenName_,
-        string memory tokenSymbol_,
-        uint256 mintFeeBps_,
-        uint256 redeemFeeBps_,
-        uint256 minMintRounds_
-    ) {
-        if (manager_ == address(0) || usdc_ == address(0) || oracle_ == address(0)) revert ZeroAddress();
-        if (usdcDecimals_ > 18) revert InvalidAmount();
-        if (mintFeeBps_ > 10_000 || redeemFeeBps_ > 10_000) revert InvalidBps();
+    constructor(MarketConfig memory config) {
+        if (
+            config.manager == address(0) || config.usdc == address(0) || config.oracle == address(0)
+                || config.emissionController == address(0)
+        ) {
+            revert ZeroAddress();
+        }
+        if (config.usdcDecimals > 18) revert InvalidAmount();
+        if (config.mintFeeBps > 10_000 || config.redeemFeeBps > 10_000) revert InvalidBps();
 
-        manager = AmmoManager(manager_);
-        usdc = IERC20(usdc_);
-        usdcDecimals = usdcDecimals_;
-        oracle = IPriceOracle(oracle_);
-        caliberId = caliberId_;
-        mintFeeBps = mintFeeBps_;
-        redeemFeeBps = redeemFeeBps_;
-        minMintRounds = minMintRounds_;
+        manager = AmmoManager(config.manager);
+        usdc = IERC20(config.usdc);
+        usdcDecimals = config.usdcDecimals;
+        oracle = IPriceOracle(config.oracle);
+        emissionController = IProtocolEmissionController(config.emissionController);
+        caliberId = config.caliberId;
+        mintFeeBps = config.mintFeeBps;
+        redeemFeeBps = config.redeemFeeBps;
+        minMintRounds = config.minMintRounds;
 
-        token = new AmmoToken(tokenName_, tokenSymbol_, address(this), manager_);
+        token = new AmmoToken(config.tokenName, config.tokenSymbol, address(this), config.manager);
     }
 
     // ── User functions ──────────────────────────────
@@ -160,6 +171,7 @@ contract CaliberMarket {
 
         // Mint tokens
         token.mint(msg.sender, tokenAmount);
+        emissionController.recordCaliberMint(usdcAmount);
 
         emit Minted(msg.sender, caliberId, usdcAmount, tokenAmount, price, refund);
     }

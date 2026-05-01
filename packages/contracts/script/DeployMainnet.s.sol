@@ -6,6 +6,8 @@ import "../src/PriceOracle.sol";
 import "../src/AmmoManager.sol";
 import "../src/AmmoFactory.sol";
 import "../src/AmmoLiquidityManager.sol";
+import "../src/ProtocolEmissionController.sol";
+import "../src/ProtocolToken.sol";
 import "../src/interfaces/IDexRouter.sol";
 
 /// @notice Deploy script for the full Ammo Exchange protocol on Avalanche mainnet.
@@ -28,8 +30,14 @@ contract DeployMainnet is Script {
 
     AmmoManager public manager;
     AmmoLiquidityManager public liquidityManager;
+    ProtocolToken public protocolToken;
+    ProtocolEmissionController public emissionController;
     PriceOracle public oracle;
     AmmoFactory public factory;
+
+    uint256 constant FARM_CAP = 365_000_000e18;
+    uint256 constant TREASURY_CAP = (FARM_CAP * 40) / 60;
+    uint256 constant TREASURY_VOLUME_TARGET = 10_000_000e6;
 
     struct CaliberDeployment {
         address market;
@@ -66,16 +74,24 @@ contract DeployMainnet is Script {
         // 4. Deploy AmmoFactory pointing to real USDT
         factory = new AmmoFactory(address(manager), USDT, USDT_DECIMALS, address(oracle));
 
-        // 5. Wire oracle ↔ factory (enables auto-registration of markets)
+        // 5. Deploy protocol emission stack and lock the mint path
+        protocolToken = new ProtocolToken("Ammo Protocol", "AMMO", address(manager));
+        emissionController = new ProtocolEmissionController(
+            address(manager), address(factory), address(protocolToken), FARM_CAP, TREASURY_CAP, TREASURY_VOLUME_TARGET
+        );
+        protocolToken.setMinterOnce(address(emissionController));
+        factory.setEmissionControllerOnce(address(emissionController));
+
+        // 6. Wire oracle ↔ factory (enables auto-registration of markets)
         oracle.setFactory(address(factory));
 
-        // 6. Create 4 calibers (factory auto-registers each with oracle)
+        // 7. Create 4 calibers (factory auto-registers each with oracle)
         _deploy9mmPractice();
         _deploy9mmSelfDefense();
         _deploy556SelfDefense();
         _deploy556NatoPractice();
 
-        // 7. Set initial prices via batch update
+        // 8. Set initial prices via batch update
         _setInitialPrices();
 
         vm.stopBroadcast();
@@ -131,6 +147,8 @@ contract DeployMainnet is Script {
         console.log("USDT (existing):", USDT);
         console.log("AmmoManager:", address(manager));
         console.log("AmmoLiquidityManager:", address(liquidityManager));
+        console.log("ProtocolToken:", address(protocolToken));
+        console.log("ProtocolEmissionController:", address(emissionController));
         console.log("PriceOracle:", address(oracle));
         console.log("AmmoFactory:", address(factory));
         console.log("PairFactory:", PAIR_FACTORY);

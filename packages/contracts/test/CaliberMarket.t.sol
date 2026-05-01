@@ -7,6 +7,7 @@ import "../src/CaliberMarket.sol";
 import "../src/AmmoToken.sol";
 import "./MockPriceOracle.sol";
 import "./MockERC20.sol";
+import "./MockEmissionController.sol";
 
 contract CaliberMarketTest is Test {
     AmmoManager manager;
@@ -14,6 +15,7 @@ contract CaliberMarketTest is Test {
     AmmoToken ammoToken;
     MockERC20 usdc;
     MockPriceOracle oracle;
+    MockEmissionController emissionController;
 
     address user = address(0xBEEF);
     address keeper = address(0xCA11);
@@ -27,15 +29,14 @@ contract CaliberMarketTest is Test {
     function setUp() public {
         usdc = new MockERC20("USD Coin", "USDC", 6);
         oracle = new MockPriceOracle(ORACLE_PRICE);
+        emissionController = new MockEmissionController(address(new MockERC20("Protocol", "AMMO", 18)));
 
         manager = new AmmoManager(feeRecipient, address(0xAA0C));
         manager.setKeeper(keeper, true);
         manager.setGuardian(guardian);
         manager.setTreasury(treasury);
 
-        market = new CaliberMarket(
-            address(manager), address(usdc), 6, address(oracle), CALIBER_9MM, "Ammo 9MM", "MO9MM", 150, 150, 50
-        );
+        market = _newMarket(manager, oracle, "Ammo 9MM", "MO9MM", 150, 150, 50);
 
         ammoToken = market.token();
 
@@ -202,9 +203,7 @@ contract CaliberMarketTest is Test {
 
         MockPriceOracle freshOracle = new MockPriceOracle(ORACLE_PRICE);
 
-        CaliberMarket freshMarket = new CaliberMarket(
-            address(freshManager), address(usdc), 6, address(freshOracle), CALIBER_9MM, "Ammo 9MM", "MO9MM", 150, 150, 50
-        );
+        CaliberMarket freshMarket = _newMarket(freshManager, freshOracle, "Ammo 9MM", "MO9MM", 150, 150, 50);
 
         usdc.mint(user, 100e6);
         vm.prank(user);
@@ -216,9 +215,7 @@ contract CaliberMarketTest is Test {
     }
 
     function testMintZeroFeeAllToTreasury() public {
-        CaliberMarket zeroFeeMarket = new CaliberMarket(
-            address(manager), address(usdc), 6, address(oracle), CALIBER_9MM, "Ammo 9MM Zero", "MO9Z", 0, 150, 50
-        );
+        CaliberMarket zeroFeeMarket = _newMarket(manager, oracle, "Ammo 9MM Zero", "MO9Z", 0, 150, 50);
 
         usdc.mint(user, 100e6);
         vm.prank(user);
@@ -592,5 +589,31 @@ contract CaliberMarketTest is Test {
         usdc.approve(address(market), 100e6);
         vm.prank(who);
         market.mint(100e6);
+    }
+
+    function _newMarket(
+        AmmoManager manager_,
+        MockPriceOracle oracle_,
+        string memory name,
+        string memory symbol,
+        uint256 mintFeeBps,
+        uint256 redeemFeeBps,
+        uint256 minMintRounds
+    ) internal returns (CaliberMarket) {
+        return new CaliberMarket(
+            CaliberMarket.MarketConfig({
+                manager: address(manager_),
+                usdc: address(usdc),
+                usdcDecimals: 6,
+                oracle: address(oracle_),
+                emissionController: address(emissionController),
+                caliberId: CALIBER_9MM,
+                tokenName: name,
+                tokenSymbol: symbol,
+                mintFeeBps: mintFeeBps,
+                redeemFeeBps: redeemFeeBps,
+                minMintRounds: minMintRounds
+            })
+        );
     }
 }

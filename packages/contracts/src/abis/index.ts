@@ -7,3 +7,5 @@ export { MockUSDCAbi } from "./MockUSDC.js";
 export { PriceOracleAbi } from "./PriceOracle.js";
 export { AmmoPriceFunctionsAbi } from "./AmmoPriceFunctions.js";
 export { AmmoMarketLPFarmAbi } from "./AmmoMarketLPFarm.js";
+export { ProtocolTokenAbi } from "./ProtocolToken.js";
+export { ProtocolEmissionControllerAbi } from "./ProtocolEmissionController.js";

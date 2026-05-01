@@ -9,6 +9,7 @@ import "../src/CaliberMarket.sol";
 import "./MockDexRouter.sol";
 import "./MockPriceOracle.sol";
 import "./MockERC20.sol";
+import "./MockEmissionController.sol";
 
 contract AmmoTokenTaxTest is Test {
     AmmoManager manager;
@@ -18,6 +19,7 @@ contract AmmoTokenTaxTest is Test {
     AmmoLiquidityManager liquidityManager;
     MockERC20 usdc;
     MockPriceOracle oracle;
+    MockEmissionController emissionController;
 
     address owner = address(this);
     address user = address(0xBEEF);
@@ -37,6 +39,7 @@ contract AmmoTokenTaxTest is Test {
         oracle = new MockPriceOracle(ORACLE_PRICE);
         router = new MockDexRouter(wavax);
         liquidityManager = new AmmoLiquidityManager(address(router));
+        emissionController = new MockEmissionController(address(new MockERC20("Protocol", "AMMO", 18)));
 
         manager = new AmmoManager(feeRecipient, wavax);
         manager.setTreasury(treasury);
@@ -44,7 +47,19 @@ contract AmmoTokenTaxTest is Test {
         manager.setTaxExempt(address(liquidityManager), true);
 
         market = new CaliberMarket(
-            address(manager), address(usdc), 6, address(oracle), CALIBER_9MM, "Ammo 9MM", "MO9MM", 150, 150, 50
+            CaliberMarket.MarketConfig({
+                manager: address(manager),
+                usdc: address(usdc),
+                usdcDecimals: 6,
+                oracle: address(oracle),
+                emissionController: address(emissionController),
+                caliberId: CALIBER_9MM,
+                tokenName: "Ammo 9MM",
+                tokenSymbol: "MO9MM",
+                mintFeeBps: 150,
+                redeemFeeBps: 150,
+                minMintRounds: 50
+            })
         );
         token = market.token();
 

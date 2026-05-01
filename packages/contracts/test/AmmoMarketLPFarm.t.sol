@@ -5,10 +5,12 @@ import "forge-std/Test.sol";
 import "../src/AmmoManager.sol";
 import "../src/AmmoMarketLPFarm.sol";
 import "./MockERC20.sol";
+import "./MockEmissionController.sol";
 
 contract AmmoMarketLPFarmTest is Test {
     AmmoManager manager;
     AmmoMarketLPFarm farm;
+    MockEmissionController emissionController;
     MockERC20 reward;
     MockERC20 lp9mm;
     MockERC20 lp556;
@@ -28,14 +30,13 @@ contract AmmoMarketLPFarmTest is Test {
     function setUp() public {
         manager = new AmmoManager(feeRecipient, wavax);
         reward = new MockERC20("Ammo Reward", "AMMO", 18);
+        emissionController = new MockEmissionController(address(reward));
         lp9mm = new MockERC20("9mm LP", "9MM-LP", 18);
         lp556 = new MockERC20("556 LP", "556-LP", 18);
 
-        farm = new AmmoMarketLPFarm(address(manager), address(reward), duration, startRewardPerDay);
-
-        reward.mint(address(this), 10_000e18);
-        reward.approve(address(farm), type(uint256).max);
-        farm.fundRewards(10_000e18);
+        farm = new AmmoMarketLPFarm(
+            address(manager), address(emissionController), address(reward), duration, startRewardPerDay, 10_000e18
+        );
 
         lp9mm.mint(alice, 100e18);
         lp9mm.mint(bob, 100e18);
@@ -69,16 +70,15 @@ contract AmmoMarketLPFarmTest is Test {
         farm.deposit(pid, amount);
     }
 
-    function _fundedFarm(uint256 amount) internal returns (AmmoMarketLPFarm lowFundFarm) {
-        lowFundFarm = new AmmoMarketLPFarm(address(manager), address(reward), duration, startRewardPerDay);
-        reward.mint(address(this), amount);
-        reward.approve(address(lowFundFarm), amount);
-        lowFundFarm.fundRewards(amount);
+    function _cappedFarm(uint256 cap) internal returns (AmmoMarketLPFarm lowCapFarm) {
+        lowCapFarm = new AmmoMarketLPFarm(
+            address(manager), address(emissionController), address(reward), duration, startRewardPerDay, cap
+        );
 
         vm.prank(alice);
-        lp9mm.approve(address(lowFundFarm), type(uint256).max);
+        lp9mm.approve(address(lowCapFarm), type(uint256).max);
 
-        lowFundFarm.addPool(CALIBER_9MM, address(lp9mm));
+        lowCapFarm.addPool(CALIBER_9MM, address(lp9mm));
     }
 
     function testTotalProgramRewardsIsTriangularEmission() public view {
@@ -348,21 +348,30 @@ contract AmmoMarketLPFarmTest is Test {
         assertEq(lp9mm.balanceOf(alice), 100e18);
         assertEq(reward.balanceOf(alice), 0);
         assertEq(farm.pendingRewards(0, bob), 475e18);
-        assertEq(farm.rewardReserve(), 475e18);
+        assertEq(reward.totalSupply(), 0);
 
         vm.prank(bob);
         farm.harvest(0);
 
         assertEq(reward.balanceOf(bob), 475e18);
-        assertEq(farm.rewardReserve(), 0);
+        assertEq(reward.totalSupply(), 475e18);
     }
 
-    function testUnderfundedRewardsRevertOnFirstDeposit() public {
-        AmmoMarketLPFarm lowFundFarm = _fundedFarm(1e18);
+    function testFarmCapStopsNewAccrual() public {
+        AmmoMarketLPFarm lowCapFarm = _cappedFarm(500e18);
 
         vm.prank(alice);
-        vm.expectRevert(AmmoMarketLPFarm.InsufficientFunding.selector);
-        lowFundFarm.deposit(0, 10e18);
+        lowCapFarm.deposit(0, 10e18);
+
+        vm.warp(startTime + 1 days);
+
+        assertEq(lowCapFarm.pendingRewards(0, alice), 500e18);
+        assertEq(lowCapFarm.totalFarmAccrued(), 0);
+
+        lowCapFarm.updatePool(0);
+
+        assertEq(lowCapFarm.totalFarmAccrued(), 500e18);
+        assertEq(lowCapFarm.pendingRewards(0, alice), 500e18);
     }
 
     function testDisablingOneOfTwoPoolsGivesRemainingPoolFullEmissionUntilReactivation() public {
@@ -394,28 +403,34 @@ contract AmmoMarketLPFarmTest is Test {
         assertEq(farm.pendingRewards(1, bob), 1_700e18);
     }
 
-    function testUnderfundedZeroDepositDoesNotStartFarm() public {
-        AmmoMarketLPFarm lowFundFarm = _fundedFarm(1e18);
+    function testZeroDepositDoesNotStartFarm() public {
+        AmmoMarketLPFarm lowCapFarm = _cappedFarm(1e18);
 
         vm.prank(alice);
         vm.expectRevert(AmmoMarketLPFarm.InvalidAmount.selector);
-        lowFundFarm.deposit(0, 0);
+        lowCapFarm.deposit(0, 0);
 
-        assertFalse(lowFundFarm.farmingStarted());
+        assertFalse(lowCapFarm.farmingStarted());
     }
 
     function testConstructorRejectsZeroAddressesAndInvalidSchedule() public {
         vm.expectRevert(AmmoMarketLPFarm.ZeroAddress.selector);
-        new AmmoMarketLPFarm(address(0), address(reward), duration, startRewardPerDay);
+        new AmmoMarketLPFarm(address(0), address(emissionController), address(reward), duration, startRewardPerDay, 10_000e18);
 
         vm.expectRevert(AmmoMarketLPFarm.ZeroAddress.selector);
-        new AmmoMarketLPFarm(address(manager), address(0), duration, startRewardPerDay);
+        new AmmoMarketLPFarm(address(manager), address(0), address(reward), duration, startRewardPerDay, 10_000e18);
+
+        vm.expectRevert(AmmoMarketLPFarm.ZeroAddress.selector);
+        new AmmoMarketLPFarm(address(manager), address(emissionController), address(0), duration, startRewardPerDay, 10_000e18);
 
         vm.expectRevert(AmmoMarketLPFarm.InvalidTime.selector);
-        new AmmoMarketLPFarm(address(manager), address(reward), 0, startRewardPerDay);
+        new AmmoMarketLPFarm(address(manager), address(emissionController), address(reward), 0, startRewardPerDay, 10_000e18);
 
         vm.expectRevert(AmmoMarketLPFarm.InvalidTime.selector);
-        new AmmoMarketLPFarm(address(manager), address(reward), duration, 0);
+        new AmmoMarketLPFarm(address(manager), address(emissionController), address(reward), duration, 0, 10_000e18);
+
+        vm.expectRevert(AmmoMarketLPFarm.InvalidTime.selector);
+        new AmmoMarketLPFarm(address(manager), address(emissionController), address(reward), duration, startRewardPerDay, 0);
     }
 
     function testRejectsInvalidAmountsAndZeroRecoveryAddresses() public {
@@ -423,9 +438,6 @@ contract AmmoMarketLPFarmTest is Test {
 
         vm.expectRevert(AmmoMarketLPFarm.ZeroAddress.selector);
         farm.addPool(CALIBER_556, address(0));
-
-        vm.expectRevert(AmmoMarketLPFarm.InvalidAmount.selector);
-        farm.fundRewards(0);
 
         vm.prank(alice);
         vm.expectRevert(AmmoMarketLPFarm.InvalidAmount.selector);
@@ -498,7 +510,7 @@ contract AmmoMarketLPFarmTest is Test {
         farm.setPoolActive(0, false);
     }
 
-    function testRecoverTokenAllowsJunkTokenAndBlocksRewardAndPoolTokens() public {
+    function testRecoverTokenAllowsJunkTokenAndBlocksPoolTokens() public {
         _add9mmPool();
 
         MockERC20 junk = new MockERC20("Junk", "JUNK", 18);
@@ -509,21 +521,15 @@ contract AmmoMarketLPFarmTest is Test {
         assertEq(junk.balanceOf(bob), 5e18);
 
         vm.expectRevert(AmmoMarketLPFarm.InvalidPool.selector);
-        farm.recoverToken(address(reward), bob, 1);
-
-        vm.expectRevert(AmmoMarketLPFarm.InvalidPool.selector);
         farm.recoverToken(address(lp9mm), bob, 1);
     }
 
-    function testShutdownAllowsOnlyUnreservedRewardRecovery() public {
+    function testShutdownFreezesAccrualButAllowsHarvests() public {
         _addTwoPools();
         _deposit(alice, 0, 10e18);
         _deposit(bob, 1, 10e18);
 
         assertTrue(farm.hasActivePools());
-
-        vm.expectRevert(AmmoMarketLPFarm.FarmNotShutdown.selector);
-        farm.recoverUnreservedRewards(bob, 1e18);
 
         vm.warp(startTime + 1 days);
         farm.shutdownFarm();
@@ -531,22 +537,11 @@ contract AmmoMarketLPFarmTest is Test {
         assertTrue(farm.farmShutdown());
         assertEq(farm.shutdownTime(), startTime + 1 days);
         assertFalse(farm.hasActivePools());
-        assertEq(farm.rewardReserve(), 950e18);
-
-        uint256 recoverable = farm.recoverableRewardBalance();
-        vm.expectRevert(AmmoMarketLPFarm.InsufficientRecoverableRewards.selector);
-        farm.recoverUnreservedRewards(bob, recoverable + 1);
-
-        farm.recoverUnreservedRewards(bob, recoverable);
-
-        assertEq(reward.balanceOf(bob), recoverable);
-        assertEq(reward.balanceOf(address(farm)), farm.rewardReserve());
 
         vm.warp(startTime + 2 days);
 
         assertEq(farm.pendingRewards(0, alice), 475e18);
         assertEq(farm.pendingRewards(1, bob), 475e18);
-        assertEq(farm.recoverableRewardBalance(), 0);
 
         vm.prank(alice);
         farm.harvest(0);
@@ -555,28 +550,18 @@ contract AmmoMarketLPFarmTest is Test {
         farm.harvest(1);
 
         assertEq(reward.balanceOf(alice), 475e18);
-        assertEq(reward.balanceOf(bob), recoverable + 475e18);
-        assertEq(farm.rewardReserve(), 0);
+        assertEq(reward.balanceOf(bob), 475e18);
+        assertEq(reward.totalSupply(), 950e18);
     }
 
-    function testShutdownAndRecoverRewardTokenRejectInvalidCallersAndAmounts() public {
+    function testShutdownRejectsInvalidCallersAndSecondShutdown() public {
         _add9mmPool();
 
-        vm.expectRevert(AmmoMarketLPFarm.ZeroAddress.selector);
-        farm.recoverUnreservedRewards(address(0), 1e18);
-
-        vm.prank(alice);
-        vm.expectRevert(AmmoMarketLPFarm.NotOwner.selector);
-        farm.recoverUnreservedRewards(alice, 1e18);
-
         vm.prank(alice);
         vm.expectRevert(AmmoMarketLPFarm.NotOwner.selector);
         farm.shutdownFarm();
 
         farm.shutdownFarm();
-
-        vm.expectRevert(AmmoMarketLPFarm.InvalidAmount.selector);
-        farm.recoverUnreservedRewards(bob, 0);
 
         vm.expectRevert(AmmoMarketLPFarm.FarmAlreadyShutdown.selector);
         farm.shutdownFarm();
@@ -604,7 +589,7 @@ contract AmmoMarketLPFarmTest is Test {
 
         assertEq(lp9mm.balanceOf(alice), 100e18);
         assertEq(reward.balanceOf(alice), 950e18);
-        assertEq(farm.rewardReserve(), 0);
+        assertEq(reward.totalSupply(), 950e18);
     }
 
     function testRecoverTokenRejectsNonGuardianOrOwner() public {

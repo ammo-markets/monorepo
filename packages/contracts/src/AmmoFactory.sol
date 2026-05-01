@@ -14,6 +14,7 @@ contract AmmoFactory {
     address public immutable usdc;
     uint8 public immutable usdcDecimals;
     address public immutable oracle;
+    address public emissionController;
 
     struct CaliberInfo {
         address market;
@@ -21,13 +22,17 @@ contract AmmoFactory {
     }
 
     mapping(bytes32 => CaliberInfo) public calibers;
+    mapping(address => bool) public isMarket;
     bytes32[] public caliberIds;
 
     error NotOwner();
     error CaliberExists();
+    error EmissionControllerNotSet();
+    error EmissionControllerAlreadySet();
     error ZeroAddress();
 
     event CaliberCreated(bytes32 indexed caliberId, address indexed market, address indexed token);
+    event EmissionControllerSet(address indexed emissionController);
 
     modifier onlyOwner() {
         if (!manager.isOwner(msg.sender)) revert NotOwner();
@@ -42,6 +47,13 @@ contract AmmoFactory {
         oracle = oracle_;
     }
 
+    function setEmissionControllerOnce(address emissionController_) external onlyOwner {
+        if (emissionController_ == address(0)) revert ZeroAddress();
+        if (emissionController != address(0)) revert EmissionControllerAlreadySet();
+        emissionController = emissionController_;
+        emit EmissionControllerSet(emissionController_);
+    }
+
     /// @notice Deploy a new caliber market + token pair.
     /// @return market The deployed CaliberMarket address.
     /// @return token  The deployed AmmoToken address (created by the market).
@@ -54,9 +66,23 @@ contract AmmoFactory {
         uint256 minMintRounds
     ) external onlyOwner returns (address market, address token) {
         if (calibers[caliberId].market != address(0)) revert CaliberExists();
+        address controller = emissionController;
+        if (controller == address(0)) revert EmissionControllerNotSet();
 
         CaliberMarket marketContract = new CaliberMarket(
-            address(manager), usdc, usdcDecimals, oracle, caliberId, name, symbol, mintFeeBps, redeemFeeBps, minMintRounds
+            CaliberMarket.MarketConfig({
+                manager: address(manager),
+                usdc: usdc,
+                usdcDecimals: usdcDecimals,
+                oracle: oracle,
+                emissionController: controller,
+                caliberId: caliberId,
+                tokenName: name,
+                tokenSymbol: symbol,
+                mintFeeBps: mintFeeBps,
+                redeemFeeBps: redeemFeeBps,
+                minMintRounds: minMintRounds
+            })
         );
 
         market = address(marketContract);
@@ -66,6 +92,7 @@ contract AmmoFactory {
         PriceOracle(oracle).registerMarket(market);
 
         calibers[caliberId] = CaliberInfo({market: market, token: token});
+        isMarket[market] = true;
         caliberIds.push(caliberId);
 
         emit CaliberCreated(caliberId, market, token);

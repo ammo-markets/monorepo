@@ -3,54 +3,66 @@ export const CaliberMarketAbi = [
     "type": "constructor",
     "inputs": [
       {
-        "name": "manager_",
-        "type": "address",
-        "internalType": "address"
-      },
-      {
-        "name": "usdc_",
-        "type": "address",
-        "internalType": "address"
-      },
-      {
-        "name": "usdcDecimals_",
-        "type": "uint8",
-        "internalType": "uint8"
-      },
-      {
-        "name": "oracle_",
-        "type": "address",
-        "internalType": "address"
-      },
-      {
-        "name": "caliberId_",
-        "type": "bytes32",
-        "internalType": "bytes32"
-      },
-      {
-        "name": "tokenName_",
-        "type": "string",
-        "internalType": "string"
-      },
-      {
-        "name": "tokenSymbol_",
-        "type": "string",
-        "internalType": "string"
-      },
-      {
-        "name": "mintFeeBps_",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "redeemFeeBps_",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "minMintRounds_",
-        "type": "uint256",
-        "internalType": "uint256"
+        "name": "config",
+        "type": "tuple",
+        "internalType": "struct CaliberMarket.MarketConfig",
+        "components": [
+          {
+            "name": "manager",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "usdc",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "usdcDecimals",
+            "type": "uint8",
+            "internalType": "uint8"
+          },
+          {
+            "name": "oracle",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "emissionController",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "caliberId",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "tokenName",
+            "type": "string",
+            "internalType": "string"
+          },
+          {
+            "name": "tokenSymbol",
+            "type": "string",
+            "internalType": "string"
+          },
+          {
+            "name": "mintFeeBps",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "redeemFeeBps",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "minMintRounds",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
       }
     ],
     "stateMutability": "nonpayable"
@@ -98,6 +110,19 @@ export const CaliberMarketAbi = [
     ],
     "outputs": [],
     "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "emissionController",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "contract IProtocolEmissionController"
+      }
+    ],
+    "stateMutability": "view"
   },
   {
     "type": "function",

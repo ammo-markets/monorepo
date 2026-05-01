@@ -14,6 +14,8 @@ const CONTRACTS_TO_EXPORT = [
   "PriceOracle",
   "AmmoPriceFunctions",
   "AmmoMarketLPFarm",
+  "ProtocolToken",
+  "ProtocolEmissionController",
 ];
 
 if (!existsSync(ABI_DIR)) {

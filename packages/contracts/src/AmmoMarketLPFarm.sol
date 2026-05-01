@@ -2,6 +2,7 @@
 pragma solidity ^0.8.24;
 
 import {AmmoManager} from "./AmmoManager.sol";
+import {IProtocolEmissionController} from "./interfaces/IProtocolEmissionController.sol";
 import {IERC20} from "./interfaces/IERC20.sol";
 
 /// @notice Equal-weight LP farming contract for per-caliber LP tokens
@@ -24,15 +25,17 @@ contract AmmoMarketLPFarm {
     uint256 public constant ACC_REWARD_PRECISION = 1e18;
 
     AmmoManager public immutable manager;
-    IERC20 public immutable rewardToken;
+    IProtocolEmissionController public immutable emissionController;
+    address public immutable protocolToken;
     uint256 public startTime;
     uint256 public endTime;
     uint256 public immutable duration;
     uint256 public immutable startRewardPerDay;
+    uint256 public immutable farmMintCap;
     bool public farmingStarted;
     bool public farmShutdown;
     uint256 public shutdownTime;
-    uint256 public rewardReserve;
+    uint256 public totalFarmAccrued;
 
     uint256 private _locked;
 
@@ -49,10 +52,7 @@ contract AmmoMarketLPFarm {
     error InvalidPool();
     error PoolInactive();
     error FarmIsShutdown();
-    error FarmNotShutdown();
     error FarmAlreadyShutdown();
-    error InsufficientFunding();
-    error InsufficientRecoverableRewards();
     error Reentrancy();
 
     event PoolAdded(uint256 indexed pid, bytes32 indexed caliberId, address indexed stakingToken);
@@ -61,9 +61,7 @@ contract AmmoMarketLPFarm {
     event Withdrawn(address indexed user, uint256 indexed pid, uint256 amount);
     event Harvested(address indexed user, uint256 indexed pid, uint256 amount);
     event EmergencyWithdrawn(address indexed user, uint256 indexed pid, uint256 amount);
-    event RewardsFunded(address indexed funder, uint256 amount);
     event FarmShutdown(uint256 timestamp);
-    event RewardTokensRecovered(address indexed to, uint256 amount);
 
     modifier onlyOwner() {
         if (!manager.isOwner(msg.sender)) revert NotOwner();
@@ -82,14 +80,25 @@ contract AmmoMarketLPFarm {
         _locked = 0;
     }
 
-    constructor(address manager_, address rewardToken_, uint256 duration_, uint256 startRewardPerDay_) {
-        if (manager_ == address(0) || rewardToken_ == address(0)) revert ZeroAddress();
-        if (duration_ == 0 || startRewardPerDay_ == 0) revert InvalidTime();
+    constructor(
+        address manager_,
+        address emissionController_,
+        address protocolToken_,
+        uint256 duration_,
+        uint256 startRewardPerDay_,
+        uint256 farmMintCap_
+    ) {
+        if (manager_ == address(0) || emissionController_ == address(0) || protocolToken_ == address(0)) {
+            revert ZeroAddress();
+        }
+        if (duration_ == 0 || startRewardPerDay_ == 0 || farmMintCap_ == 0) revert InvalidTime();
 
         manager = AmmoManager(manager_);
-        rewardToken = IERC20(rewardToken_);
+        emissionController = IProtocolEmissionController(emissionController_);
+        protocolToken = protocolToken_;
         duration = duration_;
         startRewardPerDay = startRewardPerDay_;
+        farmMintCap = farmMintCap_;
     }
 
     function poolLength() external view returns (uint256) {
@@ -109,7 +118,7 @@ contract AmmoMarketLPFarm {
     function addPool(bytes32 caliberId, address stakingToken) external onlyOwner returns (uint256 pid) {
         if (farmShutdown) revert FarmIsShutdown();
         if (stakingToken == address(0)) revert ZeroAddress();
-        if (stakingToken == address(rewardToken)) revert InvalidPool();
+        if (stakingToken == protocolToken) revert InvalidPool();
         if (isPoolToken[stakingToken]) revert DuplicatePool();
 
         massUpdatePools();
@@ -149,12 +158,6 @@ contract AmmoMarketLPFarm {
         emit PoolActiveUpdated(pid, active);
     }
 
-    function fundRewards(uint256 amount) external nonReentrant {
-        if (amount == 0) revert InvalidAmount();
-        _safeTransferFrom(rewardToken, msg.sender, address(this), amount);
-        emit RewardsFunded(msg.sender, amount);
-    }
-
     function deposit(uint256 pid, uint256 amount) external nonReentrant {
         if (farmShutdown) revert FarmIsShutdown();
         if (pid >= pools.length) revert InvalidPool();
@@ -163,7 +166,6 @@ contract AmmoMarketLPFarm {
 
         if (!farmingStarted) {
             if (amount == 0) revert InvalidAmount();
-            if (rewardToken.balanceOf(address(this)) < totalProgramRewards()) revert InsufficientFunding();
             _startFarming();
         }
 
@@ -240,11 +242,6 @@ contract AmmoMarketLPFarm {
             massUpdatePools();
         }
 
-        uint256 pending = (user.amount * pool.accRewardPerShare) / ACC_REWARD_PRECISION - user.rewardDebt;
-        if (pending > 0) {
-            rewardReserve -= pending;
-        }
-
         user.amount = 0;
         user.rewardDebt = 0;
         pool.totalStaked -= amount;
@@ -259,7 +256,7 @@ contract AmmoMarketLPFarm {
     /// @notice Rescue unrelated tokens accidentally sent to this contract.
     function recoverToken(address token, address to, uint256 amount) external onlyGuardianOrOwner nonReentrant {
         if (token == address(0) || to == address(0)) revert ZeroAddress();
-        if (token == address(rewardToken) || isPoolToken[token]) revert InvalidPool();
+        if (isPoolToken[token]) revert InvalidPool();
         _safeTransfer(IERC20(token), to, amount);
     }
 
@@ -283,29 +280,12 @@ contract AmmoMarketLPFarm {
         emit FarmShutdown(block.timestamp);
     }
 
-    /// @notice Recover reward tokens not reserved for already-accrued user rewards.
-    /// @dev LP tokens are never recoverable.
-    function recoverUnreservedRewards(address to, uint256 amount) external onlyOwner nonReentrant {
-        if (to == address(0)) revert ZeroAddress();
-        if (amount == 0) revert InvalidAmount();
-        if (!farmShutdown) revert FarmNotShutdown();
-        if (amount > recoverableRewardBalance()) revert InsufficientRecoverableRewards();
-        _safeTransfer(rewardToken, to, amount);
-        emit RewardTokensRecovered(to, amount);
-    }
-
     function hasActivePools() public view returns (bool) {
         uint256 length = pools.length;
         for (uint256 pid = 0; pid < length; pid++) {
             if (pools[pid].active) return true;
         }
         return false;
-    }
-
-    function recoverableRewardBalance() public view returns (uint256) {
-        uint256 balance = rewardToken.balanceOf(address(this));
-        if (balance <= rewardReserve) return 0;
-        return balance - rewardReserve;
     }
 
     function massUpdatePools() public {
@@ -333,8 +313,7 @@ contract AmmoMarketLPFarm {
             return;
         }
 
-        uint256 poolReward = _emitted(pool.lastRewardTime, current) / rewardableCount;
-        rewardReserve += poolReward;
+        uint256 poolReward = _capFarmAccrual(_emitted(pool.lastRewardTime, current) / rewardableCount);
         pool.accRewardPerShare += (poolReward * ACC_REWARD_PRECISION) / pool.totalStaked;
         pool.lastRewardTime = current;
     }
@@ -350,7 +329,7 @@ contract AmmoMarketLPFarm {
         if (current > pool.lastRewardTime && pool.active && pool.totalStaked > 0) {
             uint256 rewardableCount = rewardablePoolCount();
             if (rewardableCount > 0) {
-                uint256 poolReward = _emitted(pool.lastRewardTime, current) / rewardableCount;
+                uint256 poolReward = _viewCappedFarmAccrual(_emitted(pool.lastRewardTime, current) / rewardableCount);
                 accRewardPerShare += (poolReward * ACC_REWARD_PRECISION) / pool.totalStaked;
             }
         }
@@ -383,10 +362,29 @@ contract AmmoMarketLPFarm {
     {
         pending = (user.amount * pool.accRewardPerShare) / ACC_REWARD_PRECISION - user.rewardDebt;
         if (pending > 0) {
-            rewardReserve -= pending;
-            _safeTransfer(rewardToken, to, pending);
+            emissionController.mintFarmReward(to, pending);
             emit Harvested(to, pid, pending);
         }
+    }
+
+    function _capFarmAccrual(uint256 amount) internal returns (uint256) {
+        if (amount == 0) return 0;
+        uint256 accrued = totalFarmAccrued;
+        if (accrued >= farmMintCap) return 0;
+
+        uint256 remaining = farmMintCap - accrued;
+        if (amount > remaining) {
+            amount = remaining;
+        }
+
+        totalFarmAccrued = accrued + amount;
+        return amount;
+    }
+
+    function _viewCappedFarmAccrual(uint256 amount) internal view returns (uint256) {
+        if (amount == 0 || totalFarmAccrued >= farmMintCap) return 0;
+        uint256 remaining = farmMintCap - totalFarmAccrued;
+        return amount > remaining ? remaining : amount;
     }
 
     function _lastRewardStart() internal view returns (uint256) {

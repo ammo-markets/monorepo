@@ -119,6 +119,19 @@ export const AmmoFactoryAbi = [
   },
   {
     "type": "function",
+    "name": "emissionController",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "getCaliberCount",
     "inputs": [],
     "outputs": [
@@ -126,6 +139,25 @@ export const AmmoFactoryAbi = [
         "name": "",
         "type": "uint256",
         "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "isMarket",
+    "inputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
       }
     ],
     "stateMutability": "view"
@@ -155,6 +187,19 @@ export const AmmoFactoryAbi = [
       }
     ],
     "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "setEmissionControllerOnce",
+    "inputs": [
+      {
+        "name": "emissionController_",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
   },
   {
     "type": "function",
@@ -208,8 +253,31 @@ export const AmmoFactoryAbi = [
     "anonymous": false
   },
   {
+    "type": "event",
+    "name": "EmissionControllerSet",
+    "inputs": [
+      {
+        "name": "emissionController",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
     "type": "error",
     "name": "CaliberExists",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "EmissionControllerAlreadySet",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "EmissionControllerNotSet",
     "inputs": []
   },
   {

@@ -8,6 +8,7 @@ import "../src/AmmoToken.sol";
 import "../src/CaliberMarket.sol";
 import {IDexRouter} from "../src/interfaces/IDexRouter.sol";
 import "./MockERC20.sol";
+import "./MockEmissionController.sol";
 import "./MockPriceOracle.sol";
 
 interface IPairFactoryFork {
@@ -30,6 +31,7 @@ contract AmmoTokenTaxForkTest is Test {
     AmmoToken token;
     AmmoLiquidityManager liquidityManager;
     MockERC20 usdc;
+    MockEmissionController emissionController;
     MockPriceOracle oracle;
 
     address wavax;
@@ -57,6 +59,7 @@ contract AmmoTokenTaxForkTest is Test {
 
         usdc = new MockERC20("USD Coin", "USDC", 6);
         oracle = new MockPriceOracle(21e16);
+        emissionController = new MockEmissionController(address(new MockERC20("Protocol", "AMMO", 18)));
 
         manager = new AmmoManager(feeRecipient, wavax);
         manager.setTreasury(treasury);
@@ -67,7 +70,19 @@ contract AmmoTokenTaxForkTest is Test {
         manager.setTaxExempt(address(liquidityManager), true);
 
         market = new CaliberMarket(
-            address(manager), address(usdc), 6, address(oracle), bytes32("9MM_TEST"), "Ammo 9MM", "9MM-T", 150, 150, 0
+            CaliberMarket.MarketConfig({
+                manager: address(manager),
+                usdc: address(usdc),
+                usdcDecimals: 6,
+                oracle: address(oracle),
+                emissionController: address(emissionController),
+                caliberId: bytes32("9MM_TEST"),
+                tokenName: "Ammo 9MM",
+                tokenSymbol: "9MM-T",
+                mintFeeBps: 150,
+                redeemFeeBps: 150,
+                minMintRounds: 0
+            })
         );
         token = market.token();
 

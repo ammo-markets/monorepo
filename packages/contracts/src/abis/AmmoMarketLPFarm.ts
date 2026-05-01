@@ -8,7 +8,12 @@ export const AmmoMarketLPFarmAbi = [
         "internalType": "address"
       },
       {
-        "name": "rewardToken_",
+        "name": "emissionController_",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "protocolToken_",
         "type": "address",
         "internalType": "address"
       },
@@ -19,6 +24,11 @@ export const AmmoMarketLPFarmAbi = [
       },
       {
         "name": "startRewardPerDay_",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "farmMintCap_",
         "type": "uint256",
         "internalType": "uint256"
       }
@@ -108,6 +118,19 @@ export const AmmoMarketLPFarmAbi = [
   },
   {
     "type": "function",
+    "name": "emissionController",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "contract IProtocolEmissionController"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "emitted",
     "inputs": [
       {
@@ -145,6 +168,19 @@ export const AmmoMarketLPFarmAbi = [
   },
   {
     "type": "function",
+    "name": "farmMintCap",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "farmShutdown",
     "inputs": [],
     "outputs": [
@@ -168,19 +204,6 @@ export const AmmoMarketLPFarmAbi = [
       }
     ],
     "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "fundRewards",
-    "inputs": [
-      {
-        "name": "amount",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
   },
   {
     "type": "function",
@@ -330,6 +353,19 @@ export const AmmoMarketLPFarmAbi = [
   },
   {
     "type": "function",
+    "name": "protocolToken",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "recoverToken",
     "inputs": [
       {
@@ -350,63 +386,6 @@ export const AmmoMarketLPFarmAbi = [
     ],
     "outputs": [],
     "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "recoverUnreservedRewards",
-    "inputs": [
-      {
-        "name": "to",
-        "type": "address",
-        "internalType": "address"
-      },
-      {
-        "name": "amount",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "recoverableRewardBalance",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "rewardReserve",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "rewardToken",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "address",
-        "internalType": "contract IERC20"
-      }
-    ],
-    "stateMutability": "view"
   },
   {
     "type": "function",
@@ -475,6 +454,19 @@ export const AmmoMarketLPFarmAbi = [
   {
     "type": "function",
     "name": "startTime",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "totalFarmAccrued",
     "inputs": [],
     "outputs": [
       {
@@ -692,44 +684,6 @@ export const AmmoMarketLPFarmAbi = [
   },
   {
     "type": "event",
-    "name": "RewardTokensRecovered",
-    "inputs": [
-      {
-        "name": "to",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      },
-      {
-        "name": "amount",
-        "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
-      }
-    ],
-    "anonymous": false
-  },
-  {
-    "type": "event",
-    "name": "RewardsFunded",
-    "inputs": [
-      {
-        "name": "funder",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      },
-      {
-        "name": "amount",
-        "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
-      }
-    ],
-    "anonymous": false
-  },
-  {
-    "type": "event",
     "name": "Withdrawn",
     "inputs": [
       {
@@ -766,21 +720,6 @@ export const AmmoMarketLPFarmAbi = [
   {
     "type": "error",
     "name": "FarmIsShutdown",
-    "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "FarmNotShutdown",
-    "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "InsufficientFunding",
-    "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "InsufficientRecoverableRewards",
     "inputs": []
   },
   {
