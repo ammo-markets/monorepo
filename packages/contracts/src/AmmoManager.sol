@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {ILBRouter} from "./interfaces/ILBRouter.sol";
-
 /// @notice Global ops/admin, role registry, and centralized tax configuration for the Ammo Exchange protocol.
 /// @dev All CaliberMarket and AmmoToken instances reference this contract for access control and tax config.
 ///      Owner should be a multisig in production.
@@ -15,8 +13,8 @@ contract AmmoManager {
     }
 
     struct SwapPath {
-        uint256 binStep;
-        ILBRouter.Version version;
+        address outputToken;
+        bool stable;
     }
 
     // ── Constants ───────────────────────────────────
@@ -38,7 +36,7 @@ contract AmmoManager {
     /// @notice Wrapped native token address (immutable per chain).
     address public immutable wavax;
 
-    /// @notice Trader Joe LBRouter address (protocol-wide, mutable).
+    /// @notice Solidly-style DEX router address (protocol-wide, mutable).
     address public dexRouter;
 
     /// @notice Per-token per-pool tax rates. token => pool => TaxConfig
@@ -47,7 +45,7 @@ contract AmmoManager {
     /// @notice Per-token list of taxed pools for enumeration.
     mapping(address => address[]) internal _tokenPools;
 
-    /// @notice Per-token swap path configuration (bin step + LB version).
+    /// @notice Per-token swap path configuration for auto-selling taxes.
     mapping(address => SwapPath) public swapPaths;
 
     /// @notice Per-token minimum accumulated tax balance before auto-swap triggers.
@@ -79,7 +77,7 @@ contract AmmoManager {
     event DexRouterUpdated(address indexed oldRouter, address indexed newRouter);
     event PoolTaxSet(address indexed token, address indexed pool, uint256 buyTax, uint256 sellTax);
     event PoolTaxRemoved(address indexed token, address indexed pool);
-    event SwapPathUpdated(address indexed token, uint256 binStep, ILBRouter.Version version);
+    event SwapPathUpdated(address indexed token, address indexed outputToken, bool stable);
     event TaxSwapThresholdUpdated(address indexed token, uint256 threshold);
     event TaxExemptUpdated(address indexed account, bool exempt);
 
@@ -155,7 +153,7 @@ contract AmmoManager {
     // ── Tax Admin ────────────────────────────────────
     // ══════════════════════════════════════════════════
 
-    /// @notice Set the Trader Joe LBRouter address for the entire protocol.
+    /// @notice Set the DEX router address for the entire protocol.
     function setDexRouter(address newRouter) external onlyOwner {
         address old = dexRouter;
         dexRouter = newRouter;
@@ -164,7 +162,7 @@ contract AmmoManager {
 
     /// @notice Set buy/sell tax rates for a specific token's DEX pool.
     /// @param token The AmmoToken address.
-    /// @param pool The Trader Joe LBPair address.
+    /// @param pool The DEX pair address.
     /// @param buyBps Buy tax in basis points (max 1000 = 10%).
     /// @param sellBps Sell tax in basis points (max 1000 = 10%).
     function setPoolTax(address token, address pool, uint256 buyBps, uint256 sellBps) external onlyOwner {
@@ -205,14 +203,14 @@ contract AmmoManager {
         emit PoolTaxRemoved(token, pool);
     }
 
-    /// @notice Configure the Trader Joe swap path for a token's auto-swap.
+    /// @notice Configure the DEX swap path for a token's auto-swap.
     /// @param token The AmmoToken address.
-    /// @param binStep The LBPair bin step (e.g., 20 for 20bps granularity).
-    /// @param version The LB version to route through.
-    function setSwapPath(address token, uint256 binStep, ILBRouter.Version version) external onlyOwner {
-        if (token == address(0)) revert ZeroAddress();
-        swapPaths[token] = SwapPath({binStep: binStep, version: version});
-        emit SwapPathUpdated(token, binStep, version);
+    /// @param outputToken The token to receive before the router unwraps to native ETH/AVAX.
+    /// @param stable Whether to route through the stable pair.
+    function setSwapPath(address token, address outputToken, bool stable) external onlyOwner {
+        if (token == address(0) || outputToken == address(0)) revert ZeroAddress();
+        swapPaths[token] = SwapPath({outputToken: outputToken, stable: stable});
+        emit SwapPathUpdated(token, outputToken, stable);
     }
 
     /// @notice Set the minimum accumulated tax balance before auto-swap triggers.

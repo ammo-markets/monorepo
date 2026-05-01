@@ -6,18 +6,21 @@ import "../src/MockUSDC.sol";
 import "../src/PriceOracle.sol";
 import "../src/AmmoManager.sol";
 import "../src/AmmoFactory.sol";
+import "../src/AmmoLiquidityManager.sol";
+import "../src/interfaces/IDexRouter.sol";
 
 /// @notice Single deploy script for the full Ammo Exchange protocol on Fuji testnet.
 /// @dev Deploys MockUSDC, AmmoManager (with roles), PriceOracle, AmmoFactory,
 ///      and 4 calibers. All testnet roles are set to the deployer.
 contract DeployFuji is Script {
-    /// @dev WAVAX on Fuji testnet.
-    address constant WAVAX = 0xd00ae08403B9bbb9124bB305C09058E32C39A48c;
-    /// @dev Trader Joe LBRouter V2.2 on Avalanche (same address on Fuji and mainnet).
-    address constant LB_ROUTER = 0x18556DA13313f3532c54711497A8FedAC273220E;
+    /// @dev PairFactory on the target DEX.
+    address constant PAIR_FACTORY = 0x85448bF2F589ab1F56225DF5167c63f57758f8c1;
+    /// @dev Uniswap type router on the target DEX.
+    address constant DEX_ROUTER = 0x9CEE04bDcE127DA7E448A333f006DEFb3d5e38cC;
 
     MockUSDC public usdc;
     AmmoManager public manager;
+    AmmoLiquidityManager public liquidityManager;
     PriceOracle public oracle;
     AmmoFactory public factory;
 
@@ -37,28 +40,34 @@ contract DeployFuji is Script {
         // 1. Deploy MockUSDC
         usdc = new MockUSDC();
 
+        address wrappedNative = IDexRouter(DEX_ROUTER).WETH();
+
         // 2. Deploy AmmoManager (constructor sets owner=msg.sender, keepers[msg.sender]=true, feeRecipient=msg.sender)
-        manager = new AmmoManager(msg.sender, WAVAX);
+        manager = new AmmoManager(msg.sender, wrappedNative);
         manager.setTreasury(msg.sender);
         manager.setGuardian(msg.sender);
-        manager.setDexRouter(LB_ROUTER);
+        manager.setDexRouter(DEX_ROUTER);
 
-        // 3. Deploy PriceOracle
+        // 3. Deploy tax-exempt liquidity helper
+        liquidityManager = new AmmoLiquidityManager(DEX_ROUTER);
+        manager.setTaxExempt(address(liquidityManager), true);
+
+        // 4. Deploy PriceOracle
         oracle = new PriceOracle(address(manager));
 
-        // 4. Deploy AmmoFactory with oracle
+        // 5. Deploy AmmoFactory with oracle
         factory = new AmmoFactory(address(manager), address(usdc), 6, address(oracle));
 
-        // 5. Set oracle factory (enables auto-registration of markets)
+        // 6. Set oracle factory (enables auto-registration of markets)
         oracle.setFactory(address(factory));
 
-        // 6. Create 4 calibers (factory auto-registers each with oracle)
+        // 7. Create 4 calibers (factory auto-registers each with oracle)
         _deploy9mmPractice();
         _deploy9mmSelfDefense();
         _deploy556SelfDefense();
         _deploy556NatoPractice();
 
-        // 7. Set initial prices via batch update
+        // 8. Set initial prices via batch update
         _setInitialPrices();
 
         vm.stopBroadcast();
@@ -67,16 +76,14 @@ contract DeployFuji is Script {
     }
 
     function _deploy9mmPractice() internal {
-        (address market, address token) = factory.createCaliber(
-            bytes32("9MM_PRACTICE"), "Ammo Exchange 9mm Practice", "9MM-P", 150, 150, 50
-        );
+        (address market, address token) =
+            factory.createCaliber(bytes32("9MM_PRACTICE"), "Ammo Exchange 9mm Practice", "9MM-P", 150, 150, 50);
         deployed9mmPractice = CaliberDeployment(market, token);
     }
 
     function _deploy9mmSelfDefense() internal {
-        (address market, address token) = factory.createCaliber(
-            bytes32("9MM_SELF_DEFENSE"), "Ammo Exchange 9mm Self Defense", "9MM-SD", 150, 150, 50
-        );
+        (address market, address token) =
+            factory.createCaliber(bytes32("9MM_SELF_DEFENSE"), "Ammo Exchange 9mm Self Defense", "9MM-SD", 150, 150, 50);
         deployed9mmSelfDefense = CaliberDeployment(market, token);
     }
 
@@ -103,10 +110,10 @@ contract DeployFuji is Script {
         markets[2] = deployed556SelfDefense.market;
         markets[3] = deployed556NatoPractice.market;
 
-        prices[0] = 21e16;  // $0.21
-        prices[1] = 45e16;  // $0.45
-        prices[2] = 55e16;  // $0.55
-        prices[3] = 40e16;  // $0.40
+        prices[0] = 21e16; // $0.21
+        prices[1] = 45e16; // $0.45
+        prices[2] = 55e16; // $0.55
+        prices[3] = 40e16; // $0.40
 
         oracle.setBatchPrices(markets, prices);
     }
@@ -115,8 +122,11 @@ contract DeployFuji is Script {
         console.log("=== Deployed Addresses ===");
         console.log("MockUSDC:", address(usdc));
         console.log("AmmoManager:", address(manager));
+        console.log("AmmoLiquidityManager:", address(liquidityManager));
         console.log("PriceOracle:", address(oracle));
         console.log("AmmoFactory:", address(factory));
+        console.log("PairFactory:", PAIR_FACTORY);
+        console.log("Router:", DEX_ROUTER);
         console.log("--- 9MM_PRACTICE ---");
         console.log("Market:", deployed9mmPractice.market);
         console.log("Token:", deployed9mmPractice.token);

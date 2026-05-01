@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {ILBRouter} from "./ILBRouter.sol";
-
 /// @title IAmmoManager
 /// @notice Interface for the global ops/admin, role registry, and centralized tax configuration.
 /// @dev All CaliberMarket and AmmoToken instances reference this contract.
@@ -15,8 +13,8 @@ interface IAmmoManager {
     }
 
     struct SwapPath {
-        uint256 binStep;
-        ILBRouter.Version version;
+        address outputToken;
+        bool stable;
     }
 
     // ── Errors ───────���──────────────────────────────
@@ -42,7 +40,7 @@ interface IAmmoManager {
     event DexRouterUpdated(address indexed oldRouter, address indexed newRouter);
     event PoolTaxSet(address indexed token, address indexed pool, uint256 buyTax, uint256 sellTax);
     event PoolTaxRemoved(address indexed token, address indexed pool);
-    event SwapPathUpdated(address indexed token, uint256 binStep, ILBRouter.Version version);
+    event SwapPathUpdated(address indexed token, address indexed outputToken, bool stable);
     event TaxSwapThresholdUpdated(address indexed token, uint256 threshold);
     event TaxExemptUpdated(address indexed account, bool exempt);
 
@@ -62,7 +60,7 @@ interface IAmmoManager {
     function wavax() external view returns (address);
     function dexRouter() external view returns (address);
     function tokenPoolTax(address token, address pool) external view returns (uint256 buyTax, uint256 sellTax);
-    function swapPaths(address token) external view returns (uint256 binStep, ILBRouter.Version version);
+    function swapPaths(address token) external view returns (address outputToken, bool stable);
     function taxSwapThresholds(address token) external view returns (uint256);
     function taxExempt(address account) external view returns (bool);
     function getSwapConfig(address token)
@@ -91,7 +89,7 @@ interface IAmmoManager {
     function setDexRouter(address newRouter) external;
     function setPoolTax(address token, address pool, uint256 buyBps, uint256 sellBps) external;
     function removePoolTax(address token, address pool) external;
-    function setSwapPath(address token, uint256 binStep, ILBRouter.Version version) external;
+    function setSwapPath(address token, address outputToken, bool stable) external;
     function setTaxSwapThreshold(address token, uint256 threshold) external;
     function setTaxExempt(address account, bool exempt) external;
 }

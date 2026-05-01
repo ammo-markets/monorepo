@@ -5,6 +5,8 @@ import "forge-std/Script.sol";
 import "../src/PriceOracle.sol";
 import "../src/AmmoManager.sol";
 import "../src/AmmoFactory.sol";
+import "../src/AmmoLiquidityManager.sol";
+import "../src/interfaces/IDexRouter.sol";
 
 /// @notice Deploy script for the full Ammo Exchange protocol on Avalanche mainnet.
 /// @dev Uses real USDT on Avalanche C-Chain. Role addresses are read from
@@ -19,12 +21,13 @@ contract DeployMainnet is Script {
     address constant USDT = 0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7;
     uint8 constant USDT_DECIMALS = 6;
 
-    /// @dev WAVAX on Avalanche mainnet.
-    address constant WAVAX = 0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7;
-    /// @dev Trader Joe LBRouter V2.2 on Avalanche mainnet.
-    address constant LB_ROUTER = 0x18556DA13313f3532c54711497A8FedAC273220E;
+    /// @dev PairFactory on the target DEX.
+    address constant PAIR_FACTORY = 0x85448bF2F589ab1F56225DF5167c63f57758f8c1;
+    /// @dev Uniswap type router on the target DEX.
+    address constant DEX_ROUTER = 0x9CEE04bDcE127DA7E448A333f006DEFb3d5e38cC;
 
     AmmoManager public manager;
+    AmmoLiquidityManager public liquidityManager;
     PriceOracle public oracle;
     AmmoFactory public factory;
 
@@ -45,28 +48,34 @@ contract DeployMainnet is Script {
 
         vm.startBroadcast();
 
+        address wrappedNative = IDexRouter(DEX_ROUTER).WETH();
+
         // 1. Deploy AmmoManager (owner + initial keeper = deployer)
-        manager = new AmmoManager(feeRecipient, WAVAX);
+        manager = new AmmoManager(feeRecipient, wrappedNative);
         manager.setTreasury(treasury);
         manager.setGuardian(guardian);
-        manager.setDexRouter(LB_ROUTER);
+        manager.setDexRouter(DEX_ROUTER);
 
-        // 2. Deploy PriceOracle
+        // 2. Deploy tax-exempt liquidity helper
+        liquidityManager = new AmmoLiquidityManager(DEX_ROUTER);
+        manager.setTaxExempt(address(liquidityManager), true);
+
+        // 3. Deploy PriceOracle
         oracle = new PriceOracle(address(manager));
 
-        // 3. Deploy AmmoFactory pointing to real USDT
+        // 4. Deploy AmmoFactory pointing to real USDT
         factory = new AmmoFactory(address(manager), USDT, USDT_DECIMALS, address(oracle));
 
-        // 4. Wire oracle ↔ factory (enables auto-registration of markets)
+        // 5. Wire oracle ↔ factory (enables auto-registration of markets)
         oracle.setFactory(address(factory));
 
-        // 5. Create 4 calibers (factory auto-registers each with oracle)
+        // 6. Create 4 calibers (factory auto-registers each with oracle)
         _deploy9mmPractice();
         _deploy9mmSelfDefense();
         _deploy556SelfDefense();
         _deploy556NatoPractice();
 
-        // 6. Set initial prices via batch update
+        // 7. Set initial prices via batch update
         _setInitialPrices();
 
         vm.stopBroadcast();
@@ -75,16 +84,14 @@ contract DeployMainnet is Script {
     }
 
     function _deploy9mmPractice() internal {
-        (address market, address token) = factory.createCaliber(
-            bytes32("9MM_PRACTICE"), "Ammo Exchange 9mm Practice", "9MM-P", 150, 150, 50
-        );
+        (address market, address token) =
+            factory.createCaliber(bytes32("9MM_PRACTICE"), "Ammo Exchange 9mm Practice", "9MM-P", 150, 150, 50);
         deployed9mmPractice = CaliberDeployment(market, token);
     }
 
     function _deploy9mmSelfDefense() internal {
-        (address market, address token) = factory.createCaliber(
-            bytes32("9MM_SELF_DEFENSE"), "Ammo Exchange 9mm Self Defense", "9MM-SD", 150, 150, 50
-        );
+        (address market, address token) =
+            factory.createCaliber(bytes32("9MM_SELF_DEFENSE"), "Ammo Exchange 9mm Self Defense", "9MM-SD", 150, 150, 50);
         deployed9mmSelfDefense = CaliberDeployment(market, token);
     }
 
@@ -111,10 +118,10 @@ contract DeployMainnet is Script {
         markets[2] = deployed556SelfDefense.market;
         markets[3] = deployed556NatoPractice.market;
 
-        prices[0] = 21e16;  // $0.21
-        prices[1] = 45e16;  // $0.45
-        prices[2] = 55e16;  // $0.55
-        prices[3] = 40e16;  // $0.40
+        prices[0] = 21e16; // $0.21
+        prices[1] = 45e16; // $0.45
+        prices[2] = 55e16; // $0.55
+        prices[3] = 40e16; // $0.40
 
         oracle.setBatchPrices(markets, prices);
     }
@@ -123,8 +130,11 @@ contract DeployMainnet is Script {
         console.log("=== Mainnet Deployed Addresses ===");
         console.log("USDT (existing):", USDT);
         console.log("AmmoManager:", address(manager));
+        console.log("AmmoLiquidityManager:", address(liquidityManager));
         console.log("PriceOracle:", address(oracle));
         console.log("AmmoFactory:", address(factory));
+        console.log("PairFactory:", PAIR_FACTORY);
+        console.log("Router:", DEX_ROUTER);
         console.log("--- 9MM_PRACTICE ---");
         console.log("Market:", deployed9mmPractice.market);
         console.log("Token:", deployed9mmPractice.token);

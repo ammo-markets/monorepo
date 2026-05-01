@@ -9,6 +9,7 @@ const CONTRACTS_TO_EXPORT = [
   "AmmoFactory",
   "CaliberMarket",
   "AmmoToken",
+  "AmmoLiquidityManager",
   "MockUSDC",
   "PriceOracle",
   "AmmoPriceFunctions",

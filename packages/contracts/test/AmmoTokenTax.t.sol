@@ -4,9 +4,9 @@ pragma solidity ^0.8.24;
 import "forge-std/Test.sol";
 import "../src/AmmoManager.sol";
 import "../src/AmmoToken.sol";
+import "../src/AmmoLiquidityManager.sol";
 import "../src/CaliberMarket.sol";
-import {ILBRouter} from "../src/interfaces/ILBRouter.sol";
-import "./MockLBRouter.sol";
+import "./MockDexRouter.sol";
 import "./MockPriceOracle.sol";
 import "./MockERC20.sol";
 
@@ -14,14 +14,15 @@ contract AmmoTokenTaxTest is Test {
     AmmoManager manager;
     CaliberMarket market;
     AmmoToken token;
-    MockLBRouter router;
+    MockDexRouter router;
+    AmmoLiquidityManager liquidityManager;
     MockERC20 usdc;
     MockPriceOracle oracle;
 
     address owner = address(this);
     address user = address(0xBEEF);
     address user2 = address(0xCAFE);
-    address pool = address(0xDEE1); // simulated Trader Joe LBPair
+    address pool = address(0xDEE1); // simulated DEX pair
     address treasury = address(0x73EA5);
     address feeRecipient = address(0xFEE1);
     address wavax = address(0xAA0C);
@@ -34,11 +35,13 @@ contract AmmoTokenTaxTest is Test {
     function setUp() public {
         usdc = new MockERC20("USD Coin", "USDC", 6);
         oracle = new MockPriceOracle(ORACLE_PRICE);
-        router = new MockLBRouter();
+        router = new MockDexRouter(wavax);
+        liquidityManager = new AmmoLiquidityManager(address(router));
 
         manager = new AmmoManager(feeRecipient, wavax);
         manager.setTreasury(treasury);
         manager.setDexRouter(address(router));
+        manager.setTaxExempt(address(liquidityManager), true);
 
         market = new CaliberMarket(
             address(manager), address(usdc), 6, address(oracle), CALIBER_9MM, "Ammo 9MM", "MO9MM", 150, 150, 50
@@ -48,7 +51,7 @@ contract AmmoTokenTaxTest is Test {
         // Configure tax: 3% buy, 3% sell on the pool
         manager.setPoolTax(address(token), pool, BUY_TAX, SELL_TAX);
         // Configure swap path
-        manager.setSwapPath(address(token), 20, ILBRouter.Version.V2_2);
+        manager.setSwapPath(address(token), wavax, false);
         // Set threshold low for testing
         manager.setTaxSwapThreshold(address(token), 1e18);
 
@@ -191,6 +194,35 @@ contract AmmoTokenTaxTest is Test {
         token.transfer(pool, 50e18);
         assertEq(token.balanceOf(pool) - poolBefore, 50e18, "Pool gets full amount");
         assertEq(token.balanceOf(address(token)), taxBefore, "No tax collected");
+    }
+
+    function testDirectAddLiquidityTokenTransferIsTaxed() public {
+        uint256 amount = 100e18;
+        uint256 expectedTax = (amount * SELL_TAX) / 10_000;
+
+        uint256 taxBefore = token.balanceOf(address(token));
+        uint256 poolBefore = token.balanceOf(pool);
+
+        vm.prank(user);
+        token.transfer(pool, amount);
+
+        assertEq(token.balanceOf(pool) - poolBefore, amount - expectedTax);
+        assertEq(token.balanceOf(address(token)) - taxBefore, expectedTax);
+    }
+
+    function testLiquidityHelperAddLiquidityIsNotTaxed() public {
+        uint256 amount = 100e18;
+        uint256 taxBefore = token.balanceOf(address(token));
+        uint256 poolBefore = token.balanceOf(pool);
+
+        vm.deal(user, 1 ether);
+        vm.startPrank(user);
+        token.approve(address(liquidityManager), amount);
+        liquidityManager.addLiquidityETH{value: 1 ether}(address(token), false, amount, 0, 0, user, block.timestamp);
+        vm.stopPrank();
+
+        assertEq(token.balanceOf(pool) - poolBefore, amount);
+        assertEq(token.balanceOf(address(token)), taxBefore);
     }
 
     // ═══════════════════════════════════════════════

@@ -286,19 +286,19 @@ export const AmmoTokenAbi = [
   },
   {
     "type": "event",
-    "name": "TaxesSwapped",
+    "name": "TaxesSold",
     "inputs": [
       {
-        "name": "tokensSwapped",
+        "name": "tokensSold",
         "type": "uint256",
         "indexed": false,
         "internalType": "uint256"
       },
       {
-        "name": "avaxReceived",
-        "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
+        "name": "recipient",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
       }
     ],
     "anonymous": false

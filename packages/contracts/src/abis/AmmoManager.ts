@@ -88,14 +88,14 @@ export const AmmoManagerAbi = [
         "internalType": "struct AmmoManager.SwapPath",
         "components": [
           {
-            "name": "binStep",
-            "type": "uint256",
-            "internalType": "uint256"
+            "name": "outputToken",
+            "type": "address",
+            "internalType": "address"
           },
           {
-            "name": "version",
-            "type": "uint8",
-            "internalType": "enum ILBRouter.Version"
+            "name": "stable",
+            "type": "bool",
+            "internalType": "bool"
           }
         ]
       },
@@ -340,14 +340,14 @@ export const AmmoManagerAbi = [
         "internalType": "address"
       },
       {
-        "name": "binStep",
-        "type": "uint256",
-        "internalType": "uint256"
+        "name": "outputToken",
+        "type": "address",
+        "internalType": "address"
       },
       {
-        "name": "version",
-        "type": "uint8",
-        "internalType": "enum ILBRouter.Version"
+        "name": "stable",
+        "type": "bool",
+        "internalType": "bool"
       }
     ],
     "outputs": [],
@@ -414,14 +414,14 @@ export const AmmoManagerAbi = [
     ],
     "outputs": [
       {
-        "name": "binStep",
-        "type": "uint256",
-        "internalType": "uint256"
+        "name": "outputToken",
+        "type": "address",
+        "internalType": "address"
       },
       {
-        "name": "version",
-        "type": "uint8",
-        "internalType": "enum ILBRouter.Version"
+        "name": "stable",
+        "type": "bool",
+        "internalType": "bool"
       }
     ],
     "stateMutability": "view"
@@ -707,16 +707,16 @@ export const AmmoManagerAbi = [
         "internalType": "address"
       },
       {
-        "name": "binStep",
-        "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
+        "name": "outputToken",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
       },
       {
-        "name": "version",
-        "type": "uint8",
+        "name": "stable",
+        "type": "bool",
         "indexed": false,
-        "internalType": "enum ILBRouter.Version"
+        "internalType": "bool"
       }
     ],
     "anonymous": false

@@ -2,12 +2,11 @@
 pragma solidity ^0.8.24;
 
 import {AmmoManager} from "./AmmoManager.sol";
-import {ILBRouter} from "./interfaces/ILBRouter.sol";
-import {IERC20} from "./interfaces/IERC20.sol";
+import {IDexRouter} from "./interfaces/IDexRouter.sol";
 
 /// @notice ERC20 token with fee-on-transfer tax for DEX trades.
 /// @dev Mint/burn restricted to its CaliberMarket. Tax config is read from AmmoManager.
-///      Accumulated taxes are auto-swapped to native AVAX via Trader Joe LBRouter.
+///      Accumulated taxes are auto-swapped to native AVAX via the configured DEX router.
 contract AmmoToken {
     string public name;
     string public symbol;
@@ -32,7 +31,7 @@ contract AmmoToken {
 
     event Transfer(address indexed from, address indexed to, uint256 amount);
     event Approval(address indexed owner, address indexed spender, uint256 amount);
-    event TaxesSwapped(uint256 tokensSwapped, uint256 avaxReceived);
+    event TaxesSold(uint256 tokensSold, address indexed recipient);
 
     modifier onlyMarket() {
         if (msg.sender != market) revert NotMarket();
@@ -92,13 +91,18 @@ contract AmmoToken {
         uint256 taxAmount = 0;
 
         if (!_inSwap && !_isLocalExempt(from, to)) {
-            taxAmount = _determineTax(from, to, amount);
+            bool protocolExempt = manager.taxExempt(from) || manager.taxExempt(to);
+            if (protocolExempt) {
+                taxAmount = 0;
+            } else {
+                taxAmount = _determineTax(from, to, amount);
 
-            // Auto-swap only on non-DEX transfers to avoid reentering the router/pair
-            // during a buy or sell. DEX trades just accumulate tax; the next regular
-            // transfer that crosses threshold flushes it.
-            if (taxAmount == 0 && _shouldSwap()) {
-                _sellTaxes();
+                // Auto-swap only on non-DEX transfers to avoid reentering the router/pair
+                // during a buy or sell. DEX trades just accumulate tax; the next regular
+                // transfer that crosses threshold flushes it.
+                if (taxAmount == 0 && _shouldSwap()) {
+                    _sellTaxes();
+                }
             }
         }
 
@@ -115,9 +119,6 @@ contract AmmoToken {
 
     /// @dev Calculate tax amount by reading rates from AmmoManager.
     function _determineTax(address from, address to, uint256 amount) internal view returns (uint256) {
-        // Check protocol-wide exemptions
-        if (manager.taxExempt(from) || manager.taxExempt(to)) return 0;
-
         // Buy: check if `from` is a taxed pool
         (uint256 buyBps,) = manager.tokenPoolTax(address(this), from);
         if (buyBps > 0) return (amount * buyBps) / _BPS_DIVISOR;
@@ -132,11 +133,10 @@ contract AmmoToken {
     /// @dev Check token-local exemptions (no storage reads for cheapest checks).
     ///      - market: CaliberMarket mint/redeem/transfer operations
     ///      - address(this): tax swap transfers
-    ///      - dexRouter: router pulling tokens during swap execution
+    ///      Router transfers are not exempt because sells also arrive as router-mediated
+    ///      user-to-pair transfers. Liquidity adds should use an exempt helper contract.
     function _isLocalExempt(address from, address to) internal view returns (bool) {
-        address router = manager.dexRouter();
-        return from == market || to == market || from == address(this) || to == address(this) || from == router
-            || to == router;
+        return from == market || to == market || from == address(this) || to == address(this);
     }
 
     /// @dev Check if accumulated tax balance exceeds the auto-swap threshold.
@@ -145,7 +145,7 @@ contract AmmoToken {
         return threshold > 0 && balanceOf[address(this)] >= threshold;
     }
 
-    /// @dev Swap accumulated tax tokens to native AVAX via Trader Joe LBRouter.
+    /// @dev Swap accumulated tax tokens to native AVAX via the configured DEX router.
     ///      Sends AVAX directly to treasury. Failures are silently caught so user
     ///      trades are never blocked by swap issues.
     function _sellTaxes() internal {
@@ -155,41 +155,34 @@ contract AmmoToken {
         (address router, address wavax_, AmmoManager.SwapPath memory swapPath,, address treasury_) =
             manager.getSwapConfig(address(this));
 
-        if (router == address(0) || treasury_ == address(0) || swapPath.binStep == 0) return;
+        if (router == address(0) || treasury_ == address(0) || swapPath.outputToken == address(0)) return;
+        if (swapPath.outputToken != wavax_) return;
 
         _inSwap = true;
 
         // Approve router to pull our tokens
         allowance[address(this)][router] = tokenBalance;
+        emit Approval(address(this), router, tokenBalance);
 
-        // Build Trader Joe LB path: AmmoToken -> WAVAX
-        uint256[] memory pairBinSteps = new uint256[](1);
-        pairBinSteps[0] = swapPath.binStep;
+        // Build DEX path: AmmoToken -> WAVAX. The router unwraps WAVAX to native AVAX.
+        IDexRouter.route[] memory routes = new IDexRouter.route[](1);
+        routes[0] = IDexRouter.route({from: address(this), to: wavax_, stable: swapPath.stable});
 
-        ILBRouter.Version[] memory versions = new ILBRouter.Version[](1);
-        versions[0] = swapPath.version;
-
-        IERC20[] memory tokenPath = new IERC20[](2);
-        tokenPath[0] = IERC20(address(this));
-        tokenPath[1] = IERC20(wavax_);
-
-        ILBRouter.Path memory path =
-            ILBRouter.Path({pairBinSteps: pairBinSteps, versions: versions, tokenPath: tokenPath});
-
-        try ILBRouter(router)
-            .swapExactTokensForNATIVE(
+        try IDexRouter(router)
+            .swapExactTokensForETHSupportingFeeOnTransferTokens(
                 tokenBalance,
-                0, // amountOutMinNATIVE: no slippage protection for small tax swaps
-                path,
-                payable(treasury_),
+                0, // amountOutMin: no slippage protection for small tax swaps
+                routes,
+                treasury_,
                 block.timestamp
-            ) returns (
-            uint256 avaxOut
-        ) {
-            emit TaxesSwapped(tokenBalance, avaxOut);
+            ) {
+            emit TaxesSold(tokenBalance, treasury_);
+            allowance[address(this)][router] = 0;
+            emit Approval(address(this), router, 0);
         } catch {
             // Swap failed — reset approval, taxes accumulate for next attempt
             allowance[address(this)][router] = 0;
+            emit Approval(address(this), router, 0);
         }
 
         _inSwap = false;

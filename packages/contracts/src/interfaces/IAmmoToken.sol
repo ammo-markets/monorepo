@@ -15,7 +15,7 @@ interface IAmmoToken {
 
     event Transfer(address indexed from, address indexed to, uint256 amount);
     event Approval(address indexed owner, address indexed spender, uint256 amount);
-    event TaxesSwapped(uint256 tokensSwapped, uint256 avaxReceived);
+    event TaxesSold(uint256 tokensSold, address indexed recipient);
 
     // ── View functions ───────────────────────────────
 
