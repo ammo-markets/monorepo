@@ -31,18 +31,18 @@ export function SlideAmmoSquared() {
 
       <StaggerContainer
         preset="firing-sequence"
-        className="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:gap-10"
+        className="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:gap-8"
       >
         {AMMOSQUARED_PILLARS.map((pillar) => (
           <StaggerItem key={pillar.title} preset="firing-sequence">
             <div className="card-hover flex h-full flex-col rounded-none border border-surface-elevated bg-surface p-6 sm:p-8 lg:p-10">
-              <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-surface-elevated text-5xl font-bold text-brass sm:h-28 sm:w-28 sm:text-6xl">
+              <div className="mb-6 flex h-24 w-24 shrink-0 items-center justify-center rounded-full bg-surface-elevated text-5xl font-bold text-brass">
                 {pillar.icon}
               </div>
-              <h3 className="mb-4 font-display text-3xl font-bold uppercase tracking-tight text-brass sm:text-4xl lg:text-5xl">
+              <h3 className="mb-4 font-display text-2xl font-bold uppercase tracking-tight text-brass sm:text-3xl">
                 {pillar.title}
               </h3>
-              <p className="text-base leading-relaxed text-text-secondary sm:text-lg lg:text-xl">
+              <p className="text-base leading-relaxed text-text-secondary sm:text-lg">
                 {pillar.detail}
               </p>
             </div>

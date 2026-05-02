@@ -18,14 +18,14 @@ export function SlideProtocol() {
       >
         {PROTOCOL_POINTS.map((point) => (
           <StaggerItem key={point.title} preset="firing-sequence">
-            <div className="card-hover flex h-full flex-col items-center rounded-none border border-surface-elevated bg-surface p-4 text-center sm:p-6 lg:p-8">
-              <div className="mb-4 flex h-32 w-32 items-center justify-center rounded-full bg-surface-elevated text-6xl font-bold text-brass">
+            <div className="card-hover flex h-full flex-col items-center rounded-none border border-surface-elevated bg-surface p-6 sm:p-8 lg:p-10">
+              <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-surface-elevated text-5xl font-bold text-brass">
                 {point.icon}
               </div>
-              <h3 className="mb-3 text-xl font-semibold text-text">
+              <h3 className="mb-4 font-display text-2xl font-bold uppercase tracking-tight text-brass sm:text-3xl">
                 {point.title}
               </h3>
-              <p className="text-base leading-relaxed text-text-secondary">
+              <p className="text-center text-base leading-relaxed text-text-secondary sm:text-lg">
                 {point.detail}
               </p>
             </div>
