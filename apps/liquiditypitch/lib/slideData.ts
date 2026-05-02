@@ -27,6 +27,12 @@ export interface ReturnPoint {
   detail: string;
 }
 
+export interface AmmoSquaredPillar {
+  icon: string;
+  title: string;
+  detail: string;
+}
+
 // ---------------------------------------------------------------------------
 // Slide 2 — The Protocol, Briefly
 // ---------------------------------------------------------------------------
@@ -36,21 +42,41 @@ export const PROTOCOL_POINTS: ProtocolPoint[] = [
     icon: "🪙",
     title: "1 token = 1 round",
     detail:
-      "ERC-20 ammunition tokens, fully backed 1:1 by physical inventory in our US warehouse.",
-  },
-  {
-    icon: "🔒",
-    title: "Avalanche-only at launch",
-    detail:
-      "Bridges blacklisted by the protocol — supply stays native to Avalanche so redemption integrity and tax mechanics hold.",
+      "ERC-20 ammunition tokens, fully backed 1:1 by physical rounds. Mint with USDC, redeem to your door.",
   },
   {
     icon: "🤝",
-    title: "In partnership with Avalanche",
+    title: "Avalanche-native by design",
     detail:
-      "Built in close coordination with the Avalanche team — strategic ecosystem support and aligned go-to-market.",
+      "Built in close coordination with the Avalanche team. Bridges blocked at launch — supply, redemption, and tax mechanics all stay on-chain.",
   },
 ];
+
+// ---------------------------------------------------------------------------
+// Slide 3 — Backed by AmmoSquared (dual-pillar)
+// ---------------------------------------------------------------------------
+
+export const AMMOSQUARED_HEADLINE = "Backed by AmmoSquared";
+export const AMMOSQUARED_SUB =
+  "Custody and exit liquidity through one named US counterparty.";
+
+export const AMMOSQUARED_PILLARS: AmmoSquaredPillar[] = [
+  {
+    icon: "🏭",
+    title: "Physical Custody",
+    detail:
+      "Every token = 1 physical round, custodied at AmmoSquared's US warehouse. Audited, insured, redeemable on demand.",
+  },
+  {
+    icon: "🛡️",
+    title: "95% NAV Buyback",
+    detail:
+      "Token holders who don't want physical delivery redeem to cash at 95% of NAV through AmmoSquared. Hard, transparent floor.",
+  },
+];
+
+export const AMMOSQUARED_FOOTER =
+  "One named US counterparty handling both sides of the physical leg — custody and exit liquidity.";
 
 // ---------------------------------------------------------------------------
 // Slide 3 — The Problem (cold-start)
@@ -64,13 +90,7 @@ export const PROBLEM_POINTS: ProblemPoint[] = [
     icon: "🥶",
     headline: "Cold start kills new commodities",
     detail:
-      "Thin pools signal an undesirable asset before retail ever arrives. Liquidity is the first trust signal a buyer sees.",
-  },
-  {
-    icon: "📉",
-    headline: "Wide spreads break the funnel",
-    detail:
-      "5–10% slippage on a token-to-AVAX swap is enough to send a first-time buyer away. They don't come back.",
+      "Thin pools signal an undesirable asset, and 5–10% slippage on early swaps sends first-time buyers away. Liquidity is the trust signal — there's no second first impression.",
   },
   {
     icon: "🎯",
@@ -122,8 +142,8 @@ export const RETURN_POINTS: ReturnPoint[] = [
   },
   {
     icon: "🛡️",
-    title: "95% NAV Exit Floor",
+    title: "Bounded Downside",
     detail:
-      "AmmoSquared repurchases ammo rounds at 95% of NAV — at any time, you can unwind the ammo side of your position into cash with a hard, transparent floor.",
+      "Worst case, the ammo side exits at 95% of NAV. Best case, fees and farming compound on a position with a known floor — your risk profile has a known bottom before any return assumption.",
   },
 ];

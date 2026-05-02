@@ -14,7 +14,7 @@ export function SlideProtocol() {
 
       <StaggerContainer
         preset="firing-sequence"
-        className="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-6 lg:gap-8"
+        className="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:gap-8"
       >
         {PROTOCOL_POINTS.map((point) => (
           <StaggerItem key={point.title} preset="firing-sequence">

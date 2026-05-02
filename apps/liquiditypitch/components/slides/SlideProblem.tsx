@@ -14,7 +14,7 @@ export function SlideProblem() {
 
       <StaggerContainer
         preset="magazine-load"
-        className="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-6"
+        className="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6"
       >
         {PROBLEM_POINTS.map((point) => (
           <StaggerItem key={point.icon}>
