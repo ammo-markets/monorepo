@@ -103,7 +103,7 @@ export const PROBLEM_POINTS: ProblemPoint[] = [
     icon: "🎯",
     headline: "Start narrow, prove demand",
     detail:
-      "Concentrating liquidity in 9mm + 5.56 NATO makes the first markets usable. Once trading, custody, and redemption are proven, new calibers can launch from a stronger base.",
+      "Starting with 9mm + 5.56 NATO gives buyers enough depth to trade with confidence. Once trading, custody, and redemption are proven, new calibers can launch from a stronger base.",
   },
 ];
 
