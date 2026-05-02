@@ -101,9 +101,9 @@ export const PROBLEM_POINTS: ProblemPoint[] = [
   },
   {
     icon: "🎯",
-    headline: "Anchor calibers, then catalog",
+    headline: "Start narrow, prove demand",
     detail:
-      "Deep liquidity on 9mm + 5.56 NATO unlocks the rest. Each additional caliber compounds the network effect for the protocol and for the LP.",
+      "Concentrating liquidity in 9mm + 5.56 NATO makes the first markets usable. Once trading, custody, and redemption are proven, new calibers can launch from a stronger base.",
   },
 ];
 
@@ -116,21 +116,21 @@ export const ASK_INTRO =
 
 export const ASK_SLIPPAGE_ROWS: AskSlippageRow[] = [
   {
-    tvl: "$1M pool",
-    slippage: "~1.0%",
-    note: "Minimum — some friction.",
+    tvl: "$100K pool",
+    slippage: "~9.36%",
+    note: "Thin pool — about $468 cost.",
     isTarget: false,
   },
   {
-    tvl: "$4M pool",
-    slippage: "~0.25%",
-    note: "Target — feels professional.",
+    tvl: "$1M pool",
+    slippage: "~1.28%",
+    note: "Ask — about $64 cost.",
     isTarget: true,
   },
 ];
 
 export const ASK_SUMMARY =
-  "$1M floor · $4M target — per caliber. Two calibers at launch: 9mm + 5.56 NATO.";
+  "$1M ask — per caliber. Two calibers at launch: 9mm + 5.56 NATO.";
 
 export const ASK_TERMS: AskRow[] = [
   { label: "Calibers at launch", value: "9mm + 5.56 NATO" },
