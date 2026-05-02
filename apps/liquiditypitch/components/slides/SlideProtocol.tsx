@@ -9,7 +9,7 @@ export function SlideProtocol() {
         The Protocol, Briefly
       </h2>
       <p className="mb-4 text-sm text-text-muted sm:mb-6 sm:text-base lg:mb-10 lg:text-lg">
-        A brand new commodity, native to Avalanche.
+        A brand new commodity launching on Avalanche.
       </p>
 
       <StaggerContainer

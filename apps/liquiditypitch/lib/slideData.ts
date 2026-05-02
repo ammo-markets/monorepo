@@ -53,9 +53,9 @@ export const PROTOCOL_POINTS: ProtocolPoint[] = [
   },
   {
     icon: "🤝",
-    title: "Avalanche-native by design",
+    title: "Built on Avalanche",
     detail:
-      "Launching on Avalanche with ecosystem support. Bridges blocked at launch — supply, redemption, and tax mechanics all stay on-chain.",
+      "A brand new commodity launching on Avalanche. Bridges blocked at launch — supply, redemption, and tax mechanics stay on-chain.",
   },
 ];
 
