@@ -1,0 +1,201 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-*: initial;
+
+  /* Background colors */
+  --color-background: #000000;
+  --color-surface: #050505;
+  --color-surface-elevated: #0a0a0a;
+
+  /* Brass palette */
+  --color-brass: #c6a44e;
+  --color-brass-light: #d4b76a;
+  --color-brass-dark: #1c1606;
+
+  /* Text colors */
+  --color-text: #ffffff;
+  --color-text-secondary: #a0a0a0;
+  --color-text-muted: #666666;
+
+  /* Base colors */
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+  /* Semantic colors */
+  --color-green: #2ecc71;
+  --color-red: #e74c3c;
+  --color-amber: #f39c12;
+  --color-blue: #3498db;
+
+  /* Font families */
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-rajdhani), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+}
+
+:root {
+  background-color: var(--color-background);
+  color: var(--color-text);
+}
+
+/* ── Brass shimmer ────────────────────────────── */
+
+@keyframes brass-shimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+.brass-shimmer {
+  background: linear-gradient(
+    90deg,
+    #c6a44e 0%,
+    #c6a44e 40%,
+    #f0d080 50%,
+    #c6a44e 60%,
+    #c6a44e 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: brass-shimmer 1.5s ease-in-out 1s 1;
+}
+
+/* ── Button recoil ────────────────────────────── */
+
+@keyframes recoil-right {
+  0% {
+    transform: scale(1) translateX(0);
+  }
+  50% {
+    transform: scale(0.94) translateX(2px);
+  }
+  100% {
+    transform: scale(1) translateX(0);
+  }
+}
+
+@keyframes recoil-left {
+  0% {
+    transform: scale(1) translateX(0);
+  }
+  50% {
+    transform: scale(0.94) translateX(-2px);
+  }
+  100% {
+    transform: scale(1) translateX(0);
+  }
+}
+
+.btn-recoil-next:active {
+  animation: recoil-right 120ms ease-out;
+}
+
+.btn-recoil-prev:active {
+  animation: recoil-left 120ms ease-out;
+}
+
+/* ── Card hover ───────────────────────────────── */
+
+.card-hover {
+  transition:
+    transform 200ms ease-out,
+    box-shadow 200ms ease-out,
+    border-color 200ms ease-out;
+}
+
+@media (hover: hover) {
+  .card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: none;
+    border-color: var(--color-brass);
+    background-color: var(--color-surface-elevated);
+  }
+}
+
+/* ── Ambient background glow ──────────────────── */
+
+@keyframes ambient-breathe {
+  0%,
+  100% {
+    opacity: 0.1;
+  }
+  50% {
+    opacity: 0.2;
+  }
+}
+
+.ambient-glow {
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 255, 255, 0.02) 0%,
+    transparent 70%
+  );
+  animation: ambient-breathe 8s ease-in-out infinite;
+}
+
+/* ── Live ping dot ────────────────────────────── */
+
+@keyframes live-ping {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  75% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+.live-dot {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.live-dot::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #2ecc71;
+  margin-right: 6px;
+  flex-shrink: 0;
+}
+
+.live-dot::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #2ecc71;
+  animation: live-ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* ── Current badge pulse ──────────────────────── */
+
+@keyframes badge-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.badge-pulse {
+  animation: badge-pulse 2s ease-in-out infinite;
+}
