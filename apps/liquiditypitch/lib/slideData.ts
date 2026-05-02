@@ -21,6 +21,13 @@ export interface AskRow {
   value: string;
 }
 
+export interface AskSlippageRow {
+  tvl: string;
+  slippage: string;
+  note: string;
+  isTarget: boolean;
+}
+
 export interface ReturnPoint {
   icon: string;
   title: string;
@@ -94,9 +101,9 @@ export const PROBLEM_POINTS: ProblemPoint[] = [
   },
   {
     icon: "🎯",
-    headline: "Anchor caliber, then catalog",
+    headline: "Anchor calibers, then catalog",
     detail:
-      "Deep liquidity on 5.56 NATO unlocks the rest. Each additional caliber compounds the network effect for the protocol and for the LP.",
+      "Deep liquidity on 9mm + 5.56 NATO unlocks the rest. Each additional caliber compounds the network effect for the protocol and for the LP.",
   },
 ];
 
@@ -104,19 +111,35 @@ export const PROBLEM_POINTS: ProblemPoint[] = [
 // Slide 4 — The Ask
 // ---------------------------------------------------------------------------
 
-export const ASK_HEADLINE = "$100K – $1M per caliber";
-export const ASK_SUB =
-  "50% AVAX · 50% ammo rounds · Uniswap V2-style LP — Pharaoh Exchange at launch";
+export const ASK_INTRO =
+  "A $5K user swap shouldn't feel slippage. TVL is the dial.";
+
+export const ASK_SLIPPAGE_ROWS: AskSlippageRow[] = [
+  {
+    tvl: "$1M pool",
+    slippage: "~1.0%",
+    note: "Minimum — some friction.",
+    isTarget: false,
+  },
+  {
+    tvl: "$4M pool",
+    slippage: "~0.25%",
+    note: "Target — feels professional.",
+    isTarget: true,
+  },
+];
+
+export const ASK_SUMMARY =
+  "$1M floor · $4M target — per caliber. Two calibers at launch: 9mm + 5.56 NATO.";
 
 export const ASK_TERMS: AskRow[] = [
-  { label: "Capital range", value: "$100K – $1M per caliber" },
-  { label: "Composition", value: "50% AVAX / 50% ammo tokens" },
+  { label: "Calibers at launch", value: "9mm + 5.56 NATO" },
+  { label: "Composition", value: "50% AVAX / 50% ammo tokens per pool" },
   { label: "Position", value: "Uniswap V2-style LP" },
   {
     label: "Venue",
     value: "Pharaoh Exchange at launch — any V2-compatible AMM",
   },
-  { label: "Launch caliber", value: "5.56 NATO" },
   {
     label: "Roadmap",
     value: "Additional calibers open as further LPs commit",
