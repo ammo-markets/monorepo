@@ -10,13 +10,7 @@ import "../src/AmmoPriceFunctions.sol";
 ///      AmmoPriceFunctions without a real router. We only need the
 ///      handleOracleFulfillment entry point for fulfillment tests.
 contract MockFunctionsRouter {
-    function sendRequest(
-        uint64,
-        bytes calldata,
-        uint16,
-        uint32,
-        bytes32
-    ) external pure returns (bytes32) {
+    function sendRequest(uint64, bytes calldata, uint16, uint32, bytes32) external pure returns (bytes32) {
         return keccak256("mock-request");
     }
 }
@@ -83,9 +77,7 @@ contract AmmoPriceFunctionsTest is Test {
         keys[0] = "9MM_PRACTICE";
 
         vm.expectRevert(AmmoPriceFunctions.ArrayLengthMismatch.selector);
-        new AmmoPriceFunctions(
-            address(router), 1, bytes32("don"), address(oracle), markets, keys
-        );
+        new AmmoPriceFunctions(address(router), 1, bytes32("don"), address(oracle), markets, keys);
     }
 
     function testConstructorSetsState() public {

@@ -28,6 +28,7 @@ contract AmmoToken {
     error InsufficientBalance();
     error InsufficientAllowance();
     error ZeroAddress();
+    error Denied();
 
     event Transfer(address indexed from, address indexed to, uint256 amount);
     event Approval(address indexed owner, address indexed spender, uint256 amount);
@@ -87,6 +88,9 @@ contract AmmoToken {
     function _transfer(address from, address to, uint256 amount) internal {
         if (to == address(0)) revert ZeroAddress();
         if (balanceOf[from] < amount) revert InsufficientBalance();
+        // Denylist takes precedence over tax/exempt logic. Once denied, an address
+        // cannot send or receive — bridges and similar destinations are fully frozen.
+        if (manager.isDenied(from) || manager.isDenied(to)) revert Denied();
 
         uint256 taxAmount = 0;
 

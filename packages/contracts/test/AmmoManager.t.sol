@@ -116,4 +116,37 @@ contract AmmoManagerTest is Test {
         emit AmmoManager.TreasuryUpdated(address(0), alice);
         manager.setTreasury(alice);
     }
+
+    // ── Denylist admin ──────────────────────────────
+
+    function testSetDeniedAddsAndRemoves() public {
+        assertFalse(manager.isDenied(alice));
+
+        manager.setDenied(alice, true);
+        assertTrue(manager.isDenied(alice));
+
+        manager.setDenied(alice, false);
+        assertFalse(manager.isDenied(alice));
+    }
+
+    function testSetDeniedRevertsForNonOwner() public {
+        vm.prank(alice);
+        vm.expectRevert(AmmoManager.NotOwner.selector);
+        manager.setDenied(bob, true);
+    }
+
+    function testSetDeniedRevertsForZeroAddress() public {
+        vm.expectRevert(AmmoManager.ZeroAddress.selector);
+        manager.setDenied(address(0), true);
+    }
+
+    function testSetDeniedEmitsEvent() public {
+        vm.expectEmit(true, false, false, true);
+        emit AmmoManager.DeniedUpdated(alice, true);
+        manager.setDenied(alice, true);
+
+        vm.expectEmit(true, false, false, true);
+        emit AmmoManager.DeniedUpdated(alice, false);
+        manager.setDenied(alice, false);
+    }
 }

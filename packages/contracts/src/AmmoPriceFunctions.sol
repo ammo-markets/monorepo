@@ -3,7 +3,9 @@ pragma solidity ^0.8.24;
 
 import {FunctionsClient} from "@chainlink/contracts/src/v0.8/functions/v1_3_0/FunctionsClient.sol";
 import {FunctionsRequest} from "@chainlink/contracts/src/v0.8/functions/v1_0_0/libraries/FunctionsRequest.sol";
-import {AutomationCompatibleInterface} from "@chainlink/contracts/src/v0.8/automation/interfaces/AutomationCompatibleInterface.sol";
+import {
+    AutomationCompatibleInterface
+} from "@chainlink/contracts/src/v0.8/automation/interfaces/AutomationCompatibleInterface.sol";
 import {PriceOracle} from "./PriceOracle.sol";
 
 /// @title AmmoPriceFunctions
@@ -85,12 +87,7 @@ contract AmmoPriceFunctions is FunctionsClient, AutomationCompatibleInterface {
     /// @notice Called by Chainlink Automation to check if upkeep is needed.
     /// @return upkeepNeeded True if enough time has elapsed since last update.
     /// @return performData Empty bytes (no extra data needed).
-    function checkUpkeep(bytes calldata)
-        external
-        view
-        override
-        returns (bool upkeepNeeded, bytes memory performData)
-    {
+    function checkUpkeep(bytes calldata) external view override returns (bool upkeepNeeded, bytes memory performData) {
         upkeepNeeded = (block.timestamp - lastUpkeepTimestamp) >= updateInterval;
         performData = "";
     }
@@ -118,12 +115,7 @@ contract AmmoPriceFunctions is FunctionsClient, AutomationCompatibleInterface {
         }
         req.setArgs(args);
 
-        bytes32 requestId = _sendRequest(
-            req.encodeCBOR(),
-            subscriptionId,
-            callbackGasLimit,
-            donId
-        );
+        bytes32 requestId = _sendRequest(req.encodeCBOR(), subscriptionId, callbackGasLimit, donId);
 
         lastRequestId = requestId;
         emit PriceUpdateRequested(requestId);
@@ -133,11 +125,7 @@ contract AmmoPriceFunctions is FunctionsClient, AutomationCompatibleInterface {
     /// @dev Decodes uint256[] and calls oracle.setBatchPrices(). On error, emits
     ///      an event but does NOT revert — reverting would waste the DON's gas
     ///      and the request can't be retried anyway.
-    function _fulfillRequest(
-        bytes32 requestId,
-        bytes memory response,
-        bytes memory err
-    ) internal override {
+    function _fulfillRequest(bytes32 requestId, bytes memory response, bytes memory err) internal override {
         if (err.length > 0) {
             emit PriceUpdateFailed(requestId, err);
             return;
@@ -167,11 +155,7 @@ contract AmmoPriceFunctions is FunctionsClient, AutomationCompatibleInterface {
         emit UpdateIntervalUpdated(interval);
     }
 
-    function setConfig(
-        uint64 subscriptionId_,
-        bytes32 donId_,
-        uint32 callbackGasLimit_
-    ) external onlyOwner {
+    function setConfig(uint64 subscriptionId_, bytes32 donId_, uint32 callbackGasLimit_) external onlyOwner {
         subscriptionId = subscriptionId_;
         donId = donId_;
         callbackGasLimit = callbackGasLimit_;

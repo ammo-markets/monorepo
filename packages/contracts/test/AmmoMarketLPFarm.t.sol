@@ -415,22 +415,30 @@ contract AmmoMarketLPFarmTest is Test {
 
     function testConstructorRejectsZeroAddressesAndInvalidSchedule() public {
         vm.expectRevert(AmmoMarketLPFarm.ZeroAddress.selector);
-        new AmmoMarketLPFarm(address(0), address(emissionController), address(reward), duration, startRewardPerDay, 10_000e18);
+        new AmmoMarketLPFarm(
+            address(0), address(emissionController), address(reward), duration, startRewardPerDay, 10_000e18
+        );
 
         vm.expectRevert(AmmoMarketLPFarm.ZeroAddress.selector);
         new AmmoMarketLPFarm(address(manager), address(0), address(reward), duration, startRewardPerDay, 10_000e18);
 
         vm.expectRevert(AmmoMarketLPFarm.ZeroAddress.selector);
-        new AmmoMarketLPFarm(address(manager), address(emissionController), address(0), duration, startRewardPerDay, 10_000e18);
+        new AmmoMarketLPFarm(
+            address(manager), address(emissionController), address(0), duration, startRewardPerDay, 10_000e18
+        );
 
         vm.expectRevert(AmmoMarketLPFarm.InvalidTime.selector);
-        new AmmoMarketLPFarm(address(manager), address(emissionController), address(reward), 0, startRewardPerDay, 10_000e18);
+        new AmmoMarketLPFarm(
+            address(manager), address(emissionController), address(reward), 0, startRewardPerDay, 10_000e18
+        );
 
         vm.expectRevert(AmmoMarketLPFarm.InvalidTime.selector);
         new AmmoMarketLPFarm(address(manager), address(emissionController), address(reward), duration, 0, 10_000e18);
 
         vm.expectRevert(AmmoMarketLPFarm.InvalidTime.selector);
-        new AmmoMarketLPFarm(address(manager), address(emissionController), address(reward), duration, startRewardPerDay, 0);
+        new AmmoMarketLPFarm(
+            address(manager), address(emissionController), address(reward), duration, startRewardPerDay, 0
+        );
     }
 
     function testRejectsInvalidAmountsAndZeroRecoveryAddresses() public {

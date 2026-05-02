@@ -131,8 +131,9 @@ contract ProtocolEmissionControllerTest is Test {
     }
 
     function testFarmMintsLazilyOnHarvestThroughController() public {
-        AmmoMarketLPFarm farm =
-            new AmmoMarketLPFarm(address(manager), address(controller), address(protocolToken), 10 days, 1_000e18, 5_000e18);
+        AmmoMarketLPFarm farm = new AmmoMarketLPFarm(
+            address(manager), address(controller), address(protocolToken), 10 days, 1_000e18, 5_000e18
+        );
         controller.setFarmOnce(address(farm));
         farm.addPool(bytes32("9MM"), address(lpToken));
 

@@ -108,9 +108,8 @@ contract AmmoTokenTaxForkTest is Test {
         vm.startPrank(user);
         token.approve(DEX_ROUTER, sellAmount);
         IDexRouter.route[] memory routes = _route(address(token), wavax);
-        IDexRouter(DEX_ROUTER).swapExactTokensForETHSupportingFeeOnTransferTokens(
-            sellAmount, 0, routes, user, block.timestamp
-        );
+        IDexRouter(DEX_ROUTER)
+            .swapExactTokensForETHSupportingFeeOnTransferTokens(sellAmount, 0, routes, user, block.timestamp);
         vm.stopPrank();
 
         assertApproxEqAbs(token.balanceOf(address(token)), expectedTax, 1, "sell tax collected");
@@ -138,9 +137,8 @@ contract AmmoTokenTaxForkTest is Test {
         vm.startPrank(user);
         token.approve(DEX_ROUTER, 200e18);
         IDexRouter.route[] memory routes = _route(address(token), wavax);
-        IDexRouter(DEX_ROUTER).swapExactTokensForETHSupportingFeeOnTransferTokens(
-            200e18, 0, routes, user, block.timestamp
-        );
+        IDexRouter(DEX_ROUTER)
+            .swapExactTokensForETHSupportingFeeOnTransferTokens(200e18, 0, routes, user, block.timestamp);
         vm.stopPrank();
 
         assertGe(token.balanceOf(address(token)), manager.taxSwapThresholds(address(token)));

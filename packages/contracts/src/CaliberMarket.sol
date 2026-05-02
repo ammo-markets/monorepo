@@ -11,7 +11,12 @@ import {IERC20} from "./interfaces/IERC20.sol";
 /// @dev Deployed by AmmoFactory. Each instance manages exactly one caliber.
 ///      Mint reads price from a shared PriceOracle; redeem is keeper-finalized.
 contract CaliberMarket {
-    enum RedeemStatus { None, Requested, Finalized, Canceled }
+    enum RedeemStatus {
+        None,
+        Requested,
+        Finalized,
+        Canceled
+    }
 
     struct MarketConfig {
         address manager;
@@ -54,9 +59,12 @@ contract CaliberMarket {
     error TreasuryNotSet();
 
     event Minted(
-        address indexed user, bytes32 indexed caliberId,
-        uint256 usdcAmount, uint256 tokenAmount,
-        uint256 priceUsed, uint256 refundAmount
+        address indexed user,
+        bytes32 indexed caliberId,
+        uint256 usdcAmount,
+        uint256 tokenAmount,
+        uint256 priceUsed,
+        uint256 refundAmount
     );
     event RedeemRequested(uint256 indexed orderId, address indexed user, uint256 tokenAmount, uint64 deadline);
     event RedeemFinalized(uint256 indexed orderId, address indexed user, uint256 burnedTokens, uint256 feeTokens);

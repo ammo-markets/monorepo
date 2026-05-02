@@ -54,6 +54,11 @@ contract AmmoManager {
     /// @notice Protocol-wide tax-exempt addresses (staking, vesting, etc.).
     mapping(address => bool) public taxExempt;
 
+    /// @notice Protocol-wide transfer denylist. AmmoTokens revert any transfer
+    ///         where `from` or `to` is denied. Used to block bridges and other
+    ///         destinations the protocol does not allow ammo tokens to leave through.
+    mapping(address => bool) public isDenied;
+
     // ── Errors ──────────────────────────────────────
 
     error NotOwner();
@@ -80,6 +85,7 @@ contract AmmoManager {
     event SwapPathUpdated(address indexed token, address indexed outputToken, bool stable);
     event TaxSwapThresholdUpdated(address indexed token, uint256 threshold);
     event TaxExemptUpdated(address indexed account, bool exempt);
+    event DeniedUpdated(address indexed account, bool denied);
 
     // ── Modifiers ───────────────────────────────────
 
@@ -225,6 +231,16 @@ contract AmmoManager {
         if (account == address(0)) revert ZeroAddress();
         taxExempt[account] = exempt;
         emit TaxExemptUpdated(account, exempt);
+    }
+
+    /// @notice Add or remove a protocol-wide transfer denial. Denied addresses
+    ///         cannot be the `from` or `to` of any AmmoToken transfer. Used to
+    ///         block bridges and other destinations the protocol does not allow
+    ///         ammo tokens to leave through.
+    function setDenied(address account, bool denied) external onlyOwner {
+        if (account == address(0)) revert ZeroAddress();
+        isDenied[account] = denied;
+        emit DeniedUpdated(account, denied);
     }
 
     // ══════════════════════════════════════════════════

@@ -330,6 +330,11 @@ export const AmmoTokenAbi = [
   },
   {
     "type": "error",
+    "name": "Denied",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "InsufficientAllowance",
     "inputs": []
   },

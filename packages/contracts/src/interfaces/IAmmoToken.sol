@@ -35,5 +35,4 @@ interface IAmmoToken {
     function transferFrom(address from, address to, uint256 amount) external returns (bool);
     function mint(address to, uint256 amount) external;
     function burn(address from, uint256 amount) external;
-
 }

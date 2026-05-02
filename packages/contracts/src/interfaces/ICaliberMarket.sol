@@ -7,8 +7,18 @@ pragma solidity ^0.8.24;
 interface ICaliberMarket {
     // ── Enums ────────────────────────────────────────
 
-    enum MintStatus { None, Started, Finalized, Refunded }
-    enum RedeemStatus { None, Requested, Finalized, Canceled }
+    enum MintStatus {
+        None,
+        Started,
+        Finalized,
+        Refunded
+    }
+    enum RedeemStatus {
+        None,
+        Requested,
+        Finalized,
+        Canceled
+    }
 
     // ── Structs ──────────────────────────────────────
 
@@ -55,8 +65,12 @@ interface ICaliberMarket {
     // ── Events ───────────────────────────────────────
 
     event MintStarted(
-        uint256 indexed orderId, address indexed user, uint256 usdcAmount,
-        uint256 requestPrice, uint256 minTokensOut, uint64 deadline
+        uint256 indexed orderId,
+        address indexed user,
+        uint256 usdcAmount,
+        uint256 requestPrice,
+        uint256 minTokensOut,
+        uint64 deadline
     );
     event MintFinalized(uint256 indexed orderId, address indexed user, uint256 tokenAmount, uint256 priceUsed);
     event MintRefunded(uint256 indexed orderId, address indexed user, uint256 refundAmount, uint8 reasonCode);
@@ -100,7 +114,15 @@ interface ICaliberMarket {
     function redeemOrders(uint256 orderId)
         external
         view
-        returns (address user, uint256 tokenAmount, uint256 feeBps, uint64 deadline, uint64 createdAt, uint64 finalizedAt, RedeemStatus status);
+        returns (
+            address user,
+            uint256 tokenAmount,
+            uint256 feeBps,
+            uint64 deadline,
+            uint64 createdAt,
+            uint64 finalizedAt,
+            RedeemStatus status
+        );
     // ── User functions ───────────────────────────────
 
     function startMint(uint256 usdcAmount, uint256 maxSlippageBps, uint64 deadline) external returns (uint256 orderId);

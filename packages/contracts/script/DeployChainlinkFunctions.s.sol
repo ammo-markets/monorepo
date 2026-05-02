@@ -45,14 +45,7 @@ contract DeployChainlinkFunctions is Script {
         vm.startBroadcast();
 
         // 1. Deploy consumer
-        AmmoPriceFunctions consumer = new AmmoPriceFunctions(
-            router,
-            subId,
-            donId,
-            oracleAddr,
-            markets,
-            caliberKeys
-        );
+        AmmoPriceFunctions consumer = new AmmoPriceFunctions(router, subId, donId, oracleAddr, markets, caliberKeys);
 
         // 2. Set API URL and JS source
         consumer.setApiBaseUrl(apiBaseUrl);

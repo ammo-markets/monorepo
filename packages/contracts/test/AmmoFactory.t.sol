@@ -35,8 +35,7 @@ contract AmmoFactoryTest is Test {
     // ── Create caliber ──────────────────────────────
 
     function testCreateCaliber() public {
-        (address market, address token) =
-            factory.createCaliber(CALIBER_9MM, "Ammo 9MM", "MO9MM", 150, 150, 50);
+        (address market, address token) = factory.createCaliber(CALIBER_9MM, "Ammo 9MM", "MO9MM", 150, 150, 50);
 
         assertTrue(market != address(0));
         assertTrue(token != address(0));
